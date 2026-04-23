@@ -34,7 +34,7 @@ button,input,select,textarea{font-family:var(--fb);}
 ════════════════════════════════════════════════════════ */
 
 /* ── THEME PICKER UI ── */
-.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px;}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
 .theme-card{border:2px solid var(--s-border);cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);border-radius:8px;overflow:hidden;position:relative;}
 .theme-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.5);}
 .theme-card.selected{border-color:var(--s-gold);box-shadow:0 0 0 3px var(--s-gold),0 12px 32px rgba(0,0,0,.5);}
@@ -424,6 +424,455 @@ button,input,select,textarea{font-family:var(--fb);}
 #pg-customer[data-theme="lao"] .c-item:hover{border-color:#8b4513;box-shadow:0 8px 24px rgba(139,69,19,.12);}
 #pg-customer[data-theme="lao"] .c-order-btn,.c-cart-btn,.c-fab{background:linear-gradient(135deg,#1a0a00,#2a1500);}
 #pg-customer[data-theme="lao"] .c-summary-val{color:#8b4513;}
+
+
+/* ─────────────────────────────────────────────────────
+   THEME 11: ZEN GARDEN 🍃
+   Soft sage green · Japanese minimal · Peaceful · Airy
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="zen"]{
+  --c-bg:#f5f7f2;--c-surf:#ffffff;--c-surf2:#eef2ea;--c-surf3:#e4ead8;
+  --c-border:#c8d8b8;--c-border2:#a8bc98;--c-text:#1e2a18;--c-muted:#6a8060;
+  --c-gold:#4a7c40;--c-gold2:#5a9a4e;
+}
+#pg-customer[data-theme="zen"] .c-topbar{
+  background:rgba(245,247,242,.97);border-bottom:1px solid #c8d8b8;
+  box-shadow:0 1px 12px rgba(74,124,64,.06);
+}
+#pg-customer[data-theme="zen"] .c-hero{
+  background:linear-gradient(160deg,#0f1f0a 0%,#1a2e10 50%,#121e0c 100%);
+  border-bottom:1px solid #4a7c40;
+}
+#pg-customer[data-theme="zen"] .c-hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Ccircle cx='30' cy='30' r='28' stroke='%234a7c40' stroke-opacity='0.06' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='20' stroke='%234a7c40' stroke-opacity='0.04' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='10' stroke='%234a7c40' stroke-opacity='0.03' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+#pg-customer[data-theme="zen"] .c-hero-tag{border-color:rgba(90,154,78,.4);background:rgba(90,154,78,.08);}
+#pg-customer[data-theme="zen"] .c-hero-tag-dot{background:#5a9a4e;box-shadow:0 0 8px #5a9a4e;}
+#pg-customer[data-theme="zen"] .c-hero-tag-txt{color:#8ac878;}
+#pg-customer[data-theme="zen"] .c-hero-title{color:#fff;font-weight:300;letter-spacing:2px;}
+#pg-customer[data-theme="zen"] .c-hero-title em{color:#8ac878;font-style:normal;}
+#pg-customer[data-theme="zen"] .c-hero-sub{color:rgba(255,255,255,.4);font-weight:300;letter-spacing:1px;}
+#pg-customer[data-theme="zen"] .c-meta-val{color:#8ac878;}
+#pg-customer[data-theme="zen"] .c-meta-lbl{color:rgba(255,255,255,.3);}
+#pg-customer[data-theme="zen"] .c-cats{background:#fff;border-bottom:1px solid #c8d8b8;}
+#pg-customer[data-theme="zen"] .c-cat{color:#a8bc98;font-weight:400;letter-spacing:1px;}
+#pg-customer[data-theme="zen"] .c-cat:hover{color:#4a7c40;}
+#pg-customer[data-theme="zen"] .c-cat.on{color:#1e2a18;border-bottom-color:#4a7c40;font-weight:600;}
+#pg-customer[data-theme="zen"] .c-item{background:#fff;border-color:#c8d8b8;border-radius:8px;}
+#pg-customer[data-theme="zen"] .c-item:hover{border-color:#4a7c40;box-shadow:0 4px 20px rgba(74,124,64,.1);}
+#pg-customer[data-theme="zen"] .c-item-img{background:linear-gradient(135deg,#eef2ea,#e4ead8);}
+#pg-customer[data-theme="zen"] .c-item-cat{color:#6a8060;font-weight:400;letter-spacing:2px;}
+#pg-customer[data-theme="zen"] .c-item-name{color:#1e2a18;font-weight:600;}
+#pg-customer[data-theme="zen"] .c-item-desc{color:#8a9880;}
+#pg-customer[data-theme="zen"] .c-item-price{color:#1e2a18;font-weight:700;}
+#pg-customer[data-theme="zen"] .c-item-add{background:#4a7c40;border-radius:50%;width:28px;height:28px;}
+#pg-customer[data-theme="zen"] .c-item-add:hover{background:#5a9a4e;}
+#pg-customer[data-theme="zen"] .c-badge-new{background:#4a7c40;color:#fff;}
+#pg-customer[data-theme="zen"] .c-tabs-bar{background:rgba(245,247,242,.97);border-top:1px solid #c8d8b8;}
+#pg-customer[data-theme="zen"] .c-tab-btn{color:#c8d8b8;}
+#pg-customer[data-theme="zen"] .c-tab-btn.on{color:#1e2a18;}
+#pg-customer[data-theme="zen"] .c-cart-panel{background:#fff;}
+#pg-customer[data-theme="zen"] .c-cart-h{border-bottom:1px solid #c8d8b8;}
+#pg-customer[data-theme="zen"] .c-cart-title{color:#1e2a18;}
+#pg-customer[data-theme="zen"] .c-cart-f{background:#f5f7f2;border-top:1px solid #c8d8b8;}
+#pg-customer[data-theme="zen"] .c-cart-total-l{color:#1e2a18;}
+#pg-customer[data-theme="zen"] .c-cart-total-v{color:#4a7c40;}
+#pg-customer[data-theme="zen"] .c-order-btn{background:#1e2a18;border-radius:4px;}
+#pg-customer[data-theme="zen"] .c-order-btn:hover{background:#4a7c40;}
+#pg-customer[data-theme="zen"] .c-fab{background:#1e2a18;}
+#pg-customer[data-theme="zen"] .c-fab:hover{background:#4a7c40;}
+#pg-customer[data-theme="zen"] .c-ci-name{color:#1e2a18;}
+#pg-customer[data-theme="zen"] .c-ci-em{background:#eef2ea;}
+#pg-customer[data-theme="zen"] .c-summary-val{color:#4a7c40;}
+#pg-customer[data-theme="zen"] .c-session-summary{background:#fff;border-color:#c8d8b8;}
+#pg-customer[data-theme="zen"] .c-ocard{background:#fff;border-color:#c8d8b8;}
+#pg-customer[data-theme="zen"] .c-oc-h{background:#f5f7f2;border-bottom:1px solid #c8d8b8;}
+#pg-customer[data-theme="zen"] .c-oc-id{color:#1e2a18;}
+#pg-customer[data-theme="zen"] .c-oc-row{color:#6a8060;}
+#pg-customer[data-theme="zen"] .c-cart-btn{background:#1e2a18;}
+#pg-customer[data-theme="zen"] .c-cart-btn:hover{background:#4a7c40;}
+
+/* ─────────────────────────────────────────────────────
+   THEME 12: STEAKHOUSE / EMBER 🥩🔥
+   Dark slate + amber glow · Premium grill · Masculine
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="ember"]{
+  --c-bg:#1a1410;--c-surf:#221c16;--c-surf2:#1e1812;--c-surf3:#19130e;
+  --c-border:#3a2e20;--c-border2:#5a4830;--c-text:#f0e0c8;--c-muted:#9a7850;
+  --c-gold:#d4682a;--c-gold2:#f08040;background:#1a1410;
+}
+#pg-customer[data-theme="ember"] .c-topbar{
+  background:rgba(26,20,16,.98);border-bottom:2px solid #3a2e20;
+  box-shadow:0 2px 16px rgba(212,104,42,.08);
+}
+#pg-customer[data-theme="ember"] .c-resto-name{color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .c-table-tag{color:#9a7850;}
+#pg-customer[data-theme="ember"] .c-cart-btn{background:linear-gradient(135deg,#a04020,#d4682a);color:#fff;}
+#pg-customer[data-theme="ember"] .c-hero{
+  background:linear-gradient(160deg,#0a0604 0%,#160e08 50%,#0e0804 100%);
+  border-bottom:2px solid #3a2e20;
+}
+#pg-customer[data-theme="ember"] .c-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 80%,rgba(212,104,42,.12) 0%,transparent 60%);
+}
+#pg-customer[data-theme="ember"] .c-hero-tag{border-color:rgba(212,104,42,.35);background:rgba(212,104,42,.07);}
+#pg-customer[data-theme="ember"] .c-hero-tag-dot{background:#d4682a;box-shadow:0 0 10px #d4682a;}
+#pg-customer[data-theme="ember"] .c-hero-tag-txt{color:#f08040;}
+#pg-customer[data-theme="ember"] .c-hero-title{color:#f0e0c8;font-weight:900;letter-spacing:1px;}
+#pg-customer[data-theme="ember"] .c-hero-title em{color:#f08040;}
+#pg-customer[data-theme="ember"] .c-hero-sub{color:rgba(240,224,200,.35);}
+#pg-customer[data-theme="ember"] .c-meta-val{color:#d4682a;}
+#pg-customer[data-theme="ember"] .c-meta-lbl{color:rgba(240,224,200,.25);}
+#pg-customer[data-theme="ember"] .c-cats{background:#1e1812;border-bottom:1px solid #3a2e20;}
+#pg-customer[data-theme="ember"] .c-cat{color:#4a3820;}
+#pg-customer[data-theme="ember"] .c-cat:hover{color:#d4682a;}
+#pg-customer[data-theme="ember"] .c-cat.on{color:#f0e0c8;border-bottom-color:#d4682a;}
+#pg-customer[data-theme="ember"] .c-menu{background:#1a1410;}
+#pg-customer[data-theme="ember"] .c-item{background:#221c16;border-color:#3a2e20;border-radius:4px;}
+#pg-customer[data-theme="ember"] .c-item:hover{border-color:#d4682a;box-shadow:0 8px 24px rgba(212,104,42,.15);}
+#pg-customer[data-theme="ember"] .c-item-img{background:linear-gradient(135deg,#1a1410,#221c16);}
+#pg-customer[data-theme="ember"] .c-item-cat{color:#5a4828;letter-spacing:2px;}
+#pg-customer[data-theme="ember"] .c-item-name{color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .c-item-desc{color:#6a5038;}
+#pg-customer[data-theme="ember"] .c-item-price{color:#d4682a;font-weight:900;}
+#pg-customer[data-theme="ember"] .c-item-add{background:linear-gradient(135deg,#a04020,#d4682a);color:#fff;}
+#pg-customer[data-theme="ember"] .c-item-add:hover{background:linear-gradient(135deg,#c05030,#f08040);}
+#pg-customer[data-theme="ember"] .c-badge-new{background:#d4682a;color:#fff;}
+#pg-customer[data-theme="ember"] .c-badge-pop{background:#0a0604;color:#d4682a;border-color:#d4682a;}
+#pg-customer[data-theme="ember"] .c-tabs-bar{background:rgba(26,20,16,.98);border-top:1px solid #3a2e20;}
+#pg-customer[data-theme="ember"] .c-tab-btn{color:#3a2e20;}
+#pg-customer[data-theme="ember"] .c-tab-btn.on{color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .c-cart-panel{background:#1e1812;}
+#pg-customer[data-theme="ember"] .c-cart-h{border-bottom:1px solid #3a2e20;}
+#pg-customer[data-theme="ember"] .c-cart-title{color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .c-cart-f{background:#19130e;border-top:1px solid #3a2e20;}
+#pg-customer[data-theme="ember"] .c-cart-total-l{color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .c-cart-total-v{color:#d4682a;}
+#pg-customer[data-theme="ember"] .c-order-btn{background:linear-gradient(135deg,#a04020,#d4682a);color:#fff;font-weight:900;}
+#pg-customer[data-theme="ember"] .c-order-btn:hover{background:linear-gradient(135deg,#c05030,#f08040);}
+#pg-customer[data-theme="ember"] .c-ci-name{color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .c-ci-em{background:#1a1410;}
+#pg-customer[data-theme="ember"] .c-fab{background:linear-gradient(135deg,#a04020,#d4682a);color:#fff;}
+#pg-customer[data-theme="ember"] .c-summary-val{color:#d4682a;}
+#pg-customer[data-theme="ember"] .c-session-summary,.c-ocard{background:#221c16;border-color:#3a2e20;}
+#pg-customer[data-theme="ember"] .c-oc-h{background:#1e1812;border-bottom:1px solid #3a2e20;}
+#pg-customer[data-theme="ember"] .c-oc-id{color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .c-oc-row{color:#9a7850;}
+#pg-customer[data-theme="ember"] .lang-sel{background:#221c16;border-color:#3a2e20;color:#f0e0c8;}
+#pg-customer[data-theme="ember"] .sess-timer{background:#221c16;border-color:#3a2e20;color:#9a7850;}
+
+
+/* ─────────────────────────────────────────────────────
+   THEME 13: BRASSERIE 🥐
+   Ivory · Slate Blue · Copper · French bistro elegance
+   Clean serif typography · Refined margins · Zero effects
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="brasserie"]{
+  --c-bg:#f7f4ef;--c-surf:#ffffff;--c-surf2:#f0ece4;--c-surf3:#e8e2d8;
+  --c-border:#d8d0c4;--c-border2:#beb4a4;--c-text:#1c2330;--c-muted:#7a8090;
+  --c-gold:#8c6a3a;--c-gold2:#a07e4a;
+}
+
+/* Top bar — crisp white with thin slate underline */
+#pg-customer[data-theme="brasserie"] .c-topbar{
+  background:#ffffff;
+  border-bottom:1px solid #1c2330;
+  box-shadow:none;
+  height:62px;
+}
+#pg-customer[data-theme="brasserie"] .c-resto-name{
+  color:#1c2330;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:700;
+  letter-spacing:.5px;
+  font-size:18px;
+}
+#pg-customer[data-theme="brasserie"] .c-table-tag{
+  color:#7a8090;
+  letter-spacing:3px;
+  font-size:9px;
+  text-transform:uppercase;
+}
+#pg-customer[data-theme="brasserie"] .c-cart-btn{
+  background:#1c2330;
+  color:#f7f4ef;
+  border-radius:2px;
+  font-weight:600;
+  letter-spacing:.5px;
+}
+#pg-customer[data-theme="brasserie"] .c-cart-btn:hover{background:#8c6a3a;}
+#pg-customer[data-theme="brasserie"] .c-cart-count{background:#8c6a3a;color:#fff;}
+#pg-customer[data-theme="brasserie"] .lang-sel{
+  background:#fff;border:1px solid #d8d0c4;
+  color:#1c2330;border-radius:2px;
+}
+#pg-customer[data-theme="brasserie"] .sess-timer{
+  background:#fff;border:1px solid #d8d0c4;
+  color:#7a8090;border-radius:20px;
+}
+#pg-customer[data-theme="brasserie"] .timer-dot{background:#8c6a3a;}
+
+/* Hero — deep slate with warm copper accent line */
+#pg-customer[data-theme="brasserie"] .c-hero{
+  background:linear-gradient(165deg,#111820 0%,#1c2330 55%,#141c28 100%);
+  border-bottom:3px solid #8c6a3a;
+  padding:56px 28px 52px;
+}
+#pg-customer[data-theme="brasserie"] .c-hero-glow{
+  background:radial-gradient(ellipse at 70% 40%,rgba(140,106,58,.14) 0%,transparent 60%);
+}
+#pg-customer[data-theme="brasserie"] .c-hero-tag{
+  border:1px solid rgba(140,106,58,.35);
+  background:rgba(140,106,58,.08);
+  border-radius:2px;
+}
+#pg-customer[data-theme="brasserie"] .c-hero-tag-dot{
+  background:#c8a06a;
+  border-radius:50%;
+  animation:none;
+  box-shadow:none;
+}
+#pg-customer[data-theme="brasserie"] .c-hero-tag-txt{
+  color:#c8a06a;
+  letter-spacing:3px;
+  font-size:9px;
+  text-transform:uppercase;
+  font-family:'Geist',system-ui,sans-serif;
+}
+#pg-customer[data-theme="brasserie"] .c-hero-title{
+  color:#f7f4ef;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:300;
+  font-style:italic;
+  letter-spacing:1px;
+  font-size:clamp(34px,6vw,50px);
+  line-height:1.1;
+}
+#pg-customer[data-theme="brasserie"] .c-hero-title em{
+  color:#c8a06a;
+  font-style:normal;
+  font-weight:700;
+}
+#pg-customer[data-theme="brasserie"] .c-hero-sub{
+  color:rgba(247,244,239,.4);
+  letter-spacing:.5px;
+  font-weight:300;
+  font-size:13px;
+}
+#pg-customer[data-theme="brasserie"] .c-hero-meta{
+  border-top:1px solid rgba(140,106,58,.2);
+  padding-top:20px;
+  margin-top:24px;
+}
+#pg-customer[data-theme="brasserie"] .c-meta-val{
+  color:#c8a06a;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:700;
+  font-size:22px;
+}
+#pg-customer[data-theme="brasserie"] .c-meta-lbl{
+  color:rgba(247,244,239,.3);
+  letter-spacing:2px;
+  font-size:8px;
+  text-transform:uppercase;
+}
+
+/* Category tabs — thin underline style, no background */
+#pg-customer[data-theme="brasserie"] .c-cats{
+  background:#ffffff;
+  border-bottom:1px solid #d8d0c4;
+  padding:0 24px;
+}
+#pg-customer[data-theme="brasserie"] .c-cat{
+  color:#beb4a4;
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-weight:400;
+  padding:16px 16px;
+}
+#pg-customer[data-theme="brasserie"] .c-cat:hover{color:#1c2330;}
+#pg-customer[data-theme="brasserie"] .c-cat.on{
+  color:#1c2330;
+  border-bottom-color:#8c6a3a;
+  font-weight:600;
+}
+
+/* Menu items — clean card, copper accent on hover */
+#pg-customer[data-theme="brasserie"] .c-menu{background:#f7f4ef;padding:20px 16px 130px;}
+#pg-customer[data-theme="brasserie"] .c-item{
+  background:#ffffff;
+  border:1px solid #d8d0c4;
+  border-radius:2px;
+  box-shadow:0 1px 4px rgba(28,35,48,.04);
+}
+#pg-customer[data-theme="brasserie"] .c-item:hover{
+  border-color:#8c6a3a;
+  box-shadow:0 4px 20px rgba(28,35,48,.08);
+  transform:translateY(-2px);
+}
+#pg-customer[data-theme="brasserie"] .c-item-img{
+  background:linear-gradient(135deg,#f0ece4,#e8e2d8);
+  height:110px;
+}
+#pg-customer[data-theme="brasserie"] .c-item-cat{
+  color:#8c6a3a;
+  font-size:8px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  font-weight:500;
+}
+#pg-customer[data-theme="brasserie"] .c-item-name{
+  color:#1c2330;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:.2px;
+}
+#pg-customer[data-theme="brasserie"] .c-item-desc{
+  color:#9a9faa;
+  font-size:11px;
+  line-height:1.6;
+}
+#pg-customer[data-theme="brasserie"] .c-item-price{
+  color:#1c2330;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:700;
+  font-size:15px;
+}
+#pg-customer[data-theme="brasserie"] .c-item-add{
+  background:#1c2330;
+  border-radius:2px;
+  width:28px;height:28px;
+  font-size:16px;
+}
+#pg-customer[data-theme="brasserie"] .c-item-add:hover{background:#8c6a3a;}
+#pg-customer[data-theme="brasserie"] .c-badge-new{
+  background:#8c6a3a;color:#fff;
+  border-radius:2px;letter-spacing:2px;
+}
+#pg-customer[data-theme="brasserie"] .c-badge-pop{
+  background:#1c2330;color:#c8a06a;
+  border-color:#8c6a3a;border-radius:2px;
+}
+
+/* Bottom tabs — minimal, pure */
+#pg-customer[data-theme="brasserie"] .c-tabs-bar{
+  background:#ffffff;
+  border-top:1px solid #d8d0c4;
+  box-shadow:none;
+}
+#pg-customer[data-theme="brasserie"] .c-tab-btn{color:#d8d0c4;letter-spacing:1px;font-size:8px;}
+#pg-customer[data-theme="brasserie"] .c-tab-btn.on{color:#1c2330;}
+#pg-customer[data-theme="brasserie"] .c-tab-ico{font-size:18px;}
+
+/* Cart bottom sheet */
+#pg-customer[data-theme="brasserie"] .c-cart-panel{background:#ffffff;}
+#pg-customer[data-theme="brasserie"] .c-cart-drag{background:#d8d0c4;}
+#pg-customer[data-theme="brasserie"] .c-cart-h{border-bottom:1px solid #e8e2d8;}
+#pg-customer[data-theme="brasserie"] .c-cart-title{
+  color:#1c2330;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:700;
+  font-size:18px;
+  letter-spacing:.5px;
+}
+#pg-customer[data-theme="brasserie"] .c-cart-x{
+  border:1px solid #d8d0c4;color:#7a8090;border-radius:50%;
+}
+#pg-customer[data-theme="brasserie"] .c-ci{border-bottom:1px solid #f0ece4;}
+#pg-customer[data-theme="brasserie"] .c-ci-em{background:#f0ece4;border-radius:4px;}
+#pg-customer[data-theme="brasserie"] .c-ci-name{color:#1c2330;font-weight:600;}
+#pg-customer[data-theme="brasserie"] .c-ci-price{color:#8c6a3a;}
+#pg-customer[data-theme="brasserie"] .c-ciqb{
+  background:#f7f4ef;border:1px solid #d8d0c4;
+  color:#1c2330;border-radius:2px;
+}
+#pg-customer[data-theme="brasserie"] .c-ciqb:hover{background:#1c2330;border-color:#1c2330;color:#fff;}
+#pg-customer[data-theme="brasserie"] .c-ci-rm{color:#d8d0c4;}
+#pg-customer[data-theme="brasserie"] .c-ci-rm:hover{color:#c0392b;}
+#pg-customer[data-theme="brasserie"] .c-cart-f{
+  background:#f7f4ef;
+  border-top:1px solid #e8e2d8;
+}
+#pg-customer[data-theme="brasserie"] .c-cart-total-row{border-top:1px solid #d8d0c4;}
+#pg-customer[data-theme="brasserie"] .c-cart-total-l{
+  color:#1c2330;
+  font-family:'Fraunces',Georgia,serif;
+  letter-spacing:1px;
+  font-size:16px;
+}
+#pg-customer[data-theme="brasserie"] .c-cart-total-v{color:#8c6a3a;}
+#pg-customer[data-theme="brasserie"] .c-order-btn{
+  background:#1c2330;
+  color:#f7f4ef;
+  border-radius:2px;
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:12px;
+}
+#pg-customer[data-theme="brasserie"] .c-order-btn:hover{background:#8c6a3a;}
+#pg-customer[data-theme="brasserie"] .c-order-btn::after{content:''}
+
+/* FAB */
+#pg-customer[data-theme="brasserie"] .c-fab{
+  background:#1c2330;color:#f7f4ef;
+  border-radius:4px;
+  box-shadow:0 4px 16px rgba(28,35,48,.2);
+}
+#pg-customer[data-theme="brasserie"] .c-fab:hover{background:#8c6a3a;}
+#pg-customer[data-theme="brasserie"] .c-fab-badge{background:#8c6a3a;color:#fff;}
+
+/* Orders / Bill view */
+#pg-customer[data-theme="brasserie"] .c-session-summary{
+  background:#ffffff;border:1px solid #d8d0c4;border-radius:4px;
+}
+#pg-customer[data-theme="brasserie"] .c-summary-lbl{color:#7a8090;letter-spacing:2px;font-size:8px;text-transform:uppercase;}
+#pg-customer[data-theme="brasserie"] .c-summary-val{
+  color:#8c6a3a;
+  font-family:'Fraunces',Georgia,serif;
+  font-size:22px;font-weight:700;
+}
+#pg-customer[data-theme="brasserie"] .c-ocard{
+  background:#ffffff;border:1px solid #d8d0c4;border-radius:4px;
+}
+#pg-customer[data-theme="brasserie"] .c-oc-h{
+  background:#f7f4ef;border-bottom:1px solid #e8e2d8;
+}
+#pg-customer[data-theme="brasserie"] .c-oc-id{
+  color:#1c2330;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:700;
+}
+#pg-customer[data-theme="brasserie"] .c-oc-time{color:#9a9faa;}
+#pg-customer[data-theme="brasserie"] .c-oc-row{color:#5a6070;border-bottom-color:#f0ece4;}
+#pg-customer[data-theme="brasserie"] .c-oc-total{
+  color:#1c2330;
+  font-family:'Fraunces',Georgia,serif;
+}
+
+/* Success overlay */
+#pg-customer[data-theme="brasserie"] .order-success-ov{
+  background:rgba(28,35,48,.96);
+  backdrop-filter:blur(12px);
+}
+#pg-customer[data-theme="brasserie"] .os-title{color:#f7f4ef;font-style:italic;}
+#pg-customer[data-theme="brasserie"] .os-total{color:#c8a06a;}
+#pg-customer[data-theme="brasserie"] .os-btn-primary{background:#8c6a3a;color:#fff;border-radius:2px;}
+#pg-customer[data-theme="brasserie"] .os-btn-primary:hover{background:#a07e4a;}
+#pg-customer[data-theme="brasserie"] .os-btn-secondary{border-color:rgba(247,244,239,.2);color:rgba(247,244,239,.6);}
+
+/* Cart empty */
+#pg-customer[data-theme="brasserie"] .c-cart-empty{color:#beb4a4;}
+
+/* Notification */
+#pg-customer[data-theme="brasserie"] ~ .notif-c{
+  background:#fff;border-left-color:#8c6a3a;
+  box-shadow:0 4px 20px rgba(28,35,48,.1);
+}
 
 /* ═══ PAGES ═══ */
 .page{display:none!important;}
@@ -851,7 +1300,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .ep-tab.on{color:var(--s-gold);border-bottom-color:var(--s-gold);}
 .ep-tab-content{display:none;padding:12px;}
 .ep-tab-content.on{display:block;}
-.ep-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:160px;overflow-y:auto;}
+.ep-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:180px;overflow-y:auto;padding:2px;}
 .ep-grid::-webkit-scrollbar{width:3px;}
 .ep-grid::-webkit-scrollbar-thumb{background:var(--s-border);}
 .ep-emoji-btn{width:34px;height:34px;background:none;border:1px solid transparent;font-size:20px;cursor:pointer;border-radius:4px;transition:all .15s;display:flex;align-items:center;justify-content:center;}
@@ -2700,8 +3149,28 @@ const EP_EMOJIS = {
   food:['🍽️','🫕','🍲','🍜','🍛','🍣','🍱','🥘','🍝','🍗','🍖','🥩','🍔','🍟','🌮','🌯','🥙','🥗','🥚','🍳','🥞','🧇','🥓','🧆','🫔','🍤','🦐','🦞','🦀','🦑','🐟','🍕','🥪','🧀','🥨','🥐','🍞','🥖','🍰','🎂','🧁','🍩','🍪','🍫','🍬','🫕','🥜','🌽','🥦','🧅','🥕','🍅','🥑','🍋','🍊','🍇','🍓','🍑','🍍','🥭'],
   drink:['🥤','🧋','🍵','☕','🫖','🧃','🍺','🍻','🥂','🍷','🍸','🍹','🫗','🍶','🥛','🧉','🍾'],
   other:['⭐','🔥','✨','💎','👑','🎯','🎪','🎭','🎨','🏆','💫','🌟','❤️','💚','💛','🧡','💜','🤍'],
-  icons:['🏪','🍽️','🫕','🍔','🍕','🌮','🍣','🍜','🥘','🍛','🥗','🍗','🥩','🧆','🍤','🦐','🍱','🥙','🌯','🫔','🥞','🧇','🍳','🎂','🧁','☕','🥤','🍵','🫖','🍺','🍹'],
-  tags:['🏷️','🔖','📌','📍','🎯','⭐','🌟','💫','🔥','✨','🍽️','🥗','🥤','🍲','🫕','🍔','🍕','🌮','🍣','🥘','🍗','🍟','🧁','☕','🍵','🍺','🍹','🥩','🦐','🌽','🥦','🍱','🎪','💎','👑','🏆']
+  icons:[
+    // Restaurants & buildings
+    '🏪','🏬','🏨','🍽️','🥂','🫕','🍴','🥄','🔪',
+    // Meat & grill
+    '🍔','🌭','🍗','🍖','🥩','🥓','🧆','🫕','🍱',
+    // Asian
+    '🍣','🍜','🍛','🍚','🍙','🍘','🍡','🥟','🦪',
+    // International
+    '🍕','🌮','🌯','🥙','🧇','🥞','🫔','🥨','🧀',
+    // Seafood
+    '🦐','🦞','🦀','🦑','🐟','🍤','🐠','🦈','🐙',
+    // Dessert & cafe
+    '🎂','🧁','🍰','🍩','🍪','🍫','🍮','☕','🫖',
+    // Drinks
+    '🥤','🧋','🍵','🍺','🍻','🥂','🍷','🍸','🍹',
+    // Fruits & fresh
+    '🥗','🥦','🌽','🥕','🍅','🥑','🍋','🍊','🍇',
+    // Events & special
+    '⭐','🌟','👑','💎','🏆','🔥','✨','💫','🎯',
+  ],
+  tags:['🏷️','🔖','📌','📍','🎯','⭐','🌟','💫','🔥','✨','🍽️','🥗','🥤','🍲','🫕','🍔','🍕','🌮','🍣','🥘','🍗','🍟','🧁','☕','🍵','🍺','🍹','🥩','🦐','🌽','🥦','🍱','🎪','💎','👑','🏆'],
+  star:['⭐','🌟','💫','✨','🏆','👑','💎','🔥','❤️','💚','💛','🧡','💜','🤍','🎯','🎪','🎭','🎨','🎬','🎵','🎤','🎸','🏅','🥇','🎊','🎉','🎈','🎀','🌈','☀️','🌙','⚡','🌊','🍀','🦁','🐯','🦅','🐉','🦄']
 };
 
 let currentEPTarget=null; // which picker is open
@@ -2720,6 +3189,9 @@ const THEMES = [
   {id:'neon',      name:'Neon Tokyo',       desc:'⚡ Cyberpunk · Electric · Night vibes',   hero:'linear-gradient(135deg,#080012,#2a005a)', accent:'#bf00ff', icon:'⚡', particles:'neon'},
   {id:'luxury',    name:'Black Gold Luxury',desc:'🏆 Fine dining · Elegant · Premium',      hero:'linear-gradient(135deg,#020100,#0a0800)', accent:'#c8973a', icon:'🏆', particles:'luxury'},
   {id:'lao',       name:'Lao Heritage',     desc:'🏛️ Traditional · Cultural · Warm earth',  hero:'linear-gradient(135deg,#1a0a00,#2a1500)', accent:'#d4b880', icon:'🏛️', particles:'lao'},
+  {id:'zen',       name:'Zen Garden',        desc:'🍃 Sage green · Japanese minimal · Calm',   hero:'linear-gradient(135deg,#0f1f0a,#1a2e10)', accent:'#4a7c40', icon:'🍃', particles:'zen'},
+  {id:'ember',     name:'Steakhouse Ember',  desc:'🥩 Dark slate · Amber glow · Premium BBQ', hero:'linear-gradient(135deg,#0a0604,#221c16)', accent:'#d4682a', icon:'🔥', particles:'ember'},
+  {id:'brasserie', name:'Brasserie',           desc:'🥐 Ivory · Slate · Copper · French elegance', hero:'linear-gradient(135deg,#111820,#1c2330)', accent:'#8c6a3a', icon:'🥐'},
 ];
 
 function initThemePicker(){
@@ -2767,104 +3239,76 @@ function applyTheme(themeId){
 
 // ═══ PARTICLE / EFFECT SYSTEMS ═══
 let particleInterval=null;
+// Particle configs — small count, one wave every 10s, elegant
+const PARTICLE_CFG={
+  cny:     {emojis:['🧧','🏮','🎊','✨'],     size:22, count:5, dur:6, useSX:false},
+  halloween:{emojis:['🦇','👻','🎃','🌕'],    size:20, count:4, dur:7, useSX:false},
+  christmas:{emojis:['❄️','❄️','⭐','🎁'],    size:16, count:6, dur:7, useSX:true},
+  ice:     {emojis:['❄️','❄️','❄️','✦'],      size:14, count:5, dur:6, useSX:true},
+  tropical:{emojis:['🌺','🌸','🍃','🌼'],     size:18, count:4, dur:7, useSX:false},
+  sakura:  {emojis:['🌸','🌺','🌸','✿'],      size:16, count:5, dur:8, useSX:false},
+  galaxy:  {emojis:['⭐','✦','✧','★'],        size:12, count:5, dur:4, fixed:true},
+  neon:    {emojis:['✦','◆','✦','◆'],         size:12, count:4, dur:5, useSX:false},
+  luxury:  {emojis:['✦','✧','◆','★'],         size:11, count:4, dur:4, fixed:true},
+  lao:     {emojis:['🌺','✦','✿','🌸'],       size:16, count:4, dur:8, useSX:false},
+  zen:     {emojis:['🍃','✦','🌿','✧'],       size:14, count:4, dur:9, useSX:false},
+  ember:   {emojis:['✦','◆','✦','✧'],         size:10, count:3, dur:5, fixed:true},
+};
+
 function launchParticles(themeId){
-  // Remove old particles and canvas
   const old=document.getElementById('theme-particles');
   if(old) old.remove();
   if(particleInterval){clearInterval(particleInterval);particleInterval=null;}
   const t=THEMES.find(x=>x.id===themeId);
   if(!t||!t.particles) return;
+  const cfg=PARTICLE_CFG[t.particles];
+  if(!cfg) return;
+
+  // Create container
   const container=document.createElement('div');
   container.id='theme-particles';
   container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;';
   document.getElementById('pg-customer').appendChild(container);
-  const configs={
-    cny:{
-      emojis:['🧧','🎊','🏮','✨','🐉','🎆'],
-      count:30, minSize:16, maxSize:36,
-      anim:'th-fall', minDur:4, maxDur:9, rise:false
-    },
-    halloween:{
-      emojis:['🎃','👻','🦇','🕷️','🌕','💀'],
-      count:25, minSize:14, maxSize:30,
-      anim:'th-fall', minDur:5, maxDur:11, rise:false
-    },
-    christmas:{
-      emojis:['❄️','⭐','🎄','🎁','🔔','❄️','❄️'],
-      count:40, minSize:10, maxSize:22,
-      anim:'th-snow', minDur:5, maxDur:12, rise:false,
-      useSX:true
-    },
-    ice:{
-      emojis:['❄️','🧊','❄️','❄️','✦','❄️'],
-      count:35, minSize:10, maxSize:20,
-      anim:'th-snow', minDur:4, maxDur:10, rise:false, useSX:true
-    },
-    tropical:{
-      emojis:['🌺','🌸','🍃','🌼','🌻','⭐'],
-      count:25, minSize:12, maxSize:28,
-      anim:'th-fall', minDur:5, maxDur:10, rise:false
-    },
-    sakura:{
-      emojis:['🌸','🌺','✿','🌸','🌸','💮'],
-      count:35, minSize:12, maxSize:24,
-      anim:'th-fall', minDur:6, maxDur:12, rise:false
-    },
-    galaxy:{
-      emojis:['⭐','✦','★','✧','·','⭐','✦'],
-      count:50, minSize:8, maxSize:18,
-      anim:'th-twinkle', minDur:1, maxDur:4, rise:false, fixed:true
-    },
-    neon:{
-      emojis:['⚡','✦','◆','▲','✦','⚡'],
-      count:20, minSize:10, maxSize:20,
-      anim:'th-fall', minDur:3, maxDur:8, rise:false
-    },
-    luxury:{
-      emojis:['✦','◆','✧','★','✦','◆'],
-      count:25, minSize:8, maxSize:18,
-      anim:'th-twinkle', minDur:2, maxDur:5, rise:false, fixed:true
-    },
-    lao:{
-      emojis:['✦','🌺','◆','✿','✦','🌸'],
-      count:20, minSize:10, maxSize:22,
-      anim:'th-fall', minDur:6, maxDur:12, rise:false
-    }
-  };
-  const cfg=configs[t.particles];
-  if(!cfg) return;
 
-  function makeParticle(){
-    const el=document.createElement('div');
-    el.className='th-particle';
-    const emoji=cfg.emojis[Math.floor(Math.random()*cfg.emojis.length)];
-    const size=cfg.minSize+Math.random()*(cfg.maxSize-cfg.minSize);
-    el.textContent=emoji;
-    el.style.fontSize=size+'px';
-    if(cfg.fixed){
-      el.style.left=Math.random()*100+'vw';
-      el.style.top=Math.random()*100+'vh';
-      el.style.position='absolute';
-    } else {
-      el.style.left=Math.random()*100+'vw';
-      el.style.top=cfg.rise?'110vh':'-30px';
+  // Drop one wave of N particles, then remove them after they fall
+  function dropWave(){
+    const wave=[];
+    for(let i=0;i<cfg.count;i++){
+      const el=document.createElement('div');
+      el.style.cssText='position:absolute;pointer-events:none;user-select:none;';
+      el.textContent=cfg.emojis[i%cfg.emojis.length];
+      el.style.fontSize=cfg.size+'px';
+      el.style.opacity='0';
+      // Spread across width with staggered start
+      el.style.left=(5+Math.random()*90)+'vw';
+      if(cfg.fixed){
+        el.style.top=(5+Math.random()*85)+'vh';
+        el.style.transition='opacity 1s ease';
+        container.appendChild(el);
+        wave.push(el);
+        setTimeout(()=>el.style.opacity=String(Math.random()*.5+.3),50+i*100);
+        setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),1000);},(cfg.dur*1000)-1200);
+      } else {
+        el.style.top='-40px';
+        const delay=i*(700/cfg.count); // stagger each particle
+        const totalDur=cfg.dur*1000;
+        const drift=cfg.useSX?(Math.random()-0.5)*80:0;
+        container.appendChild(el);
+        wave.push(el);
+        setTimeout(()=>{
+          el.style.transition=`transform ${cfg.dur}s cubic-bezier(.25,.46,.45,.94), opacity .5s ease`;
+          el.style.opacity=String(Math.random()*.6+.35);
+          el.style.transform=`translateY(110vh) translateX(${drift}px) rotate(${Math.random()*360}deg)`;
+          setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),600);},totalDur-600);
+        },delay);
+      }
     }
-    const dur=(cfg.minDur+Math.random()*(cfg.maxDur-cfg.minDur)).toFixed(1);
-    const delay=(Math.random()*cfg.maxDur).toFixed(1);
-    if(cfg.useSX){
-      const sx=(Math.random()-0.5)*120;
-      const sr=Math.random()*720;
-      el.style.setProperty('--sx',sx+'px');
-      el.style.setProperty('--sr',sr+'deg');
-    }
-    el.style.animation=`${cfg.anim} ${dur}s ${delay}s linear infinite`;
-    el.style.opacity=Math.random()*.7+.3;
-    container.appendChild(el);
-    return el;
   }
 
-  // Create initial particles
-  for(let i=0;i<cfg.count;i++) makeParticle();
+  // First wave immediately (small delay so page is ready)
+  setTimeout(dropWave, 1200);
+  // Then every 10 seconds
+  particleInterval=setInterval(dropWave, 10000);
 }
 
 function initEmojiPickers(){
@@ -2872,9 +3316,12 @@ function initEmojiPickers(){
   renderEPGrid('itemEP-food-grid', EP_EMOJIS.food, 'item');
   renderEPGrid('itemEP-drink-grid', EP_EMOJIS.drink, 'item');
   renderEPGrid('itemEP-other-grid', EP_EMOJIS.other, 'item');
-  // Restaurant picker
-  renderEPGrid('restoEP-icons-grid', EP_EMOJIS.icons, 'resto');
+  // Restaurant picker — 4 tabs, flatten icons array
+  const flatIcons = EP_EMOJIS.icons.flat();
+  renderEPGrid('restoEP-icons-grid', flatIcons, 'resto');
   renderEPGrid('restoEP-food-grid', EP_EMOJIS.food, 'resto');
+  renderEPGrid('restoEP-drink-grid', EP_EMOJIS.drink, 'resto');
+  renderEPGrid('restoEP-star-grid', EP_EMOJIS.star, 'resto');
   // Category picker
   renderEPGrid('catEP-tags-grid', EP_EMOJIS.tags, 'cat');
   renderEPGrid('catEP-food-grid2', EP_EMOJIS.food, 'cat');
