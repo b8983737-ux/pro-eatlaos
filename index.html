@@ -29,238 +29,401 @@ button,input,select,textarea{font-family:var(--fb);}
 
 
 /* ═══════════════════════════════════════════════════════
-   RESTAURANT THEMES — 10 Professional Styles
+   RESTAURANT THEMES — 10 Immersive Experiences
    Applied via data-theme attribute on #pg-customer
 ════════════════════════════════════════════════════════ */
 
-/* Theme preview card */
-.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:8px;}
-.theme-card{border:2px solid var(--s-border);cursor:pointer;transition:all .25s;border-radius:6px;overflow:hidden;position:relative;}
-.theme-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
-.theme-card.selected{border-color:var(--s-gold);box-shadow:0 0 0 2px var(--s-gold);}
-.theme-card-hero{height:60px;display:flex;align-items:center;justify-content:center;font-size:22px;}
-.theme-card-body{padding:7px 8px;background:rgba(0,0,0,.4);}
-.theme-card-name{font-size:11px;font-weight:700;color:#fff;margin-bottom:2px;}
-.theme-card-desc{font-size:9px;color:rgba(255,255,255,.5);line-height:1.4;}
-.theme-card-check{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--s-gold);color:#000;font-size:10px;font-weight:900;display:none;align-items:center;justify-content:center;}
+/* ── THEME PICKER UI ── */
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px;}
+.theme-card{border:2px solid var(--s-border);cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);border-radius:8px;overflow:hidden;position:relative;}
+.theme-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.5);}
+.theme-card.selected{border-color:var(--s-gold);box-shadow:0 0 0 3px var(--s-gold),0 12px 32px rgba(0,0,0,.5);}
+.theme-card-hero{height:80px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;overflow:hidden;}
+.theme-card-body{padding:7px 8px;background:rgba(0,0,0,.6);}
+.theme-card-name{font-size:11px;font-weight:700;color:#fff;margin-bottom:1px;}
+.theme-card-desc{font-size:8px;color:rgba(255,255,255,.45);line-height:1.4;}
+.theme-card-check{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--s-gold);color:#000;font-size:11px;font-weight:900;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(200,151,58,.5);}
 .theme-card.selected .theme-card-check{display:flex;}
 
-/* ── THEME 1: Savaan Classic (default warm cream) ── */
-#pg-customer[data-theme="classic"]{
-  --c-bg:#faf6f1;--c-surf:#ffffff;--c-surf2:#f3ede4;--c-surf3:#ede5d8;
-  --c-border:#e8e0d4;--c-border2:#d4c8b8;--c-text:#1a1209;--c-muted:#8a7a68;
-  --c-gold:#b8821e;--c-gold2:#d4a03c;
-  --c-hero-from:#1a0e03;--c-hero-to:#2a1a08;
-  --c-ff:'Fraunces',Georgia,serif;
-}
-#pg-customer[data-theme="classic"] .c-hero{background:linear-gradient(160deg,#1a0e03 0%,#241508 50%,#1a1008 100%);}
+/* ── THEME PARTICLE LAYER (injected by JS) ── */
+#theme-particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.th-particle{position:absolute;animation:th-fall linear infinite;pointer-events:none;}
+@keyframes th-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes th-rise{0%{transform:translateY(110vh) rotate(0deg);opacity:0}20%{opacity:1}100%{transform:translateY(-20px) rotate(360deg);opacity:0}}
+@keyframes th-float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-30px) rotate(180deg)}}
+@keyframes th-sway{0%,100%{transform:translateX(0) rotate(-5deg)}50%{transform:translateX(20px) rotate(5deg)}}
+@keyframes th-drift{0%{transform:translate(0,110vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(var(--dx,0),−20px) rotate(var(--dr,720deg));opacity:0}}
+@keyframes th-twinkle{0%,100%{opacity:.2;transform:scale(.5)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes th-flicker{0%,100%{opacity:1}45%{opacity:.9}50%{opacity:.5}55%{opacity:.95}}
+@keyframes th-snow{0%{transform:translateY(-10px) translateX(0) rotate(0);opacity:1}100%{transform:translateY(110vh) translateX(var(--sx,30px)) rotate(var(--sr,360deg));opacity:.3}}
+@keyframes th-ascend{0%{transform:translateY(110vh) scale(1);opacity:.6}100%{transform:translateY(-20px) scale(.3);opacity:0}}
+@keyframes th-pulse-glow{0%,100%{box-shadow:0 0 10px var(--glow-color,#ff0000),0 0 20px var(--glow-color,#ff0000)}50%{box-shadow:0 0 20px var(--glow-color,#ff0000),0 0 40px var(--glow-color,#ff0000),0 0 60px var(--glow-color,#ff0000)}}
 
-/* ── THEME 2: Midnight Noir ── */
-#pg-customer[data-theme="noir"]{
-  --c-bg:#0a0a0a;--c-surf:#141414;--c-surf2:#1a1a1a;--c-surf3:#202020;
-  --c-border:#2a2a2a;--c-border2:#333;--c-text:#e8e4dc;--c-muted:#666;
-  --c-gold:#c8973a;--c-gold2:#e0b55a;
-}
-#pg-customer[data-theme="noir"]{background:#0a0a0a;color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-topbar{background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;}
-#pg-customer[data-theme="noir"] .c-hero{background:linear-gradient(160deg,#000 0%,#111 60%,#0d0d0d 100%);}
-#pg-customer[data-theme="noir"] .c-cats{background:#141414;border-bottom:1px solid #2a2a2a;}
-#pg-customer[data-theme="noir"] .c-cat{color:#666;}
-#pg-customer[data-theme="noir"] .c-cat.on{color:#e8e4dc;border-bottom-color:#c8973a;}
-#pg-customer[data-theme="noir"] .c-item{background:#141414;border-color:#2a2a2a;}
-#pg-customer[data-theme="noir"] .c-item:hover{border-color:#c8973a;box-shadow:0 8px 24px rgba(0,0,0,.6);}
-#pg-customer[data-theme="noir"] .c-item-img{background:#1a1a1a;}
-#pg-customer[data-theme="noir"] .c-item-name{color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-item-desc{color:#555;}
-#pg-customer[data-theme="noir"] .c-item-price{color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-item-add{background:#c8973a;}
-#pg-customer[data-theme="noir"] .c-tabs-bar{background:rgba(10,10,10,.97);border-top:1px solid #2a2a2a;}
-#pg-customer[data-theme="noir"] .c-tab-btn{color:#444;}
-#pg-customer[data-theme="noir"] .c-tab-btn.on{color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-cart-panel{background:#141414;}
-#pg-customer[data-theme="noir"] .c-cart-h{border-bottom:1px solid #2a2a2a;}
-#pg-customer[data-theme="noir"] .c-cart-title{color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-cart-f{background:#1a1a1a;border-top:1px solid #2a2a2a;}
-#pg-customer[data-theme="noir"] .c-order-btn{background:#c8973a;color:#000;}
-#pg-customer[data-theme="noir"] .c-ci{border-bottom:1px solid #2a2a2a;}
-#pg-customer[data-theme="noir"] .c-ci-name{color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-ci-em{background:#202020;}
-#pg-customer[data-theme="noir"] .c-cart-total-l{color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-session-summary{background:#141414;border-color:#2a2a2a;}
-#pg-customer[data-theme="noir"] .c-ocard{background:#141414;border-color:#2a2a2a;}
-#pg-customer[data-theme="noir"] .c-oc-h{background:#1a1a1a;border-bottom:1px solid #2a2a2a;}
-#pg-customer[data-theme="noir"] .c-oc-id,.c-oc-total{color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .c-oc-row{color:#aaa;border-bottom-color:#2a2a2a;}
-#pg-customer[data-theme="noir"] .lang-sel{background:#1a1a1a;border-color:#2a2a2a;color:#e8e4dc;}
-#pg-customer[data-theme="noir"] .sess-timer{background:#1a1a1a;border-color:#2a2a2a;color:#666;}
-#pg-customer[data-theme="noir"] .c-cart-btn{background:#c8973a;color:#000;}
-#pg-customer[data-theme="noir"] .c-fab{background:#c8973a;color:#000;}
+/* ── THEME OVERLAYS ── */
+.th-overlay{position:fixed;inset:0;pointer-events:none;z-index:1;}
+.th-scanline{position:fixed;inset:0;pointer-events:none;z-index:2;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);animation:th-scan 8s linear infinite;}
+@keyframes th-scan{0%{background-position:0 0}100%{background-position:0 100px}}
+.th-aurora{position:fixed;top:0;left:0;right:0;height:40vh;pointer-events:none;z-index:0;opacity:.4;}
 
-/* ── THEME 3: Cherry Blossom (soft pink Japanese) ── */
+/* ─────────────────────────────────────────────────────
+   THEME 1: CHINESE NEW YEAR 🧧🐉
+   Red+Gold · Lanterns · Firecrackers · Dragons
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="cny"]{
+  --c-bg:#1a0000;--c-surf:#2a0000;--c-surf2:#1f0000;--c-surf3:#150000;
+  --c-border:#8b0000;--c-border2:#cc0000;--c-text:#ffd700;--c-muted:#ff6b6b;
+  --c-gold:#ffd700;--c-gold2:#ffed4a;background:#1a0000;
+}
+#pg-customer[data-theme="cny"] .c-topbar{background:rgba(20,0,0,.97);border-bottom:2px solid #cc0000;box-shadow:0 2px 20px rgba(255,0,0,.3);}
+#pg-customer[data-theme="cny"] .c-resto-name{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-table-tag{color:#ff6b6b;}
+#pg-customer[data-theme="cny"] .lang-sel{background:#2a0000;border-color:#8b0000;color:#ffd700;}
+#pg-customer[data-theme="cny"] .sess-timer{background:#2a0000;border-color:#8b0000;color:#ff6b6b;}
+#pg-customer[data-theme="cny"] .c-cart-btn{background:linear-gradient(135deg,#cc0000,#ff0000);color:#ffd700;font-weight:900;}
+#pg-customer[data-theme="cny"] .c-hero{background:linear-gradient(160deg,#0d0000 0%,#1a0000 40%,#2a0000 100%);border-bottom:3px solid #cc0000;position:relative;}
+#pg-customer[data-theme="cny"] .c-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(204,0,0,.05) 20px,rgba(204,0,0,.05) 40px);}
+#pg-customer[data-theme="cny"] .c-hero-tag{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.1);}
+#pg-customer[data-theme="cny"] .c-hero-tag-dot{background:#ffd700;box-shadow:0 0 10px #ffd700;}
+#pg-customer[data-theme="cny"] .c-hero-tag-txt{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-hero-title{color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,.5);}
+#pg-customer[data-theme="cny"] .c-hero-title em{color:#ff4444;}
+#pg-customer[data-theme="cny"] .c-hero-sub{color:rgba(255,107,107,.6);}
+#pg-customer[data-theme="cny"] .c-meta-val{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-meta-lbl{color:rgba(255,107,107,.5);}
+#pg-customer[data-theme="cny"] .c-cats{background:#1f0000;border-bottom:2px solid #8b0000;}
+#pg-customer[data-theme="cny"] .c-cat{color:#8b0000;}
+#pg-customer[data-theme="cny"] .c-cat:hover{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-cat.on{color:#ffd700;border-bottom-color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-menu{background:#1a0000;}
+#pg-customer[data-theme="cny"] .c-item{background:#2a0000;border-color:#5c0000;border-radius:4px;}
+#pg-customer[data-theme="cny"] .c-item:hover{border-color:#ffd700;box-shadow:0 8px 24px rgba(255,215,0,.15);}
+#pg-customer[data-theme="cny"] .c-item-img{background:linear-gradient(135deg,#1f0000,#2a0000);}
+#pg-customer[data-theme="cny"] .c-item-cat{color:#cc0000;}
+#pg-customer[data-theme="cny"] .c-item-name{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-item-desc{color:#8b4444;}
+#pg-customer[data-theme="cny"] .c-item-price{color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,.3);}
+#pg-customer[data-theme="cny"] .c-item-add{background:linear-gradient(135deg,#cc0000,#ff4444);color:#ffd700;box-shadow:0 2px 8px rgba(204,0,0,.4);}
+#pg-customer[data-theme="cny"] .c-badge-new{background:#ffd700;color:#cc0000;}
+#pg-customer[data-theme="cny"] .c-badge-pop{background:#cc0000;color:#ffd700;border-color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-tabs-bar{background:rgba(20,0,0,.97);border-top:2px solid #8b0000;}
+#pg-customer[data-theme="cny"] .c-tab-btn{color:#5c0000;}
+#pg-customer[data-theme="cny"] .c-tab-btn.on{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-cart-panel{background:#1f0000;}
+#pg-customer[data-theme="cny"] .c-cart-h{border-bottom:1px solid #5c0000;}
+#pg-customer[data-theme="cny"] .c-cart-title{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-cart-f{background:#150000;border-top:1px solid #5c0000;}
+#pg-customer[data-theme="cny"] .c-cart-total-l{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-cart-total-v{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-order-btn{background:linear-gradient(135deg,#cc0000,#ff0000);color:#ffd700;font-weight:900;letter-spacing:1px;}
+#pg-customer[data-theme="cny"] .c-ci-name{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-ci-em{background:#150000;}
+#pg-customer[data-theme="cny"] .c-fab{background:linear-gradient(135deg,#cc0000,#ff0000);color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-fab-badge{background:#ffd700;color:#cc0000;}
+#pg-customer[data-theme="cny"] .c-session-summary,.c-ocard{background:#2a0000;border-color:#5c0000;}
+#pg-customer[data-theme="cny"] .c-summary-val{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-oc-h{background:#1f0000;border-bottom:1px solid #5c0000;}
+#pg-customer[data-theme="cny"] .c-oc-id{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-oc-row{color:#cc6666;border-bottom-color:#3a0000;}
+#pg-customer[data-theme="cny"] .c-cart-drag{background:#5c0000;}
+#pg-customer[data-theme="cny"] .c-cart-x{border-color:#5c0000;color:#8b0000;}
+
+/* ─────────────────────────────────────────────────────
+   THEME 2: HALLOWEEN 🎃👻
+   Black+Orange · Spooky · Pumpkins · Bats
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="halloween"]{
+  --c-bg:#0a0005;--c-surf:#120010;--c-surf2:#0d0008;--c-surf3:#080005;
+  --c-border:#4a1060;--c-border2:#7a1090;--c-text:#ff8c00;--c-muted:#cc5500;
+  --c-gold:#ff6600;--c-gold2:#ff8c00;background:#0a0005;
+}
+#pg-customer[data-theme="halloween"] .c-topbar{background:rgba(8,0,4,.98);border-bottom:2px solid #4a1060;box-shadow:0 2px 20px rgba(120,0,180,.3);}
+#pg-customer[data-theme="halloween"] .c-resto-name{color:#ff8c00;}
+#pg-customer[data-theme="halloween"] .c-cart-btn{background:linear-gradient(135deg,#ff4500,#ff8c00);color:#000;}
+#pg-customer[data-theme="halloween"] .c-hero{background:radial-gradient(ellipse at 50% 0%,#1a004a 0%,#0d0020 40%,#050010 100%);border-bottom:2px solid #4a1060;}
+#pg-customer[data-theme="halloween"] .c-hero-tag{border-color:rgba(120,0,180,.4);background:rgba(120,0,180,.1);}
+#pg-customer[data-theme="halloween"] .c-hero-tag-dot{background:#7800b4;box-shadow:0 0 12px #7800b4;}
+#pg-customer[data-theme="halloween"] .c-hero-tag-txt{color:#b44aff;}
+#pg-customer[data-theme="halloween"] .c-hero-title{color:#ff8c00;text-shadow:0 0 20px rgba(255,140,0,.4),0 0 40px rgba(255,140,0,.2);}
+#pg-customer[data-theme="halloween"] .c-hero-title em{color:#b44aff;}
+#pg-customer[data-theme="halloween"] .c-hero-sub{color:rgba(180,74,255,.5);}
+#pg-customer[data-theme="halloween"] .c-meta-val{color:#ff8c00;}
+#pg-customer[data-theme="halloween"] .c-cats{background:#0d0008;border-bottom:1px solid #4a1060;}
+#pg-customer[data-theme="halloween"] .c-cat{color:#4a1060;}
+#pg-customer[data-theme="halloween"] .c-cat.on{color:#ff8c00;border-bottom-color:#ff6600;}
+#pg-customer[data-theme="halloween"] .c-item{background:#120010;border-color:#2a0030;border-radius:6px;}
+#pg-customer[data-theme="halloween"] .c-item:hover{border-color:#ff6600;box-shadow:0 8px 24px rgba(255,102,0,.2);}
+#pg-customer[data-theme="halloween"] .c-item-img{background:linear-gradient(135deg,#0d0008,#150015);}
+#pg-customer[data-theme="halloween"] .c-item-cat{color:#7800b4;}
+#pg-customer[data-theme="halloween"] .c-item-name{color:#ff8c00;}
+#pg-customer[data-theme="halloween"] .c-item-desc{color:#5c2a00;}
+#pg-customer[data-theme="halloween"] .c-item-price{color:#ff6600;}
+#pg-customer[data-theme="halloween"] .c-item-add{background:linear-gradient(135deg,#7800b4,#b44aff);}
+#pg-customer[data-theme="halloween"] .c-tabs-bar{background:rgba(8,0,4,.98);border-top:1px solid #4a1060;}
+#pg-customer[data-theme="halloween"] .c-tab-btn{color:#2a0030;}
+#pg-customer[data-theme="halloween"] .c-tab-btn.on{color:#ff8c00;}
+#pg-customer[data-theme="halloween"] .c-cart-panel,.c-cart-f{background:#0d0008;}
+#pg-customer[data-theme="halloween"] .c-cart-title,.c-cart-total-l,.c-cart-total-v,.c-ci-name{color:#ff8c00;}
+#pg-customer[data-theme="halloween"] .c-order-btn{background:linear-gradient(135deg,#ff4500,#ff8c00);color:#000;font-weight:900;}
+#pg-customer[data-theme="halloween"] .c-fab{background:linear-gradient(135deg,#ff4500,#ff8c00);color:#000;}
+
+/* ─────────────────────────────────────────────────────
+   THEME 3: CHRISTMAS ❄️🎄
+   Deep Green+Red+Gold · Snow · Festive lights
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="christmas"]{
+  --c-bg:#f8fff8;--c-surf:#ffffff;--c-surf2:#e8f5e8;--c-surf3:#d4ecd4;
+  --c-border:#a8d4a8;--c-border2:#78b878;--c-text:#1a3a1a;--c-muted:#4a7a4a;
+  --c-gold:#cc0000;--c-gold2:#ff2222;
+}
+#pg-customer[data-theme="christmas"] .c-topbar{background:rgba(248,255,248,.97);border-bottom:2px solid #cc0000;box-shadow:0 2px 12px rgba(204,0,0,.15);}
+#pg-customer[data-theme="christmas"] .c-hero{background:linear-gradient(160deg,#0d1f0d 0%,#1a3a1a 50%,#0d220d 100%);border-bottom:3px solid #cc0000;}
+#pg-customer[data-theme="christmas"] .c-hero-tag{border-color:rgba(255,215,0,.4);background:rgba(255,215,0,.1);}
+#pg-customer[data-theme="christmas"] .c-hero-tag-dot{background:#ffd700;box-shadow:0 0 10px #ffd700;}
+#pg-customer[data-theme="christmas"] .c-hero-tag-txt{color:#ffd700;}
+#pg-customer[data-theme="christmas"] .c-hero-title{color:#fff;text-shadow:0 0 20px rgba(255,215,0,.4);}
+#pg-customer[data-theme="christmas"] .c-hero-title em{color:#ffd700;}
+#pg-customer[data-theme="christmas"] .c-hero-sub{color:rgba(255,255,255,.55);}
+#pg-customer[data-theme="christmas"] .c-meta-val{color:#ffd700;}
+#pg-customer[data-theme="christmas"] .c-item-add{background:#cc0000;}
+#pg-customer[data-theme="christmas"] .c-item-add:hover{background:#ff2222;}
+#pg-customer[data-theme="christmas"] .c-cat.on{color:#1a3a1a;border-bottom-color:#cc0000;}
+#pg-customer[data-theme="christmas"] .c-item-cat{color:#cc0000;}
+#pg-customer[data-theme="christmas"] .c-item:hover{border-color:#cc0000;box-shadow:0 8px 24px rgba(204,0,0,.1);}
+#pg-customer[data-theme="christmas"] .c-order-btn{background:linear-gradient(135deg,#1a3a1a,#2d5a2d);}
+#pg-customer[data-theme="christmas"] .c-cart-btn{background:#1a3a1a;}
+#pg-customer[data-theme="christmas"] .c-fab{background:#1a3a1a;}
+#pg-customer[data-theme="christmas"] .c-summary-val{color:#cc0000;}
+#pg-customer[data-theme="christmas"] .c-badge-new{background:#cc0000;color:#fff;}
+#pg-customer[data-theme="christmas"] .c-badge-pop{background:#1a3a1a;color:#ffd700;border-color:#ffd700;}
+
+/* ─────────────────────────────────────────────────────
+   THEME 4: WINTER / ICE ❄️🧊
+   Ice blue · Frost · Arctic · Crystals
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="ice"]{
+  --c-bg:#f0f8ff;--c-surf:#ffffff;--c-surf2:#e8f4ff;--c-surf3:#d0eaff;
+  --c-border:#a8d4f0;--c-border2:#70b8e8;--c-text:#0a1a2a;--c-muted:#4a7a9a;
+  --c-gold:#0080c8;--c-gold2:#00a0e8;
+}
+#pg-customer[data-theme="ice"] .c-topbar{background:rgba(240,248,255,.97);border-bottom:2px solid #70b8e8;box-shadow:0 2px 12px rgba(0,128,200,.1);}
+#pg-customer[data-theme="ice"] .c-hero{background:linear-gradient(160deg,#001428 0%,#001e3c 50%,#002850 100%);}
+#pg-customer[data-theme="ice"] .c-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300a0e8' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+#pg-customer[data-theme="ice"] .c-hero-tag{border-color:rgba(0,160,232,.4);background:rgba(0,160,232,.08);}
+#pg-customer[data-theme="ice"] .c-hero-tag-dot{background:#00a0e8;box-shadow:0 0 10px #00a0e8;}
+#pg-customer[data-theme="ice"] .c-hero-tag-txt{color:#5ad4ff;}
+#pg-customer[data-theme="ice"] .c-hero-title{color:#fff;text-shadow:0 0 30px rgba(0,160,232,.5);}
+#pg-customer[data-theme="ice"] .c-hero-title em{color:#5ad4ff;}
+#pg-customer[data-theme="ice"] .c-meta-val{color:#5ad4ff;}
+#pg-customer[data-theme="ice"] .c-item-add{background:linear-gradient(135deg,#0080c8,#00a0e8);}
+#pg-customer[data-theme="ice"] .c-cat.on{color:#0a1a2a;border-bottom-color:#0080c8;}
+#pg-customer[data-theme="ice"] .c-item-cat{color:#0080c8;}
+#pg-customer[data-theme="ice"] .c-item:hover{border-color:#0080c8;box-shadow:0 8px 24px rgba(0,128,200,.15);}
+#pg-customer[data-theme="ice"] .c-order-btn,.c-cart-btn,.c-fab{background:linear-gradient(135deg,#001e3c,#003366);}
+#pg-customer[data-theme="ice"] .c-summary-val{color:#0080c8;}
+
+/* ─────────────────────────────────────────────────────
+   THEME 5: TROPICAL / SUMMER ☀️🌴
+   Vibrant yellow+cyan · Beach vibes · Paradise
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="tropical"]{
+  --c-bg:#fffbf0;--c-surf:#ffffff;--c-surf2:#fff8e0;--c-surf3:#fff0c0;
+  --c-border:#f0d880;--c-border2:#e0c040;--c-text:#1a1200;--c-muted:#8a7200;
+  --c-gold:#ff8c00;--c-gold2:#ffaa00;
+}
+#pg-customer[data-theme="tropical"] .c-topbar{background:rgba(255,251,240,.97);border-bottom:3px solid #ff8c00;box-shadow:0 2px 12px rgba(255,140,0,.15);}
+#pg-customer[data-theme="tropical"] .c-hero{background:linear-gradient(160deg,#003355 0%,#005580 40%,#0077aa 70%,#004466 100%);}
+#pg-customer[data-theme="tropical"] .c-hero-tag{border-color:rgba(255,200,0,.5);background:rgba(255,200,0,.1);}
+#pg-customer[data-theme="tropical"] .c-hero-tag-dot{background:#ffc800;box-shadow:0 0 12px #ffc800;}
+#pg-customer[data-theme="tropical"] .c-hero-tag-txt{color:#ffc800;}
+#pg-customer[data-theme="tropical"] .c-hero-title{color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.3);}
+#pg-customer[data-theme="tropical"] .c-hero-title em{color:#ffc800;}
+#pg-customer[data-theme="tropical"] .c-meta-val{color:#ffc800;}
+#pg-customer[data-theme="tropical"] .c-item-add{background:linear-gradient(135deg,#ff6600,#ff9900);}
+#pg-customer[data-theme="tropical"] .c-cat.on{color:#1a1200;border-bottom-color:#ff8c00;}
+#pg-customer[data-theme="tropical"] .c-item-cat{color:#ff6600;}
+#pg-customer[data-theme="tropical"] .c-item:hover{border-color:#ff8c00;box-shadow:0 8px 24px rgba(255,140,0,.2);}
+#pg-customer[data-theme="tropical"] .c-order-btn,.c-cart-btn,.c-fab{background:linear-gradient(135deg,#003355,#005580);}
+#pg-customer[data-theme="tropical"] .c-summary-val,.c-cart-total-v{color:#ff6600;}
+
+/* ─────────────────────────────────────────────────────
+   THEME 6: SAKURA NIGHT 🌸🌙
+   Midnight with glowing pink petals · Romance
+───────────────────────────────────────────────────── */
 #pg-customer[data-theme="sakura"]{
-  --c-bg:#fff5f7;--c-surf:#ffffff;--c-surf2:#ffe8ed;--c-surf3:#ffd6de;
-  --c-border:#f5c6cf;--c-border2:#e8a0ad;--c-text:#2d1a1f;--c-muted:#9b6470;
-  --c-gold:#d4547a;--c-gold2:#e8729a;
+  --c-bg:#080010;--c-surf:#100018;--c-surf2:#0d0014;--c-surf3:#080010;
+  --c-border:#3a0040;--c-border2:#6a0080;--c-text:#ffb3d9;--c-muted:#cc5599;
+  --c-gold:#ff69b4;--c-gold2:#ff90cc;background:#080010;
 }
-#pg-customer[data-theme="sakura"] .c-hero{background:linear-gradient(160deg,#2d0a14 0%,#4a1220 50%,#3d0e1a 100%);}
-#pg-customer[data-theme="sakura"] .c-hero-glow{background:radial-gradient(circle,rgba(212,84,122,.2) 0%,transparent 65%);}
-#pg-customer[data-theme="sakura"] .c-item-add{background:#d4547a;}
-#pg-customer[data-theme="sakura"] .c-item-add:hover{background:#e8729a;}
-#pg-customer[data-theme="sakura"] .c-cat.on{color:#2d1a1f;border-bottom-color:#d4547a;}
-#pg-customer[data-theme="sakura"] .c-order-btn{background:#2d1a1f;}
-#pg-customer[data-theme="sakura"] .c-cart-btn{background:#2d1a1f;}
-#pg-customer[data-theme="sakura"] .c-fab{background:#2d1a1f;}
-#pg-customer[data-theme="sakura"] .c-hero-tag{border-color:rgba(212,84,122,.3);background:rgba(212,84,122,.08);}
-#pg-customer[data-theme="sakura"] .c-hero-tag-dot{background:#d4547a;}
-#pg-customer[data-theme="sakura"] .c-hero-tag-txt{color:#e8729a;}
+#pg-customer[data-theme="sakura"] .c-topbar{background:rgba(8,0,16,.97);border-bottom:1px solid #3a0040;box-shadow:0 2px 20px rgba(255,105,180,.1);}
+#pg-customer[data-theme="sakura"] .c-resto-name{color:#ff90cc;}
+#pg-customer[data-theme="sakura"] .c-cart-btn{background:linear-gradient(135deg,#aa0066,#ff69b4);color:#fff;}
+#pg-customer[data-theme="sakura"] .c-hero{background:linear-gradient(160deg,#020008 0%,#080010 50%,#060014 100%);border-bottom:1px solid #3a0040;}
+#pg-customer[data-theme="sakura"] .c-hero-tag{border-color:rgba(255,105,180,.3);background:rgba(255,105,180,.06);}
+#pg-customer[data-theme="sakura"] .c-hero-tag-dot{background:#ff69b4;box-shadow:0 0 12px #ff69b4,0 0 24px #ff69b4;}
+#pg-customer[data-theme="sakura"] .c-hero-tag-txt{color:#ff90cc;}
+#pg-customer[data-theme="sakura"] .c-hero-title{color:#ffb3d9;text-shadow:0 0 30px rgba(255,105,180,.4);}
+#pg-customer[data-theme="sakura"] .c-hero-title em{color:#ff69b4;}
+#pg-customer[data-theme="sakura"] .c-meta-val{color:#ff69b4;}
+#pg-customer[data-theme="sakura"] .c-cats{background:#0d0014;border-bottom:1px solid #3a0040;}
+#pg-customer[data-theme="sakura"] .c-cat{color:#3a0040;}
+#pg-customer[data-theme="sakura"] .c-cat.on{color:#ff90cc;border-bottom-color:#ff69b4;}
+#pg-customer[data-theme="sakura"] .c-item{background:#100018;border-color:#2a0030;}
+#pg-customer[data-theme="sakura"] .c-item:hover{border-color:#ff69b4;box-shadow:0 8px 24px rgba(255,105,180,.15);}
+#pg-customer[data-theme="sakura"] .c-item-img{background:linear-gradient(135deg,#0d0014,#150020);}
+#pg-customer[data-theme="sakura"] .c-item-name{color:#ffb3d9;}
+#pg-customer[data-theme="sakura"] .c-item-cat{color:#aa0066;}
+#pg-customer[data-theme="sakura"] .c-item-price{color:#ff69b4;}
+#pg-customer[data-theme="sakura"] .c-item-add{background:linear-gradient(135deg,#aa0066,#ff69b4);}
+#pg-customer[data-theme="sakura"] .c-tabs-bar{background:rgba(8,0,16,.97);border-top:1px solid #3a0040;}
+#pg-customer[data-theme="sakura"] .c-tab-btn{color:#2a0030;}
+#pg-customer[data-theme="sakura"] .c-tab-btn.on{color:#ff90cc;}
+#pg-customer[data-theme="sakura"] .c-cart-panel,.c-cart-f{background:#0d0014;}
+#pg-customer[data-theme="sakura"] .c-cart-title,.c-ci-name,.c-cart-total-l{color:#ffb3d9;}
+#pg-customer[data-theme="sakura"] .c-cart-total-v{color:#ff69b4;}
+#pg-customer[data-theme="sakura"] .c-order-btn{background:linear-gradient(135deg,#aa0066,#ff69b4);color:#fff;}
+#pg-customer[data-theme="sakura"] .c-fab{background:linear-gradient(135deg,#aa0066,#ff69b4);color:#fff;}
 
-/* ── THEME 4: Ocean Breeze (deep teal/turquoise) ── */
-#pg-customer[data-theme="ocean"]{
-  --c-bg:#f0fafa;--c-surf:#ffffff;--c-surf2:#e0f4f4;--c-surf3:#ccecea;
-  --c-border:#a8ddd8;--c-border2:#7bc8c2;--c-text:#0d2a28;--c-muted:#4a8280;
-  --c-gold:#0d9488;--c-gold2:#14b8a6;
+/* ─────────────────────────────────────────────────────
+   THEME 7: GALAXY / SPACE 🚀🌌
+   Deep space · Stars · Nebula · Cosmic
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="galaxy"]{
+  --c-bg:#02050f;--c-surf:#060d1e;--c-surf2:#040b18;--c-surf3:#030810;
+  --c-border:#0d2040;--c-border2:#1a3a60;--c-text:#c8d8ff;--c-muted:#5878aa;
+  --c-gold:#4a9eff;--c-gold2:#7abbff;background:#02050f;
 }
-#pg-customer[data-theme="ocean"] .c-hero{background:linear-gradient(160deg,#042f2e 0%,#064e3b 50%,#065f46 100%);}
-#pg-customer[data-theme="ocean"] .c-hero-glow{background:radial-gradient(circle,rgba(20,184,166,.2) 0%,transparent 65%);}
-#pg-customer[data-theme="ocean"] .c-item-add{background:#0d9488;}
-#pg-customer[data-theme="ocean"] .c-item-add:hover{background:#14b8a6;}
-#pg-customer[data-theme="ocean"] .c-cat.on{color:#0d2a28;border-bottom-color:#0d9488;}
-#pg-customer[data-theme="ocean"] .c-order-btn{background:#0d2a28;}
-#pg-customer[data-theme="ocean"] .c-cart-btn{background:#0d2a28;}
-#pg-customer[data-theme="ocean"] .c-fab{background:#0d2a28;}
-#pg-customer[data-theme="ocean"] .c-hero-tag{border-color:rgba(20,184,166,.3);background:rgba(20,184,166,.08);}
-#pg-customer[data-theme="ocean"] .c-hero-tag-dot{background:#14b8a6;}
-#pg-customer[data-theme="ocean"] .c-hero-tag-txt{color:#14b8a6;}
-#pg-customer[data-theme="ocean"] .c-item-cat{color:#0d9488;}
-#pg-customer[data-theme="ocean"] .c-summary-val{color:#0d9488;}
+#pg-customer[data-theme="galaxy"] .c-topbar{background:rgba(2,5,15,.97);border-bottom:1px solid #0d2040;box-shadow:0 2px 20px rgba(74,158,255,.1);}
+#pg-customer[data-theme="galaxy"] .c-resto-name{color:#c8d8ff;}
+#pg-customer[data-theme="galaxy"] .c-cart-btn{background:linear-gradient(135deg,#1a3a80,#4a9eff);}
+#pg-customer[data-theme="galaxy"] .c-hero{background:radial-gradient(ellipse at 30% 50%,#1a0040 0%,#050a1f 40%,#02050f 100%);}
+#pg-customer[data-theme="galaxy"] .c-hero-tag{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.06);}
+#pg-customer[data-theme="galaxy"] .c-hero-tag-dot{background:#4a9eff;box-shadow:0 0 10px #4a9eff;}
+#pg-customer[data-theme="galaxy"] .c-hero-tag-txt{color:#7abbff;}
+#pg-customer[data-theme="galaxy"] .c-hero-title{color:#c8d8ff;text-shadow:0 0 20px rgba(74,158,255,.3);}
+#pg-customer[data-theme="galaxy"] .c-hero-title em{color:#4a9eff;}
+#pg-customer[data-theme="galaxy"] .c-meta-val{color:#4a9eff;}
+#pg-customer[data-theme="galaxy"] .c-cats{background:#040b18;border-bottom:1px solid #0d2040;}
+#pg-customer[data-theme="galaxy"] .c-cat{color:#0d2040;}
+#pg-customer[data-theme="galaxy"] .c-cat.on{color:#c8d8ff;border-bottom-color:#4a9eff;}
+#pg-customer[data-theme="galaxy"] .c-item{background:#060d1e;border-color:#0d2040;}
+#pg-customer[data-theme="galaxy"] .c-item:hover{border-color:#4a9eff;box-shadow:0 8px 24px rgba(74,158,255,.2);}
+#pg-customer[data-theme="galaxy"] .c-item-img{background:linear-gradient(135deg,#040b18,#081525);}
+#pg-customer[data-theme="galaxy"] .c-item-name{color:#c8d8ff;}
+#pg-customer[data-theme="galaxy"] .c-item-cat{color:#1a3a80;}
+#pg-customer[data-theme="galaxy"] .c-item-price{color:#4a9eff;}
+#pg-customer[data-theme="galaxy"] .c-item-add{background:linear-gradient(135deg,#1a3a80,#4a9eff);}
+#pg-customer[data-theme="galaxy"] .c-tabs-bar{background:rgba(2,5,15,.97);border-top:1px solid #0d2040;}
+#pg-customer[data-theme="galaxy"] .c-tab-btn{color:#0d2040;}
+#pg-customer[data-theme="galaxy"] .c-tab-btn.on{color:#c8d8ff;}
+#pg-customer[data-theme="galaxy"] .c-cart-panel,.c-cart-f{background:#040b18;}
+#pg-customer[data-theme="galaxy"] .c-cart-title,.c-ci-name,.c-cart-total-l{color:#c8d8ff;}
+#pg-customer[data-theme="galaxy"] .c-cart-total-v{color:#4a9eff;}
+#pg-customer[data-theme="galaxy"] .c-order-btn{background:linear-gradient(135deg,#1a3a80,#4a9eff);}
+#pg-customer[data-theme="galaxy"] .c-fab{background:linear-gradient(135deg,#1a3a80,#4a9eff);}
 
-/* ── THEME 5: Royal Purple (luxury fine dining) ── */
-#pg-customer[data-theme="royal"]{
-  --c-bg:#f9f7ff;--c-surf:#ffffff;--c-surf2:#ede9ff;--c-surf3:#ddd6ff;
-  --c-border:#c4b8f0;--c-border2:#a89de0;--c-text:#1e0a3c;--c-muted:#6b5b95;
-  --c-gold:#7c3aed;--c-gold2:#8b5cf6;
-}
-#pg-customer[data-theme="royal"] .c-hero{background:linear-gradient(160deg,#0d0020 0%,#1e0a3c 50%,#160828 100%);}
-#pg-customer[data-theme="royal"] .c-hero-glow{background:radial-gradient(circle,rgba(139,92,246,.2) 0%,transparent 65%);}
-#pg-customer[data-theme="royal"] .c-item-add{background:#7c3aed;}
-#pg-customer[data-theme="royal"] .c-item-add:hover{background:#8b5cf6;}
-#pg-customer[data-theme="royal"] .c-cat.on{color:#1e0a3c;border-bottom-color:#7c3aed;}
-#pg-customer[data-theme="royal"] .c-order-btn{background:#1e0a3c;}
-#pg-customer[data-theme="royal"] .c-cart-btn{background:#1e0a3c;}
-#pg-customer[data-theme="royal"] .c-fab{background:#1e0a3c;}
-#pg-customer[data-theme="royal"] .c-hero-tag{border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.1);}
-#pg-customer[data-theme="royal"] .c-hero-tag-dot{background:#8b5cf6;}
-#pg-customer[data-theme="royal"] .c-hero-tag-txt{color:#8b5cf6;}
-#pg-customer[data-theme="royal"] .c-item-cat{color:#7c3aed;}
-#pg-customer[data-theme="royal"] .c-meta-val{color:#8b5cf6;}
-#pg-customer[data-theme="royal"] .c-summary-val{color:#7c3aed;}
-
-/* ── THEME 6: Forest Green (organic/natural) ── */
-#pg-customer[data-theme="forest"]{
-  --c-bg:#f2f7f2;--c-surf:#ffffff;--c-surf2:#e4f0e4;--c-surf3:#d4e8d4;
-  --c-border:#b4d4b4;--c-border2:#8fbc8f;--c-text:#0f2a0f;--c-muted:#4a7a4a;
-  --c-gold:#2d6a2d;--c-gold2:#3d8b3d;
-}
-#pg-customer[data-theme="forest"] .c-hero{background:linear-gradient(160deg,#071a07 0%,#0f2a0f 50%,#0a1f0a 100%);}
-#pg-customer[data-theme="forest"] .c-hero-glow{background:radial-gradient(circle,rgba(61,139,61,.2) 0%,transparent 65%);}
-#pg-customer[data-theme="forest"] .c-item-add{background:#2d6a2d;}
-#pg-customer[data-theme="forest"] .c-item-add:hover{background:#3d8b3d;}
-#pg-customer[data-theme="forest"] .c-cat.on{color:#0f2a0f;border-bottom-color:#2d6a2d;}
-#pg-customer[data-theme="forest"] .c-order-btn{background:#0f2a0f;}
-#pg-customer[data-theme="forest"] .c-cart-btn{background:#0f2a0f;}
-#pg-customer[data-theme="forest"] .c-fab{background:#0f2a0f;}
-#pg-customer[data-theme="forest"] .c-hero-tag{border-color:rgba(61,139,61,.3);background:rgba(61,139,61,.08);}
-#pg-customer[data-theme="forest"] .c-hero-tag-dot{background:#3d8b3d;}
-#pg-customer[data-theme="forest"] .c-hero-tag-txt{color:#3d8b3d;}
-#pg-customer[data-theme="forest"] .c-item-cat{color:#2d6a2d;}
-#pg-customer[data-theme="forest"] .c-summary-val{color:#2d6a2d;}
-
-/* ── THEME 7: Ember Orange (BBQ / street food) ── */
-#pg-customer[data-theme="ember"]{
-  --c-bg:#fff8f3;--c-surf:#ffffff;--c-surf2:#fff0e6;--c-surf3:#ffe4d0;
-  --c-border:#f4cdb0;--c-border2:#e8a87c;--c-text:#2a0f00;--c-muted:#8a5a3a;
-  --c-gold:#ea580c;--c-gold2:#f97316;
-}
-#pg-customer[data-theme="ember"] .c-hero{background:linear-gradient(160deg,#1a0800 0%,#2a0f00 50%,#1f0900 100%);}
-#pg-customer[data-theme="ember"] .c-hero-glow{background:radial-gradient(circle,rgba(249,115,22,.2) 0%,transparent 65%);}
-#pg-customer[data-theme="ember"] .c-item-add{background:#ea580c;}
-#pg-customer[data-theme="ember"] .c-item-add:hover{background:#f97316;}
-#pg-customer[data-theme="ember"] .c-cat.on{color:#2a0f00;border-bottom-color:#ea580c;}
-#pg-customer[data-theme="ember"] .c-order-btn{background:#2a0f00;}
-#pg-customer[data-theme="ember"] .c-cart-btn{background:#2a0f00;}
-#pg-customer[data-theme="ember"] .c-fab{background:#2a0f00;}
-#pg-customer[data-theme="ember"] .c-hero-tag{border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.08);}
-#pg-customer[data-theme="ember"] .c-hero-tag-dot{background:#f97316;}
-#pg-customer[data-theme="ember"] .c-hero-tag-txt{color:#f97316;}
-#pg-customer[data-theme="ember"] .c-item-cat{color:#ea580c;}
-#pg-customer[data-theme="ember"] .c-summary-val{color:#ea580c;}
-
-/* ── THEME 8: Arctic White (ultra-minimal clean) ── */
-#pg-customer[data-theme="arctic"]{
-  --c-bg:#f8f8f8;--c-surf:#ffffff;--c-surf2:#f0f0f0;--c-surf3:#e8e8e8;
-  --c-border:#e0e0e0;--c-border2:#c8c8c8;--c-text:#111111;--c-muted:#888888;
-  --c-gold:#111111;--c-gold2:#333333;
-}
-#pg-customer[data-theme="arctic"] .c-hero{background:linear-gradient(160deg,#111 0%,#1a1a1a 60%,#111 100%);}
-#pg-customer[data-theme="arctic"] .c-hero-glow{background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 65%);}
-#pg-customer[data-theme="arctic"] .c-item-add{background:#111;}
-#pg-customer[data-theme="arctic"] .c-item-add:hover{background:#333;}
-#pg-customer[data-theme="arctic"] .c-cat.on{color:#111;border-bottom-color:#111;}
-#pg-customer[data-theme="arctic"] .c-order-btn{background:#111;}
-#pg-customer[data-theme="arctic"] .c-cart-btn{background:#111;}
-#pg-customer[data-theme="arctic"] .c-fab{background:#111;}
-#pg-customer[data-theme="arctic"] .c-hero-tag{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06);}
-#pg-customer[data-theme="arctic"] .c-hero-tag-dot{background:#fff;}
-#pg-customer[data-theme="arctic"] .c-hero-tag-txt{color:rgba(255,255,255,.7);}
-#pg-customer[data-theme="arctic"] .c-item-cat{color:#888;}
-#pg-customer[data-theme="arctic"] .c-item{border-color:#e0e0e0;border-radius:2px;}
-#pg-customer[data-theme="arctic"] .c-summary-val{color:#111;}
-#pg-customer[data-theme="arctic"] .c-meta-val{color:rgba(255,255,255,.9);}
-
-/* ── THEME 9: Spice Bazaar (Middle Eastern / Lao fusion) ── */
-#pg-customer[data-theme="spice"]{
-  --c-bg:#fdf5e6;--c-surf:#ffffff;--c-surf2:#f9ead0;--c-surf3:#f2dbb5;
-  --c-border:#e8c988;--c-border2:#d4a832;--c-text:#2a1800;--c-muted:#8a6a20;
-  --c-gold:#b8860b;--c-gold2:#daa520;
-}
-#pg-customer[data-theme="spice"] .c-hero{background:linear-gradient(160deg,#1a0a00 0%,#2a1500 50%,#1e1000 100%);}
-#pg-customer[data-theme="spice"] .c-hero-glow{background:radial-gradient(circle,rgba(218,165,32,.25) 0%,transparent 65%);}
-#pg-customer[data-theme="spice"] .c-item-add{background:#b8860b;}
-#pg-customer[data-theme="spice"] .c-item-add:hover{background:#daa520;}
-#pg-customer[data-theme="spice"] .c-cat.on{color:#2a1800;border-bottom-color:#b8860b;}
-#pg-customer[data-theme="spice"] .c-order-btn{background:#2a1800;}
-#pg-customer[data-theme="spice"] .c-cart-btn{background:#2a1800;}
-#pg-customer[data-theme="spice"] .c-fab{background:#2a1800;}
-#pg-customer[data-theme="spice"] .c-hero-tag{border-color:rgba(218,165,32,.4);background:rgba(218,165,32,.1);}
-#pg-customer[data-theme="spice"] .c-hero-tag-dot{background:#daa520;}
-#pg-customer[data-theme="spice"] .c-hero-tag-txt{color:#daa520;}
-#pg-customer[data-theme="spice"] .c-item-cat{color:#b8860b;}
-#pg-customer[data-theme="spice"] .c-summary-val{color:#b8860b;}
-
-/* ── THEME 10: Neon Tokyo (vibrant Japanese street) ── */
+/* ─────────────────────────────────────────────────────
+   THEME 8: NEON TOKYO ⚡🎌
+   Purple/Pink neon · Cyberpunk · Electric
+───────────────────────────────────────────────────── */
 #pg-customer[data-theme="neon"]{
-  --c-bg:#fafafa;--c-surf:#ffffff;--c-surf2:#f5f0ff;--c-surf3:#ede0ff;
-  --c-border:#ddd0f0;--c-border2:#c4b0e8;--c-text:#0a0014;--c-muted:#6644aa;
-  --c-gold:#7c00ff;--c-gold2:#a855f7;
+  --c-bg:#080012;--c-surf:#0f001f;--c-surf2:#0a0015;--c-surf3:#06000d;
+  --c-border:#2a005a;--c-border2:#5500aa;--c-text:#f0e0ff;--c-muted:#8855cc;
+  --c-gold:#bf00ff;--c-gold2:#df44ff;background:#080012;
 }
-#pg-customer[data-theme="neon"] .c-hero{background:linear-gradient(160deg,#050010 0%,#0a0020 50%,#080018 100%);}
-#pg-customer[data-theme="neon"] .c-hero-glow{background:radial-gradient(circle,rgba(168,85,247,.25) 0%,transparent 65%);}
-#pg-customer[data-theme="neon"] .c-item-add{background:linear-gradient(135deg,#7c00ff,#ff0080);border:none;}
-#pg-customer[data-theme="neon"] .c-item-add:hover{background:linear-gradient(135deg,#9900ff,#ff2090);}
-#pg-customer[data-theme="neon"] .c-cat.on{color:#0a0014;border-bottom-color:#7c00ff;}
-#pg-customer[data-theme="neon"] .c-order-btn{background:linear-gradient(135deg,#7c00ff,#ff0080);border:none;}
-#pg-customer[data-theme="neon"] .c-order-btn:hover{background:linear-gradient(135deg,#9900ff,#ff2090);}
-#pg-customer[data-theme="neon"] .c-cart-btn{background:linear-gradient(135deg,#7c00ff,#ff0080);}
-#pg-customer[data-theme="neon"] .c-fab{background:linear-gradient(135deg,#7c00ff,#ff0080);}
-#pg-customer[data-theme="neon"] .c-hero-tag{border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.1);}
-#pg-customer[data-theme="neon"] .c-hero-tag-dot{background:#a855f7;animation:none;box-shadow:0 0 8px #a855f7;}
-#pg-customer[data-theme="neon"] .c-hero-tag-txt{color:#a855f7;}
-#pg-customer[data-theme="neon"] .c-item-cat{color:#7c00ff;}
-#pg-customer[data-theme="neon"] .c-summary-val{color:#7c00ff;}
-#pg-customer[data-theme="neon"] .c-meta-val{color:#a855f7;}
-#pg-customer[data-theme="neon"] .c-item{border-radius:8px;}
-#pg-customer[data-theme="neon"] .c-item:hover{box-shadow:0 8px 24px rgba(124,0,255,.15);}
-#pg-customer[data-theme="neon"] .c-cart-count{background:linear-gradient(135deg,#7c00ff,#ff0080);}
+#pg-customer[data-theme="neon"] .c-topbar{background:rgba(8,0,18,.97);border-bottom:2px solid #5500aa;box-shadow:0 0 20px rgba(191,0,255,.2);}
+#pg-customer[data-theme="neon"] .c-resto-name{color:#f0e0ff;}
+#pg-customer[data-theme="neon"] .c-cart-btn{background:linear-gradient(135deg,#bf00ff,#ff007f);box-shadow:0 0 15px rgba(191,0,255,.4);}
+#pg-customer[data-theme="neon"] .c-hero{background:linear-gradient(160deg,#03000a 0%,#080012 50%,#04000e 100%);}
+#pg-customer[data-theme="neon"] .c-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#bf00ff,#ff007f,#bf00ff,transparent);box-shadow:0 0 10px #bf00ff;}
+#pg-customer[data-theme="neon"] .c-hero-tag{border-color:rgba(191,0,255,.4);background:rgba(191,0,255,.06);}
+#pg-customer[data-theme="neon"] .c-hero-tag-dot{background:#bf00ff;box-shadow:0 0 15px #bf00ff,0 0 30px #bf00ff;animation:th-flicker 3s ease infinite;}
+#pg-customer[data-theme="neon"] .c-hero-tag-txt{color:#df44ff;text-shadow:0 0 10px #df44ff;}
+#pg-customer[data-theme="neon"] .c-hero-title{color:#f0e0ff;text-shadow:0 0 10px rgba(191,0,255,.5),0 0 40px rgba(191,0,255,.2);}
+#pg-customer[data-theme="neon"] .c-hero-title em{color:#df44ff;text-shadow:0 0 20px #df44ff;}
+#pg-customer[data-theme="neon"] .c-meta-val{color:#bf00ff;text-shadow:0 0 10px #bf00ff;}
+#pg-customer[data-theme="neon"] .c-cats{background:#0a0015;border-bottom:1px solid #2a005a;}
+#pg-customer[data-theme="neon"] .c-cat{color:#2a005a;}
+#pg-customer[data-theme="neon"] .c-cat.on{color:#f0e0ff;border-bottom-color:#bf00ff;text-shadow:0 0 8px #bf00ff;}
+#pg-customer[data-theme="neon"] .c-item{background:#0f001f;border-color:#1a0035;}
+#pg-customer[data-theme="neon"] .c-item:hover{border-color:#bf00ff;box-shadow:0 8px 24px rgba(191,0,255,.25),0 0 1px #bf00ff;}
+#pg-customer[data-theme="neon"] .c-item-img{background:linear-gradient(135deg,#0a0015,#12001e);}
+#pg-customer[data-theme="neon"] .c-item-name{color:#f0e0ff;}
+#pg-customer[data-theme="neon"] .c-item-cat{color:#5500aa;}
+#pg-customer[data-theme="neon"] .c-item-price{color:#bf00ff;text-shadow:0 0 8px #bf00ff;}
+#pg-customer[data-theme="neon"] .c-item-add{background:linear-gradient(135deg,#bf00ff,#ff007f);box-shadow:0 0 10px rgba(191,0,255,.4);}
+#pg-customer[data-theme="neon"] .c-tabs-bar{background:rgba(8,0,18,.97);border-top:1px solid #2a005a;}
+#pg-customer[data-theme="neon"] .c-tab-btn{color:#1a0030;}
+#pg-customer[data-theme="neon"] .c-tab-btn.on{color:#f0e0ff;text-shadow:0 0 8px #bf00ff;}
+#pg-customer[data-theme="neon"] .c-cart-panel,.c-cart-f{background:#0a0015;}
+#pg-customer[data-theme="neon"] .c-cart-title,.c-ci-name,.c-cart-total-l{color:#f0e0ff;}
+#pg-customer[data-theme="neon"] .c-cart-total-v,.c-item-price{color:#df44ff;text-shadow:0 0 8px #df44ff;}
+#pg-customer[data-theme="neon"] .c-order-btn{background:linear-gradient(135deg,#bf00ff,#ff007f);box-shadow:0 0 20px rgba(191,0,255,.4);}
+#pg-customer[data-theme="neon"] .c-fab{background:linear-gradient(135deg,#bf00ff,#ff007f);box-shadow:0 4px 20px rgba(191,0,255,.4);}
+
+/* ─────────────────────────────────────────────────────
+   THEME 9: CLASSIC GOLD / LUXURY 🏆
+   Black+Gold · Fine dining · Elegant
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="luxury"]{
+  --c-bg:#0a0800;--c-surf:#141000;--c-surf2:#0f0c00;--c-surf3:#0a0800;
+  --c-border:#3a2e00;--c-border2:#5a4800;--c-text:#f0e0a0;--c-muted:#8a7830;
+  --c-gold:#c8973a;--c-gold2:#e0b55a;background:#0a0800;
+}
+#pg-customer[data-theme="luxury"] .c-topbar{background:rgba(10,8,0,.97);border-bottom:1px solid #3a2e00;box-shadow:0 2px 20px rgba(200,151,58,.1);}
+#pg-customer[data-theme="luxury"] .c-resto-name{color:#e0b55a;}
+#pg-customer[data-theme="luxury"] .c-cart-btn{background:var(--c-gold);color:#000;}
+#pg-customer[data-theme="luxury"] .c-hero{background:linear-gradient(160deg,#020100 0%,#0a0800 50%,#050400 100%);border-bottom:1px solid #3a2e00;}
+#pg-customer[data-theme="luxury"] .c-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,151,58,.08) 0%,transparent 60%);}
+#pg-customer[data-theme="luxury"] .c-hero-tag{border-color:rgba(200,151,58,.3);background:rgba(200,151,58,.06);}
+#pg-customer[data-theme="luxury"] .c-hero-tag-dot{background:#c8973a;box-shadow:0 0 10px #c8973a;}
+#pg-customer[data-theme="luxury"] .c-hero-tag-txt{color:#c8973a;}
+#pg-customer[data-theme="luxury"] .c-hero-title{color:#e0b55a;text-shadow:0 0 30px rgba(200,151,58,.3);}
+#pg-customer[data-theme="luxury"] .c-hero-title em{color:#c8973a;}
+#pg-customer[data-theme="luxury"] .c-meta-val{color:#c8973a;}
+#pg-customer[data-theme="luxury"] .c-cats{background:#0f0c00;border-bottom:1px solid #3a2e00;}
+#pg-customer[data-theme="luxury"] .c-cat{color:#3a2e00;}
+#pg-customer[data-theme="luxury"] .c-cat.on{color:#e0b55a;border-bottom-color:#c8973a;}
+#pg-customer[data-theme="luxury"] .c-item{background:#141000;border-color:#2a2000;}
+#pg-customer[data-theme="luxury"] .c-item:hover{border-color:#c8973a;box-shadow:0 8px 24px rgba(200,151,58,.15);}
+#pg-customer[data-theme="luxury"] .c-item-img{background:linear-gradient(135deg,#0f0c00,#1a1500);}
+#pg-customer[data-theme="luxury"] .c-item-name{color:#e0b55a;}
+#pg-customer[data-theme="luxury"] .c-item-cat{color:#5a4800;}
+#pg-customer[data-theme="luxury"] .c-item-price{color:#c8973a;}
+#pg-customer[data-theme="luxury"] .c-item-add{background:#c8973a;color:#000;}
+#pg-customer[data-theme="luxury"] .c-tabs-bar{background:rgba(10,8,0,.97);border-top:1px solid #3a2e00;}
+#pg-customer[data-theme="luxury"] .c-tab-btn{color:#2a2000;}
+#pg-customer[data-theme="luxury"] .c-tab-btn.on{color:#e0b55a;}
+#pg-customer[data-theme="luxury"] .c-cart-panel,.c-cart-f{background:#0f0c00;}
+#pg-customer[data-theme="luxury"] .c-cart-title,.c-ci-name,.c-cart-total-l{color:#e0b55a;}
+#pg-customer[data-theme="luxury"] .c-cart-total-v{color:#c8973a;}
+#pg-customer[data-theme="luxury"] .c-order-btn{background:#c8973a;color:#000;font-weight:900;}
+#pg-customer[data-theme="luxury"] .c-fab{background:#c8973a;color:#000;}
+
+/* ─────────────────────────────────────────────────────
+   THEME 10: LAO HERITAGE 🏛️
+   Deep indigo+gold · Lao patterns · Cultural
+───────────────────────────────────────────────────── */
+#pg-customer[data-theme="lao"]{
+  --c-bg:#fdf8f0;--c-surf:#ffffff;--c-surf2:#f8f0e0;--c-surf3:#f0e4c8;
+  --c-border:#d4b880;--c-border2:#c0a060;--c-text:#1a1200;--c-muted:#7a6030;
+  --c-gold:#8b4513;--c-gold2:#a0522d;
+}
+#pg-customer[data-theme="lao"] .c-topbar{background:rgba(253,248,240,.97);border-bottom:3px solid #8b4513;box-shadow:0 2px 12px rgba(139,69,19,.15);}
+#pg-customer[data-theme="lao"] .c-hero{background:linear-gradient(160deg,#1a0a00 0%,#2a1500 50%,#1a0c00 100%);border-bottom:4px solid #d4b880;}
+#pg-customer[data-theme="lao"] .c-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4b880' fill-opacity='0.06'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10S0 14.5 0 20s4.5 10 10 10 10-4.5 10-10zm10 10c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E");}
+#pg-customer[data-theme="lao"] .c-hero-tag{border-color:rgba(212,184,128,.5);background:rgba(212,184,128,.1);}
+#pg-customer[data-theme="lao"] .c-hero-tag-dot{background:#d4b880;box-shadow:0 0 10px #d4b880;}
+#pg-customer[data-theme="lao"] .c-hero-tag-txt{color:#d4b880;}
+#pg-customer[data-theme="lao"] .c-hero-title{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5);}
+#pg-customer[data-theme="lao"] .c-hero-title em{color:#d4b880;}
+#pg-customer[data-theme="lao"] .c-meta-val{color:#d4b880;}
+#pg-customer[data-theme="lao"] .c-item-add{background:#8b4513;}
+#pg-customer[data-theme="lao"] .c-item-add:hover{background:#a0522d;}
+#pg-customer[data-theme="lao"] .c-cat.on{color:#1a1200;border-bottom-color:#8b4513;}
+#pg-customer[data-theme="lao"] .c-item-cat{color:#8b4513;}
+#pg-customer[data-theme="lao"] .c-item:hover{border-color:#8b4513;box-shadow:0 8px 24px rgba(139,69,19,.12);}
+#pg-customer[data-theme="lao"] .c-order-btn,.c-cart-btn,.c-fab{background:linear-gradient(135deg,#1a0a00,#2a1500);}
+#pg-customer[data-theme="lao"] .c-summary-val{color:#8b4513;}
 
 /* ═══ PAGES ═══ */
 .page{display:none!important;}
@@ -1401,7 +1564,7 @@ async function seedFirebaseIfEmpty(){
   const r1Ref = await fbPush('restaurants', {
     name:'Savaan Kitchen', cuisine:'Lao & Thai', emoji:'🫕', logo:'',
     addr:'Ban Mixay, Vientiane', user:'savaan', pass:'owner123',
-    comm:15, vat:10, status:'active', prep:15, theme:'classic',
+    comm:15, vat:10, status:'active', prep:15, theme:'lao',
     expiresAt: Date.now() + (365*86400000), // 1 year
     createdAt: Date.now(),
     cats:[
@@ -1429,7 +1592,7 @@ async function seedFirebaseIfEmpty(){
   const r2Ref = await fbPush('restaurants', {
     name:'Burger Lab', cuisine:'Western', emoji:'🍔', logo:'',
     addr:'Nong Bone Road, Vientiane', user:'burgerlab', pass:'owner123',
-    comm:12, vat:10, status:'active', prep:20, theme:'ember',
+    comm:12, vat:10, status:'active', prep:20, theme:'tropical',
     expiresAt: Date.now() + (365*86400000), // 1 year
     createdAt: Date.now(),
     cats:[
@@ -2547,16 +2710,16 @@ let currentEPTarget=null; // which picker is open
 // RESTAURANT THEME SYSTEM
 // ═══════════════════════════════════════════════════════════════
 const THEMES = [
-  {id:'classic', name:'Savaan Classic',  desc:'Warm cream · Golden',     hero:'linear-gradient(135deg,#1a0e03,#2a1a08)', accent:'#b8821e', icon:'☀️'},
-  {id:'noir',    name:'Midnight Noir',   desc:'Dark · Luxury · Gold',    hero:'linear-gradient(135deg,#000,#111)',        accent:'#c8973a', icon:'🌙'},
-  {id:'sakura',  name:'Cherry Blossom', desc:'Soft pink · Japanese',     hero:'linear-gradient(135deg,#2d0a14,#4a1220)', accent:'#d4547a', icon:'🌸'},
-  {id:'ocean',   name:'Ocean Breeze',   desc:'Teal · Fresh · Modern',    hero:'linear-gradient(135deg,#042f2e,#065f46)', accent:'#0d9488', icon:'🌊'},
-  {id:'royal',   name:'Royal Purple',   desc:'Luxury · Fine dining',     hero:'linear-gradient(135deg,#0d0020,#1e0a3c)', accent:'#7c3aed', icon:'👑'},
-  {id:'forest',  name:'Forest Green',   desc:'Organic · Natural · Farm', hero:'linear-gradient(135deg,#071a07,#0f2a0f)', accent:'#2d6a2d', icon:'🌿'},
-  {id:'ember',   name:'Ember Orange',   desc:'BBQ · Street food · Bold', hero:'linear-gradient(135deg,#1a0800,#2a0f00)', accent:'#ea580c', icon:'🔥'},
-  {id:'arctic',  name:'Arctic White',   desc:'Minimal · Clean · Sharp',  hero:'linear-gradient(135deg,#111,#1a1a1a)',    accent:'#111111', icon:'❄️'},
-  {id:'spice',   name:'Spice Bazaar',   desc:'Golden · Rich · Warm',     hero:'linear-gradient(135deg,#1a0a00,#2a1500)', accent:'#b8860b', icon:'✨'},
-  {id:'neon',    name:'Neon Tokyo',     desc:'Vibrant · Night · Energy', hero:'linear-gradient(135deg,#050010,#0a0020)', accent:'#7c00ff', icon:'⚡'},
+  {id:'cny',       name:'Chinese New Year', desc:'🎊 Red+Gold · Dragons · Firecrackers',  hero:'linear-gradient(135deg,#1a0000,#cc0000)', accent:'#ffd700', icon:'🧧', particles:'cny'},
+  {id:'halloween', name:'Halloween Night',  desc:'🎃 Spooky · Pumpkins · Purple magic',   hero:'linear-gradient(135deg,#0a0005,#2a0040)', accent:'#ff8c00', icon:'🎃', particles:'halloween'},
+  {id:'christmas', name:'Christmas Magic',  desc:'🎄 Snow · Green+Red · Festive lights',  hero:'linear-gradient(135deg,#0d1f0d,#1a3a1a)', accent:'#cc0000', icon:'🎄', particles:'christmas'},
+  {id:'ice',       name:'Winter Ice',       desc:'❄️ Frost · Crystal · Arctic blue',       hero:'linear-gradient(135deg,#001428,#003366)', accent:'#00a0e8', icon:'🧊', particles:'ice'},
+  {id:'tropical',  name:'Tropical Summer',  desc:'☀️ Beach · Sunshine · Paradise vibes',   hero:'linear-gradient(135deg,#003355,#0077aa)', accent:'#ff8c00', icon:'🌴', particles:'tropical'},
+  {id:'sakura',    name:'Sakura Night',     desc:'🌸 Pink petals · Moonlit romance',        hero:'linear-gradient(135deg,#020008,#080010)', accent:'#ff69b4', icon:'🌸', particles:'sakura'},
+  {id:'galaxy',    name:'Galaxy Space',     desc:'🚀 Stars · Nebula · Cosmic wonder',       hero:'linear-gradient(135deg,#02050f,#1a0040)', accent:'#4a9eff', icon:'🌌', particles:'galaxy'},
+  {id:'neon',      name:'Neon Tokyo',       desc:'⚡ Cyberpunk · Electric · Night vibes',   hero:'linear-gradient(135deg,#080012,#2a005a)', accent:'#bf00ff', icon:'⚡', particles:'neon'},
+  {id:'luxury',    name:'Black Gold Luxury',desc:'🏆 Fine dining · Elegant · Premium',      hero:'linear-gradient(135deg,#020100,#0a0800)', accent:'#c8973a', icon:'🏆', particles:'luxury'},
+  {id:'lao',       name:'Lao Heritage',     desc:'🏛️ Traditional · Cultural · Warm earth',  hero:'linear-gradient(135deg,#1a0a00,#2a1500)', accent:'#d4b880', icon:'🏛️', particles:'lao'},
 ];
 
 function initThemePicker(){
@@ -2564,19 +2727,20 @@ function initThemePicker(){
   if(!grid) return;
   grid.innerHTML=THEMES.map(t=>`
     <div class="theme-card" id="tc-${t.id}" onclick="selectTheme('${t.id}')">
-      <div class="theme-card-hero" style="background:${t.hero}">
-        <span style="font-size:24px">${t.icon}</span>
+      <div class="theme-card-hero" style="background:${t.hero};position:relative;overflow:hidden">
+        <span style="font-size:28px;position:relative;z-index:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))">${t.icon}</span>
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,${t.accent}22,transparent 60%)"></div>
+        <div style="position:absolute;bottom:4px;left:4px;right:4px;height:2px;background:${t.accent};opacity:.5;border-radius:1px"></div>
       </div>
-      <div style="height:4px;background:${t.accent}"></div>
+      <div style="height:3px;background:linear-gradient(90deg,${t.accent},${t.accent}88,transparent)"></div>
       <div class="theme-card-body">
         <div class="theme-card-name">${t.name}</div>
-        <div class="theme-card-desc">${t.desc}</div>
+        <div class="theme-card-desc">${t.desc.replace('· ','<br>')}</div>
       </div>
       <div class="theme-card-check">✓</div>
     </div>
   `).join('');
-  // Default select classic
-  selectTheme(document.getElementById('mRtheme')?.value||'classic', false);
+  selectTheme(document.getElementById('mRtheme')?.value||'cny', false);
 }
 
 function selectTheme(themeId, save=true){
@@ -2595,7 +2759,112 @@ function selectTheme(themeId, save=true){
 function applyTheme(themeId){
   const pg=document.getElementById('pg-customer');
   if(!pg) return;
-  pg.setAttribute('data-theme', themeId||'classic');
+  const tid=themeId||'classic';
+  pg.setAttribute('data-theme', tid);
+  // Launch particle system
+  launchParticles(tid);
+}
+
+// ═══ PARTICLE / EFFECT SYSTEMS ═══
+let particleInterval=null;
+function launchParticles(themeId){
+  // Remove old particles and canvas
+  const old=document.getElementById('theme-particles');
+  if(old) old.remove();
+  if(particleInterval){clearInterval(particleInterval);particleInterval=null;}
+  const t=THEMES.find(x=>x.id===themeId);
+  if(!t||!t.particles) return;
+  const container=document.createElement('div');
+  container.id='theme-particles';
+  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;';
+  document.getElementById('pg-customer').appendChild(container);
+  const configs={
+    cny:{
+      emojis:['🧧','🎊','🏮','✨','🐉','🎆'],
+      count:30, minSize:16, maxSize:36,
+      anim:'th-fall', minDur:4, maxDur:9, rise:false
+    },
+    halloween:{
+      emojis:['🎃','👻','🦇','🕷️','🌕','💀'],
+      count:25, minSize:14, maxSize:30,
+      anim:'th-fall', minDur:5, maxDur:11, rise:false
+    },
+    christmas:{
+      emojis:['❄️','⭐','🎄','🎁','🔔','❄️','❄️'],
+      count:40, minSize:10, maxSize:22,
+      anim:'th-snow', minDur:5, maxDur:12, rise:false,
+      useSX:true
+    },
+    ice:{
+      emojis:['❄️','🧊','❄️','❄️','✦','❄️'],
+      count:35, minSize:10, maxSize:20,
+      anim:'th-snow', minDur:4, maxDur:10, rise:false, useSX:true
+    },
+    tropical:{
+      emojis:['🌺','🌸','🍃','🌼','🌻','⭐'],
+      count:25, minSize:12, maxSize:28,
+      anim:'th-fall', minDur:5, maxDur:10, rise:false
+    },
+    sakura:{
+      emojis:['🌸','🌺','✿','🌸','🌸','💮'],
+      count:35, minSize:12, maxSize:24,
+      anim:'th-fall', minDur:6, maxDur:12, rise:false
+    },
+    galaxy:{
+      emojis:['⭐','✦','★','✧','·','⭐','✦'],
+      count:50, minSize:8, maxSize:18,
+      anim:'th-twinkle', minDur:1, maxDur:4, rise:false, fixed:true
+    },
+    neon:{
+      emojis:['⚡','✦','◆','▲','✦','⚡'],
+      count:20, minSize:10, maxSize:20,
+      anim:'th-fall', minDur:3, maxDur:8, rise:false
+    },
+    luxury:{
+      emojis:['✦','◆','✧','★','✦','◆'],
+      count:25, minSize:8, maxSize:18,
+      anim:'th-twinkle', minDur:2, maxDur:5, rise:false, fixed:true
+    },
+    lao:{
+      emojis:['✦','🌺','◆','✿','✦','🌸'],
+      count:20, minSize:10, maxSize:22,
+      anim:'th-fall', minDur:6, maxDur:12, rise:false
+    }
+  };
+  const cfg=configs[t.particles];
+  if(!cfg) return;
+
+  function makeParticle(){
+    const el=document.createElement('div');
+    el.className='th-particle';
+    const emoji=cfg.emojis[Math.floor(Math.random()*cfg.emojis.length)];
+    const size=cfg.minSize+Math.random()*(cfg.maxSize-cfg.minSize);
+    el.textContent=emoji;
+    el.style.fontSize=size+'px';
+    if(cfg.fixed){
+      el.style.left=Math.random()*100+'vw';
+      el.style.top=Math.random()*100+'vh';
+      el.style.position='absolute';
+    } else {
+      el.style.left=Math.random()*100+'vw';
+      el.style.top=cfg.rise?'110vh':'-30px';
+    }
+    const dur=(cfg.minDur+Math.random()*(cfg.maxDur-cfg.minDur)).toFixed(1);
+    const delay=(Math.random()*cfg.maxDur).toFixed(1);
+    if(cfg.useSX){
+      const sx=(Math.random()-0.5)*120;
+      const sr=Math.random()*720;
+      el.style.setProperty('--sx',sx+'px');
+      el.style.setProperty('--sr',sr+'deg');
+    }
+    el.style.animation=`${cfg.anim} ${dur}s ${delay}s linear infinite`;
+    el.style.opacity=Math.random()*.7+.3;
+    container.appendChild(el);
+    return el;
+  }
+
+  // Create initial particles
+  for(let i=0;i<cfg.count;i++) makeParticle();
 }
 
 function initEmojiPickers(){
