@@ -27,6 +27,241 @@
 body{font-family:var(--fb);background:var(--s-bg);color:var(--s-text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 button,input,select,textarea{font-family:var(--fb);}
 
+
+/* ═══════════════════════════════════════════════════════
+   RESTAURANT THEMES — 10 Professional Styles
+   Applied via data-theme attribute on #pg-customer
+════════════════════════════════════════════════════════ */
+
+/* Theme preview card */
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:8px;}
+.theme-card{border:2px solid var(--s-border);cursor:pointer;transition:all .25s;border-radius:6px;overflow:hidden;position:relative;}
+.theme-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.theme-card.selected{border-color:var(--s-gold);box-shadow:0 0 0 2px var(--s-gold);}
+.theme-card-hero{height:60px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.theme-card-body{padding:7px 8px;background:rgba(0,0,0,.4);}
+.theme-card-name{font-size:11px;font-weight:700;color:#fff;margin-bottom:2px;}
+.theme-card-desc{font-size:9px;color:rgba(255,255,255,.5);line-height:1.4;}
+.theme-card-check{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--s-gold);color:#000;font-size:10px;font-weight:900;display:none;align-items:center;justify-content:center;}
+.theme-card.selected .theme-card-check{display:flex;}
+
+/* ── THEME 1: Savaan Classic (default warm cream) ── */
+#pg-customer[data-theme="classic"]{
+  --c-bg:#faf6f1;--c-surf:#ffffff;--c-surf2:#f3ede4;--c-surf3:#ede5d8;
+  --c-border:#e8e0d4;--c-border2:#d4c8b8;--c-text:#1a1209;--c-muted:#8a7a68;
+  --c-gold:#b8821e;--c-gold2:#d4a03c;
+  --c-hero-from:#1a0e03;--c-hero-to:#2a1a08;
+  --c-ff:'Fraunces',Georgia,serif;
+}
+#pg-customer[data-theme="classic"] .c-hero{background:linear-gradient(160deg,#1a0e03 0%,#241508 50%,#1a1008 100%);}
+
+/* ── THEME 2: Midnight Noir ── */
+#pg-customer[data-theme="noir"]{
+  --c-bg:#0a0a0a;--c-surf:#141414;--c-surf2:#1a1a1a;--c-surf3:#202020;
+  --c-border:#2a2a2a;--c-border2:#333;--c-text:#e8e4dc;--c-muted:#666;
+  --c-gold:#c8973a;--c-gold2:#e0b55a;
+}
+#pg-customer[data-theme="noir"]{background:#0a0a0a;color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-topbar{background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;}
+#pg-customer[data-theme="noir"] .c-hero{background:linear-gradient(160deg,#000 0%,#111 60%,#0d0d0d 100%);}
+#pg-customer[data-theme="noir"] .c-cats{background:#141414;border-bottom:1px solid #2a2a2a;}
+#pg-customer[data-theme="noir"] .c-cat{color:#666;}
+#pg-customer[data-theme="noir"] .c-cat.on{color:#e8e4dc;border-bottom-color:#c8973a;}
+#pg-customer[data-theme="noir"] .c-item{background:#141414;border-color:#2a2a2a;}
+#pg-customer[data-theme="noir"] .c-item:hover{border-color:#c8973a;box-shadow:0 8px 24px rgba(0,0,0,.6);}
+#pg-customer[data-theme="noir"] .c-item-img{background:#1a1a1a;}
+#pg-customer[data-theme="noir"] .c-item-name{color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-item-desc{color:#555;}
+#pg-customer[data-theme="noir"] .c-item-price{color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-item-add{background:#c8973a;}
+#pg-customer[data-theme="noir"] .c-tabs-bar{background:rgba(10,10,10,.97);border-top:1px solid #2a2a2a;}
+#pg-customer[data-theme="noir"] .c-tab-btn{color:#444;}
+#pg-customer[data-theme="noir"] .c-tab-btn.on{color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-cart-panel{background:#141414;}
+#pg-customer[data-theme="noir"] .c-cart-h{border-bottom:1px solid #2a2a2a;}
+#pg-customer[data-theme="noir"] .c-cart-title{color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-cart-f{background:#1a1a1a;border-top:1px solid #2a2a2a;}
+#pg-customer[data-theme="noir"] .c-order-btn{background:#c8973a;color:#000;}
+#pg-customer[data-theme="noir"] .c-ci{border-bottom:1px solid #2a2a2a;}
+#pg-customer[data-theme="noir"] .c-ci-name{color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-ci-em{background:#202020;}
+#pg-customer[data-theme="noir"] .c-cart-total-l{color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-session-summary{background:#141414;border-color:#2a2a2a;}
+#pg-customer[data-theme="noir"] .c-ocard{background:#141414;border-color:#2a2a2a;}
+#pg-customer[data-theme="noir"] .c-oc-h{background:#1a1a1a;border-bottom:1px solid #2a2a2a;}
+#pg-customer[data-theme="noir"] .c-oc-id,.c-oc-total{color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .c-oc-row{color:#aaa;border-bottom-color:#2a2a2a;}
+#pg-customer[data-theme="noir"] .lang-sel{background:#1a1a1a;border-color:#2a2a2a;color:#e8e4dc;}
+#pg-customer[data-theme="noir"] .sess-timer{background:#1a1a1a;border-color:#2a2a2a;color:#666;}
+#pg-customer[data-theme="noir"] .c-cart-btn{background:#c8973a;color:#000;}
+#pg-customer[data-theme="noir"] .c-fab{background:#c8973a;color:#000;}
+
+/* ── THEME 3: Cherry Blossom (soft pink Japanese) ── */
+#pg-customer[data-theme="sakura"]{
+  --c-bg:#fff5f7;--c-surf:#ffffff;--c-surf2:#ffe8ed;--c-surf3:#ffd6de;
+  --c-border:#f5c6cf;--c-border2:#e8a0ad;--c-text:#2d1a1f;--c-muted:#9b6470;
+  --c-gold:#d4547a;--c-gold2:#e8729a;
+}
+#pg-customer[data-theme="sakura"] .c-hero{background:linear-gradient(160deg,#2d0a14 0%,#4a1220 50%,#3d0e1a 100%);}
+#pg-customer[data-theme="sakura"] .c-hero-glow{background:radial-gradient(circle,rgba(212,84,122,.2) 0%,transparent 65%);}
+#pg-customer[data-theme="sakura"] .c-item-add{background:#d4547a;}
+#pg-customer[data-theme="sakura"] .c-item-add:hover{background:#e8729a;}
+#pg-customer[data-theme="sakura"] .c-cat.on{color:#2d1a1f;border-bottom-color:#d4547a;}
+#pg-customer[data-theme="sakura"] .c-order-btn{background:#2d1a1f;}
+#pg-customer[data-theme="sakura"] .c-cart-btn{background:#2d1a1f;}
+#pg-customer[data-theme="sakura"] .c-fab{background:#2d1a1f;}
+#pg-customer[data-theme="sakura"] .c-hero-tag{border-color:rgba(212,84,122,.3);background:rgba(212,84,122,.08);}
+#pg-customer[data-theme="sakura"] .c-hero-tag-dot{background:#d4547a;}
+#pg-customer[data-theme="sakura"] .c-hero-tag-txt{color:#e8729a;}
+
+/* ── THEME 4: Ocean Breeze (deep teal/turquoise) ── */
+#pg-customer[data-theme="ocean"]{
+  --c-bg:#f0fafa;--c-surf:#ffffff;--c-surf2:#e0f4f4;--c-surf3:#ccecea;
+  --c-border:#a8ddd8;--c-border2:#7bc8c2;--c-text:#0d2a28;--c-muted:#4a8280;
+  --c-gold:#0d9488;--c-gold2:#14b8a6;
+}
+#pg-customer[data-theme="ocean"] .c-hero{background:linear-gradient(160deg,#042f2e 0%,#064e3b 50%,#065f46 100%);}
+#pg-customer[data-theme="ocean"] .c-hero-glow{background:radial-gradient(circle,rgba(20,184,166,.2) 0%,transparent 65%);}
+#pg-customer[data-theme="ocean"] .c-item-add{background:#0d9488;}
+#pg-customer[data-theme="ocean"] .c-item-add:hover{background:#14b8a6;}
+#pg-customer[data-theme="ocean"] .c-cat.on{color:#0d2a28;border-bottom-color:#0d9488;}
+#pg-customer[data-theme="ocean"] .c-order-btn{background:#0d2a28;}
+#pg-customer[data-theme="ocean"] .c-cart-btn{background:#0d2a28;}
+#pg-customer[data-theme="ocean"] .c-fab{background:#0d2a28;}
+#pg-customer[data-theme="ocean"] .c-hero-tag{border-color:rgba(20,184,166,.3);background:rgba(20,184,166,.08);}
+#pg-customer[data-theme="ocean"] .c-hero-tag-dot{background:#14b8a6;}
+#pg-customer[data-theme="ocean"] .c-hero-tag-txt{color:#14b8a6;}
+#pg-customer[data-theme="ocean"] .c-item-cat{color:#0d9488;}
+#pg-customer[data-theme="ocean"] .c-summary-val{color:#0d9488;}
+
+/* ── THEME 5: Royal Purple (luxury fine dining) ── */
+#pg-customer[data-theme="royal"]{
+  --c-bg:#f9f7ff;--c-surf:#ffffff;--c-surf2:#ede9ff;--c-surf3:#ddd6ff;
+  --c-border:#c4b8f0;--c-border2:#a89de0;--c-text:#1e0a3c;--c-muted:#6b5b95;
+  --c-gold:#7c3aed;--c-gold2:#8b5cf6;
+}
+#pg-customer[data-theme="royal"] .c-hero{background:linear-gradient(160deg,#0d0020 0%,#1e0a3c 50%,#160828 100%);}
+#pg-customer[data-theme="royal"] .c-hero-glow{background:radial-gradient(circle,rgba(139,92,246,.2) 0%,transparent 65%);}
+#pg-customer[data-theme="royal"] .c-item-add{background:#7c3aed;}
+#pg-customer[data-theme="royal"] .c-item-add:hover{background:#8b5cf6;}
+#pg-customer[data-theme="royal"] .c-cat.on{color:#1e0a3c;border-bottom-color:#7c3aed;}
+#pg-customer[data-theme="royal"] .c-order-btn{background:#1e0a3c;}
+#pg-customer[data-theme="royal"] .c-cart-btn{background:#1e0a3c;}
+#pg-customer[data-theme="royal"] .c-fab{background:#1e0a3c;}
+#pg-customer[data-theme="royal"] .c-hero-tag{border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.1);}
+#pg-customer[data-theme="royal"] .c-hero-tag-dot{background:#8b5cf6;}
+#pg-customer[data-theme="royal"] .c-hero-tag-txt{color:#8b5cf6;}
+#pg-customer[data-theme="royal"] .c-item-cat{color:#7c3aed;}
+#pg-customer[data-theme="royal"] .c-meta-val{color:#8b5cf6;}
+#pg-customer[data-theme="royal"] .c-summary-val{color:#7c3aed;}
+
+/* ── THEME 6: Forest Green (organic/natural) ── */
+#pg-customer[data-theme="forest"]{
+  --c-bg:#f2f7f2;--c-surf:#ffffff;--c-surf2:#e4f0e4;--c-surf3:#d4e8d4;
+  --c-border:#b4d4b4;--c-border2:#8fbc8f;--c-text:#0f2a0f;--c-muted:#4a7a4a;
+  --c-gold:#2d6a2d;--c-gold2:#3d8b3d;
+}
+#pg-customer[data-theme="forest"] .c-hero{background:linear-gradient(160deg,#071a07 0%,#0f2a0f 50%,#0a1f0a 100%);}
+#pg-customer[data-theme="forest"] .c-hero-glow{background:radial-gradient(circle,rgba(61,139,61,.2) 0%,transparent 65%);}
+#pg-customer[data-theme="forest"] .c-item-add{background:#2d6a2d;}
+#pg-customer[data-theme="forest"] .c-item-add:hover{background:#3d8b3d;}
+#pg-customer[data-theme="forest"] .c-cat.on{color:#0f2a0f;border-bottom-color:#2d6a2d;}
+#pg-customer[data-theme="forest"] .c-order-btn{background:#0f2a0f;}
+#pg-customer[data-theme="forest"] .c-cart-btn{background:#0f2a0f;}
+#pg-customer[data-theme="forest"] .c-fab{background:#0f2a0f;}
+#pg-customer[data-theme="forest"] .c-hero-tag{border-color:rgba(61,139,61,.3);background:rgba(61,139,61,.08);}
+#pg-customer[data-theme="forest"] .c-hero-tag-dot{background:#3d8b3d;}
+#pg-customer[data-theme="forest"] .c-hero-tag-txt{color:#3d8b3d;}
+#pg-customer[data-theme="forest"] .c-item-cat{color:#2d6a2d;}
+#pg-customer[data-theme="forest"] .c-summary-val{color:#2d6a2d;}
+
+/* ── THEME 7: Ember Orange (BBQ / street food) ── */
+#pg-customer[data-theme="ember"]{
+  --c-bg:#fff8f3;--c-surf:#ffffff;--c-surf2:#fff0e6;--c-surf3:#ffe4d0;
+  --c-border:#f4cdb0;--c-border2:#e8a87c;--c-text:#2a0f00;--c-muted:#8a5a3a;
+  --c-gold:#ea580c;--c-gold2:#f97316;
+}
+#pg-customer[data-theme="ember"] .c-hero{background:linear-gradient(160deg,#1a0800 0%,#2a0f00 50%,#1f0900 100%);}
+#pg-customer[data-theme="ember"] .c-hero-glow{background:radial-gradient(circle,rgba(249,115,22,.2) 0%,transparent 65%);}
+#pg-customer[data-theme="ember"] .c-item-add{background:#ea580c;}
+#pg-customer[data-theme="ember"] .c-item-add:hover{background:#f97316;}
+#pg-customer[data-theme="ember"] .c-cat.on{color:#2a0f00;border-bottom-color:#ea580c;}
+#pg-customer[data-theme="ember"] .c-order-btn{background:#2a0f00;}
+#pg-customer[data-theme="ember"] .c-cart-btn{background:#2a0f00;}
+#pg-customer[data-theme="ember"] .c-fab{background:#2a0f00;}
+#pg-customer[data-theme="ember"] .c-hero-tag{border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.08);}
+#pg-customer[data-theme="ember"] .c-hero-tag-dot{background:#f97316;}
+#pg-customer[data-theme="ember"] .c-hero-tag-txt{color:#f97316;}
+#pg-customer[data-theme="ember"] .c-item-cat{color:#ea580c;}
+#pg-customer[data-theme="ember"] .c-summary-val{color:#ea580c;}
+
+/* ── THEME 8: Arctic White (ultra-minimal clean) ── */
+#pg-customer[data-theme="arctic"]{
+  --c-bg:#f8f8f8;--c-surf:#ffffff;--c-surf2:#f0f0f0;--c-surf3:#e8e8e8;
+  --c-border:#e0e0e0;--c-border2:#c8c8c8;--c-text:#111111;--c-muted:#888888;
+  --c-gold:#111111;--c-gold2:#333333;
+}
+#pg-customer[data-theme="arctic"] .c-hero{background:linear-gradient(160deg,#111 0%,#1a1a1a 60%,#111 100%);}
+#pg-customer[data-theme="arctic"] .c-hero-glow{background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 65%);}
+#pg-customer[data-theme="arctic"] .c-item-add{background:#111;}
+#pg-customer[data-theme="arctic"] .c-item-add:hover{background:#333;}
+#pg-customer[data-theme="arctic"] .c-cat.on{color:#111;border-bottom-color:#111;}
+#pg-customer[data-theme="arctic"] .c-order-btn{background:#111;}
+#pg-customer[data-theme="arctic"] .c-cart-btn{background:#111;}
+#pg-customer[data-theme="arctic"] .c-fab{background:#111;}
+#pg-customer[data-theme="arctic"] .c-hero-tag{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06);}
+#pg-customer[data-theme="arctic"] .c-hero-tag-dot{background:#fff;}
+#pg-customer[data-theme="arctic"] .c-hero-tag-txt{color:rgba(255,255,255,.7);}
+#pg-customer[data-theme="arctic"] .c-item-cat{color:#888;}
+#pg-customer[data-theme="arctic"] .c-item{border-color:#e0e0e0;border-radius:2px;}
+#pg-customer[data-theme="arctic"] .c-summary-val{color:#111;}
+#pg-customer[data-theme="arctic"] .c-meta-val{color:rgba(255,255,255,.9);}
+
+/* ── THEME 9: Spice Bazaar (Middle Eastern / Lao fusion) ── */
+#pg-customer[data-theme="spice"]{
+  --c-bg:#fdf5e6;--c-surf:#ffffff;--c-surf2:#f9ead0;--c-surf3:#f2dbb5;
+  --c-border:#e8c988;--c-border2:#d4a832;--c-text:#2a1800;--c-muted:#8a6a20;
+  --c-gold:#b8860b;--c-gold2:#daa520;
+}
+#pg-customer[data-theme="spice"] .c-hero{background:linear-gradient(160deg,#1a0a00 0%,#2a1500 50%,#1e1000 100%);}
+#pg-customer[data-theme="spice"] .c-hero-glow{background:radial-gradient(circle,rgba(218,165,32,.25) 0%,transparent 65%);}
+#pg-customer[data-theme="spice"] .c-item-add{background:#b8860b;}
+#pg-customer[data-theme="spice"] .c-item-add:hover{background:#daa520;}
+#pg-customer[data-theme="spice"] .c-cat.on{color:#2a1800;border-bottom-color:#b8860b;}
+#pg-customer[data-theme="spice"] .c-order-btn{background:#2a1800;}
+#pg-customer[data-theme="spice"] .c-cart-btn{background:#2a1800;}
+#pg-customer[data-theme="spice"] .c-fab{background:#2a1800;}
+#pg-customer[data-theme="spice"] .c-hero-tag{border-color:rgba(218,165,32,.4);background:rgba(218,165,32,.1);}
+#pg-customer[data-theme="spice"] .c-hero-tag-dot{background:#daa520;}
+#pg-customer[data-theme="spice"] .c-hero-tag-txt{color:#daa520;}
+#pg-customer[data-theme="spice"] .c-item-cat{color:#b8860b;}
+#pg-customer[data-theme="spice"] .c-summary-val{color:#b8860b;}
+
+/* ── THEME 10: Neon Tokyo (vibrant Japanese street) ── */
+#pg-customer[data-theme="neon"]{
+  --c-bg:#fafafa;--c-surf:#ffffff;--c-surf2:#f5f0ff;--c-surf3:#ede0ff;
+  --c-border:#ddd0f0;--c-border2:#c4b0e8;--c-text:#0a0014;--c-muted:#6644aa;
+  --c-gold:#7c00ff;--c-gold2:#a855f7;
+}
+#pg-customer[data-theme="neon"] .c-hero{background:linear-gradient(160deg,#050010 0%,#0a0020 50%,#080018 100%);}
+#pg-customer[data-theme="neon"] .c-hero-glow{background:radial-gradient(circle,rgba(168,85,247,.25) 0%,transparent 65%);}
+#pg-customer[data-theme="neon"] .c-item-add{background:linear-gradient(135deg,#7c00ff,#ff0080);border:none;}
+#pg-customer[data-theme="neon"] .c-item-add:hover{background:linear-gradient(135deg,#9900ff,#ff2090);}
+#pg-customer[data-theme="neon"] .c-cat.on{color:#0a0014;border-bottom-color:#7c00ff;}
+#pg-customer[data-theme="neon"] .c-order-btn{background:linear-gradient(135deg,#7c00ff,#ff0080);border:none;}
+#pg-customer[data-theme="neon"] .c-order-btn:hover{background:linear-gradient(135deg,#9900ff,#ff2090);}
+#pg-customer[data-theme="neon"] .c-cart-btn{background:linear-gradient(135deg,#7c00ff,#ff0080);}
+#pg-customer[data-theme="neon"] .c-fab{background:linear-gradient(135deg,#7c00ff,#ff0080);}
+#pg-customer[data-theme="neon"] .c-hero-tag{border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.1);}
+#pg-customer[data-theme="neon"] .c-hero-tag-dot{background:#a855f7;animation:none;box-shadow:0 0 8px #a855f7;}
+#pg-customer[data-theme="neon"] .c-hero-tag-txt{color:#a855f7;}
+#pg-customer[data-theme="neon"] .c-item-cat{color:#7c00ff;}
+#pg-customer[data-theme="neon"] .c-summary-val{color:#7c00ff;}
+#pg-customer[data-theme="neon"] .c-meta-val{color:#a855f7;}
+#pg-customer[data-theme="neon"] .c-item{border-radius:8px;}
+#pg-customer[data-theme="neon"] .c-item:hover{box-shadow:0 8px 24px rgba(124,0,255,.15);}
+#pg-customer[data-theme="neon"] .c-cart-count{background:linear-gradient(135deg,#7c00ff,#ff0080);}
+
 /* ═══ PAGES ═══ */
 .page{display:none!important;}
 .page.on{display:block!important;}
@@ -566,7 +801,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">👑</div><div><div class="sb-un">Super Admin</div><div class="sb-ur">Platform Owner</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
     </aside>
     <main class="staff-main">
-      <div class="topbar"><div class="topbar-title" id="saTbar">Dashboard</div><div class="topbar-r"><button class="btn btn-gold" onclick="openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
+      <div class="topbar"><div class="topbar-title" id="saTbar">Dashboard</div><div class="topbar-r"><button class="btn btn-gold" onclick="resetRestoModal();openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="sa-dashboard">
           <div style="display:flex;justify-content:flex-end;gap:5px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
@@ -610,7 +845,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div class="card"><div class="card-h"><div class="card-title">Revenue by Restaurant</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Orders</th><th>Gross (₭)</th><th>Commission %</th><th>Your Earn</th><th>Restaurant Earn</th><th>VAT Collected</th></tr></thead><tbody id="sa-revtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-restaurants">
-          <div class="card"><div class="card-h"><div class="card-title">All Restaurants</div><button class="btn btn-gold" onclick="openModal('mAddResto')">+ Add Restaurant</button></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
+          <div class="card"><div class="card-h"><div class="card-title">All Restaurants</div><button class="btn btn-gold" onclick="openModal('mAddResto');resetRestoModal()">+ Add Restaurant</button></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Theme</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-orders">
           <div class="card"><div class="card-h"><div class="card-title">All Orders (Live Firebase)</div></div><div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Restaurant</th><th>Items</th><th>Total (₭)</th><th>Commission</th><th>Time</th><th>Status</th></tr></thead><tbody id="sa-ordtbl"></tbody></table></div></div>
@@ -846,6 +1081,15 @@ tr:hover td{background:rgba(255,255,255,.015);}
       </div>
       <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
       <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px"></div>
+      <div class="fg">
+        <label>Customer Menu Theme <span style="color:var(--s-muted);font-size:9px;font-weight:400;letter-spacing:0">— how your menu looks when customers scan QR</span></label>
+        <input type="hidden" id="mRtheme" value="classic">
+        <div class="theme-grid" id="themePickerGrid"></div>
+        <div style="margin-top:10px;padding:10px 12px;background:var(--s-surf3);border:1px solid var(--s-border);font-size:11px;color:var(--s-muted)">
+          Selected: <b id="themeSelectedName" style="color:var(--s-gold)">Savaan Classic</b>
+          <span style="margin-left:8px;color:var(--s-muted2)">· Customers see this theme when they scan the QR code</span>
+        </div>
+      </div>
       <div class="fg">
         <label>Access Expiry (Subscription)</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
@@ -1133,6 +1377,7 @@ async function init(){
   }
   document.getElementById('loadingScreen').style.display='none';
   initEmojiPickers();
+  initThemePicker();
 }
 
 function restoreSA(){
@@ -1156,7 +1401,7 @@ async function seedFirebaseIfEmpty(){
   const r1Ref = await fbPush('restaurants', {
     name:'Savaan Kitchen', cuisine:'Lao & Thai', emoji:'🫕', logo:'',
     addr:'Ban Mixay, Vientiane', user:'savaan', pass:'owner123',
-    comm:15, vat:10, status:'active', prep:15,
+    comm:15, vat:10, status:'active', prep:15, theme:'classic',
     expiresAt: Date.now() + (365*86400000), // 1 year
     createdAt: Date.now(),
     cats:[
@@ -1184,7 +1429,7 @@ async function seedFirebaseIfEmpty(){
   const r2Ref = await fbPush('restaurants', {
     name:'Burger Lab', cuisine:'Western', emoji:'🍔', logo:'',
     addr:'Nong Bone Road, Vientiane', user:'burgerlab', pass:'owner123',
-    comm:12, vat:10, status:'active', prep:20,
+    comm:12, vat:10, status:'active', prep:20, theme:'ember',
     expiresAt: Date.now() + (365*86400000), // 1 year
     createdAt: Date.now(),
     cats:[
@@ -1547,12 +1792,16 @@ async function loadAndRenderRestos(){
     return`<tr>
       <td><div style="display:flex;align-items:center;gap:8px">${r.logo?`<img src="${r.logo}" style="width:28px;height:28px;border-radius:4px;object-fit:cover">`:''}<div><div class="td-main">${r.emoji||'🍽️'} ${r.name}</div><div class="td-sub">${r.addr||''}</div></div></div></td>
       <td>${r.user||r.ownerUser||''}</td>
-      <td><span class="comm">${r.comm||15}%</span></td>
+      <td><span class="comm">${r.comm??0}%</span></td>
+      <td>
+        ${(()=>{const t=THEMES.find(x=>x.id===(r.theme||'classic'));return t?`<div style="display:flex;align-items:center;gap:5px"><div style="width:16px;height:16px;border-radius:50%;background:${t.accent};flex-shrink:0"></div><span style="font-size:11px">${t.icon} ${t.name}</span></div>`:'—';})()}
+      </td>
       <td style="font-size:11px">${expTxt}</td>
       <td><span class="tag ${r.status==='active'?'tg':r.status==='pending'?'to':'tr'}">${r.status}</span></td>
       <td>${cnt}</td>
       <td><div class="btn-acts">
         <button class="btn btn-sm" onclick="editResto('${k}')">Edit</button>
+        <button class="btn btn-sm" onclick="previewRestoTheme('${k}')" style="border-color:var(--s-blue);color:var(--s-blue)">👁 Theme</button>
         <button class="btn btn-sm btn-red" onclick="delResto('${k}')">Del</button>
         ${r.status==='pending'?`<button class="btn btn-sm btn-green" onclick="approveResto('${k}')">✓ Approve</button>`:''}
         <button class="btn btn-sm" onclick="renewResto('${k}')">🔄 Renew</button>
@@ -1692,6 +1941,72 @@ function saChartSwitch(p,btn){document.querySelectorAll('#sa-dashboard .ctab').f
 // ═══════════════════════════════════════════════════════════════
 // RESTAURANT CRUD (Firebase)
 // ═══════════════════════════════════════════════════════════════
+function resetRestoModal(){
+  document.getElementById('mRestoId').value='';
+  document.getElementById('mRestoTitle').textContent='Add Restaurant';
+  document.getElementById('mRtheme').value='classic';
+  selectTheme('classic',false);
+  document.getElementById('mRlogoData').value='';
+  document.getElementById('logoPreview').textContent='🍽️';
+}
+
+async function previewRestoTheme(id){
+  const r=await fbGet('restaurants/'+id);
+  if(!r) return;
+  const theme=r.theme||'classic';
+  const t=THEMES.find(x=>x.id===theme);
+  const msg=`Restaurant: ${r.name}\nTheme: ${t?t.icon+' '+t.name:'Classic'}\n\nTo change the theme, click Edit on this restaurant.`;
+  // Show a quick visual preview
+  showThemePreviewModal(theme, r.name, r.emoji||'🍽️');
+}
+
+function showThemePreviewModal(themeId, restoName, emoji){
+  const t=THEMES.find(x=>x.id===themeId)||THEMES[0];
+  const existing=document.getElementById('themePreviewModal');
+  if(existing) existing.remove();
+  const div=document.createElement('div');
+  div.id='themePreviewModal';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)';
+  div.innerHTML=`
+    <div style="background:var(--s-surf);border:1px solid var(--s-border);max-width:420px;width:100%;border-radius:6px;overflow:hidden;animation:fadeUp .3s ease;box-shadow:0 24px 80px rgba(0,0,0,.5)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--s-border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-family:var(--ff);font-size:16px;font-weight:700">Theme Preview</div>
+        <button onclick="document.getElementById('themePreviewModal').remove()" style="background:none;border:1px solid var(--s-border);color:var(--s-muted);width:28px;height:28px;cursor:pointer;border-radius:3px;font-size:14px">✕</button>
+      </div>
+      <!-- Mock customer menu preview -->
+      <div style="background:${t.hero};padding:20px 18px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,${t.accent}22 0%,transparent 65%)"></div>
+        <div style="font-size:40px;margin-bottom:10px;position:relative">${emoji}</div>
+        <div style="font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:4px">${restoName}</div>
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${t.accent}">${t.desc}</div>
+      </div>
+      <div style="height:3px;background:${t.accent}"></div>
+      <!-- Mock menu items -->
+      <div style="padding:12px;background:#fff;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${['🫕 Lao Larb','🍲 Tom Kha','🥗 Salad','🥤 Smoothie'].map(item=>`
+          <div style="border:1.5px solid #eee;border-radius:6px;overflow:hidden">
+            <div style="height:50px;background:linear-gradient(135deg,#f5f0e8,#ede9e0);display:flex;align-items:center;justify-content:center;font-size:22px">${item.split(' ')[0]}</div>
+            <div style="padding:6px 8px">
+              <div style="font-size:11px;font-weight:700;color:#1a1209">${item.split(' ').slice(1).join(' ')}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+                <span style="font-size:11px;font-weight:900;color:#1a1209">₭45,000</span>
+                <div style="width:22px;height:22px;background:${t.accent};border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">+</div>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div style="padding:14px 16px;background:var(--s-surf3);border-top:1px solid var(--s-border);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--s-text)">${t.icon} ${t.name}</div>
+          <div style="font-size:10px;color:var(--s-muted);margin-top:2px">${t.desc}</div>
+        </div>
+        <button onclick="document.getElementById('themePreviewModal').remove()" style="padding:8px 18px;background:var(--s-gold);border:none;color:#000;font-size:12px;font-weight:700;cursor:pointer;border-radius:3px">Close</button>
+      </div>
+    </div>`;
+  document.body.appendChild(div);
+  div.addEventListener('click',e=>{if(e.target===div) div.remove();});
+}
+
 function calcExpiry(dur){
   if(dur==='lifetime') return null;
   const now=Date.now();
@@ -1725,6 +2040,7 @@ async function saveResto(){
     addr:document.getElementById('mRaddr').value.trim(),
     status:document.getElementById('mRstatus').value,
     prep:parseInt(document.getElementById('mRprep').value)||15,
+    theme:document.getElementById('mRtheme').value||'classic',
     expiresAt:newExpiry,
     updatedAt:Date.now()
   };
@@ -1761,6 +2077,10 @@ async function editResto(id){
   document.getElementById('mRstatus').value=r.status||'active';
   document.getElementById('mRprep').value=r.prep||15;
   document.getElementById('mRvat').value=r.vat||0;
+  // Restore theme
+  const restoTheme=r.theme||'classic';
+  document.getElementById('mRtheme').value=restoTheme;
+  selectTheme(restoTheme, false);
   // Restore emoji preview
   document.getElementById('mRemoji').value=r.emoji||'🍽️';
   const rEmojiPrev=document.getElementById('mRemojiPreview');
@@ -2222,6 +2542,61 @@ const EP_EMOJIS = {
 };
 
 let currentEPTarget=null; // which picker is open
+
+// ═══════════════════════════════════════════════════════════════
+// RESTAURANT THEME SYSTEM
+// ═══════════════════════════════════════════════════════════════
+const THEMES = [
+  {id:'classic', name:'Savaan Classic',  desc:'Warm cream · Golden',     hero:'linear-gradient(135deg,#1a0e03,#2a1a08)', accent:'#b8821e', icon:'☀️'},
+  {id:'noir',    name:'Midnight Noir',   desc:'Dark · Luxury · Gold',    hero:'linear-gradient(135deg,#000,#111)',        accent:'#c8973a', icon:'🌙'},
+  {id:'sakura',  name:'Cherry Blossom', desc:'Soft pink · Japanese',     hero:'linear-gradient(135deg,#2d0a14,#4a1220)', accent:'#d4547a', icon:'🌸'},
+  {id:'ocean',   name:'Ocean Breeze',   desc:'Teal · Fresh · Modern',    hero:'linear-gradient(135deg,#042f2e,#065f46)', accent:'#0d9488', icon:'🌊'},
+  {id:'royal',   name:'Royal Purple',   desc:'Luxury · Fine dining',     hero:'linear-gradient(135deg,#0d0020,#1e0a3c)', accent:'#7c3aed', icon:'👑'},
+  {id:'forest',  name:'Forest Green',   desc:'Organic · Natural · Farm', hero:'linear-gradient(135deg,#071a07,#0f2a0f)', accent:'#2d6a2d', icon:'🌿'},
+  {id:'ember',   name:'Ember Orange',   desc:'BBQ · Street food · Bold', hero:'linear-gradient(135deg,#1a0800,#2a0f00)', accent:'#ea580c', icon:'🔥'},
+  {id:'arctic',  name:'Arctic White',   desc:'Minimal · Clean · Sharp',  hero:'linear-gradient(135deg,#111,#1a1a1a)',    accent:'#111111', icon:'❄️'},
+  {id:'spice',   name:'Spice Bazaar',   desc:'Golden · Rich · Warm',     hero:'linear-gradient(135deg,#1a0a00,#2a1500)', accent:'#b8860b', icon:'✨'},
+  {id:'neon',    name:'Neon Tokyo',     desc:'Vibrant · Night · Energy', hero:'linear-gradient(135deg,#050010,#0a0020)', accent:'#7c00ff', icon:'⚡'},
+];
+
+function initThemePicker(){
+  const grid=document.getElementById('themePickerGrid');
+  if(!grid) return;
+  grid.innerHTML=THEMES.map(t=>`
+    <div class="theme-card" id="tc-${t.id}" onclick="selectTheme('${t.id}')">
+      <div class="theme-card-hero" style="background:${t.hero}">
+        <span style="font-size:24px">${t.icon}</span>
+      </div>
+      <div style="height:4px;background:${t.accent}"></div>
+      <div class="theme-card-body">
+        <div class="theme-card-name">${t.name}</div>
+        <div class="theme-card-desc">${t.desc}</div>
+      </div>
+      <div class="theme-card-check">✓</div>
+    </div>
+  `).join('');
+  // Default select classic
+  selectTheme(document.getElementById('mRtheme')?.value||'classic', false);
+}
+
+function selectTheme(themeId, save=true){
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
+  const card=document.getElementById('tc-'+themeId);
+  if(card) card.classList.add('selected');
+  if(save){
+    const inp=document.getElementById('mRtheme');
+    if(inp) inp.value=themeId;
+  }
+  const t=THEMES.find(x=>x.id===themeId);
+  const lbl=document.getElementById('themeSelectedName');
+  if(lbl&&t) lbl.textContent=t.icon+' '+t.name+' — '+t.desc;
+}
+
+function applyTheme(themeId){
+  const pg=document.getElementById('pg-customer');
+  if(!pg) return;
+  pg.setAttribute('data-theme', themeId||'classic');
+}
 
 function initEmojiPickers(){
   // Item picker
@@ -2754,6 +3129,8 @@ function setupCustomerUI(r,sess){
   document.getElementById('cPrepTime').textContent=r.prep||15;
   document.getElementById('cSessLeft').textContent=(sess?.duration||2)+'h';
   custVatRate=r.vat||0;
+  // Apply restaurant theme
+  applyTheme(r.theme||'classic');
   renderCats(r);renderMenu('All',r);updateCart();
 }
 
