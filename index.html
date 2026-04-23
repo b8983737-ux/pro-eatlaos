@@ -539,10 +539,18 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="topbar"><div class="topbar-title" id="saTbar">Dashboard</div><div class="topbar-r"><button class="btn btn-gold" onclick="openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="sa-dashboard">
+          <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:14px">
+            <span style="font-size:11px;color:var(--s-muted);align-self:center">Filter:</span>
+            <button class="btn btn-sm btn-gold" onclick="setSAFilter('today',this)">Today</button>
+            <button class="btn btn-sm" onclick="setSAFilter('week',this)">This Week</button>
+            <button class="btn btn-sm" onclick="setSAFilter('month',this)">This Month</button>
+            <button class="btn btn-sm" onclick="setSAFilter('all',this)">All Time</button>
+          </div>
+          <div style="font-size:11px;color:var(--s-muted);margin-bottom:10px;text-align:right" id="saFilterLabel">Showing: Today</div>
           <div class="stats-row s4">
             <div class="stat-box"><div class="stat-ico">🏪</div><div class="stat-lbl">Restaurants</div><div class="stat-val" id="sa-s1">—</div><div class="stat-sub">Active</div></div>
-            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl">Total Orders</div><div class="stat-val" id="sa-s2">—</div></div>
-            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl">Platform Commission</div><div class="stat-val" id="sa-s3">—</div></div>
+            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl">Orders (filtered)</div><div class="stat-val" id="sa-s2">—</div></div>
+            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl">Commission (filtered)</div><div class="stat-val" id="sa-s3">—</div></div>
             <div class="stat-box"><div class="stat-ico">📱</div><div class="stat-lbl">Active Sessions</div><div class="stat-val" id="sa-s4">—</div></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
@@ -552,8 +560,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div class="card"><div class="card-h"><div class="card-title">Recent Orders (Live)</div><button class="btn btn-sm" onclick="saP('orders',null)">View All</button></div><div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Restaurant</th><th>Total (₭)</th><th>Commission</th><th>Time</th><th>Status</th></tr></thead><tbody id="sa-recent"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-revenue">
+          <div id="saVatContainer"></div>
           <div class="stats-row s3"><div class="stat-box"><div class="stat-lbl">Gross Revenue</div><div class="stat-val" id="sa-gr">—</div></div><div class="stat-box"><div class="stat-ico">👑</div><div class="stat-lbl">Your Commission</div><div class="stat-val" id="sa-co">—</div></div><div class="stat-box"><div class="stat-lbl">Paid to Restaurants</div><div class="stat-val" id="sa-po">—</div></div></div>
-          <div class="card"><div class="card-h"><div class="card-title">Revenue by Restaurant</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Orders</th><th>Gross (₭)</th><th>Commission %</th><th>Your Earn</th><th>Restaurant Earn</th></tr></thead><tbody id="sa-revtbl"></tbody></table></div></div>
+          <div class="card"><div class="card-h"><div class="card-title">Revenue by Restaurant</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Orders</th><th>Gross (₭)</th><th>Commission %</th><th>Your Earn</th><th>Restaurant Earn</th><th>VAT Collected</th></tr></thead><tbody id="sa-revtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-restaurants">
           <div class="card"><div class="card-h"><div class="card-title">All Restaurants</div><button class="btn btn-gold" onclick="openModal('mAddResto')">+ Add Restaurant</button></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
@@ -566,7 +575,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
         </div>
         <div class="panel" id="sa-settings">
           <div class="card"><div class="card-h"><div class="card-title">Platform Settings</div></div><div style="padding:20px">
-            <div class="form-row" style="margin-bottom:14px"><div class="fg"><label>Platform Name</label><input class="fi" value="EATLAOS" id="setPName"></div><div class="fg"><label>Default Commission (%)</label><input class="fi" type="number" value="15" id="setComm" min="0" max="50"></div></div>
+            <div class="form-row" style="margin-bottom:14px"><div class="fg"><label>Platform Name</label><input class="fi" value="EATLAOS" id="setPName"></div><div class="fg"><label>Default Commission (%)</label><input class="fi" type="number" value="15" id="setComm" min="0" max="100" step="0.5" placeholder="0 = no commission"></div></div>
             <div class="fg"><label>Default Session Duration</label><select class="fi" id="setSessH" style="max-width:240px"><option value="1">1 hour</option><option value="2" selected>2 hours</option><option value="4">4 hours</option><option value="8">8 hours</option><option value="24">1 day</option></select></div>
             <button class="btn btn-gold" onclick="saveSettings()">Save Settings</button>
           </div></div>
@@ -739,7 +748,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <input type="hidden" id="mRestoId">
       <div class="form-row"><div class="fg"><label>Restaurant Name</label><input class="fi" id="mRname" placeholder="e.g. Savaan Kitchen"></div><div class="fg"><label>Cuisine Type</label><input class="fi" id="mRcuisine" placeholder="e.g. Lao, Thai, Mixed"></div></div>
       <div class="form-row"><div class="fg"><label>Owner Username</label><input class="fi" id="mRuser" placeholder="login username"></div><div class="fg"><label>Owner Password</label><input class="fi" type="password" id="mRpass" placeholder="set a strong password"></div></div>
-      <div class="form-row"><div class="fg"><label>Commission % (platform takes)</label><input class="fi" type="number" id="mRcomm" value="15" min="0" max="50"></div><div class="fg"><label>Restaurant Emoji</label><input class="fi" id="mRemoji" placeholder="🍽️" maxlength="4"></div></div>
+      <div class="form-row"><div class="fg"><label>Commission % (platform takes)</label><input class="fi" type="number" id="mRcomm" value="15" min="0" max="100" step="0.5" placeholder="0 = free"></div><div class="fg"><label>Restaurant Emoji</label><input class="fi" id="mRemoji" placeholder="🍽️" maxlength="4"></div></div>
       <div class="fg"><label>Address</label><input class="fi" id="mRaddr" placeholder="Vientiane, Laos"></div>
       <div class="fg">
         <label>Restaurant Logo (optional)</label>
@@ -754,6 +763,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
         </div>
       </div>
       <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
+      <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px"></div>
       <div class="fg">
         <label>Access Expiry (Subscription)</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
@@ -811,8 +821,28 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="fg"><label>Description (English)</label><input class="fi" id="mIdesc" placeholder="Brief description..."></div>
       <div class="fg"><label>Description (ລາວ)</label><input class="fi" id="mIdescLo" placeholder="ຄຳອະທິບາຍ..."></div>
       <div class="fg"><label>Description (ไทย)</label><input class="fi" id="mIdescTh" placeholder="คำอธิบาย..."></div>
-      <div class="form-row"><div class="fg"><label>Emoji</label><input class="fi" id="mIemoji" placeholder="🍽️" maxlength="4"></div><div class="fg"><label>Badge</label><select class="fi" id="mIbadge"><option value="">None</option><option value="new">🆕 New</option><option value="popular">⭐ Popular</option><option value="sold">Sold Out</option></select></div></div>
-      <div class="fg"><label>Status</label><select class="fi" id="mIstatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+      <div class="fg">
+        <label>Item Image / Emoji</label>
+        <div style="display:flex;gap:10px;margin-top:6px;align-items:flex-start">
+          <div id="mIimgPreview" style="width:64px;height:64px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;border-radius:4px;overflow:hidden">🍽️</div>
+          <div style="flex:1">
+            <input type="hidden" id="mIimgData">
+            <input type="file" id="mIimgFile" accept="image/*" style="display:none" onchange="previewItemImg(this)">
+            <button type="button" class="btn btn-sm" onclick="document.getElementById('mIimgFile').click()" style="width:100%;margin-bottom:5px">📷 Upload Photo</button>
+            <button type="button" class="btn btn-sm" onclick="clearItemImg()" style="width:100%;margin-bottom:8px">✕ Remove Photo</button>
+            <div style="font-size:9px;color:var(--s-muted);margin-bottom:6px;letter-spacing:1px">OR CHOOSE EMOJI:</div>
+            <div id="emojiPicker" style="display:flex;flex-wrap:wrap;gap:4px;max-height:100px;overflow-y:auto">
+              ${['🍽️','🫕','🍲','🍜','🍛','🍣','🍱','🥘','🍝','🍗','🍖','🥩','🍔','🍟','🌮','🌯','🥙','🥗','🥚','🍳','🥞','🧇','🥓','🧆','🫔','🍤','🦐','🦞','🦀','🦑','🐟','🥩','🍕','🥪','🧀','🥨','🥐','🍞','🥖','🧁','🎂','🍰','🍩','🍪','🍫','🍬','🍭','🍮','🍯','🫖','☕','🍵','🧋','🥤','🧃','🍺','🍻','🥂','🍷','🍸','🍹','🫗'].map(e=>
+              `<button type="button" onclick="pickEmoji('${e}')" style="width:32px;height:32px;background:none;border:1px solid var(--s-border);font-size:18px;cursor:pointer;border-radius:3px;transition:background .15s" onmouseover="this.style.background='var(--s-gold-bg)'" onmouseout="this.style.background='none'">${e}</button>`).join('')}
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+              <span style="font-size:9px;color:var(--s-muted)">CUSTOM:</span>
+              <input class="fi" id="mIemoji" placeholder="🍽️" maxlength="4" style="width:80px;padding:6px 8px" oninput="syncEmojiPreview()">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row"><div class="fg"><label>Badge</label><select class="fi" id="mIbadge"><option value="">None</option><option value="new">🆕 New</option><option value="popular">⭐ Popular</option><option value="sold">Sold Out</option></select></div><div class="fg"><label>Status</label><select class="fi" id="mIstatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div></div>
     </div>
     <div class="modal-f"><button class="btn" onclick="closeModal('mOwItem')">Cancel</button><button class="btn btn-gold" onclick="saveOwItem()">Save</button></div>
   </div>
@@ -934,14 +964,36 @@ async function saveCFG(){
 async function init(){
   try {
     await loadCFG();
+    await seedFirebaseIfEmpty();
     const p=new URLSearchParams(window.location.search);
     if(p.get('qr')==='1'){
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
       if(r&&t) await startCustomerSession(r,t,s);
       else showPage('pg-land');
     } else if(p.get('admin')==='eatlaos2026'){
+      // Check if already logged in as SA
+      const saved=sessionStorage.getItem('el_session');
+      if(saved){const ss=JSON.parse(saved);if(ss.role==='superadmin'){me=ss;restoreSA();return;}}
       showPage('pg-sa-login');
     } else {
+      // Restore owner session on refresh
+      const saved=sessionStorage.getItem('el_session');
+      if(saved){
+        try{
+          const ss=JSON.parse(saved);
+          if(ss.role==='owner'&&ss.restoId){
+            me=ss;restoId=ss.restoId;
+            document.getElementById('owSbN').textContent=ss.name||'';
+            document.getElementById('owSbR').textContent=ss.restoName||'';
+            showPage('pg-ow');
+            owP('dashboard',document.querySelector('#pg-ow .sb-item'));
+            startOwnerListeners();
+            setTimeout(()=>initOwChart('rev'),300);
+            document.getElementById('loadingScreen').style.display='none';
+            return;
+          }
+        }catch(e){sessionStorage.removeItem('el_session');}
+      }
       showPage('pg-land');
     }
   } catch(e){
@@ -949,6 +1001,79 @@ async function init(){
     showPage('pg-land');
   }
   document.getElementById('loadingScreen').style.display='none';
+}
+
+function restoreSA(){
+  showPage('pg-sa');
+  saP('dashboard',document.querySelector('#pg-sa .sb-item'));
+  startSAListeners();
+  setTimeout(()=>initSACharts(),300);
+  document.getElementById('loadingScreen').style.display='none';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SEED DATA — runs once if Firebase is empty
+// ═══════════════════════════════════════════════════════════════
+async function seedFirebaseIfEmpty(){
+  const existing = await fbGet('restaurants');
+  if(existing && Object.keys(existing).length > 0) return; // already has data
+
+  console.log('Seeding Firebase with demo data...');
+
+  // Create Savaan Kitchen
+  const r1Ref = await fbPush('restaurants', {
+    name:'Savaan Kitchen', cuisine:'Lao & Thai', emoji:'🫕', logo:'',
+    addr:'Ban Mixay, Vientiane', user:'savaan', pass:'owner123',
+    comm:15, vat:10, status:'active', prep:15,
+    expiresAt: Date.now() + (365*86400000), // 1 year
+    createdAt: Date.now(),
+    cats:[
+      {id:'c1',name:'Lao Food',icon:'🫕'},
+      {id:'c2',name:'Starters',icon:'🥗'},
+      {id:'c3',name:'Drinks',icon:'🥤'}
+    ],
+    menu:[
+      {id:'m1',name:'Lao Larb',cat:'Lao Food',price:55000,desc:'Traditional minced meat salad with fresh herbs and toasted rice powder',dLo:'ລາບຊີ້ນດ້ວຍຜັກສົດ',dTh:'ลาบเนื้อกับผักสด',emoji:'🫕',badge:'popular',status:'active'},
+      {id:'m2',name:'Tom Kha Soup',cat:'Starters',price:45000,desc:'Creamy coconut milk soup with galangal and lemongrass',dLo:'ຕົ້ມຂ່າໃສ່ນ້ຳໝາກພ້າວ',dTh:'ต้มข่าน้ำกะทิ',emoji:'🍲',badge:'',status:'active'},
+      {id:'m3',name:'Sticky Rice',cat:'Lao Food',price:15000,desc:'Traditional steamed glutinous rice served in a bamboo basket',dLo:'ເຂົ້າໜຽວນຶ່ງ',dTh:'ข้าวเหนียวนึ่ง',emoji:'🍚',badge:'',status:'active'},
+      {id:'m4',name:'Green Papaya Salad',cat:'Starters',price:35000,desc:'Shredded green papaya with lime, fish sauce and chili',dLo:'ຕໍາໝາກຮຸ່ງ',dTh:'ส้มตำ',emoji:'🥗',badge:'popular',status:'active'},
+      {id:'m5',name:'Lychee Smoothie',cat:'Drinks',price:28000,desc:'Fresh lychee blended with coconut milk and lime',dLo:'ນ້ຳລີ້ນຈີ່',dTh:'น้ำลิ้นจี่',emoji:'🥤',badge:'new',status:'active'},
+      {id:'m6',name:'Beerlao',cat:'Drinks',price:20000,desc:'Ice cold Beerlao — the pride of Laos',dLo:'ເບຍລາວ',dTh:'เบียร์ลาว',emoji:'🍺',badge:'',status:'active'},
+    ],
+    tables:[
+      {id:'t1',num:'1',seats:4},
+      {id:'t2',num:'2',seats:2},
+      {id:'t3',num:'3',seats:6},
+      {id:'t4',num:'VIP',seats:8},
+    ]
+  });
+
+  // Create Burger Lab
+  const r2Ref = await fbPush('restaurants', {
+    name:'Burger Lab', cuisine:'Western', emoji:'🍔', logo:'',
+    addr:'Nong Bone Road, Vientiane', user:'burgerlab', pass:'owner123',
+    comm:12, vat:10, status:'active', prep:20,
+    expiresAt: Date.now() + (365*86400000), // 1 year
+    createdAt: Date.now(),
+    cats:[
+      {id:'c4',name:'Burgers',icon:'🍔'},
+      {id:'c5',name:'Sides',icon:'🍟'},
+      {id:'c6',name:'Drinks',icon:'🥤'}
+    ],
+    menu:[
+      {id:'m7',name:'Classic Cheeseburger',cat:'Burgers',price:85000,desc:'Juicy 180g beef patty with aged cheddar and secret sauce',dLo:'ເບີເກີຊີ່ສ',dTh:'เบอร์เกอร์ชีส',emoji:'🍔',badge:'popular',status:'active'},
+      {id:'m8',name:'Truffle Fries',cat:'Sides',price:42000,desc:'Crispy fries with black truffle oil and parmesan',dLo:'ໝາກໄພ່ຕຣັຟເຟິ້ລ',dTh:'เฟรนช์ฟรายส์ทรัฟเฟิล',emoji:'🍟',badge:'new',status:'active'},
+      {id:'m9',name:'Craft Milkshake',cat:'Drinks',price:48000,desc:'Thick hand-spun milkshake — chocolate, vanilla or strawberry',dLo:'ນ້ຳນົມ',dTh:'มิลค์เชคหนา',emoji:'🥛',badge:'',status:'active'},
+    ],
+    tables:[
+      {id:'t5',num:'1',seats:4},
+      {id:'t6',num:'2',seats:4},
+      {id:'t7',num:'Bar',seats:6},
+    ]
+  });
+
+  console.log('Firebase seeded OK! r1='+r1Ref.key+' r2='+r2Ref.key);
+  notifyD('✓ Demo restaurants loaded from Firebase');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -977,8 +1102,9 @@ async function doOwnerLogin(){
     document.getElementById('owErr').textContent='Your access has expired. Contact the platform administrator.';
     return;
   }
-  me={name:u,role:'owner',restoId:found.id};
+  me={name:u,role:'owner',restoId:found.id,restoName:found.name};
   restoId=found.id;
+  sessionStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
   document.getElementById('owSbN').textContent=found.name;
   document.getElementById('owSbR').textContent=found.cuisine||'';
   showPage('pg-ow');
@@ -1005,6 +1131,7 @@ async function doSALogin(){
   await loadCFG();
   if(u==='superadmin'&&p===CFG.saPass){
     me={name:'Super Admin',role:'superadmin'};
+    sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
     showPage('pg-sa');
     saP('dashboard',document.querySelector('#pg-sa .sb-item'));
     startSAListeners();
@@ -1016,10 +1143,10 @@ async function doSALogin(){
 }
 
 function logout(){
-  // Remove Firebase listeners
   if(owOrdersListener) db.ref('orders').off();
   if(saOrdersListener) db.ref('orders').off();
   me=null;restoId=null;cachedOrders=[];
+  sessionStorage.removeItem('el_session');
   ['owU','owP','saU','saP'].forEach(id=>{const e=document.getElementById(id);if(e) e.value='';});
   showPage('pg-land');
 }
@@ -1095,12 +1222,43 @@ function saP(panel,btn){
   if(panel==='settings') loadSettingsUI();
 }
 
+let saFilter='today';
+
+function setSAFilter(f,btn){
+  saFilter=f;
+  document.querySelectorAll('#sa-dashboard .btn').forEach(b=>{b.classList.remove('btn-gold');});
+  btn.classList.add('btn-gold');
+  const labels={today:'Today',week:'This Week',month:'This Month',all:'All Time'};
+  const lbl=document.getElementById('saFilterLabel');
+  if(lbl) lbl.textContent='Showing: '+labels[f];
+  saStats();saRecentOrders();initSACharts();
+}
+
+function filterOrdersByPeriod(orders,period){
+  const now=Date.now();
+  const d=new Date();
+  if(period==='today'){
+    const start=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+    return orders.filter(o=>(o.ts||0)>=start);
+  }
+  if(period==='week'){
+    const start=now-(7*86400000);
+    return orders.filter(o=>(o.ts||0)>=start);
+  }
+  if(period==='month'){
+    const start=new Date(d.getFullYear(),d.getMonth(),1).getTime();
+    return orders.filter(o=>(o.ts||0)>=start);
+  }
+  return orders;
+}
+
 async function saStats(){
   const restos=await fbGet('restaurants')||{};
   const restoList=Object.values(restos);
   const active=restoList.filter(r=>r.status==='active').length;
-  const orders=cachedOrders.length;
-  const comm=cachedOrders.reduce((s,o)=>s+(o.total||0)*((o.comm||15)/100),0);
+  const filtered=filterOrdersByPeriod(cachedOrders,saFilter);
+  const orders=filtered.length;
+  const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm||15)/100),0);
   const sessions=await fbGet('sessions')||{};
   const activeSess=Object.values(sessions).filter(s=>Date.now()<(s.exp||0)).length;
   document.getElementById('sa-s1').textContent=active;
@@ -1110,7 +1268,7 @@ async function saStats(){
 }
 
 function saRecentOrders(){
-  const recent=cachedOrders.slice(0,10);
+  const recent=filterOrdersByPeriod(cachedOrders,saFilter).slice(0,10);
   document.getElementById('sa-recent').innerHTML=recent.map(o=>{
     const comm=Math.round((o.total||0)*(o.comm||15)/100);
     return`<tr><td><b style="font-size:11px">${o.id||o.fbKey}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
@@ -1124,12 +1282,28 @@ async function saRevenue(){
   document.getElementById('sa-co').textContent=fmtK(comm);
   document.getElementById('sa-po').textContent=fmtK(gross-comm);
   const restos=await fbGet('restaurants')||{};
+  // Monthly VAT summary
+  const now2=new Date();
+  const monthStart=new Date(now2.getFullYear(),now2.getMonth(),1).getTime();
+  const monthOrders=cachedOrders.filter(o=>(o.ts||0)>=monthStart);
+  const vatByResto={};
+  for(const [k,r] of Object.entries(restos)){
+    if((r.vat||0)>0){
+      const ro=monthOrders.filter(o=>o.rId===k);
+      const g=ro.reduce((s,o)=>s+(o.total||0),0);
+      vatByResto[r.name]={vat:r.vat||0,gross:g,vatAmt:Math.round(g*(r.vat/100))};
+    }
+  }
+  const vatHtml=Object.keys(vatByResto).length?`<div class="card" style="margin-bottom:16px"><div class="card-h"><div class="card-title">🧾 VAT Summary — This Month</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>VAT Rate</th><th>Monthly Revenue</th><th>VAT Collected</th></tr></thead><tbody>${Object.entries(vatByResto).map(([name,v])=>`<tr><td><b>${name}</b></td><td><span class="comm">${v.vat}%</span></td><td>${fmtK(v.gross)}</td><td style="color:var(--s-blue);font-weight:600">${fmtK(v.vatAmt)}</td></tr>`).join('')}</tbody></table></div></div>`:'';
+  const vatContainer=document.getElementById('saVatContainer');
+  if(vatContainer) vatContainer.innerHTML=vatHtml;
   document.getElementById('sa-revtbl').innerHTML=Object.entries(restos).map(([k,r])=>{
     const ro=cachedOrders.filter(o=>o.rId===k);
     const g=ro.reduce((s,o)=>s+(o.total||0),0);
-    const mc=Math.round(g*(r.comm||15)/100);
-    return`<tr><td><b>${r.emoji||'🍽️'} ${r.name}</b></td><td>${ro.length}</td><td>${fmtK(g)}</td><td><span class="comm">${r.comm||15}%</span></td><td style="color:var(--s-gold);font-weight:600">${fmtK(mc)}</td><td style="color:var(--s-green)">${fmtK(g-mc)}</td></tr>`;
-  }).join('')||nd(6);
+    const mc=Math.round(g*(r.comm||0)/100);
+    const vatAmt=Math.round(g*((r.vat||0)/100));
+    return`<tr><td><b>${r.emoji||'🍽️'} ${r.name}</b></td><td>${ro.length}</td><td>${fmtK(g)}</td><td><span class="comm">${r.comm||0}%</span></td><td style="color:var(--s-gold);font-weight:600">${fmtK(mc)}</td><td style="color:var(--s-green)">${fmtK(g-mc)}</td><td style="color:var(--s-blue)">${(r.vat||0)>0?fmtK(vatAmt):'—'}</td></tr>`;
+  }).join('')||nd(7);
 }
 
 async function loadAndRenderRestos(){
@@ -1243,11 +1417,13 @@ async function saveResto(){
   const expiresAt=id?(await fbGet('restaurants/'+id+'/expiresAt')):calcExpiry(dur);
   const newExpiry=calcExpiry(document.getElementById('mRexpireDur').value);
   const logoData=document.getElementById('mRlogoData').value;
+  const vatVal=parseFloat(document.getElementById('mRvat').value);
   const data={
     name:document.getElementById('mRname').value.trim(),
     cuisine:document.getElementById('mRcuisine').value.trim(),
     user:document.getElementById('mRuser').value.trim(),
-    comm:parseInt(document.getElementById('mRcomm').value)||15,
+    comm:(v=>isNaN(v)?15:Math.max(0,Math.min(100,v)))(parseFloat(document.getElementById('mRcomm').value)),
+    vat:isNaN(vatVal)?0:Math.max(0,Math.min(50,vatVal)),
     emoji:document.getElementById('mRemoji').value.trim()||'🍽️',
     logo:logoData||'',
     addr:document.getElementById('mRaddr').value.trim(),
@@ -1288,6 +1464,7 @@ async function editResto(id){
   document.getElementById('mRaddr').value=r.addr||r.address||'';
   document.getElementById('mRstatus').value=r.status||'active';
   document.getElementById('mRprep').value=r.prep||15;
+  document.getElementById('mRvat').value=r.vat||0;
   document.getElementById('mRlogoData').value=r.logo||'';
   const prev=document.getElementById('logoPreview');
   if(r.logo) prev.innerHTML=`<img src="${r.logo}" style="width:100%;height:100%;object-fit:cover">`;
@@ -1365,11 +1542,12 @@ async function owStats(){
   const gross=todayOrders.reduce((s,o)=>s+(o.total||0),0);
   const earn=Math.round(gross*(1-(r?.comm||15)/100));
   const pend=cachedOrders.filter(o=>o.status==='pending').length;
+  const vatCollected=Math.round(gross*((r?.vat||0)/100));
   document.getElementById('ow-s1').textContent=todayOrders.length;
   document.getElementById('ow-s2').textContent=fmtK(earn);
   document.getElementById('ow-s3').textContent=(r?.menu?.length||0);
   document.getElementById('ow-s4').textContent=pend;
-  document.getElementById('ow-comm-n').textContent=`After ${r?.comm||15}% commission`;
+  document.getElementById('ow-comm-n').textContent=`After ${r?.comm||0}% comm${(r?.vat||0)>0?' · VAT: '+fmtK(vatCollected):''}`;
 }
 
 function owRecentOrders(){
@@ -1521,7 +1699,9 @@ async function printBill(sessKey){
     <div class="div"></div>
     ${sessOrders.map(o=>o.items?.map(i=>`<div class="row"><span>${i.emoji||''} ${i.name} ×${i.qty}</span><span>₭${Math.round(i.price*i.qty).toLocaleString()}</span></div>`).join('')).join('')}
     <div class="div"></div>
-    <div class="total"><span>TOTAL</span><span>₭${Math.round(total).toLocaleString()}</span></div>
+    ${r?.vat>0?`<div class="row"><span>Subtotal</span><span>₭${Math.round(total).toLocaleString()}</span></div><div class="row"><span>VAT (${r.vat}%)</span><span>₭${Math.round(total*(r.vat/100)).toLocaleString()}</span></div><div class="div"></div>`:''}
+    <div class="total"><span>TOTAL</span><span>₭${Math.round(total*(1+(r?.vat||0)/100)).toLocaleString()}</span></div>
+    ${r?.vat>0?`<div style="text-align:center;font-size:9px;color:#888;margin-top:4px">VAT included: ₭${Math.round(total*(r.vat/100)).toLocaleString()}</div>`:''}
     <div class="footer">ຂອບໃຈ · Thank you · ขอบคุณ 🙏<br>eatlaos.la</div>
     <script>window.onload=()=>window.print();<\/script></body></html>`);
   w.document.close();
@@ -1596,8 +1776,41 @@ async function owTables(){
 function openOwItemModal(){
   editItemId=null;document.getElementById('mOwItemTitle').textContent='Add Menu Item';
   ['mOwItemId','mIname','mIdesc','mIdescLo','mIdescTh','mIprice'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('mIemoji').value='🍽️';document.getElementById('mIbadge').value='';document.getElementById('mIstatus').value='active';
+  document.getElementById('mIemoji').value='🍽️';
+  document.getElementById('mIbadge').value='';
+  document.getElementById('mIstatus').value='active';
+  document.getElementById('mIimgData').value='';
+  document.getElementById('mIimgPreview').textContent='🍽️';
+  const fi=document.getElementById('mIimgFile');if(fi) fi.value='';
   popCatSel();openModal('mOwItem');
+}
+
+function pickEmoji(e){
+  document.getElementById('mIemoji').value=e;
+  const imgData=document.getElementById('mIimgData').value;
+  if(!imgData) document.getElementById('mIimgPreview').textContent=e;
+}
+function syncEmojiPreview(){
+  const e=document.getElementById('mIemoji').value||'🍽️';
+  const imgData=document.getElementById('mIimgData').value;
+  if(!imgData) document.getElementById('mIimgPreview').textContent=e;
+}
+function previewItemImg(input){
+  if(!input.files||!input.files[0]) return;
+  const file=input.files[0];
+  if(file.size>2*1024*1024){notifyD('⚠ Max 2MB');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('mIimgData').value=e.target.result;
+    document.getElementById('mIimgPreview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
+  };
+  reader.readAsDataURL(file);
+}
+function clearItemImg(){
+  document.getElementById('mIimgData').value='';
+  const e=document.getElementById('mIemoji').value||'🍽️';
+  document.getElementById('mIimgPreview').textContent=e;
+  const fi=document.getElementById('mIimgFile');if(fi) fi.value='';
 }
 async function editOwItem(idx){
   const r=await fbGet('restaurants/'+restoId);
@@ -1619,7 +1832,7 @@ async function saveOwItem(){
   const price=parseInt(document.getElementById('mIprice').value);
   const cat=document.getElementById('mIcat').value;
   if(!name||!price||!cat){notifyD('⚠ Fill required fields');return;}
-  const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),emoji:document.getElementById('mIemoji').value.trim()||'🍽️',badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,id:'m'+Date.now()};
+  const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:document.getElementById('mIimgData').value||'',badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,id:'m'+Date.now()};
   const menu=[...(r.menu||[])];
   if(editItemId!==null) menu[editItemId]={...menu[editItemId],...data};
   else menu.push(data);
@@ -1668,10 +1881,17 @@ async function owProfile(){
     <div class="form-row" style="margin-bottom:12px"><div class="fg"><label>Name</label><input class="fi" value="${r.name}" id="opN"></div><div class="fg"><label>Cuisine</label><input class="fi" value="${r.cuisine||''}" id="opC"></div></div>
     <div class="form-row" style="margin-bottom:12px"><div class="fg"><label>Emoji Icon</label><input class="fi" value="${r.emoji}" id="opE" maxlength="4"></div><div class="fg"><label>Prep Time (mins)</label><input class="fi" type="number" value="${r.prep||15}" id="opP"></div></div>
     <div class="fg"><label>Address</label><input class="fi" value="${r.addr||''}" id="opA"></div>
-    <div style="padding:14px;background:var(--s-surf3);border:1px solid var(--s-border);margin-bottom:14px">
-      <div style="font-size:9px;color:var(--s-muted);margin-bottom:4px;letter-spacing:2px;text-transform:uppercase">Platform Commission</div>
-      <div style="font-family:var(--ff);font-size:28px;font-weight:900;color:var(--s-gold)">${r.comm||15}%</div>
-      <div style="font-size:11px;color:var(--s-muted);margin-top:3px">You earn <b style="color:var(--s-green)">${100-(r.comm||15)}%</b> of every order</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div style="padding:14px;background:var(--s-surf3);border:1px solid var(--s-border)">
+        <div style="font-size:9px;color:var(--s-muted);margin-bottom:4px;letter-spacing:2px;text-transform:uppercase">Platform Commission</div>
+        <div style="font-family:var(--ff);font-size:28px;font-weight:900;color:var(--s-gold)">${r.comm||0}%</div>
+        <div style="font-size:11px;color:var(--s-muted);margin-top:3px">You earn <b style="color:var(--s-green)">${100-(r.comm||0)}%</b> per order</div>
+      </div>
+      <div style="padding:14px;background:var(--s-surf3);border:1px solid var(--s-border)">
+        <div style="font-size:9px;color:var(--s-muted);margin-bottom:4px;letter-spacing:2px;text-transform:uppercase">VAT Rate</div>
+        <div style="font-family:var(--ff);font-size:28px;font-weight:900;color:var(--s-blue)">${r.vat||0}%</div>
+        <div class="fg" style="margin-top:8px;margin-bottom:0"><label style="color:var(--s-muted)">Adjust VAT %</label><input class="fi" type="number" value="${r.vat||0}" id="opVAT" min="0" max="50" step="0.5" style="margin-top:4px"></div>
+      </div>
     </div>
     <div style="padding:14px;background:var(--s-surf3);border:1px solid var(--s-border);margin-bottom:14px">
       <div style="font-size:9px;color:var(--s-muted);margin-bottom:4px;letter-spacing:2px;text-transform:uppercase">Subscription Expiry</div>
@@ -1680,8 +1900,17 @@ async function owProfile(){
     <button class="btn btn-gold" onclick="saveOwProfile()">Save Profile</button>`;
 }
 async function saveOwProfile(){
-  await fbUpdate('restaurants/'+restoId,{name:document.getElementById('opN').value.trim(),cuisine:document.getElementById('opC').value.trim(),emoji:document.getElementById('opE').value.trim(),prep:parseInt(document.getElementById('opP').value)||15,addr:document.getElementById('opA').value.trim()});
+  const vatV=parseFloat(document.getElementById('opVAT')?.value||'0');
+  await fbUpdate('restaurants/'+restoId,{
+    name:document.getElementById('opN').value.trim(),
+    cuisine:document.getElementById('opC').value.trim(),
+    emoji:document.getElementById('opE').value.trim(),
+    prep:parseInt(document.getElementById('opP').value)||15,
+    addr:document.getElementById('opA').value.trim(),
+    vat:isNaN(vatV)?0:Math.max(0,Math.min(50,vatV))
+  });
   notifyD('✓ Profile saved');
+  owProfile();
 }
 
 // Owner Chart
@@ -1782,15 +2011,53 @@ function printQR(){
   const qrHtml=document.getElementById('qrCodeEl').innerHTML;
   const url=document.getElementById('qrUrlTxt').textContent;
   const dur=document.getElementById('qrDurSel').value;
+  const tNum=curQRData.tNum;
   const w=window.open('','_blank');
-  w.document.write(`<html><head><meta charset="UTF-8"><title>QR - Table ${curQRData.tNum}</title><style>body{font-family:Georgia,serif;text-align:center;padding:50px 40px;background:#fff;color:#111;}.logo{font-size:28px;font-weight:900;letter-spacing:-1px;}.logo em{color:#b8821e;font-style:italic;}h2{font-size:18px;margin:10px 0 4px;}p{font-size:12px;color:#888;margin-bottom:16px;}.qr{background:#fff;padding:16px;display:inline-block;border:1px solid #eee;}.url{font-size:9px;color:#aaa;word-break:break-all;max-width:260px;margin:10px auto;}.info{font-size:11px;color:#888;border:1px dashed #ddd;padding:12px 18px;max-width:280px;margin:16px auto;line-height:1.8;}</style></head><body>
-    <div class="logo">EAT<em>LAOS</em></div>
-    <h2>Table ${curQRData.tNum}</h2>
-    <p>Scan to order · Session: ${dur}h</p>
-    <div class="qr">${qrHtml}</div>
-    <div class="url">${url}</div>
-    <div class="info">📱 Scan with phone camera<br>🍽️ Menu opens instantly<br>⏰ Session: ${dur} hours<br>No app download needed</div>
-    <script>window.onload=()=>window.print();<\/script></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR Table ${tNum}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    @page{size:80mm auto;margin:4mm;}
+    body{font-family:'Courier New',monospace;background:#fff;color:#111;width:72mm;margin:0 auto;}
+    .outer{border:2px solid #1a0e03;padding:0;overflow:hidden;}
+    .header{background:#1a0e03;color:#fff;padding:12px 14px;text-align:center;}
+    .header-logo{font-family:Georgia,serif;font-size:22px;font-weight:900;letter-spacing:-1px;}
+    .header-logo em{color:#d4a03c;font-style:italic;}
+    .header-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:4px;}
+    .table-label{background:#d4a03c;color:#000;text-align:center;padding:8px;font-size:22px;font-weight:900;font-family:Georgia,serif;letter-spacing:1px;}
+    .qr-area{background:#fff;text-align:center;padding:16px 12px 8px;}
+    .qr-area img,.qr-area canvas{display:block;margin:0 auto;}
+    .url-txt{font-size:7px;color:#aaa;word-break:break-all;text-align:center;padding:0 10px 8px;line-height:1.4;}
+    .divider{border:none;border-top:1px dashed #ccc;margin:0 10px;}
+    .info-section{padding:10px 14px;}
+    .info-row{display:flex;align-items:center;gap:8px;font-size:10px;color:#444;margin:3px 0;}
+    .info-icon{font-size:13px;width:18px;text-align:center;}
+    .footer{background:#1a0e03;color:rgba(255,255,255,.5);text-align:center;padding:8px;font-size:8px;letter-spacing:1px;}
+    .session-badge{display:inline-block;background:#f5f0e8;border:1px solid #d4a03c;color:#b8821e;font-size:9px;padding:3px 10px;letter-spacing:1px;margin-top:6px;font-weight:700;}
+    @media print{body{width:72mm;}.outer{border-width:1.5px;}}
+  </style>
+  </head><body>
+  <div class="outer">
+    <div class="header">
+      <div class="header-logo">EAT<em>LAOS</em></div>
+      <div class="header-sub">Restaurant Platform · Vientiane</div>
+    </div>
+    <div class="table-label">🪑 TABLE ${tNum}</div>
+    <div class="qr-area">
+      ${qrHtml}
+      <div class="session-badge">⏰ Session: ${dur} hours</div>
+    </div>
+    <div class="url-txt">${url}</div>
+    <hr class="divider">
+    <div class="info-section">
+      <div class="info-row"><span class="info-icon">📱</span><span>Point camera at QR code</span></div>
+      <div class="info-row"><span class="info-icon">🍽️</span><span>Menu opens instantly — no app needed</span></div>
+      <div class="info-row"><span class="info-icon">🛒</span><span>Order directly from your table</span></div>
+      <div class="info-row"><span class="info-icon">📋</span><span>Track your orders in real time</span></div>
+    </div>
+    <div class="footer">eatlaos.la · ©2026 EATLAOS</div>
+  </div>
+  <script>window.onload=()=>setTimeout(()=>window.print(),400);<\/script>
+  </body></html>`);
   w.document.close();
 }
 
@@ -1850,6 +2117,7 @@ function setupCustomerUI(r,sess){
   document.getElementById('cMenuCount').textContent=(r.menu||[]).filter(m=>m.status==='active').length;
   document.getElementById('cPrepTime').textContent=r.prep||15;
   document.getElementById('cSessLeft').textContent=(sess?.duration||2)+'h';
+  custVatRate=r.vat||0;
   renderCats(r);renderMenu('All',r);updateCart();
 }
 
@@ -1909,7 +2177,7 @@ function renderMenu(cat,r){
       ${item.badge==='new'?`<div class="c-badge c-badge-new">${tr('new_item')}</div>`:''}
       ${item.badge==='popular'?`<div class="c-badge c-badge-pop">★ ${tr('popular')}</div>`:''}
       ${item.badge==='sold'?`<div class="c-badge c-badge-sold">${tr('sold_out')}</div>`:''}
-      <div class="c-item-img">${item.emoji||'🍽️'}</div>
+      <div class="c-item-img">${item.img?`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover">`:item.emoji||'🍽️'}</div>
       <div class="c-item-body">
         <div class="c-item-cat">${item.cat||''}</div>
         <div class="c-item-name">${item.name}</div>
@@ -2036,18 +2304,60 @@ function cTab(tab){
   if(tab==='orders') renderCustOrders();
 }
 
+let custVatRate=0; // loaded from restaurant data
+
 function renderCustOrders(){
   const el=document.getElementById('cOrdersList');
   const orders=customerCachedOrders;
   if(!orders.length){
-    el.innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--c-muted)"><div style="font-size:52px;opacity:.3;margin-bottom:14px">📋</div><div style="font-family:var(--ff);font-size:20px;font-weight:900;color:var(--c-text);margin-bottom:6px">${tr('my_orders')}</div><div style="font-size:13px">${tr('start_order')}</div><button onclick="cTab('menu')" style="margin-top:18px;padding:11px 26px;background:var(--c-text);border:none;color:var(--c-bg);font-family:var(--ff);font-size:13px;font-weight:900;cursor:pointer;border-radius:6px">${tr('browse_menu')}</button></div>`;
+    el.innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--c-muted)">
+      <div style="font-size:52px;opacity:.3;margin-bottom:14px">📋</div>
+      <div style="font-family:var(--ff);font-size:20px;font-weight:900;color:var(--c-text);margin-bottom:6px">${tr('my_orders')}</div>
+      <div style="font-size:13px">${tr('start_order')}</div>
+      <button onclick="cTab('menu')" style="margin-top:18px;padding:11px 26px;background:var(--c-text);border:none;color:var(--c-bg);font-family:var(--ff);font-size:13px;font-weight:900;cursor:pointer;border-radius:6px">${tr('browse_menu')}</button>
+    </div>`;
     return;
   }
   const sessTotal=orders.reduce((s,o)=>s+(o.total||0),0);
-  const summary=`<div class="c-session-summary"><div><div class="c-summary-lbl">${tr('order_history')}</div><div style="font-size:12px;color:var(--c-muted)">${orders.length} order${orders.length>1?'s':''}</div></div><div style="text-align:right"><div class="c-summary-lbl">${tr('total')}</div><div class="c-summary-val">${fmtK(sessTotal)}</div></div></div>`;
-  el.innerHTML=summary+orders.map(o=>`
+  // All items flattened for "my full bill"
+  const allItems={};
+  orders.forEach(o=>o.items?.forEach(i=>{
+    const key=i.name;
+    if(allItems[key]) allItems[key].qty+=i.qty;
+    else allItems[key]={...i,qty:i.qty};
+  }));
+  const billItems=Object.values(allItems);
+  const billHtml=`
+  <div style="background:var(--c-surf);border:1.5px solid var(--c-border);border-radius:10px;overflow:hidden;margin-bottom:14px">
+    <div style="padding:14px 16px;background:var(--c-text);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-family:var(--ff);font-size:17px;font-weight:900;color:var(--c-bg)">📋 My Bill So Far</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px">${orders.length} order${orders.length>1?'s':''} · Table ${qrSess?.tNum||'?'}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:2px">TOTAL</div>
+        <div style="font-family:var(--ff);font-size:26px;font-weight:900;color:var(--c-gold2)">${fmtK(sessTotal)}</div>
+      </div>
+    </div>
+    <div style="padding:12px 16px">
+      ${billItems.map(i=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed var(--c-border)">
+          <span style="font-size:13px;color:var(--c-text)">${i.emoji||''} ${i.name} <span style="color:var(--c-muted)">×${i.qty}</span></span>
+          <span style="font-family:var(--ff);font-size:14px;font-weight:700;color:var(--c-text)">${fmtK(i.price*i.qty)}</span>
+        </div>`).join('')}
+      <div style="display:flex;justify-content:space-between;padding-top:10px;font-family:var(--ff);font-size:18px;font-weight:900;color:var(--c-text)">
+        <span>SUBTOTAL</span><span style="color:var(--c-text)">${fmtK(sessTotal)}</span>
+      </div>
+      ${custVatRate>0?`<div style="display:flex;justify-content:space-between;padding-top:4px;font-size:13px;color:var(--c-muted)"><span>VAT (${custVatRate}%)</span><span>${fmtK(Math.round(sessTotal*custVatRate/100))}</span></div><div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1.5px solid var(--c-border);margin-top:4px;font-family:var(--ff);font-size:20px;font-weight:900;color:var(--c-text)"><span>TOTAL (incl. VAT)</span><span style='color:var(--c-gold)'>${fmtK(Math.round(sessTotal*(1+custVatRate/100)))}</span></div>`:''}
+      <div style="font-size:10px;color:var(--c-muted);margin-top:4px;text-align:right">🔴 Live — updates automatically</div>
+    </div>
+  </div>`;
+  el.innerHTML=billHtml+`<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--c-muted);margin-bottom:8px;padding:0 2px">Order History</div>`+orders.map(o=>`
     <div class="c-ocard">
-      <div class="c-oc-h"><div><div class="c-oc-id">${o.id||''}</div><div class="c-oc-time">${o.time||''}</div></div><span class="spill sp-${o.status}">${tr('status_'+o.status)||o.status}</span></div>
+      <div class="c-oc-h">
+        <div><div class="c-oc-id">${o.id||''}</div><div class="c-oc-time">${o.time||''}</div></div>
+        <span class="spill sp-${o.status}">${tr('status_'+o.status)||o.status}</span>
+      </div>
       <div class="c-oc-b">
         ${o.items?.map(i=>`<div class="c-oc-row"><span>${i.emoji||''} ${i.name} ×${i.qty}</span><span style="font-weight:700">${fmtK(i.price*i.qty)}</span></div>`).join('')||''}
         <div class="c-oc-total"><span>${tr('total')}</span><span style="color:var(--c-gold)">${fmtK(o.total)}</span></div>
