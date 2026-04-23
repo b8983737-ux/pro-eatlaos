@@ -57,7 +57,7 @@ a { text-decoration: none; color: inherit; }
 ═══════════════════════════════════ */
 .page { display: none !important; }
 .page.on { display: block !important; }
-#pg-land.on, #pg-staff-login.on { display: flex !important; }
+#pg-land.on, #pg-staff-login.on, #pg-owner-login.on, #pg-sa-login.on { display: flex !important; }
 #pg-customer.on { display: flex !important; flex-direction: column; min-height: 100vh; }
 
 /* ═══════════════════════════════════
@@ -900,7 +900,7 @@ tr:hover td { background: rgba(255,255,255,.015); }
 </div>
 
 <!-- ═══════════════════ OWNER LOGIN (public) ═══════════════════ -->
-<div id="pg-owner-login" class="page">
+<div id="pg-owner-login" class="page" style="background:var(--s-bg);align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden;">
   <div class="sl-lines"></div>
   <div class="sl-wrap" style="grid-template-columns:240px 1fr">
     <div class="sl-left">
@@ -926,7 +926,7 @@ tr:hover td { background: rgba(255,255,255,.015); }
 </div>
 
 <!-- ═══════════════════ SUPER ADMIN LOGIN (secret - ?admin=eatlaos2026) ═══════════════════ -->
-<div id="pg-sa-login" class="page">
+<div id="pg-sa-login" class="page" style="background:var(--s-bg);align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden;">
   <div class="sl-lines"></div>
   <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);background:rgba(200,151,58,.1);border:1px solid rgba(200,151,58,.2);padding:6px 18px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-gold)">🔒 Restricted Access</div>
   <div class="sl-wrap" style="grid-template-columns:240px 1fr">
@@ -1007,7 +1007,14 @@ tr:hover td { background: rgba(255,255,255,.015); }
         <div class="panel" id="sa-settings">
           <div class="card"><div class="card-h"><div class="card-title">Platform Settings</div></div><div style="padding:20px">
             <div class="form-row" style="margin-bottom:12px"><div class="fg"><label>Platform Name</label><input class="fi" value="EATLAOS" id="setPName"></div><div class="fg"><label>Default Commission (%)</label><input class="fi" type="number" value="15" id="setComm" min="0" max="50"></div></div>
-            <div class="fg"><label>Session Duration (hours)</label><input class="fi" type="number" value="2" id="setSessH" min="1" max="12" style="max-width:160px"></div>
+            <div class="fg"><label>Default Session Duration</label>
+            <select class="fi" id="setSessH" style="max-width:240px">
+              <option value="1">1 hour</option>
+              <option value="2" selected>2 hours (recommended)</option>
+              <option value="4">4 hours</option>
+              <option value="8">8 hours</option>
+              <option value="24">1 day (24 hours)</option>
+            </select></div>
             <div class="fg"><label>Support Email</label><input class="fi" value="support@eatlaos.la"></div>
             <button class="btn btn-gold" onclick="saveSettings()">Save Settings</button>
           </div></div>
@@ -1179,18 +1186,40 @@ tr:hover td { background: rgba(255,255,255,.015); }
     <div class="modal-h"><div class="modal-title" id="mQRTitle">QR Code</div><button class="modal-x" onclick="closeModal('mQR')">✕</button></div>
     <div class="modal-b">
       <div style="font-size:11px;color:var(--s-muted);margin-bottom:14px" id="mQRSub">Scan to order from this table</div>
+
+      <!-- Session Duration Selector -->
+      <div style="background:var(--s-surf3);border:1px solid var(--s-border);padding:14px;margin-bottom:16px">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px">⏰ Session Duration</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select class="fi" id="qrDurSel" style="flex:1;min-width:150px">
+            <option value="1">1 hour</option>
+            <option value="2" selected>2 hours</option>
+            <option value="4">4 hours</option>
+            <option value="8">8 hours</option>
+            <option value="24">1 day (24 hours)</option>
+          </select>
+          <button class="btn btn-gold" onclick="generateQRSession()" style="padding:10px 18px;white-space:nowrap">▶ Start Session</button>
+        </div>
+        <div style="font-size:10px;color:var(--s-muted);margin-top:8px">Customer session will expire after selected duration</div>
+      </div>
+
+      <!-- Active session info -->
+      <div id="qrActiveSession" style="display:none;background:rgba(29,185,84,.08);border:1px solid rgba(29,185,84,.3);padding:12px;margin-bottom:14px;font-size:11px;color:var(--s-green)">
+        🟢 Active session running · <span id="qrSessTimeLeft"></span> remaining
+      </div>
+
       <div class="qr-box-wrap"><div id="qrCodeEl"></div></div>
       <div class="qr-url-text" id="qrUrlTxt"></div>
-      <div style="margin-top:18px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-gold" onclick="printQR()">🖨️ Print QR</button>
         <button class="btn" onclick="openQRLink()">📱 Open Link</button>
         <button class="btn" onclick="copyQRLink()">📋 Copy URL</button>
       </div>
-      <div style="margin-top:16px;padding:14px;background:var(--s-surf3);border:1px solid var(--s-border);font-size:11px;color:var(--s-muted);line-height:1.8;text-align:left">
+      <div style="margin-top:14px;padding:12px;background:var(--s-surf3);border:1px solid var(--s-border);font-size:11px;color:var(--s-muted);line-height:1.8;text-align:left">
         <b style="color:var(--s-text)">How it works:</b><br>
-        1. Print &amp; laminate — place on table<br>
-        2. Customer scans with phone camera<br>
-        3. Menu opens instantly — no app needed<br>
+        1. Choose session duration above → click <b style="color:var(--s-gold)">Start Session</b><br>
+        2. Print &amp; laminate the QR — place on table<br>
+        3. Customer scans → menu opens instantly<br>
         4. Session auto-expires after <b id="qrSessH" style="color:var(--s-gold)">2 hours</b>
       </div>
     </div>
@@ -1655,17 +1684,34 @@ function cTab(tab){
 
 function renderOrders(){
   const el=document.getElementById('cOrdersList');
+  // ✅ Always reload from localStorage so we get latest status updates
+  DB.orders = JSON.parse(localStorage.getItem(K.o)||'[]');
   const mine=DB.orders.filter(o=>o.sessId===qrSess?.id);
   if(!mine.length){
     el.innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--c-muted)">
       <div style="font-size:56px;margin-bottom:16px;opacity:.3">📋</div>
       <div style="font-family:var(--ff);font-size:22px;font-weight:900;color:var(--c-text);margin-bottom:6px">${tr('my_orders')}</div>
       <div style="font-size:13px">${tr('start_order')}</div>
+      <button onclick="cTab('menu')" style="margin-top:20px;padding:12px 28px;background:var(--c-text);border:none;color:var(--c-bg);font-family:var(--ff);font-size:14px;font-weight:900;cursor:pointer;border-radius:6px">${tr('browse_menu')} →</button>
     </div>`;return;
   }
-  el.innerHTML=mine.map(o=>`
+  const sessionTotal=mine.reduce((s,o)=>s+(o.total||0),0);
+  const summaryBar=`<div style="background:var(--c-surf2);border:1.5px solid var(--c-border);padding:14px 18px;margin-bottom:14px;border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--c-muted);margin-bottom:3px">${tr('order_history')}</div>
+      <div style="font-size:12px;color:var(--c-muted)">${mine.length} order${mine.length>1?'s':''}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--c-muted);margin-bottom:3px">${tr('total')}</div>
+      <div style="font-family:var(--ff);font-size:22px;font-weight:900;color:var(--c-gold)">${fmtK(sessionTotal)}</div>
+    </div>
+  </div>`;
+  el.innerHTML=summaryBar+mine.map(o=>`
     <div class="c-ocard">
-      <div class="c-oc-h"><div><div class="c-oc-id">${o.id}</div><div class="c-oc-time">${o.time}</div></div><span class="spill sp-${o.status}">${o.status}</span></div>
+      <div class="c-oc-h">
+        <div><div class="c-oc-id">${o.id}</div><div class="c-oc-time">${o.time}</div></div>
+        <span class="spill sp-${o.status}">${tr('status_'+o.status)||o.status}</span>
+      </div>
       <div class="c-oc-b">
         ${o.items.map(i=>`<div class="c-oc-row"><span>${i.emoji} ${i.name} ×${i.qty}</span><span style="font-weight:700">${fmtK(i.price*i.qty)}</span></div>`).join('')}
         <div class="c-oc-total"><span>${tr('total')}</span><span style="color:var(--c-gold)">${fmtK(o.total)}</span></div>
@@ -1768,9 +1814,48 @@ function placeOrder(){
     date:new Date().toLocaleDateString()
   };
   DB.orders.unshift(ord);save();
-  cart=[];updateCart();toggleCart();
-  notifyC('🎉 '+tr('order_sent'));
-  setTimeout(()=>cTab('orders'),700);
+  // ✅ FIX: Clear cart THEN close panel — customer can order again immediately
+  cart=[];
+  updateCart();
+  // Close cart panel
+  document.getElementById('cCartOv').classList.remove('open');
+  document.getElementById('cCartPanel').classList.remove('open');
+  // Show success overlay briefly then go back to menu
+  showOrderSuccess(ord.id, tot);
+}
+
+function showOrderSuccess(ordId, tot){
+  // Create success overlay
+  let overlay = document.getElementById('orderSuccessOverlay');
+  if(!overlay){
+    overlay = document.createElement('div');
+    overlay.id = 'orderSuccessOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,18,9,.92);z-index:800;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;backdrop-filter:blur(8px);animation:fadeIn .3s ease';
+    overlay.innerHTML = `
+      <div style="font-size:72px;margin-bottom:20px;animation:fadeUp .5s ease">🎉</div>
+      <div style="font-family:var(--ff);font-size:32px;font-weight:900;color:#fff;margin-bottom:8px" data-i18n="order_sent">${tr('order_sent')}</div>
+      <div style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:6px" id="osOrderId"></div>
+      <div style="font-family:var(--ff);font-size:28px;font-weight:900;color:var(--c-gold2);margin-bottom:32px" id="osTotal"></div>
+      <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:24px" data-i18n="preparing">${tr('preparing')}</div>
+      <button onclick="closeOrderSuccess()" style="padding:14px 36px;background:var(--c-gold);border:none;color:#000;font-family:var(--ff);font-size:15px;font-weight:900;cursor:pointer;border-radius:6px;letter-spacing:.5px">${tr('browse_menu')} →</button>
+      <button onclick="closeOrderSuccess('orders')" style="margin-top:10px;padding:10px 28px;background:none;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);font-family:var(--fb);font-size:13px;cursor:pointer;border-radius:6px">${tr('view_orders')}</button>
+    `;
+    document.body.appendChild(overlay);
+  } else {
+    overlay.style.display = 'flex';
+  }
+  document.getElementById('osOrderId').textContent = ordId;
+  document.getElementById('osTotal').textContent = fmtK(tot);
+}
+
+function closeOrderSuccess(tab){
+  const ov = document.getElementById('orderSuccessOverlay');
+  if(ov) ov.style.display = 'none';
+  if(tab === 'orders'){
+    cTab('orders');
+  } else {
+    cTab('menu');
+  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -1940,7 +2025,14 @@ function editResto(id){
 }
 function delResto(id){if(!confirm('Delete restaurant?')) return;DB.restos=DB.restos.filter(r=>r.id!==id);save();saRestos();saStats();notifyD('🗑 Deleted');}
 function approveResto(id){const r=DB.restos.find(x=>x.id===id);if(r){r.status='active';save();saRestos();saStats();notifyD('✓ Approved!');}}
-function saveSettings(){DB.cfg.commission=parseInt(document.getElementById('setComm').value)||15;DB.cfg.sessHours=parseInt(document.getElementById('setSessH').value)||2;save();notifyD('✓ Settings saved');}
+function saveSettings(){
+  DB.cfg.commission=parseInt(document.getElementById('setComm').value)||15;
+  DB.cfg.sessHours=parseInt(document.getElementById('setSessH').value)||2;
+  save();
+  // Update any visible session hour references
+  document.querySelectorAll('[id="owSessHours"]').forEach(el=>el.textContent=DB.cfg.sessHours+'h');
+  notifyD('✓ Settings saved');
+}
 function saveSaTable(){
   const rId=document.getElementById('mSaTableResto').value;
   const num=document.getElementById('mSaTnum').value.trim();
@@ -2045,7 +2137,7 @@ function owTables(){
         ${liveSess?`🟢 Active · ${cnt} orders`:'Available'}
       </div>
       <div class="tcard-actions">
-        <button class="btn btn-sm btn-gold" onclick="showQR('${r.id}','${t.id}')">📱 QR</button>
+        <button class="btn btn-sm btn-gold" onclick="showQRwithDuration('${r.id}','${t.id}')">📱 QR Code</button>
         <button class="btn btn-sm btn-red" onclick="delTable('${t.id}')">Del</button>
       </div>
     </div>`;
@@ -2141,22 +2233,106 @@ function owChartSwitch(type,btn){document.querySelectorAll('#ow-dashboard .ctab'
 // ═══════════════════════════════════════════════════
 // QR MODAL (Owner manages their own tables)
 // ═══════════════════════════════════════════════════
-function showQR(rId,tId){
+function showQR(rId,tId){ showQRwithDuration(rId,tId); }
+
+function showQRwithDuration(rId,tId){
   const r=DB.restos.find(x=>x.id===rId);
   const t=DB.tables.find(x=>x.id===tId);
   if(!r||!t) return;
   curQRData={rId,tId};
+  const defaultHours=DB.cfg.sessHours||2;
   const url=qrURL(rId,tId);
   document.getElementById('mQRTitle').textContent=`${r.emoji} ${r.name} — Table ${t.num}`;
-  document.getElementById('mQRSub').textContent=`${t.seats} seats · Session: ${DB.cfg.sessHours||2}h · Scan with phone camera`;
-  document.getElementById('qrSessH').textContent=(DB.cfg.sessHours||2)+'h';
+  document.getElementById('mQRSub').textContent=`${t.seats} seats · Scan with phone camera`;
+  document.getElementById('qrSessH').textContent=defaultHours+'h';
   document.getElementById('qrUrlTxt').textContent=url;
+  // Set duration selector to default
+  const durSel=document.getElementById('qrDurSel');
+  if(durSel) durSel.value=String(defaultHours);
   const el=document.getElementById('qrCodeEl');
   el.innerHTML='';
   new QRCode(el,{text:url,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+  // Check if there is already an active session for this table
+  const activeSess = DB.sessions.find(s=>s.tId===tId && Date.now()<s.exp);
+  const actEl = document.getElementById('qrActiveSession');
+  if(actEl){
+    if(activeSess){
+      actEl.style.display='block';
+      actEl.style.background='rgba(29,185,84,.08)';
+      updateQRModalTimer(activeSess.exp);
+    } else {
+      actEl.style.display='none';
+    }
+  }
   openModal('mQR');
 }
 function openQRLink(){if(!curQRData) return;window.open(qrURL(curQRData.rId,curQRData.tId),'_blank');}
+
+function generateQRSession(){
+  if(!curQRData) return;
+  const durSel = document.getElementById('qrDurSel');
+  const hours = parseInt(durSel?.value||'2');
+  const rId = curQRData.rId;
+  const tId = curQRData.tId;
+  const r = DB.restos.find(x=>x.id===rId);
+  const t = DB.tables.find(x=>x.id===tId);
+  if(!r||!t) return;
+
+  // End any existing active session for this table
+  DB.sessions.forEach(s=>{
+    if(s.tId===tId && Date.now()<s.exp) s.exp=Date.now()-1;
+  });
+
+  // Create new session with chosen duration
+  const now = Date.now();
+  const exp = now + (hours * 3600000);
+  const newSess = {
+    id:'S-'+Date.now().toString(36).toUpperCase(),
+    rId, tId,
+    start: now,
+    exp: exp,
+    orders: []
+  };
+  DB.sessions.push(newSess);
+  save();
+
+  // Update modal
+  document.getElementById('qrSessH').textContent = hours+'h';
+  const durLabel = hours===24?'1 day':hours+'h';
+  document.getElementById('mQRSub').textContent = `${t.seats} seats · Session: ${durLabel} · Scan with phone camera`;
+
+  // Show active session info
+  const actEl = document.getElementById('qrActiveSession');
+  if(actEl){
+    actEl.style.display='block';
+    updateQRModalTimer(exp);
+  }
+
+  notifyD(`✓ Session started — ${durLabel} for Table ${t.num}`);
+
+  // Refresh tables view
+  if(document.getElementById('ow-tables')?.classList.contains('on')) owTables();
+  if(document.getElementById('sa-sessions')?.classList.contains('on')) renderSASessions();
+}
+
+let qrModalTimerInt = null;
+function updateQRModalTimer(exp){
+  if(qrModalTimerInt) clearInterval(qrModalTimerInt);
+  qrModalTimerInt = setInterval(()=>{
+    const rem = exp - Date.now();
+    const el = document.getElementById('qrSessTimeLeft');
+    if(!el){ clearInterval(qrModalTimerInt); return; }
+    if(rem<=0){
+      el.textContent='Expired';
+      const actEl=document.getElementById('qrActiveSession');
+      if(actEl) actEl.style.background='rgba(229,72,77,.08)';
+      clearInterval(qrModalTimerInt);
+      return;
+    }
+    const h=Math.floor(rem/3600000),m=Math.floor((rem%3600000)/60000),s=Math.floor((rem%60000)/1000);
+    el.textContent=`${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+  },1000);
+}
 function copyQRLink(){if(!curQRData) return;navigator.clipboard.writeText(qrURL(curQRData.rId,curQRData.tId)).then(()=>notifyD('✓ URL copied to clipboard'));}
 function printQR(){
   const el=document.getElementById('qrCodeEl').innerHTML;
@@ -2243,18 +2419,36 @@ function toggleSound(){soundOn=!soundOn;['saSound','owSound'].forEach(id=>{const
 function playSound(){if(!soundOn) return;try{const ac=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0,ac.currentTime+i*.15);g.gain.linearRampToValueAtTime(.2,ac.currentTime+i*.15+.06);g.gain.linearRampToValueAtTime(0,ac.currentTime+i*.15+.28);o.start(ac.currentTime+i*.15);o.stop(ac.currentTime+i*.15+.32);});}catch(e){}}
 
 function startPoll(){
+  // Poll every 2 seconds for faster order notification
   setInterval(()=>{
-    const s=JSON.parse(localStorage.getItem(K.o)||'[]');
-    if(s.length>lastOrdCnt){
-      const n=s.length-lastOrdCnt;lastOrdCnt=s.length;DB.orders=s;
-      playSound();
-      const b=document.getElementById('newOrdBar');
-      b.textContent=`🔔 ${n} new order${n>1?'s':''} received!`;
-      b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000);
-      if(me?.role==='superadmin'){saStats();saRecent();}
-      if(me?.role==='owner'){owStats();owRecent();}
-    }
-  },3000);
+    try {
+      const stored=localStorage.getItem(K.o);
+      if(!stored) return;
+      const s=JSON.parse(stored);
+      if(!Array.isArray(s)) return;
+      if(s.length>lastOrdCnt){
+        const n=s.length-lastOrdCnt;
+        lastOrdCnt=s.length;
+        DB.orders=s;
+        playSound();
+        const b=document.getElementById('newOrdBar');
+        b.textContent=`🔔 ${n} new order${n>1?'s':''} received!`;
+        b.classList.add('show');
+        setTimeout(()=>b.classList.remove('show'),5000);
+        // Refresh whichever panel is open
+        if(me?.role==='superadmin'){
+          saStats();saRecent();
+          if(document.getElementById('sa-orders')?.classList.contains('on')) saOrders();
+          if(document.getElementById('sa-sessions')?.classList.contains('on')) renderSASessions();
+        }
+        if(me?.role==='owner'){
+          owStats();
+          if(document.getElementById('ow-dashboard')?.classList.contains('on')) owRecent();
+          if(document.getElementById('ow-orders')?.classList.contains('on')) renderOwOrders();
+        }
+      }
+    } catch(e){ console.warn('Poll error:',e); }
+  },2000);
 }
 
 // ═══════════════════════════════════════════════════
