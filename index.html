@@ -435,6 +435,36 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .new-ord-bar{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--s-green);color:#000;padding:11px 22px;z-index:950;font-family:var(--ff);font-size:13px;font-weight:900;display:flex;align-items:center;gap:8px;transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s ease;opacity:0;border-radius:4px;box-shadow:0 4px 20px rgba(29,185,84,.35);cursor:pointer;}
 .new-ord-bar.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .firebase-status{position:fixed;bottom:16px;left:16px;font-size:10px;color:var(--s-muted);display:flex;align-items:center;gap:6px;z-index:50;}
+
+/* ═══ EMOJI PICKER DROPDOWN ═══ */
+.ep-wrap{position:relative;}
+.ep-trigger{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--s-surf3);border:1px solid var(--s-border);cursor:pointer;transition:all .2s;width:100%;}
+.ep-trigger:hover{border-color:var(--s-gold);}
+.ep-preview{width:44px;height:44px;background:var(--s-surf2);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;font-size:26px;border-radius:4px;overflow:hidden;flex-shrink:0;}
+.ep-preview img{width:100%;height:100%;object-fit:cover;}
+.ep-trigger-label{flex:1;text-align:left;}
+.ep-trigger-title{font-size:13px;font-weight:500;}
+.ep-trigger-sub{font-size:10px;color:var(--s-muted);margin-top:2px;}
+.ep-arrow{font-size:11px;color:var(--s-muted);}
+.ep-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--s-surf2);border:1px solid var(--s-border);z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:fadeUp .2s ease;}
+.ep-dropdown.open{display:block;}
+.ep-tabs{display:flex;border-bottom:1px solid var(--s-border);}
+.ep-tab{flex:1;padding:8px;background:none;border:none;color:var(--s-muted);font-size:11px;letter-spacing:.5px;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;}
+.ep-tab.on{color:var(--s-gold);border-bottom-color:var(--s-gold);}
+.ep-tab-content{display:none;padding:12px;}
+.ep-tab-content.on{display:block;}
+.ep-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:160px;overflow-y:auto;}
+.ep-grid::-webkit-scrollbar{width:3px;}
+.ep-grid::-webkit-scrollbar-thumb{background:var(--s-border);}
+.ep-emoji-btn{width:34px;height:34px;background:none;border:1px solid transparent;font-size:20px;cursor:pointer;border-radius:4px;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.ep-emoji-btn:hover{background:var(--s-gold-bg);border-color:var(--s-gold);}
+.ep-emoji-btn.sel{background:var(--s-gold-bg);border-color:var(--s-gold);}
+.ep-upload-area{border:1.5px dashed var(--s-border);padding:16px;text-align:center;cursor:pointer;transition:all .2s;border-radius:4px;}
+.ep-upload-area:hover{border-color:var(--s-gold);background:var(--s-gold-bg);}
+.ep-upload-icon{font-size:28px;margin-bottom:6px;}
+.ep-upload-label{font-size:12px;color:var(--s-muted);}
+.ep-img-preview{width:80px;height:80px;border-radius:6px;object-fit:cover;border:1.5px solid var(--s-gold);margin:0 auto 8px;display:block;}
+.ep-img-actions{display:flex;gap:6px;justify-content:center;}
 .fb-dot{width:6px;height:6px;border-radius:50%;background:var(--s-muted);}
 .fb-dot.connected{background:var(--s-green);}
 
@@ -712,13 +742,16 @@ tr:hover td{background:rgba(255,255,255,.015);}
   </div>
   <div class="order-success-ov" id="orderSuccessOv">
     <div class="os-icon">🎉</div>
-    <div class="os-title" data-i18n="order_sent">Order Sent!</div>
+    <div class="os-title" data-i18n="order_sent">Order Sent to Kitchen!</div>
     <div class="os-sub" data-i18n="preparing">Kitchen is preparing your order</div>
     <div class="os-total" id="osTot"></div>
     <div class="os-order-id" id="osOrdId"></div>
+    <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:24px;letter-spacing:.5px">
+      You can order more items anytime during your session
+    </div>
     <div class="os-btns">
-      <button class="os-btn-primary" onclick="closeOrderSuccess()" data-i18n="browse_menu">+ Add More Items</button>
-      <button class="os-btn-secondary" onclick="closeOrderSuccess('orders')" data-i18n="view_orders">View My Orders</button>
+      <button class="os-btn-primary" onclick="closeOrderSuccess()" data-i18n="browse_menu">🍽️ Order More Items</button>
+      <button class="os-btn-secondary" onclick="closeOrderSuccess('orders')" data-i18n="view_orders">📋 View My Bill</button>
     </div>
   </div>
 </div>
@@ -823,21 +856,38 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="fg"><label>Description (ไทย)</label><input class="fi" id="mIdescTh" placeholder="คำอธิบาย..."></div>
       <div class="fg">
         <label>Item Image / Emoji</label>
-        <div style="display:flex;gap:10px;margin-top:6px;align-items:flex-start">
-          <div id="mIimgPreview" style="width:64px;height:64px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;border-radius:4px;overflow:hidden">🍽️</div>
-          <div style="flex:1">
-            <input type="hidden" id="mIimgData">
-            <input type="file" id="mIimgFile" accept="image/*" style="display:none" onchange="previewItemImg(this)">
-            <button type="button" class="btn btn-sm" onclick="document.getElementById('mIimgFile').click()" style="width:100%;margin-bottom:5px">📷 Upload Photo</button>
-            <button type="button" class="btn btn-sm" onclick="clearItemImg()" style="width:100%;margin-bottom:8px">✕ Remove Photo</button>
-            <div style="font-size:9px;color:var(--s-muted);margin-bottom:6px;letter-spacing:1px">OR CHOOSE EMOJI:</div>
-            <div id="emojiPicker" style="display:flex;flex-wrap:wrap;gap:4px;max-height:100px;overflow-y:auto">
-              ${['🍽️','🫕','🍲','🍜','🍛','🍣','🍱','🥘','🍝','🍗','🍖','🥩','🍔','🍟','🌮','🌯','🥙','🥗','🥚','🍳','🥞','🧇','🥓','🧆','🫔','🍤','🦐','🦞','🦀','🦑','🐟','🥩','🍕','🥪','🧀','🥨','🥐','🍞','🥖','🧁','🎂','🍰','🍩','🍪','🍫','🍬','🍭','🍮','🍯','🫖','☕','🍵','🧋','🥤','🧃','🍺','🍻','🥂','🍷','🍸','🍹','🫗'].map(e=>
-              `<button type="button" onclick="pickEmoji('${e}')" style="width:32px;height:32px;background:none;border:1px solid var(--s-border);font-size:18px;cursor:pointer;border-radius:3px;transition:background .15s" onmouseover="this.style.background='var(--s-gold-bg)'" onmouseout="this.style.background='none'">${e}</button>`).join('')}
+        <input type="hidden" id="mIemoji" value="🍽️">
+        <input type="hidden" id="mIimgData">
+        <input type="file" id="mIimgFile" accept="image/*" style="display:none" onchange="previewItemImg(this)">
+        <div class="ep-wrap" id="itemEpWrap">
+          <div class="ep-trigger" onclick="toggleEP('itemEP')">
+            <div class="ep-preview" id="mIimgPreview">🍽️</div>
+            <div class="ep-trigger-label"><div class="ep-trigger-title">Choose Emoji or Upload Photo</div><div class="ep-trigger-sub">Click to open picker</div></div>
+            <span class="ep-arrow">▼</span>
+          </div>
+          <div class="ep-dropdown" id="itemEP">
+            <div class="ep-tabs">
+              <button class="ep-tab on" onclick="epTab('itemEP','food',this)">🍽️ Food</button>
+              <button class="ep-tab" onclick="epTab('itemEP','drink',this)">🥤 Drinks</button>
+              <button class="ep-tab" onclick="epTab('itemEP','other',this)">🎯 Other</button>
+              <button class="ep-tab" onclick="epTab('itemEP','photo',this)">📷 Photo</button>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
-              <span style="font-size:9px;color:var(--s-muted)">CUSTOM:</span>
-              <input class="fi" id="mIemoji" placeholder="🍽️" maxlength="4" style="width:80px;padding:6px 8px" oninput="syncEmojiPreview()">
+            <div class="ep-tab-content on" id="itemEP-food">
+              <div class="ep-grid" id="itemEP-food-grid"></div>
+            </div>
+            <div class="ep-tab-content" id="itemEP-drink">
+              <div class="ep-grid" id="itemEP-drink-grid"></div>
+            </div>
+            <div class="ep-tab-content" id="itemEP-other">
+              <div class="ep-grid" id="itemEP-other-grid"></div>
+            </div>
+            <div class="ep-tab-content" id="itemEP-photo">
+              <div id="itemEP-photo-inner">
+                <div class="ep-upload-area" onclick="document.getElementById('mIimgFile').click()">
+                  <div class="ep-upload-icon">📷</div>
+                  <div class="ep-upload-label">Click to upload photo<br><span style="font-size:10px;color:var(--s-muted2)">PNG, JPG, WEBP · Max 2MB</span></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1001,6 +1051,7 @@ async function init(){
     showPage('pg-land');
   }
   document.getElementById('loadingScreen').style.display='none';
+  initEmojiPickers();
 }
 
 function restoreSA(){
@@ -1465,6 +1516,10 @@ async function editResto(id){
   document.getElementById('mRstatus').value=r.status||'active';
   document.getElementById('mRprep').value=r.prep||15;
   document.getElementById('mRvat').value=r.vat||0;
+  // Restore emoji preview
+  document.getElementById('mRemoji').value=r.emoji||'🍽️';
+  const rEmojiPrev=document.getElementById('mRemojiPreview');
+  if(rEmojiPrev){rEmojiPrev.textContent=r.emoji||'🍽️';rEmojiPrev.style.fontSize='26px';}
   document.getElementById('mRlogoData').value=r.logo||'';
   const prev=document.getElementById('logoPreview');
   if(r.logo) prev.innerHTML=`<img src="${r.logo}" style="width:100%;height:100%;object-fit:cover">`;
@@ -1689,21 +1744,89 @@ async function printBill(sessKey){
   const sessOrders=cachedOrders.filter(o=>o.sessId===sessKey);
   const total=sessOrders.reduce((s,o)=>s+(o.total||0),0);
   const r=await fbGet('restaurants/'+restoId);
+  const vatRate=r?.vat||0;
+  const vatAmt=Math.round(total*(vatRate/100));
+  const grandTotal=Math.round(total+vatAmt);
+  // Merge all items across orders
+  const allItems={};
+  sessOrders.forEach(o=>o.items?.forEach(i=>{
+    const k=i.name;
+    if(allItems[k]) allItems[k].qty+=i.qty;
+    else allItems[k]={...i,qty:i.qty};
+  }));
+  const mergedItems=Object.values(allItems);
+  const now=new Date();
+  const logoHtml = r?.logo
+    ? `<img src="${r.logo}" style="width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid #d4a03c;display:block;margin:0 auto 8px">`
+    : `<div style="font-size:52px;text-align:center;margin-bottom:6px">${r?.emoji||'🍽️'}</div>`;
   const w=window.open('','_blank');
-  w.document.write(`<html><head><title>Bill - Table ${sess?.tNum}</title><style>body{font-family:'Courier New',monospace;padding:30px;max-width:300px;margin:0 auto;color:#111}h2{text-align:center;font-size:18px;letter-spacing:3px}.div{border-top:1px dashed #999;margin:8px 0}.row{display:flex;justify-content:space-between;font-size:12px;margin:3px 0}.total{display:flex;justify-content:space-between;font-size:15px;font-weight:900}.footer{text-align:center;font-size:10px;margin-top:14px;color:#777}</style></head><body>
-    <h2>${r?.name||'Restaurant'}</h2>
-    <div style="text-align:center;font-size:11px;margin-bottom:10px">${r?.addr||'Vientiane'}</div>
-    <div class="div"></div>
-    <div class="row"><span>Table:</span><span><b>T${sess?.tNum||'?'}</b></span></div>
-    <div class="row"><span>Date:</span><span>${new Date().toLocaleDateString()}</span></div>
-    <div class="div"></div>
-    ${sessOrders.map(o=>o.items?.map(i=>`<div class="row"><span>${i.emoji||''} ${i.name} ×${i.qty}</span><span>₭${Math.round(i.price*i.qty).toLocaleString()}</span></div>`).join('')).join('')}
-    <div class="div"></div>
-    ${r?.vat>0?`<div class="row"><span>Subtotal</span><span>₭${Math.round(total).toLocaleString()}</span></div><div class="row"><span>VAT (${r.vat}%)</span><span>₭${Math.round(total*(r.vat/100)).toLocaleString()}</span></div><div class="div"></div>`:''}
-    <div class="total"><span>TOTAL</span><span>₭${Math.round(total*(1+(r?.vat||0)/100)).toLocaleString()}</span></div>
-    ${r?.vat>0?`<div style="text-align:center;font-size:9px;color:#888;margin-top:4px">VAT included: ₭${Math.round(total*(r.vat/100)).toLocaleString()}</div>`:''}
-    <div class="footer">ຂອບໃຈ · Thank you · ขอบคุณ 🙏<br>eatlaos.la</div>
-    <script>window.onload=()=>window.print();<\/script></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bill · T${sess?.tNum}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    @page{size:80mm auto;margin:4mm;}
+    body{font-family:'Courier New',monospace;background:#fff;color:#111;width:72mm;margin:0 auto;}
+    .outer{border:1px solid #1a0e03;overflow:hidden;}
+    /* HEADER with logo */
+    .bill-header{background:#1a0e03;padding:16px 14px 12px;text-align:center;}
+    .bill-logo-img{width:60px;height:60px;object-fit:cover;border-radius:50%;border:2px solid #d4a03c;display:block;margin:0 auto 8px;}
+    .bill-logo-emoji{font-size:44px;display:block;text-align:center;margin-bottom:6px;}
+    .bill-rname{font-family:Georgia,serif;font-size:18px;font-weight:900;color:#fff;letter-spacing:1px;}
+    .bill-addr{font-size:9px;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.5px;}
+    /* TABLE BADGE */
+    .table-badge{background:#d4a03c;color:#000;text-align:center;padding:6px;font-size:16px;font-weight:900;font-family:Georgia,serif;letter-spacing:2px;}
+    /* META */
+    .meta-section{padding:8px 12px;border-bottom:1px dashed #ccc;}
+    .meta-row{display:flex;justify-content:space-between;font-size:10px;color:#555;margin:2px 0;}
+    /* ITEMS */
+    .items-section{padding:8px 12px;}
+    .item-row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px dotted #eee;}
+    .item-row:last-child{border:none;}
+    .item-name{flex:1;padding-right:8px;}
+    .item-qty{color:#888;font-size:10px;}
+    .item-price{font-weight:700;white-space:nowrap;}
+    /* TOTALS */
+    .totals-section{padding:8px 12px;border-top:1px dashed #ccc;}
+    .subtotal-row{display:flex;justify-content:space-between;font-size:11px;color:#666;margin:2px 0;}
+    .vat-row{display:flex;justify-content:space-between;font-size:11px;color:#888;margin:2px 0;}
+    .total-row{display:flex;justify-content:space-between;font-size:16px;font-weight:900;margin-top:8px;padding-top:8px;border-top:2px solid #1a0e03;}
+    .vat-note{text-align:center;font-size:9px;color:#aaa;margin-top:4px;}
+    /* FOOTER */
+    .bill-footer{background:#1a0e03;color:rgba(255,255,255,.5);text-align:center;padding:10px;font-size:9px;letter-spacing:.5px;line-height:1.8;}
+    .bill-footer .thanks{color:#d4a03c;font-size:13px;font-weight:900;display:block;margin-bottom:4px;}
+    @media print{body{width:72mm;}.outer{border:none;}}
+  </style></head><body>
+  <div class="outer">
+    <div class="bill-header">
+      ${r?.logo?`<img src="${r.logo}" class="bill-logo-img">`:`<span class="bill-logo-emoji">${r?.emoji||'🍽️'}</span>`}
+      <div class="bill-rname">${r?.name||'Restaurant'}</div>
+      <div class="bill-addr">${r?.addr||'Vientiane, Laos'}</div>
+    </div>
+    <div class="table-badge">🪑 TABLE ${sess?.tNum||'?'}</div>
+    <div class="meta-section">
+      <div class="meta-row"><span>Date</span><span>${now.toLocaleDateString()}</span></div>
+      <div class="meta-row"><span>Time</span><span>${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</span></div>
+      <div class="meta-row"><span>Orders</span><span>${sessOrders.length}</span></div>
+    </div>
+    <div class="items-section">
+      ${mergedItems.map(i=>`<div class="item-row">
+        <span class="item-name">${i.emoji||''} ${i.name}</span>
+        <span class="item-qty">×${i.qty}</span>
+        <span class="item-price">₭${Math.round(i.price*i.qty).toLocaleString()}</span>
+      </div>`).join('')}
+    </div>
+    <div class="totals-section">
+      ${vatRate>0?`<div class="subtotal-row"><span>Subtotal</span><span>₭${Math.round(total).toLocaleString()}</span></div>
+      <div class="vat-row"><span>VAT (${vatRate}%)</span><span>₭${vatAmt.toLocaleString()}</span></div>`:''}
+      <div class="total-row"><span>TOTAL</span><span>₭${grandTotal.toLocaleString()}</span></div>
+      ${vatRate>0?`<div class="vat-note">VAT included: ₭${vatAmt.toLocaleString()}</div>`:''}
+    </div>
+    <div class="bill-footer">
+      <span class="thanks">ຂອບໃຈ · ขอบคุณ · Thank You 🙏</span>
+      eatlaos.la · Platform by EATLAOS
+    </div>
+  </div>
+  <script>window.onload=()=>setTimeout(()=>window.print(),500);<\/script>
+  </body></html>`);
   w.document.close();
 }
 
@@ -1773,6 +1896,109 @@ async function owTables(){
 }
 
 // Owner Item CRUD
+// ═══ EMOJI PICKER SYSTEM ═══
+const EP_EMOJIS = {
+  food:['🍽️','🫕','🍲','🍜','🍛','🍣','🍱','🥘','🍝','🍗','🍖','🥩','🍔','🍟','🌮','🌯','🥙','🥗','🥚','🍳','🥞','🧇','🥓','🧆','🫔','🍤','🦐','🦞','🦀','🦑','🐟','🍕','🥪','🧀','🥨','🥐','🍞','🥖','🍰','🎂','🧁','🍩','🍪','🍫','🍬','🫕','🥜','🌽','🥦','🧅','🥕','🍅','🥑','🍋','🍊','🍇','🍓','🍑','🍍','🥭'],
+  drink:['🥤','🧋','🍵','☕','🫖','🧃','🍺','🍻','🥂','🍷','🍸','🍹','🫗','🍶','🥛','🧉','🍾'],
+  other:['⭐','🔥','✨','💎','👑','🎯','🎪','🎭','🎨','🏆','💫','🌟','❤️','💚','💛','🧡','💜','🤍'],
+  icons:['🏪','🍽️','🫕','🍔','🍕','🌮','🍣','🍜','🥘','🍛','🥗','🍗','🥩','🧆','🍤','🦐','🍱','🥙','🌯','🫔','🥞','🧇','🍳','🎂','🧁','☕','🥤','🍵','🫖','🍺','🍹']
+};
+
+let currentEPTarget=null; // which picker is open
+
+function initEmojiPickers(){
+  // Item picker
+  renderEPGrid('itemEP-food-grid', EP_EMOJIS.food, 'item');
+  renderEPGrid('itemEP-drink-grid', EP_EMOJIS.drink, 'item');
+  renderEPGrid('itemEP-other-grid', EP_EMOJIS.other, 'item');
+  // Restaurant picker
+  renderEPGrid('restoEP-icons-grid', EP_EMOJIS.icons, 'resto');
+  renderEPGrid('restoEP-food-grid', EP_EMOJIS.food, 'resto');
+}
+
+function renderEPGrid(gridId, emojis, target){
+  const el=document.getElementById(gridId);
+  if(!el) return;
+  el.innerHTML=emojis.map(e=>`<button type="button" class="ep-emoji-btn" onclick="selectEmoji('${e}','${target}')" title="${e}">${e}</button>`).join('');
+}
+
+function toggleEP(id){
+  // Close all others first
+  document.querySelectorAll('.ep-dropdown').forEach(d=>{if(d.id!==id) d.classList.remove('open');});
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+function epTab(pickerID, tabName, btn){
+  const picker=document.getElementById(pickerID);
+  if(!picker) return;
+  picker.querySelectorAll('.ep-tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  picker.querySelectorAll('.ep-tab-content').forEach(c=>c.classList.remove('on'));
+  document.getElementById(pickerID+'-'+tabName)?.classList.add('on');
+}
+
+function selectEmoji(e, target){
+  if(target==='item'){
+    document.getElementById('mIemoji').value=e;
+    document.getElementById('mIimgData').value='';
+    const prev=document.getElementById('mIimgPreview');
+    prev.textContent=e;prev.style.fontSize='26px';
+    // Highlight selected
+    document.querySelectorAll('#itemEP .ep-emoji-btn').forEach(b=>{b.classList.toggle('sel',b.textContent===e);});
+    closeAllEP();
+  } else if(target==='resto'){
+    document.getElementById('mRemoji').value=e;
+    const prev=document.getElementById('mRemojiPreview');
+    if(prev){prev.textContent=e;prev.style.fontSize='26px';}
+    document.querySelectorAll('#restoEP .ep-emoji-btn').forEach(b=>{b.classList.toggle('sel',b.textContent===e);});
+    closeAllEP();
+  }
+}
+
+function closeAllEP(){
+  document.querySelectorAll('.ep-dropdown').forEach(d=>d.classList.remove('open'));
+}
+
+// Close pickers when clicking outside
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ep-wrap')) closeAllEP();
+});
+
+function previewItemImg(input){
+  if(!input.files||!input.files[0]) return;
+  const file=input.files[0];
+  if(file.size>2*1024*1024){notifyD('⚠ Max 2MB');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const data=ev.target.result;
+    document.getElementById('mIimgData').value=data;
+    const prev=document.getElementById('mIimgPreview');
+    prev.innerHTML=`<img src="${data}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
+    prev.style.fontSize='';
+    // Update photo tab preview
+    const photoInner=document.getElementById('itemEP-photo-inner');
+    if(photoInner) photoInner.innerHTML=`
+      <div style="text-align:center">
+        <img src="${data}" class="ep-img-preview">
+        <div class="ep-img-actions">
+          <button type="button" class="btn btn-sm btn-gold" onclick="document.getElementById('mIimgFile').click()">Change</button>
+          <button type="button" class="btn btn-sm btn-red" onclick="clearItemImg()">Remove</button>
+        </div>
+      </div>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearItemImg(){
+  document.getElementById('mIimgData').value='';
+  const e=document.getElementById('mIemoji').value||'🍽️';
+  const prev=document.getElementById('mIimgPreview');
+  prev.textContent=e;prev.style.fontSize='26px';
+  const fi=document.getElementById('mIimgFile');if(fi) fi.value='';
+  const photoInner=document.getElementById('itemEP-photo-inner');
+  if(photoInner) photoInner.innerHTML=`<div class="ep-upload-area" onclick="document.getElementById('mIimgFile').click()"><div class="ep-upload-icon">📷</div><div class="ep-upload-label">Click to upload photo<br><span style="font-size:10px;color:var(--s-muted2)">PNG, JPG, WEBP · Max 2MB</span></div></div>`;
+}
+
 function openOwItemModal(){
   editItemId=null;document.getElementById('mOwItemTitle').textContent='Add Menu Item';
   ['mOwItemId','mIname','mIdesc','mIdescLo','mIdescTh','mIprice'].forEach(id=>document.getElementById(id).value='');
@@ -1780,37 +2006,11 @@ function openOwItemModal(){
   document.getElementById('mIbadge').value='';
   document.getElementById('mIstatus').value='active';
   document.getElementById('mIimgData').value='';
-  document.getElementById('mIimgPreview').textContent='🍽️';
-  const fi=document.getElementById('mIimgFile');if(fi) fi.value='';
+  const prev=document.getElementById('mIimgPreview');
+  prev.textContent='🍽️';prev.style.fontSize='26px';
+  clearItemImg();
   popCatSel();openModal('mOwItem');
-}
-
-function pickEmoji(e){
-  document.getElementById('mIemoji').value=e;
-  const imgData=document.getElementById('mIimgData').value;
-  if(!imgData) document.getElementById('mIimgPreview').textContent=e;
-}
-function syncEmojiPreview(){
-  const e=document.getElementById('mIemoji').value||'🍽️';
-  const imgData=document.getElementById('mIimgData').value;
-  if(!imgData) document.getElementById('mIimgPreview').textContent=e;
-}
-function previewItemImg(input){
-  if(!input.files||!input.files[0]) return;
-  const file=input.files[0];
-  if(file.size>2*1024*1024){notifyD('⚠ Max 2MB');return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    document.getElementById('mIimgData').value=e.target.result;
-    document.getElementById('mIimgPreview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
-  };
-  reader.readAsDataURL(file);
-}
-function clearItemImg(){
-  document.getElementById('mIimgData').value='';
-  const e=document.getElementById('mIemoji').value||'🍽️';
-  document.getElementById('mIimgPreview').textContent=e;
-  const fi=document.getElementById('mIimgFile');if(fi) fi.value='';
+  closeAllEP();
 }
 async function editOwItem(idx){
   const r=await fbGet('restaurants/'+restoId);
@@ -2278,11 +2478,16 @@ async function placeOrder(){
     document.getElementById('osTot').textContent=fmtK(tot);
     document.getElementById('osOrdId').textContent=ordId;
     document.getElementById('orderSuccessOv').classList.add('show');
-    // Clear cart
+    // Clear cart so customer can order again
     cart=[];updateCart();
-    // Close cart
+    // Close cart panel
     document.getElementById('cCartOv').classList.remove('open');
     document.getElementById('cCartPanel').classList.remove('open');
+    // Auto-dismiss after 5 seconds — customer can keep ordering
+    clearTimeout(window._successTimer);
+    window._successTimer=setTimeout(()=>{
+      closeOrderSuccess();
+    }, 5000);
   } catch(e){
     notifyC('❌ Failed to send order. Check connection.');
     console.error(e);
@@ -2292,8 +2497,18 @@ async function placeOrder(){
 
 function closeOrderSuccess(tab){
   document.getElementById('orderSuccessOv').classList.remove('show');
-  if(tab==='orders') cTab('orders');
-  else cTab('menu');
+  if(tab==='orders'){
+    cTab('orders');
+  } else {
+    // Go back to menu so customer can order MORE items
+    cTab('menu');
+    // Make sure category tabs & menu are re-rendered
+    loadRestoForCustomer().then(r=>{
+      if(r){renderCats(r);renderMenu(curCat,r);}
+    });
+    // Scroll to top of menu
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 }
 
 function cTab(tab){
