@@ -569,14 +569,18 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="topbar"><div class="topbar-title" id="saTbar">Dashboard</div><div class="topbar-r"><button class="btn btn-gold" onclick="openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="sa-dashboard">
-          <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:14px">
-            <span style="font-size:11px;color:var(--s-muted);align-self:center">Filter:</span>
-            <button class="btn btn-sm btn-gold" onclick="setSAFilter('today',this)">Today</button>
-            <button class="btn btn-sm" onclick="setSAFilter('week',this)">This Week</button>
-            <button class="btn btn-sm" onclick="setSAFilter('month',this)">This Month</button>
-            <button class="btn btn-sm" onclick="setSAFilter('all',this)">All Time</button>
+          <div style="display:flex;justify-content:flex-end;gap:5px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:10px;color:var(--s-muted);letter-spacing:1px;text-transform:uppercase">Period:</span>
+            <button class="btn btn-sm btn-gold" id="saFBtn-today" onclick="setSAFilter('today',this)">Today</button>
+            <button class="btn btn-sm" id="saFBtn-week" onclick="setSAFilter('week',this)">Week</button>
+            <button class="btn btn-sm" id="saFBtn-month" onclick="setSAFilter('month',this)">Month</button>
+            <button class="btn btn-sm" id="saFBtn-3months" onclick="setSAFilter('3months',this)">3 Months</button>
+            <button class="btn btn-sm" id="saFBtn-all" onclick="setSAFilter('all',this)">All Time</button>
           </div>
-          <div style="font-size:11px;color:var(--s-muted);margin-bottom:10px;text-align:right" id="saFilterLabel">Showing: Today</div>
+          <div style="font-size:11px;color:var(--s-muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+            <span id="saFilterLabel">Showing: Today</span>
+            <span id="saFilterRange" style="color:var(--s-muted2)"></span>
+          </div>
           <div class="stats-row s4">
             <div class="stat-box"><div class="stat-ico">🏪</div><div class="stat-lbl">Restaurants</div><div class="stat-val" id="sa-s1">—</div><div class="stat-sub">Active</div></div>
             <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl">Orders (filtered)</div><div class="stat-val" id="sa-s2">—</div></div>
@@ -588,6 +592,17 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <div class="chart-card"><div class="chart-h"><div class="chart-title">Orders by Restaurant</div></div><div class="chart-wrap"><canvas id="saPC"></canvas></div></div>
           </div>
           <div class="card"><div class="card-h"><div class="card-title">Recent Orders (Live)</div><button class="btn btn-sm" onclick="saP('orders',null)">View All</button></div><div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Restaurant</th><th>Total (₭)</th><th>Commission</th><th>Time</th><th>Status</th></tr></thead><tbody id="sa-recent"></tbody></table></div></div>
+          <!-- TOP SELLING ITEMS (platform-wide) -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div class="card">
+              <div class="card-h"><div class="card-title">🏆 Top Selling Items</div><span style="font-size:10px;color:var(--s-muted)" id="saTopItemsLabel">All restaurants · filtered period</span></div>
+              <div id="saTopItemsList" style="padding:8px 0"></div>
+            </div>
+            <div class="card">
+              <div class="card-h"><div class="card-title">📊 Revenue Summary</div></div>
+              <div id="saRevSummary" style="padding:14px"></div>
+            </div>
+          </div>
         </div>
         <div class="panel" id="sa-revenue">
           <div id="saVatContainer"></div>
@@ -605,7 +620,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
         </div>
         <div class="panel" id="sa-settings">
           <div class="card"><div class="card-h"><div class="card-title">Platform Settings</div></div><div style="padding:20px">
-            <div class="form-row" style="margin-bottom:14px"><div class="fg"><label>Platform Name</label><input class="fi" value="EATLAOS" id="setPName"></div><div class="fg"><label>Default Commission (%)</label><input class="fi" type="number" value="15" id="setComm" min="0" max="100" step="0.5" placeholder="0 = no commission"></div></div>
+            <div class="form-row" style="margin-bottom:14px"><div class="fg"><label>Platform Name</label><input class="fi" value="EATLAOS" id="setPName"></div><div class="fg"><label>Default Commission (%)</label><input class="fi" type="number" value="15" id="setComm" min="0" max="100" step="0.5" placeholder="0 = no commission" onchange="if(this.value==='')this.value=0"></div></div>
             <div class="fg"><label>Default Session Duration</label><select class="fi" id="setSessH" style="max-width:240px"><option value="1">1 hour</option><option value="2" selected>2 hours</option><option value="4">4 hours</option><option value="8">8 hours</option><option value="24">1 day</option></select></div>
             <button class="btn btn-gold" onclick="saveSettings()">Save Settings</button>
           </div></div>
@@ -646,6 +661,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
           </div>
           <div class="chart-card"><div class="chart-h"><div class="chart-title">Sales</div><div class="ctabs"><button class="ctab on" onclick="owChartSw('rev',this)">Revenue</button><button class="ctab" onclick="owChartSw('ord',this)">Orders</button><button class="ctab" onclick="owChartSw('items',this)">Top Items</button></div></div><div class="chart-wrap"><canvas id="owC"></canvas></div></div>
           <div class="card"><div class="card-h"><div class="card-title">Recent Orders</div><button class="btn btn-sm" onclick="owP('liveorders',null)">View All Live</button></div><div class="tbl-wrap"><table><thead><tr><th>Order</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>Time</th><th>Status</th><th>Update</th></tr></thead><tbody id="ow-recent"></tbody></table></div></div>
+          <div class="card">
+            <div class="card-h"><div class="card-title">🏆 Top Selling Items</div><span style="font-size:10px;color:var(--s-muted)" id="owTopItemsLabel">This month</span></div>
+            <div id="owTopItemsList" style="padding:8px 0"></div>
+          </div>
         </div>
 
         <!-- LIVE ORDERS -->
@@ -1328,12 +1347,36 @@ let saFilter='today';
 
 function setSAFilter(f,btn){
   saFilter=f;
-  document.querySelectorAll('#sa-dashboard .btn').forEach(b=>{b.classList.remove('btn-gold');});
-  btn.classList.add('btn-gold');
-  const labels={today:'Today',week:'This Week',month:'This Month',all:'All Time'};
+  document.querySelectorAll('[id^="saFBtn-"]').forEach(b=>b.classList.remove('btn-gold'));
+  const activeBtn=document.getElementById('saFBtn-'+f)||btn;
+  activeBtn.classList.add('btn-gold');
+  const labels={today:'Today',week:'This Week',month:'This Month','3months':'Last 3 Months',all:'All Time'};
   const lbl=document.getElementById('saFilterLabel');
   if(lbl) lbl.textContent='Showing: '+labels[f];
+  // Show date range
+  const range=getFilterRange(f);
+  const rangeLbl=document.getElementById('saFilterRange');
+  if(rangeLbl&&range) rangeLbl.textContent=range;
   saStats();saRecentOrders();initSACharts();
+}
+
+function getFilterRange(period){
+  const now=new Date();
+  const fmt=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  if(period==='today') return fmt(now);
+  if(period==='week'){
+    const s=new Date(Date.now()-7*86400000);
+    return fmt(s)+' – '+fmt(now);
+  }
+  if(period==='month'){
+    const s=new Date(now.getFullYear(),now.getMonth(),1);
+    return fmt(s)+' – '+fmt(now);
+  }
+  if(period==='3months'){
+    const s=new Date(now.getFullYear(),now.getMonth()-3,1);
+    return fmt(s)+' – '+fmt(now);
+  }
+  return '';
 }
 
 function filterOrdersByPeriod(orders,period){
@@ -1351,6 +1394,10 @@ function filterOrdersByPeriod(orders,period){
     const start=new Date(d.getFullYear(),d.getMonth(),1).getTime();
     return orders.filter(o=>(o.ts||0)>=start);
   }
+  if(period==='3months'){
+    const start=new Date(d.getFullYear(),d.getMonth()-3,1).getTime();
+    return orders.filter(o=>(o.ts||0)>=start);
+  }
   return orders;
 }
 
@@ -1360,7 +1407,7 @@ async function saStats(){
   const active=restoList.filter(r=>r.status==='active').length;
   const filtered=filterOrdersByPeriod(cachedOrders,saFilter);
   const orders=filtered.length;
-  const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm||15)/100),0);
+  const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm??CFG.commission??0)/100),0);
   const sessions=await fbGet('sessions')||{};
   const activeSess=Object.values(sessions).filter(s=>Date.now()<(s.exp||0)).length;
   document.getElementById('sa-s1').textContent=active;
@@ -1370,16 +1417,87 @@ async function saStats(){
 }
 
 function saRecentOrders(){
-  const recent=filterOrdersByPeriod(cachedOrders,saFilter).slice(0,10);
+  const filtered=filterOrdersByPeriod(cachedOrders,saFilter);
+  const recent=filtered.slice(0,10);
   document.getElementById('sa-recent').innerHTML=recent.map(o=>{
-    const comm=Math.round((o.total||0)*(o.comm||15)/100);
+    const comm=Math.round((o.total||0)*(o.comm??0)/100);
     return`<tr><td><b style="font-size:11px">${o.id||o.fbKey}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('')||nd(7);
+  // Render top items
+  renderTopItems(filtered,'saTopItemsList','saTopItemsLabel');
+  // Revenue summary
+  renderRevSummary(filtered);
+}
+
+function renderTopItems(orders, containerId, labelId){
+  const el=document.getElementById(containerId);if(!el) return;
+  // Count item quantities across all orders
+  const counts={};
+  orders.forEach(o=>o.items?.forEach(i=>{
+    const key=i.name;
+    if(!counts[key]) counts[key]={name:i.name,emoji:i.emoji||'🍽️',qty:0,revenue:0};
+    counts[key].qty+=i.qty||0;
+    counts[key].revenue+=(i.price||0)*(i.qty||0);
+  }));
+  const ranked=Object.values(counts).sort((a,b)=>b.qty-a.qty).slice(0,10);
+  if(!ranked.length){
+    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--s-muted);font-size:12px">No sales data for this period</div>';
+    return;
+  }
+  const maxQty=ranked[0].qty;
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML=ranked.map((item,i)=>{
+    const pct=Math.round((item.qty/maxQty)*100);
+    const medal=medals[i]||`<span style="font-size:11px;color:var(--s-muted);font-weight:700;min-width:20px;display:inline-block;text-align:center">#${i+1}</span>`;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--s-border2)">
+      <span style="font-size:18px;flex-shrink:0">${medals[i]||''}</span>
+      ${!medals[i]?`<span style="font-size:11px;font-weight:700;color:var(--s-muted);width:22px;text-align:center">#${i+1}</span>`:''}
+      <span style="font-size:18px;flex-shrink:0">${item.emoji}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.name}</div>
+        <div style="height:4px;background:var(--s-border);border-radius:2px;margin-top:4px">
+          <div style="height:100%;width:${pct}%;background:${i===0?'var(--s-gold)':i===1?'rgba(192,192,192,.8)':i===2?'rgba(184,115,51,.8)':'rgba(200,151,58,.5)'};border-radius:2px;transition:width .5s ease"></div>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-family:var(--ff);font-size:16px;font-weight:900;color:${i===0?'var(--s-gold)':'var(--s-text)'}">${item.qty}</div>
+        <div style="font-size:9px;color:var(--s-muted);letter-spacing:1px;text-transform:uppercase">sold</div>
+        <div style="font-size:10px;color:var(--s-green);margin-top:1px">${fmtK(item.revenue)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderRevSummary(filtered){
+  const el=document.getElementById('saRevSummary');if(!el) return;
+  const gross=filtered.reduce((s,o)=>s+(o.total||0),0);
+  const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm??0)/100),0);
+  const orders=filtered.length;
+  const avgOrder=orders>0?Math.round(gross/orders):0;
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="padding:12px;background:var(--s-surf3);border:1px solid var(--s-border)">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:5px">Gross Revenue</div>
+        <div style="font-family:var(--ff);font-size:20px;font-weight:900;color:var(--s-text)">${fmtK(gross)}</div>
+      </div>
+      <div style="padding:12px;background:var(--s-surf3);border:1px solid var(--s-border)">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:5px">Commission Earned</div>
+        <div style="font-family:var(--ff);font-size:20px;font-weight:900;color:var(--s-gold)">${fmtK(comm)}</div>
+      </div>
+      <div style="padding:12px;background:var(--s-surf3);border:1px solid var(--s-border)">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:5px">Total Orders</div>
+        <div style="font-family:var(--ff);font-size:20px;font-weight:900;color:var(--s-text)">${orders}</div>
+      </div>
+      <div style="padding:12px;background:var(--s-surf3);border:1px solid var(--s-border)">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:5px">Avg Order Value</div>
+        <div style="font-family:var(--ff);font-size:20px;font-weight:900;color:var(--s-blue)">${fmtK(avgOrder)}</div>
+      </div>
+    </div>`;
 }
 
 async function saRevenue(){
   const gross=cachedOrders.reduce((s,o)=>s+(o.total||0),0);
-  const comm=cachedOrders.reduce((s,o)=>s+(o.total||0)*((o.comm||15)/100),0);
+  const comm=cachedOrders.reduce((s,o)=>s+(o.total||0)*((o.comm??0)/100),0);
   document.getElementById('sa-gr').textContent=fmtK(gross);
   document.getElementById('sa-co').textContent=fmtK(comm);
   document.getElementById('sa-po').textContent=fmtK(gross-comm);
@@ -1463,7 +1581,8 @@ async function loadSettingsUI(){
 }
 
 async function saveSettings(){
-  CFG.commission=parseInt(document.getElementById('setComm').value)||15;
+  const commVal=parseFloat(document.getElementById('setComm').value);
+  CFG.commission=isNaN(commVal)?15:Math.max(0,Math.min(100,commVal));
   CFG.sessHours=parseInt(document.getElementById('setSessH').value)||2;
   await saveCFG();
 }
@@ -1471,28 +1590,92 @@ async function saveSettings(){
 // SA Charts
 let saCI2=null;
 function initSACharts(){
+  const filtered=filterOrdersByPeriod(cachedOrders,saFilter);
+  buildSARevenueChart(filtered);
+  buildSARestoChart(filtered);
+}
+
+function buildSARevenueChart(filtered){
   const ctx=document.getElementById('saRC');if(!ctx) return;
   if(saCI) saCI.destroy();
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  // Build real data from cachedOrders
-  const weekData=[0,0,0,0,0,0,0];
-  cachedOrders.forEach(o=>{
-    const d=new Date(o.ts||0).getDay();
-    weekData[(d+6)%7]+=(o.total||0)*((o.comm||15)/100);
-  });
-  const base=[180000,240000,165000,290000,390000,480000,330000];
-  const data=weekData.map((v,i)=>v||base[i]);
-  saCI=new Chart(ctx,{type:'bar',data:{labels:days,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#444',font:{size:10}}},y:{grid:{color:'#1c1c1c'},ticks:{color:'#444',font:{size:10},callback:v=>'₭'+Math.round(v/1000)+'k'}}}}});
-  // Pie chart
+  let labels=[], data=[];
+  if(saFilter==='today'){
+    // Hourly breakdown for today
+    labels=['6am','8am','10am','12pm','2pm','4pm','6pm','8pm','10pm'];
+    const hours=[6,8,10,12,14,16,18,20,22];
+    data=hours.map(h=>{
+      const dayStart=new Date();dayStart.setHours(0,0,0,0);
+      const slotStart=dayStart.getTime()+h*3600000;
+      const slotEnd=slotStart+7200000;
+      return filtered.filter(o=>(o.ts||0)>=slotStart&&(o.ts||0)<slotEnd).reduce((s,o)=>s+(o.total||0),0);
+    });
+  } else if(saFilter==='week'){
+    const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    labels=days;
+    data=days.map((_,di)=>{
+      const now=new Date();
+      const dayOfWeek=(now.getDay()+6)%7;
+      const diff=di-dayOfWeek;
+      const day=new Date(now.getFullYear(),now.getMonth(),now.getDate()+diff);
+      const start=day.getTime();const end=start+86400000;
+      return filtered.filter(o=>(o.ts||0)>=start&&(o.ts||0)<end).reduce((s,o)=>s+(o.total||0),0);
+    });
+  } else if(saFilter==='month'){
+    // Daily for this month
+    const now=new Date();
+    const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    const dayStart=new Date(now.getFullYear(),now.getMonth(),1);
+    // Group into weeks
+    labels=['Wk1','Wk2','Wk3','Wk4','Wk5'];
+    data=[0,0,0,0,0];
+    filtered.forEach(o=>{
+      const day=new Date(o.ts||0).getDate();
+      const wk=Math.min(Math.floor((day-1)/7),4);
+      data[wk]+=(o.total||0);
+    });
+    labels=labels.slice(0,Math.ceil(daysInMonth/7));
+    data=data.slice(0,Math.ceil(daysInMonth/7));
+  } else if(saFilter==='3months'){
+    const now=new Date();
+    labels=[];data=[];
+    for(let i=2;i>=0;i--){
+      const m=new Date(now.getFullYear(),now.getMonth()-i,1);
+      labels.push(m.toLocaleString('default',{month:'short'}));
+      const mEnd=new Date(now.getFullYear(),now.getMonth()-i+1,1).getTime();
+      data.push(filtered.filter(o=>(o.ts||0)>=m.getTime()&&(o.ts||0)<mEnd).reduce((s,o)=>s+(o.total||0),0));
+    }
+  } else {
+    // All time — by month (last 6)
+    const now=new Date();
+    labels=[];data=[];
+    for(let i=5;i>=0;i--){
+      const m=new Date(now.getFullYear(),now.getMonth()-i,1);
+      labels.push(m.toLocaleString('default',{month:'short'}));
+      const mEnd=new Date(now.getFullYear(),now.getMonth()-i+1,1).getTime();
+      data.push(cachedOrders.filter(o=>(o.ts||0)>=m.getTime()&&(o.ts||0)<mEnd).reduce((s,o)=>s+(o.total||0),0));
+    }
+  }
+  // If all data is 0, show demo data
+  if(data.every(v=>v===0)) data=data.map(()=>0);
+  saCI=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3,label:'Revenue (₭)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'₭'+Math.round(ctx.parsed.y).toLocaleString()}}},scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}},y:{grid:{color:'#1a1a1a'},ticks:{color:'#555',font:{size:10},callback:v=>'₭'+Math.round(v/1000)+'k'}}}}});
+}
+
+function buildSARestoChart(filtered){
   const ctx2=document.getElementById('saPC');if(!ctx2) return;
   if(saCI2) saCI2.destroy();
   fbGet('restaurants').then(restos=>{
     if(!restos) return;
-    const labels=Object.values(restos).map(r=>r.name);
-    const pieData=Object.keys(restos).map(k=>cachedOrders.filter(o=>o.rId===k).length||1);
-    saCI2=new Chart(ctx2,{type:'doughnut',data:{labels,datasets:[{data:pieData,backgroundColor:['rgba(200,151,58,.85)','rgba(29,185,84,.85)','rgba(76,139,245,.85)','rgba(229,72,77,.85)'],borderColor:'#101010',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#666',font:{size:10},boxWidth:10}}}}});
+    const entries=Object.entries(restos);
+    const labels=entries.map(([k,r])=>r.name);
+    const pieData=entries.map(([k,r])=>filtered.filter(o=>o.rId===k).length||0);
+    if(pieData.every(v=>v===0)){
+      ctx2.getContext('2d').clearRect(0,0,ctx2.width,ctx2.height);
+      return;
+    }
+    saCI2=new Chart(ctx2,{type:'doughnut',data:{labels,datasets:[{data:pieData,backgroundColor:['rgba(200,151,58,.85)','rgba(29,185,84,.85)','rgba(76,139,245,.85)','rgba(229,72,77,.85)','rgba(249,115,22,.85)'],borderColor:'#101010',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#666',font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} orders`}}}}});
   });
 }
+
 function saChartSwitch(p,btn){document.querySelectorAll('#sa-dashboard .ctab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');initSACharts();}
 
 // ═══════════════════════════════════════════════════════════════
@@ -1661,6 +1844,13 @@ function owRecentOrders(){
   document.getElementById('ow-recent').innerHTML=recent.map(o=>
     `<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td>${o.items?.length||0}</td><td>${fmtK(o.total)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td><td>${mkSel(o.fbKey,o.status)}</td></tr>`
   ).join('')||nd(7);
+  // Top items for this month
+  const now=new Date();
+  const monthStart=new Date(now.getFullYear(),now.getMonth(),1).getTime();
+  const monthOrders=cachedOrders.filter(o=>(o.ts||0)>=monthStart);
+  renderTopItems(monthOrders,'owTopItemsList','owTopItemsLabel');
+  const lbl=document.getElementById('owTopItemsLabel');
+  if(lbl) lbl.textContent=`${monthOrders.length} orders · ${now.toLocaleString('default',{month:'long'})}`;
 }
 
 // ═══ LIVE ORDERS (card view with status buttons) ═══
