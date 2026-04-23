@@ -2469,8 +2469,17 @@ function updateCart(){
     </div>
   `).join('');
   const tot=cart.reduce((s,i)=>s+(i.price*i.qty),0);
-  document.getElementById('cCartTotal').textContent=fmtK(tot);
-  f.innerHTML=`<div class="c-cart-total-row"><span class="c-cart-total-l">${tr('total')}</span><span class="c-cart-total-v">${fmtK(tot)}</span></div><button class="c-order-btn" onclick="placeOrder()">${tr('send_kitchen')}</button>`;
+  // Update total display
+  const totalEl=document.getElementById('cCartTotal');
+  if(totalEl) totalEl.textContent=fmtK(tot);
+  // Restore Send to Kitchen button — always re-enable it
+  const btn=document.getElementById('cOrderBtn');
+  if(btn){
+    btn.disabled=false;
+    btn.textContent=tr('send_kitchen');
+    btn.style.opacity='1';
+    btn.onclick=placeOrder;
+  }
   f.style.display='block';
 }
 function cQty(id,d){const i=cart.find(c=>c.id===id||c.name===id);if(!i) return;i.qty+=d;if(i.qty<=0) cRm(id);else updateCart();}
@@ -2478,6 +2487,12 @@ function cRm(id){cart=cart.filter(c=>c.id!==id&&c.name!==id);updateCart();}
 function toggleCart(){
   document.getElementById('cCartOv').classList.toggle('open');
   document.getElementById('cCartPanel').classList.toggle('open');
+  // Always ensure button is enabled when cart opens
+  const btn=document.getElementById('cOrderBtn');
+  if(btn&&!btn.disabled){
+    btn.onclick=placeOrder;
+    btn.textContent=tr('send_kitchen');
+  }
   updateCart();
 }
 
@@ -2530,21 +2545,28 @@ async function placeOrder(){
     notifyC('❌ Failed to send order. Check connection.');
     console.error(e);
   }
-  if(btn){btn.disabled=false;btn.textContent=tr('send_kitchen');}
+  // Re-enable button and make sure it's fully functional
+  const btnFresh=document.getElementById('cOrderBtn');
+  if(btnFresh){
+    btnFresh.disabled=false;
+    btnFresh.textContent=tr('send_kitchen');
+    btnFresh.style.opacity='1';
+    btnFresh.onclick=placeOrder;
+  }
 }
 
 function closeOrderSuccess(tab){
   document.getElementById('orderSuccessOv').classList.remove('show');
+  // Always re-enable the Send to Kitchen button
+  const btn=document.getElementById('cOrderBtn');
+  if(btn){btn.disabled=false;btn.textContent=tr('send_kitchen');btn.style.opacity='1';btn.onclick=placeOrder;}
   if(tab==='orders'){
     cTab('orders');
   } else {
-    // Go back to menu so customer can order MORE items
     cTab('menu');
-    // Make sure category tabs & menu are re-rendered
     loadRestoForCustomer().then(r=>{
       if(r){renderCats(r);renderMenu(curCat,r);}
     });
-    // Scroll to top of menu
     window.scrollTo({top:0,behavior:'smooth'});
   }
 }
