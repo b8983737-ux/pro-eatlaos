@@ -650,11 +650,30 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
         <!-- LIVE ORDERS -->
         <div class="panel" id="ow-liveorders">
+          <!-- Live order count summary -->
+          <div id="liveOrderStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--s-border);margin-bottom:14px">
+            <div style="background:var(--s-surf);padding:12px;text-align:center">
+              <div style="font-family:var(--ff);font-size:24px;font-weight:900" id="loCount-all">0</div>
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)">Total</div>
+            </div>
+            <div style="background:var(--s-surf);padding:12px;text-align:center">
+              <div style="font-family:var(--ff);font-size:24px;font-weight:900;color:var(--s-red)" id="loCount-pending">0</div>
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)">⏳ Pending</div>
+            </div>
+            <div style="background:var(--s-surf);padding:12px;text-align:center">
+              <div style="font-family:var(--ff);font-size:24px;font-weight:900;color:var(--s-blue)" id="loCount-preparing">0</div>
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)">👨‍🍳 Preparing</div>
+            </div>
+            <div style="background:var(--s-surf);padding:12px;text-align:center">
+              <div style="font-family:var(--ff);font-size:24px;font-weight:900;color:var(--s-green)" id="loCount-ready">0</div>
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)">✅ Ready</div>
+            </div>
+          </div>
           <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
-            <button class="btn btn-gold" onclick="owOrdFilter='all';renderLiveOrders()">All</button>
-            <button class="btn" onclick="owOrdFilter='pending';renderLiveOrders()">⏳ Pending</button>
-            <button class="btn" onclick="owOrdFilter='preparing';renderLiveOrders()">👨‍🍳 Preparing</button>
-            <button class="btn" onclick="owOrdFilter='ready';renderLiveOrders()">✅ Ready</button>
+            <button class="btn btn-gold" id="loFilter-all" onclick="owOrdFilter='all';renderLiveOrders()">All</button>
+            <button class="btn" id="loFilter-pending" onclick="owOrdFilter='pending';renderLiveOrders()">⏳ Pending</button>
+            <button class="btn" id="loFilter-preparing" onclick="owOrdFilter='preparing';renderLiveOrders()">👨‍🍳 Preparing</button>
+            <button class="btn" id="loFilter-ready" onclick="owOrdFilter='ready';renderLiveOrders()">✅ Ready</button>
           </div>
           <div id="liveOrdersContainer"><div style="text-align:center;padding:40px;color:var(--s-muted)">Loading orders...</div></div>
         </div>
@@ -668,7 +687,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
         </div>
 
         <div class="panel" id="ow-menu"><div class="card"><div class="card-h"><div class="card-title">Menu Items</div><button class="btn btn-gold" onclick="openOwItemModal()">+ Add Item</button></div><div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>Price (₭)</th><th>Status</th><th>Actions</th></tr></thead><tbody id="ow-menutbl"></tbody></table></div></div></div>
-        <div class="panel" id="ow-categories"><div class="card"><div class="card-h"><div class="card-title">Categories</div><button class="btn btn-gold" onclick="openModal('mOwCat')">+ Add</button></div><table><thead><tr><th>Name</th><th>Icon</th><th>Items</th><th>Actions</th></tr></thead><tbody id="ow-cattbl"></tbody></table></div></div>
+        <div class="panel" id="ow-categories"><div class="card"><div class="card-h"><div class="card-title">Categories</div><button class="btn btn-gold" onclick="editCatIdx=null;document.getElementById('mCatModalTitle').textContent='Add Category';document.getElementById('mCatName').value='';document.getElementById('mCatEmoji').value='🏷️';document.getElementById('mCatEmojiPrev').textContent='🏷️';openModal('mOwCat')">+ Add Category</button></div><table><thead><tr><th>Name</th><th>Icon</th><th>Items</th><th>Actions</th></tr></thead><tbody id="ow-cattbl"></tbody></table></div></div>
         <div class="panel" id="ow-tables">
           <div class="card">
             <div class="card-h"><div class="card-title">Tables &amp; QR Codes</div><button class="btn btn-gold" onclick="openModal('mOwAddTable')">+ Add Table</button></div>
@@ -901,9 +920,41 @@ tr:hover td{background:rgba(255,255,255,.015);}
 <!-- OWNER CAT -->
 <div class="modal-ov" id="mOwCat">
   <div class="modal-box w380">
-    <div class="modal-h"><div class="modal-title">Add Category</div><button class="modal-x" onclick="closeModal('mOwCat')">✕</button></div>
-    <div class="modal-b"><div class="fg"><label>Category Name</label><input class="fi" id="mCatName" placeholder="e.g. Main Course"></div><div class="fg"><label>Icon Emoji</label><input class="fi" id="mCatIcon" placeholder="🍽️" maxlength="4"></div></div>
-    <div class="modal-f"><button class="btn" onclick="closeModal('mOwCat')">Cancel</button><button class="btn btn-gold" onclick="saveOwCat()">Save</button></div>
+    <div class="modal-h"><div class="modal-title" id="mCatModalTitle">Add Category</div><button class="modal-x" onclick="closeModal('mOwCat');editCatIdx=null">✕</button></div>
+    <div class="modal-b">
+      <div class="fg"><label>Category Name</label><input class="fi" id="mCatName" placeholder="e.g. Main Course"></div>
+      <div class="fg">
+        <label>Category Icon Emoji</label>
+        <input type="hidden" id="mCatEmoji" value="🏷️">
+        <div class="ep-wrap" style="margin-top:6px">
+          <div class="ep-trigger" onclick="toggleEP('catEP')">
+            <div class="ep-preview" id="mCatEmojiPrev" style="width:44px;height:44px;font-size:26px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:4px">🏷️</div>
+            <div class="ep-trigger-label"><div class="ep-trigger-title">Choose Category Icon</div><div class="ep-trigger-sub">Click to open emoji picker</div></div>
+            <span class="ep-arrow">▼</span>
+          </div>
+          <div class="ep-dropdown" id="catEP">
+            <div class="ep-tabs">
+              <button class="ep-tab on" onclick="epTab('catEP','tags',this)">🏷️ Tags</button>
+              <button class="ep-tab" onclick="epTab('catEP','food',this)">🍽️ Food</button>
+              <button class="ep-tab" onclick="epTab('catEP','other',this)">🎯 Other</button>
+            </div>
+            <div class="ep-tab-content on" id="catEP-tags">
+              <div class="ep-grid" id="catEP-tags-grid"></div>
+            </div>
+            <div class="ep-tab-content" id="catEP-food">
+              <div class="ep-grid" id="catEP-food-grid2"></div>
+            </div>
+            <div class="ep-tab-content" id="catEP-other">
+              <div class="ep-grid" id="catEP-other-grid2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" onclick="closeModal('mOwCat');editCatIdx=null">Cancel</button>
+      <button class="btn btn-gold" onclick="saveOwCat()">Save</button>
+    </div>
   </div>
 </div>
 
@@ -1615,6 +1666,24 @@ function owRecentOrders(){
 // ═══ LIVE ORDERS (card view with status buttons) ═══
 function renderLiveOrders(){
   const f=owOrdFilter;
+  // Update counts
+  const allC=cachedOrders.length;
+  const pendC=cachedOrders.filter(o=>o.status==='pending').length;
+  const prepC=cachedOrders.filter(o=>o.status==='preparing').length;
+  const readyC=cachedOrders.filter(o=>o.status==='ready').length;
+  ['all','pending','preparing','ready'].forEach(s=>{
+    const el=document.getElementById('loCount-'+s);
+    if(el) el.textContent = s==='all'?allC:s==='pending'?pendC:s==='preparing'?prepC:readyC;
+    const btn=document.getElementById('loFilter-'+s);
+    if(btn){
+      const count = s==='all'?allC:s==='pending'?pendC:s==='preparing'?prepC:readyC;
+      const label={all:'All',pending:'⏳ Pending',preparing:'👨‍🍳 Preparing',ready:'✅ Ready'}[s];
+      btn.textContent=count>0?`${label} (${count})`:label;
+    }
+  });
+  // Update sidebar badge
+  const badge=document.getElementById('owNewBadge');
+  if(badge){badge.style.display=pendC>0?'inline':'none';badge.textContent=pendC;}
   let orders=cachedOrders;
   if(f!=='all') orders=orders.filter(o=>o.status===f);
   const con=document.getElementById('liveOrdersContainer');
@@ -1868,10 +1937,33 @@ async function owCats(){
   const r=await fbGet('restaurants/'+restoId);if(!r) return;
   const cats=r.cats||[];
   document.getElementById('ow-cattbl').innerHTML=cats.map((c,i)=>`
-    <tr><td><b>${c.name}</b></td><td style="font-size:20px">${c.icon}</td>
-    <td>${(r.menu||[]).filter(m=>m.cat===c.name).length}</td>
-    <td><button class="btn btn-sm btn-red" onclick="delOwCat(${i})">Delete</button></td></tr>
+    <tr>
+      <td><b>${c.name}</b></td>
+      <td style="font-size:24px">${c.icon}</td>
+      <td>${(r.menu||[]).filter(m=>m.cat===c.name).length}</td>
+      <td>
+        <div class="btn-acts">
+          <button class="btn btn-sm" onclick="editOwCat(${i})">✏️ Edit</button>
+          <button class="btn btn-sm btn-red" onclick="delOwCat(${i})">Delete</button>
+        </div>
+      </td>
+    </tr>
   `).join('');
+}
+
+let editCatIdx=null;
+
+async function editOwCat(idx){
+  const r=await fbGet('restaurants/'+restoId);
+  const cat=(r?.cats||[])[idx];if(!cat) return;
+  editCatIdx=idx;
+  document.getElementById('mCatModalTitle').textContent='Edit Category';
+  document.getElementById('mCatName').value=cat.name;
+  // Set emoji in picker
+  document.getElementById('mCatEmoji').value=cat.icon||'🏷️';
+  const prev=document.getElementById('mCatEmojiPrev');
+  if(prev) prev.textContent=cat.icon||'🏷️';
+  openModal('mOwCat');
 }
 
 async function owTables(){
@@ -1901,7 +1993,8 @@ const EP_EMOJIS = {
   food:['🍽️','🫕','🍲','🍜','🍛','🍣','🍱','🥘','🍝','🍗','🍖','🥩','🍔','🍟','🌮','🌯','🥙','🥗','🥚','🍳','🥞','🧇','🥓','🧆','🫔','🍤','🦐','🦞','🦀','🦑','🐟','🍕','🥪','🧀','🥨','🥐','🍞','🥖','🍰','🎂','🧁','🍩','🍪','🍫','🍬','🫕','🥜','🌽','🥦','🧅','🥕','🍅','🥑','🍋','🍊','🍇','🍓','🍑','🍍','🥭'],
   drink:['🥤','🧋','🍵','☕','🫖','🧃','🍺','🍻','🥂','🍷','🍸','🍹','🫗','🍶','🥛','🧉','🍾'],
   other:['⭐','🔥','✨','💎','👑','🎯','🎪','🎭','🎨','🏆','💫','🌟','❤️','💚','💛','🧡','💜','🤍'],
-  icons:['🏪','🍽️','🫕','🍔','🍕','🌮','🍣','🍜','🥘','🍛','🥗','🍗','🥩','🧆','🍤','🦐','🍱','🥙','🌯','🫔','🥞','🧇','🍳','🎂','🧁','☕','🥤','🍵','🫖','🍺','🍹']
+  icons:['🏪','🍽️','🫕','🍔','🍕','🌮','🍣','🍜','🥘','🍛','🥗','🍗','🥩','🧆','🍤','🦐','🍱','🥙','🌯','🫔','🥞','🧇','🍳','🎂','🧁','☕','🥤','🍵','🫖','🍺','🍹'],
+  tags:['🏷️','🔖','📌','📍','🎯','⭐','🌟','💫','🔥','✨','🍽️','🥗','🥤','🍲','🫕','🍔','🍕','🌮','🍣','🥘','🍗','🍟','🧁','☕','🍵','🍺','🍹','🥩','🦐','🌽','🥦','🍱','🎪','💎','👑','🏆']
 };
 
 let currentEPTarget=null; // which picker is open
@@ -1914,6 +2007,10 @@ function initEmojiPickers(){
   // Restaurant picker
   renderEPGrid('restoEP-icons-grid', EP_EMOJIS.icons, 'resto');
   renderEPGrid('restoEP-food-grid', EP_EMOJIS.food, 'resto');
+  // Category picker
+  renderEPGrid('catEP-tags-grid', EP_EMOJIS.tags, 'cat');
+  renderEPGrid('catEP-food-grid2', EP_EMOJIS.food, 'cat');
+  renderEPGrid('catEP-other-grid2', EP_EMOJIS.other, 'cat');
 }
 
 function renderEPGrid(gridId, emojis, target){
@@ -1951,6 +2048,12 @@ function selectEmoji(e, target){
     const prev=document.getElementById('mRemojiPreview');
     if(prev){prev.textContent=e;prev.style.fontSize='26px';}
     document.querySelectorAll('#restoEP .ep-emoji-btn').forEach(b=>{b.classList.toggle('sel',b.textContent===e);});
+    closeAllEP();
+  } else if(target==='cat'){
+    document.getElementById('mCatEmoji').value=e;
+    const prev=document.getElementById('mCatEmojiPrev');
+    if(prev){prev.textContent=e;prev.style.fontSize='26px';}
+    document.querySelectorAll('#catEP .ep-emoji-btn').forEach(b=>{b.classList.toggle('sel',b.textContent===e);});
     closeAllEP();
   }
 }
@@ -2048,11 +2151,31 @@ async function delOwItem(idx){
 }
 async function saveOwCat(){
   const r=await fbGet('restaurants/'+restoId);
-  const name=document.getElementById('mCatName').value.trim(),icon=document.getElementById('mCatIcon').value.trim()||'🏷️';
-  if(!name){notifyD('⚠ Enter name');return;}
-  const cats=[...(r?.cats||[]),{id:'c'+Date.now(),name,icon}];
-  await fbUpdate('restaurants/'+restoId,{cats});
-  closeModal('mOwCat');owCats();notifyD('✓ Category added');
+  const name=document.getElementById('mCatName').value.trim();
+  const icon=document.getElementById('mCatEmoji').value.trim()||document.getElementById('mCatIcon')?.value.trim()||'🏷️';
+  if(!name){notifyD('⚠ Enter category name');return;}
+  const cats=[...(r?.cats||[])];
+  if(editCatIdx!==null&&editCatIdx>=0){
+    // Edit existing
+    cats[editCatIdx]={...cats[editCatIdx],name,icon};
+    // Also update menu items that use this category name
+    const menu=[...(r?.menu||[])];
+    const oldName=(r?.cats||[])[editCatIdx]?.name;
+    if(oldName&&oldName!==name){
+      menu.forEach(m=>{if(m.cat===oldName) m.cat=name;});
+      await fbUpdate('restaurants/'+restoId,{cats,menu});
+    } else {
+      await fbUpdate('restaurants/'+restoId,{cats});
+    }
+    notifyD('✓ Category updated');
+  } else {
+    // Add new
+    cats.push({id:'c'+Date.now(),name,icon});
+    await fbUpdate('restaurants/'+restoId,{cats});
+    notifyD('✓ Category added');
+  }
+  editCatIdx=null;
+  closeModal('mOwCat');owCats();
 }
 async function delOwCat(idx){
   const r=await fbGet('restaurants/'+restoId);
@@ -2206,12 +2329,17 @@ function copyQRLink(){
   if(!curQRData?.sessKey){notifyD('⚠ Start a session first');return;}
   navigator.clipboard.writeText(qrURL(curQRData.rId,curQRData.tId,curQRData.sessKey)).then(()=>notifyD('✓ URL copied'));
 }
-function printQR(){
+async function printQR(){
   if(!curQRData?.sessKey){notifyD('⚠ Start a session first');return;}
   const qrHtml=document.getElementById('qrCodeEl').innerHTML;
   const url=document.getElementById('qrUrlTxt').textContent;
   const dur=document.getElementById('qrDurSel').value;
   const tNum=curQRData.tNum;
+  // Load restaurant data fresh for logo
+  const r=await fbGet('restaurants/'+curQRData.rId);
+  const logoSection=r?.logo
+    ?`<img src="${r.logo}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #d4a03c;display:block;margin:0 auto 6px">`
+    :`<div style="font-size:44px;text-align:center;margin-bottom:6px">${r?.emoji||'🍽️'}</div>`;
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR Table ${tNum}</title>
   <style>
@@ -2238,8 +2366,9 @@ function printQR(){
   </head><body>
   <div class="outer">
     <div class="header">
-      <div class="header-logo">EAT<em>LAOS</em></div>
-      <div class="header-sub">Restaurant Platform · Vientiane</div>
+      ${logoSection}
+      <div class="header-logo">${r?.name||'Restaurant'}</div>
+      <div class="header-sub">${r?.addr||'Vientiane, Laos'}</div>
     </div>
     <div class="table-label">🪑 TABLE ${tNum}</div>
     <div class="qr-area">
@@ -2254,7 +2383,7 @@ function printQR(){
       <div class="info-row"><span class="info-icon">🛒</span><span>Order directly from your table</span></div>
       <div class="info-row"><span class="info-icon">📋</span><span>Track your orders in real time</span></div>
     </div>
-    <div class="footer">eatlaos.la · ©2026 EATLAOS</div>
+    <div class="footer">${r?.name||'Restaurant'} · eatlaos.la</div>
   </div>
   <script>window.onload=()=>setTimeout(()=>window.print(),400);<\/script>
   </body></html>`);
@@ -2289,11 +2418,16 @@ async function startCustomerSession(rId,tId,sessId){
   // (avoids Firebase index requirement for orderByChild)
   if(sessId && rId){
     db.ref('orders').orderByChild('rId').equalTo(rId).on('value', snap=>{
+      const seen=new Set();
       const orders=[];
       snap.forEach(c=>{
         const v=c.val();
-        // Filter only this session's orders
-        if(v.sessId===sessId) orders.push({...v,fbKey:c.key});
+        const key=c.key;
+        // Filter only this session's orders — deduplicate by Firebase key
+        if(v.sessId===sessId && !seen.has(key)){
+          seen.add(key);
+          orders.push({...v,fbKey:key});
+        }
       });
       orders.sort((a,b)=>(b.ts||0)-(a.ts||0));
       customerCachedOrders=orders;
@@ -2517,17 +2651,8 @@ async function placeOrder(){
       date:new Date().toLocaleDateString()
     };
     await fbPush('orders',order);
-    // Add order to local cache immediately (before Firebase confirms)
-    customerCachedOrders.unshift({
-      id:ordId, sessId:qrSess.id, rId:qrSess.rId,
-      tId:qrSess.tId, tNum:qrSess.tNum,
-      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty})),
-      total:tot, status:'pending', ts:Date.now(),
-      time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
-      date:new Date().toLocaleDateString()
-    });
-    updateOrderBadge(customerCachedOrders.length);
-    // Show success screen
+    // Show success screen (Firebase listener will update customerCachedOrders automatically)
+    // Do NOT add to local cache here — Firebase listener handles it, avoids duplicates
     document.getElementById('osTot').textContent=fmtK(tot);
     document.getElementById('osOrdId').textContent=ordId;
     document.getElementById('orderSuccessOv').classList.add('show');
