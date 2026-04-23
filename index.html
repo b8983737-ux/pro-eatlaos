@@ -653,9 +653,20 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="topbar"><div class="topbar-title" id="owTbar">Dashboard</div><div class="topbar-r"><div class="firebase-status"><div class="fb-dot" id="owFbDot"></div><span id="owFbTxt">Connecting...</span></div><button class="btn" id="owSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="ow-dashboard">
+          <!-- Filter buttons -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+            <div style="display:flex;gap:5px;flex-wrap:wrap">
+              <button class="btn btn-sm btn-gold" id="owFBtn-today" onclick="setOwFilter('today',this)">Today</button>
+              <button class="btn btn-sm" id="owFBtn-week" onclick="setOwFilter('week',this)">Week</button>
+              <button class="btn btn-sm" id="owFBtn-month" onclick="setOwFilter('month',this)">Month</button>
+              <button class="btn btn-sm" id="owFBtn-3months" onclick="setOwFilter('3months',this)">3 Months</button>
+              <button class="btn btn-sm" id="owFBtn-all" onclick="setOwFilter('all',this)">All Time</button>
+            </div>
+            <span style="font-size:11px;color:var(--s-muted)" id="owFilterLabel">Today</span>
+          </div>
           <div class="stats-row s4">
-            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl">Today's Orders</div><div class="stat-val" id="ow-s1">—</div></div>
-            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl">Today's Revenue</div><div class="stat-val" id="ow-s2">—</div><div class="stat-sub" id="ow-comm-n">After commission</div></div>
+            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl" id="ow-s1-lbl">Today's Orders</div><div class="stat-val" id="ow-s1">—</div></div>
+            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl" id="ow-s2-lbl">Today's Revenue</div><div class="stat-val" id="ow-s2">—</div><div class="stat-sub" id="ow-comm-n">After commission</div></div>
             <div class="stat-box"><div class="stat-ico">🍽️</div><div class="stat-lbl">Active Items</div><div class="stat-val" id="ow-s3">—</div></div>
             <div class="stat-box"><div class="stat-ico">⏳</div><div class="stat-lbl">Pending Now</div><div class="stat-val" id="ow-s4">—</div></div>
           </div>
@@ -1707,7 +1718,7 @@ async function saveResto(){
     name:document.getElementById('mRname').value.trim(),
     cuisine:document.getElementById('mRcuisine').value.trim(),
     user:document.getElementById('mRuser').value.trim(),
-    comm:(v=>isNaN(v)?15:Math.max(0,Math.min(100,v)))(parseFloat(document.getElementById('mRcomm').value)),
+    comm:(v=>isNaN(v)?0:Math.max(0,Math.min(100,v)))(parseFloat(document.getElementById('mRcomm').value)),
     vat:isNaN(vatVal)?0:Math.max(0,Math.min(50,vatVal)),
     emoji:document.getElementById('mRemoji').value.trim()||'🍽️',
     logo:logoData||'',
@@ -1744,7 +1755,7 @@ async function editResto(id){
   document.getElementById('mRcuisine').value=r.cuisine||'';
   document.getElementById('mRuser').value=r.user||r.ownerUser||'';
   document.getElementById('mRpass').value='';
-  document.getElementById('mRcomm').value=r.comm||15;
+  document.getElementById('mRcomm').value=(r.comm===undefined||r.comm===null)?15:r.comm;
   document.getElementById('mRemoji').value=r.emoji||'🍽️';
   document.getElementById('mRaddr').value=r.addr||r.address||'';
   document.getElementById('mRstatus').value=r.status||'active';
@@ -1823,34 +1834,52 @@ function owP(panel,btn){
   if(panel==='profile') owProfile();
 }
 
+let owFilter='today';
+
+function setOwFilter(f,btn){
+  owFilter=f;
+  document.querySelectorAll('[id^="owFBtn-"]').forEach(b=>b.classList.remove('btn-gold'));
+  (btn||document.getElementById('owFBtn-'+f))?.classList.add('btn-gold');
+  const labels={today:'Today',week:'This Week',month:'This Month','3months':'Last 3 Months',all:'All Time'};
+  const lbl=document.getElementById('owFilterLabel');
+  if(lbl) lbl.textContent=labels[f]||f;
+  // Update stat box label
+  const s1lbl=document.getElementById('ow-s1-lbl');
+  const s2lbl=document.getElementById('ow-s2-lbl');
+  if(s1lbl) s1lbl.textContent=labels[f]+' Orders';
+  if(s2lbl) s2lbl.textContent=labels[f]+' Revenue';
+  owStats();
+  owRecentOrders();
+  initOwChart(document.querySelector('#ow-dashboard .ctab.on')?.textContent?.toLowerCase()||'rev');
+}
+
 async function owStats(){
   if(!restoId) return;
   const r=await fbGet('restaurants/'+restoId);
-  const today=new Date().toDateString();
-  const todayOrders=cachedOrders.filter(o=>new Date(o.ts||0).toDateString()===today);
-  const gross=todayOrders.reduce((s,o)=>s+(o.total||0),0);
-  const earn=Math.round(gross*(1-(r?.comm||15)/100));
+  const filtered=filterOrdersByPeriod(cachedOrders,owFilter);
+  const gross=filtered.reduce((s,o)=>s+(o.total||0),0);
+  const comm=(r?.comm??0)/100;
+  const earn=Math.round(gross*(1-comm));
   const pend=cachedOrders.filter(o=>o.status==='pending').length;
   const vatCollected=Math.round(gross*((r?.vat||0)/100));
-  document.getElementById('ow-s1').textContent=todayOrders.length;
+  document.getElementById('ow-s1').textContent=filtered.length;
   document.getElementById('ow-s2').textContent=fmtK(earn);
-  document.getElementById('ow-s3').textContent=(r?.menu?.length||0);
+  document.getElementById('ow-s3').textContent=(r?.menu?.filter(m=>m.status==='active').length||0);
   document.getElementById('ow-s4').textContent=pend;
-  document.getElementById('ow-comm-n').textContent=`After ${r?.comm||0}% comm${(r?.vat||0)>0?' · VAT: '+fmtK(vatCollected):''}`;
+  document.getElementById('ow-comm-n').textContent=`After ${r?.comm??0}% comm${(r?.vat||0)>0?' · VAT: '+fmtK(vatCollected):''}`;
 }
 
 function owRecentOrders(){
-  const recent=cachedOrders.slice(0,6);
+  const filtered=filterOrdersByPeriod(cachedOrders,owFilter);
+  const recent=filtered.slice(0,6);
   document.getElementById('ow-recent').innerHTML=recent.map(o=>
     `<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td>${o.items?.length||0}</td><td>${fmtK(o.total)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td><td>${mkSel(o.fbKey,o.status)}</td></tr>`
   ).join('')||nd(7);
-  // Top items for this month
-  const now=new Date();
-  const monthStart=new Date(now.getFullYear(),now.getMonth(),1).getTime();
-  const monthOrders=cachedOrders.filter(o=>(o.ts||0)>=monthStart);
-  renderTopItems(monthOrders,'owTopItemsList','owTopItemsLabel');
+  // Top items using current filter
+  renderTopItems(filtered,'owTopItemsList','owTopItemsLabel');
+  const labels={today:'Today',week:'This Week',month:'This Month','3months':'Last 3 Months',all:'All Time'};
   const lbl=document.getElementById('owTopItemsLabel');
-  if(lbl) lbl.textContent=`${monthOrders.length} orders · ${now.toLocaleString('default',{month:'long'})}`;
+  if(lbl) lbl.textContent=`${filtered.length} orders · ${labels[owFilter]||owFilter}`;
 }
 
 // ═══ LIVE ORDERS (card view with status buttons) ═══
@@ -1918,7 +1947,7 @@ async function renderBills(){
     return;
   }
   const r=await fbGet('restaurants/'+restoId);
-  const comm=r?.comm||15;
+  const comm=r?.comm??0;
   con.innerHTML=activeSess.map(([sessKey,sess])=>{
     const sessOrders=cachedOrders.filter(o=>o.sessId===sessKey);
     const total=sessOrders.reduce((s,o)=>s+(o.total||0),0);
@@ -2426,28 +2455,87 @@ async function saveOwProfile(){
   owProfile();
 }
 
-// Owner Chart
+// Owner Chart — respects owFilter
 async function initOwChart(type){
   const ctx=document.getElementById('owC');if(!ctx) return;
   if(owCI) owCI.destroy();
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const r=await fbGet('restaurants/'+restoId);
+  const filtered=filterOrdersByPeriod(cachedOrders,owFilter);
+  const comm=(r?.comm??0)/100;
   if(type==='items'){
-    const counts={};cachedOrders.forEach(o=>o.items?.forEach(i=>{counts[i.name]=(counts[i.name]||0)+i.qty;}));
-    const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    const labels=sorted.length?sorted.map(s=>s[0]):(r?.menu||[]).slice(0,4).map(m=>m.name)||['No data'];
-    const data=sorted.length?sorted.map(s=>s[1]):[1,1,1,1];
-    owCI=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:['rgba(200,151,58,.85)','rgba(29,185,84,.85)','rgba(76,139,245,.85)','rgba(229,72,77,.85)','rgba(245,166,35,.85)'],borderColor:'#101010',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#666',font:{size:10},boxWidth:10}}}}});
+    const counts={};
+    filtered.forEach(o=>o.items?.forEach(i=>{
+      if(!counts[i.name]) counts[i.name]={qty:0,emoji:i.emoji||'🍽️'};
+      counts[i.name].qty+=i.qty||0;
+    }));
+    const sorted=Object.entries(counts).sort((a,b)=>b[1].qty-a[1].qty).slice(0,6);
+    const labels=sorted.length?sorted.map(([name])=>name):(r?.menu||[]).slice(0,4).map(m=>m.name)||['No data'];
+    const data=sorted.length?sorted.map(([,v])=>v.qty):[0,0,0,0];
+    owCI=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:['rgba(200,151,58,.85)','rgba(29,185,84,.85)','rgba(76,139,245,.85)','rgba(229,72,77,.85)','rgba(245,166,35,.85)','rgba(239,68,68,.85)'],borderColor:'#101010',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#666',font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} sold`}}}}});
     return;
   }
-  const comm=(r?.comm||15)/100;
-  const weekData=[0,0,0,0,0,0,0];
-  cachedOrders.forEach(o=>{const d=new Date(o.ts||0).getDay();weekData[(d+6)%7]+=(type==='rev'?(o.total||0)*(1-comm):1);});
-  const base=type==='rev'?[165000,280000,210000,370000,480000,620000,440000]:[6,9,7,11,16,20,14];
-  const data=weekData.map((v,i)=>v||base[i]);
-  owCI=new Chart(ctx,{type:'bar',data:{labels:days,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#444',font:{size:10}}},y:{grid:{color:'#1c1c1c'},ticks:{color:'#444',font:{size:10},callback:v=>type==='rev'?'₭'+Math.round(v/1000)+'k':v}}}}});
+  // Build chart based on filter period
+  let labels=[], data=[];
+  if(owFilter==='today'){
+    labels=['6am','8am','10am','12pm','2pm','4pm','6pm','8pm','10pm'];
+    const hours=[6,8,10,12,14,16,18,20,22];
+    const dayStart=new Date();dayStart.setHours(0,0,0,0);
+    data=hours.map(h=>{
+      const s=dayStart.getTime()+h*3600000,e=s+7200000;
+      return filtered.filter(o=>(o.ts||0)>=s&&(o.ts||0)<e)
+        .reduce((sum,o)=>sum+(type==='rev'?(o.total||0)*(1-comm):1),0);
+    });
+  } else if(owFilter==='week'){
+    const dayNames=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    labels=dayNames;
+    data=dayNames.map((_,di)=>{
+      const now=new Date();
+      const diff=di-((now.getDay()+6)%7);
+      const day=new Date(now.getFullYear(),now.getMonth(),now.getDate()+diff);
+      const s=day.getTime(),e=s+86400000;
+      return filtered.filter(o=>(o.ts||0)>=s&&(o.ts||0)<e)
+        .reduce((sum,o)=>sum+(type==='rev'?(o.total||0)*(1-comm):1),0);
+    });
+  } else if(owFilter==='month'){
+    labels=['Wk1','Wk2','Wk3','Wk4','Wk5'];
+    data=[0,0,0,0,0];
+    filtered.forEach(o=>{
+      const day=new Date(o.ts||0).getDate();
+      const wk=Math.min(Math.floor((day-1)/7),4);
+      data[wk]+=(type==='rev'?(o.total||0)*(1-comm):1);
+    });
+    const now=new Date();
+    const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    const weeks=Math.ceil(daysInMonth/7);
+    labels=labels.slice(0,weeks);data=data.slice(0,weeks);
+  } else if(owFilter==='3months'){
+    const now=new Date();
+    labels=[];data=[];
+    for(let i=2;i>=0;i--){
+      const m=new Date(now.getFullYear(),now.getMonth()-i,1);
+      labels.push(m.toLocaleString('default',{month:'short'}));
+      const mEnd=new Date(now.getFullYear(),now.getMonth()-i+1,1).getTime();
+      data.push(filtered.filter(o=>(o.ts||0)>=m.getTime()&&(o.ts||0)<mEnd)
+        .reduce((sum,o)=>sum+(type==='rev'?(o.total||0)*(1-comm):1),0));
+    }
+  } else {
+    const now=new Date();
+    labels=[];data=[];
+    for(let i=5;i>=0;i--){
+      const m=new Date(now.getFullYear(),now.getMonth()-i,1);
+      labels.push(m.toLocaleString('default',{month:'short'}));
+      const mEnd=new Date(now.getFullYear(),now.getMonth()-i+1,1).getTime();
+      data.push(cachedOrders.filter(o=>(o.ts||0)>=m.getTime()&&(o.ts||0)<mEnd)
+        .reduce((sum,o)=>sum+(type==='rev'?(o.total||0)*(1-comm):1),0));
+    }
+  }
+  owCI=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>type==='rev'?'₭'+Math.round(ctx.parsed.y).toLocaleString():ctx.parsed.y+' orders'}}},scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}},y:{grid:{color:'#1c1c1c'},ticks:{color:'#555',font:{size:10},callback:v=>type==='rev'?'₭'+Math.round(v/1000)+'k':v}}}}});
 }
-function owChartSw(type,btn){document.querySelectorAll('#ow-dashboard .ctab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');initOwChart(type);}
+function owChartSw(type,btn){
+  document.querySelectorAll('#ow-dashboard .ctab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  initOwChart(type);
+}
 
 // ═══════════════════════════════════════════════════════════════
 // QR & SESSIONS (Firebase)
@@ -2835,7 +2923,7 @@ async function placeOrder(){
       rId:qrSess.rId, rName:qrSess.rName||r?.name||'',
       tId:qrSess.tId, tNum:qrSess.tNum,
       items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty})),
-      total:tot, comm:r?.comm||15,
+      total:tot, comm:r?.comm??0,
       status:'pending', ts:Date.now(),
       time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
       date:new Date().toLocaleDateString()
