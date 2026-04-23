@@ -726,7 +726,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
   <div class="c-tabs-bar">
     <div class="c-tabs-inner">
       <button class="c-tab-btn on" id="ctMenu" onclick="cTab('menu')"><span class="c-tab-ico">🍽️</span><span data-i18n="menu">Menu</span></button>
-      <button class="c-tab-btn" id="ctOrders" onclick="cTab('orders')"><span class="c-tab-ico">📋</span><span data-i18n="my_orders">My Orders</span></button>
+      <button class="c-tab-btn" id="ctOrders" onclick="cTab('orders')" style="position:relative"><span class="c-tab-ico">📋</span><span data-i18n="my_orders">My Orders</span></button>
     </div>
   </div>
   <button class="c-fab" id="cFab" onclick="toggleCart()">🛒 <span data-i18n="view_cart">View Cart</span><span class="c-fab-badge" id="cFabN">0</span></button>
@@ -751,7 +751,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     </div>
     <div class="os-btns">
       <button class="os-btn-primary" onclick="closeOrderSuccess()" data-i18n="browse_menu">🍽️ Order More Items</button>
-      <button class="os-btn-secondary" onclick="closeOrderSuccess('orders')" data-i18n="view_orders">📋 View My Bill</button>
+      <button class="os-btn-secondary" onclick="closeOrderSuccess('orders')">📋 View My Bill</button>
     </div>
   </div>
 </div>
@@ -2285,16 +2285,35 @@ async function startCustomerSession(rId,tId,sessId){
   showPage('pg-customer');
   setupCustomerUI(r,sess);
   startSessTimer();
-  // Listen for order status updates (so customer sees status changes live)
-  if(sessId){
-    db.ref('orders').orderByChild('sessId').equalTo(sessId).on('value',snap=>{
+  // Listen for order updates — listen to restaurant's orders and filter by sessId client-side
+  // (avoids Firebase index requirement for orderByChild)
+  if(sessId && rId){
+    db.ref('orders').orderByChild('rId').equalTo(rId).on('value', snap=>{
       const orders=[];
-      snap.forEach(c=>orders.push({...c.val(),fbKey:c.key}));
-      customerCachedOrders=orders.sort((a,b)=>(b.ts||0)-(a.ts||0));
-      const activeView=document.getElementById('cOrdersView').style.display;
-      if(activeView==='block') renderCustOrders();
+      snap.forEach(c=>{
+        const v=c.val();
+        // Filter only this session's orders
+        if(v.sessId===sessId) orders.push({...v,fbKey:c.key});
+      });
+      orders.sort((a,b)=>(b.ts||0)-(a.ts||0));
+      customerCachedOrders=orders;
+      // Update orders view if open
+      const ordersView=document.getElementById('cOrdersView');
+      if(ordersView&&ordersView.style.display!=='none') renderCustOrders();
+      // Update order count badge in tab bar
+      updateOrderBadge(orders.length);
     });
   }
+}
+
+function updateOrderBadge(count){
+  const tab=document.getElementById('ctOrders');
+  if(!tab) return;
+  const span=tab.querySelector('.c-tab-order-cnt');
+  if(count>0){
+    if(span) span.textContent=count;
+    else tab.insertAdjacentHTML('afterbegin',`<span class="c-tab-order-cnt" style="position:absolute;top:4px;right:10px;background:var(--c-gold);color:#000;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px">${count}</span>`);
+  } else if(span) span.remove();
 }
 
 let customerCachedOrders=[];
@@ -2334,6 +2353,15 @@ function startSessTimer(){
     else if(rem<1800000) dot.className='timer-dot warn';
     else dot.className='timer-dot';
   },1000);
+  // Also refresh orders view every 5s as backup (in case Firebase listener misses updates)
+  setInterval(()=>{
+    const ordersView=document.getElementById('cOrdersView');
+    if(ordersView&&ordersView.style.display!=='none'&&customerCachedOrders.length>0){
+      renderCustOrders();
+    }
+    // Update order badge count in tab
+    updateOrderBadge(customerCachedOrders.length);
+  },5000);
 }
 
 function showExpired(){
@@ -2474,6 +2502,16 @@ async function placeOrder(){
       date:new Date().toLocaleDateString()
     };
     await fbPush('orders',order);
+    // Add order to local cache immediately (before Firebase confirms)
+    customerCachedOrders.unshift({
+      id:ordId, sessId:qrSess.id, rId:qrSess.rId,
+      tId:qrSess.tId, tNum:qrSess.tNum,
+      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty})),
+      total:tot, status:'pending', ts:Date.now(),
+      time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+      date:new Date().toLocaleDateString()
+    });
+    updateOrderBadge(customerCachedOrders.length);
     // Show success screen
     document.getElementById('osTot').textContent=fmtK(tot);
     document.getElementById('osOrdId').textContent=ordId;
@@ -2483,11 +2521,11 @@ async function placeOrder(){
     // Close cart panel
     document.getElementById('cCartOv').classList.remove('open');
     document.getElementById('cCartPanel').classList.remove('open');
-    // Auto-dismiss after 5 seconds — customer can keep ordering
+    // After 4 seconds → auto go to orders tab so customer sees their order status
     clearTimeout(window._successTimer);
     window._successTimer=setTimeout(()=>{
-      closeOrderSuccess();
-    }, 5000);
+      closeOrderSuccess('orders');
+    }, 4000);
   } catch(e){
     notifyC('❌ Failed to send order. Check connection.');
     console.error(e);
@@ -2516,7 +2554,12 @@ function cTab(tab){
   document.getElementById('cOrdersView').style.display=tab==='orders'?'block':'none';
   document.getElementById('ctMenu').classList.toggle('on',tab==='menu');
   document.getElementById('ctOrders').classList.toggle('on',tab==='orders');
-  if(tab==='orders') renderCustOrders();
+  if(tab==='orders'){
+    // Always re-render with latest data
+    renderCustOrders();
+    // Also scroll to top
+    document.getElementById('cOrdersView').scrollTop=0;
+  }
 }
 
 let custVatRate=0; // loaded from restaurant data
@@ -2530,6 +2573,9 @@ function renderCustOrders(){
       <div style="font-family:var(--ff);font-size:20px;font-weight:900;color:var(--c-text);margin-bottom:6px">${tr('my_orders')}</div>
       <div style="font-size:13px">${tr('start_order')}</div>
       <button onclick="cTab('menu')" style="margin-top:18px;padding:11px 26px;background:var(--c-text);border:none;color:var(--c-bg);font-family:var(--ff);font-size:13px;font-weight:900;cursor:pointer;border-radius:6px">${tr('browse_menu')}</button>
+      <div style="margin-top:20px;font-size:11px;color:var(--c-muted2);padding:10px 16px;background:var(--c-surf2);border-radius:6px;border:1px solid var(--c-border)">
+        💡 Orders appear here automatically after you place them
+      </div>
     </div>`;
     return;
   }
