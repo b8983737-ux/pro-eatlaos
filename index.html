@@ -1889,6 +1889,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
         <option value="en">🇬🇧 EN</option>
         <option value="lo">🇱🇦 ລາວ</option>
         <option value="th">🇹🇭 ไทย</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ko">🇰🇷 한국어</option>
       </select>
       <div class="sess-timer" id="sessTimer"><div class="timer-dot" id="timerDot"></div><span id="timerTxt">—</span></div>
       <button class="c-cart-btn" onclick="toggleCart()">🛒<span class="c-cart-count" id="cCartN">0</span></button>
@@ -2075,9 +2077,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <input type="hidden" id="mOwItemId">
       <div class="fg"><label>Item Name</label><input class="fi" id="mIname" placeholder="e.g. Lao Larb"></div>
       <div class="form-row"><div class="fg"><label>Category</label><select class="fi" id="mIcat"></select></div><div class="fg"><label>Price (₭)</label><input class="fi" type="number" id="mIprice" placeholder="50000" step="1000"></div></div>
-      <div class="fg"><label>Description (English)</label><input class="fi" id="mIdesc" placeholder="Brief description..."></div>
-      <div class="fg"><label>Description (ລາວ)</label><input class="fi" id="mIdescLo" placeholder="ຄຳອະທິບາຍ..."></div>
-      <div class="fg"><label>Description (ไทย)</label><input class="fi" id="mIdescTh" placeholder="คำอธิบาย..."></div>
+      <div class="form-row"><div class="fg"><label>Description (English)</label><input class="fi" id="mIdesc" placeholder="Brief description..."></div><div class="fg"><label>Description (ລາວ)</label><input class="fi" id="mIdescLo" placeholder="ຄຳອະທິບາຍ..."></div></div>
+      <div class="form-row"><div class="fg"><label>Description (ไทย)</label><input class="fi" id="mIdescTh" placeholder="คำอธิบาย..."></div><div class="fg"><label>Description (中文)</label><input class="fi" id="mIdescZh" placeholder="菜品描述..."></div></div>
+      <div class="fg" style="max-width:50%"><label>Description (한국어)</label><input class="fi" id="mIdescKo" placeholder="메뉴 설명..."></div>
       <div class="fg">
         <label>Item Image / Emoji</label>
         <input type="hidden" id="mIemoji" value="🍽️">
@@ -2255,16 +2257,99 @@ let db = null; // set after SDK loads for admin
 // I18N
 // ═══════════════════════════════════════════════════════════════
 const T = {
-  en:{menu:'Menu',my_orders:'My Orders',items:'Items',min_prep:'Min',session:'Session',view_cart:'View Cart',your_order:'Your Order',total:'Total',send_kitchen:'Send to Kitchen →',add_to_cart:'Add to Cart →',close:'Close',empty_cart:'Cart is empty',start_order:'Browse menu to start ordering',expired_title:'Session Expired',expired_desc:'Your table session has ended.\nPlease scan the QR code again.',order_sent:'Order Sent! 🎉',preparing:'Kitchen is preparing your order',browse_menu:'+ Add More Items',view_orders:'View My Orders',all:'All',popular:'Popular',new_item:'New',sold_out:'Sold Out',no_items:'No items in this category',order_history:'Order History',status_pending:'Pending',status_preparing:'Preparing',status_ready:'Ready ✓',status_delivered:'Done',table:'Table',items_ordered:'items ordered'},
-  lo:{menu:'ເມນູ',my_orders:'ອໍເດີຂອງຂ້ອຍ',items:'ລາຍການ',min_prep:'ນາທີ',session:'ເຊດຊັນ',view_cart:'ເບິ່ງກະຕ່າ',your_order:'ອໍເດີຂອງທ່ານ',total:'ທັງໝົດ',send_kitchen:'ສົ່ງໄປຫ້ອງຄົວ →',add_to_cart:'ເພີ່ມໃສ່ກະຕ່າ →',close:'ປິດ',empty_cart:'ກະຕ່າຍັງຫວ່າງ',start_order:'ເບິ່ງເມນູເພື່ອເລີ່ມສັ່ງ',expired_title:'ໝົດເວລາ',expired_desc:'ເຊດຊັນໝົດແລ້ວ.\nກະລຸນາສະແກນ QR ໃໝ່.',order_sent:'ສົ່ງອໍເດີແລ້ວ! 🎉',preparing:'ຫ້ອງຄົວກຳລັງກຽມ',browse_menu:'+ ສັ່ງເພີ່ມ',view_orders:'ເບິ່ງອໍເດີ',all:'ທັງໝົດ',popular:'ນິຍົມ',new_item:'ໃໝ່',sold_out:'ໝົດ',no_items:'ບໍ່ມີລາຍການ',order_history:'ປະຫວັດ',status_pending:'ລໍຖ້າ',status_preparing:'ກຳລັງກຽມ',status_ready:'ພ້ອມ ✓',status_delivered:'ສຳເລັດ',table:'ໂຕະ',items_ordered:'ລາຍການ'},
-  th:{menu:'เมนู',my_orders:'ออร์เดอร์ฉัน',items:'รายการ',min_prep:'นาที',session:'เซสชัน',view_cart:'ดูตะกร้า',your_order:'ออร์เดอร์ของคุณ',total:'ทั้งหมด',send_kitchen:'ส่งไปครัว →',add_to_cart:'เพิ่มในตะกร้า →',close:'ปิด',empty_cart:'ตะกร้าว่าง',start_order:'ดูเมนูเพื่อสั่ง',expired_title:'เซสชันหมด',expired_desc:'เซสชันหมดแล้ว\nกรุณาสแกน QR ใหม่',order_sent:'ส่งออร์เดอร์แล้ว! 🎉',preparing:'ครัวกำลังเตรียม',browse_menu:'+ สั่งเพิ่ม',view_orders:'ดูออร์เดอร์',all:'ทั้งหมด',popular:'ยอดนิยม',new_item:'ใหม่',sold_out:'หมด',no_items:'ไม่มีรายการ',order_history:'ประวัติ',status_pending:'รอ',status_preparing:'กำลังทำ',status_ready:'พร้อม ✓',status_delivered:'เสร็จ',table:'โต๊ะ',items_ordered:'รายการ'}
+  en:{
+    menu:'Menu',my_orders:'My Orders',items:'Items',min_prep:'Min',session:'Session',
+    view_cart:'View Cart',your_order:'Your Order',total:'Total',
+    send_kitchen:'Send to Kitchen →',add_to_cart:'Add to Cart →',close:'Close',
+    empty_cart:'Cart is empty',start_order:'Browse menu to start ordering',
+    expired_title:'Session Expired',expired_desc:'Your table session has ended.\nPlease scan the QR code again.',
+    order_sent:'Order Sent! 🎉',preparing:'Kitchen is preparing your order',
+    browse_menu:'+ Order More',view_orders:'View My Bill',
+    all:'All',popular:'Popular',new_item:'New',sold_out:'Sold Out',
+    no_items:'No items in this category',order_history:'My Orders',
+    status_pending:'Pending',status_preparing:'Preparing',status_ready:'Ready ✓',status_delivered:'Done',
+    table:'Table',items_ordered:'items',subtotal:'Subtotal',vat:'VAT',
+    grand_total:'Total incl. VAT',live_bill:'My Bill So Far',orders_count:'order',
+    add_more:'+ Order More Items',view_bill:'View My Bill'
+  },
+  lo:{
+    menu:'ເມນູ',my_orders:'ອໍເດີຂອງຂ້ອຍ',items:'ລາຍການ',min_prep:'ນາທີ',session:'ເຊດຊັນ',
+    view_cart:'ເບິ່ງກະຕ່າ',your_order:'ອໍເດີຂອງທ່ານ',total:'ທັງໝົດ',
+    send_kitchen:'ສົ່ງໄປຫ້ອງຄົວ →',add_to_cart:'ເພີ່ມໃສ່ກະຕ່າ →',close:'ປິດ',
+    empty_cart:'ກະຕ່າຍັງຫວ່າງ',start_order:'ເບິ່ງເມນູເພື່ອເລີ່ມສັ່ງ',
+    expired_title:'ໝົດເວລາ',expired_desc:'ເຊດຊັນໝົດແລ້ວ.\nກະລຸນາສະແກນ QR ໃໝ່.',
+    order_sent:'ສົ່ງອໍເດີແລ້ວ! 🎉',preparing:'ຫ້ອງຄົວກຳລັງກຽມ',
+    browse_menu:'+ ສັ່ງເພີ່ມ',view_orders:'ເບິ່ງໃບເກັບເງິນ',
+    all:'ທັງໝົດ',popular:'ນິຍົມ',new_item:'ໃໝ່',sold_out:'ໝົດ',
+    no_items:'ບໍ່ມີລາຍການ',order_history:'ອໍເດີຂອງຂ້ອຍ',
+    status_pending:'ລໍຖ້າ',status_preparing:'ກຳລັງກຽມ',status_ready:'ພ້ອມ ✓',status_delivered:'ສຳເລັດ',
+    table:'ໂຕະ',items_ordered:'ລາຍການ',subtotal:'ລວມຍ່ອຍ',vat:'ອາກອນ',
+    grand_total:'ລວມທັງໝົດ',live_bill:'ໃບເກັບເງິນປັດຈຸບັນ',orders_count:'ອໍເດີ',
+    add_more:'+ ສັ່ງເພີ່ມ',view_bill:'ເບິ່ງໃບເກັບເງິນ'
+  },
+  th:{
+    menu:'เมนู',my_orders:'ออร์เดอร์ของฉัน',items:'รายการ',min_prep:'นาที',session:'เซสชัน',
+    view_cart:'ดูตะกร้า',your_order:'ออร์เดอร์ของคุณ',total:'ทั้งหมด',
+    send_kitchen:'ส่งไปครัว →',add_to_cart:'เพิ่มในตะกร้า →',close:'ปิด',
+    empty_cart:'ตะกร้าว่างเปล่า',start_order:'เลือกเมนูเพื่อสั่งอาหาร',
+    expired_title:'หมดเวลา',expired_desc:'เซสชันหมดแล้ว\nกรุณาสแกน QR ใหม่อีกครั้ง',
+    order_sent:'ส่งออร์เดอร์แล้ว! 🎉',preparing:'ครัวกำลังเตรียมอาหาร',
+    browse_menu:'+ สั่งเพิ่ม',view_orders:'ดูบิลของฉัน',
+    all:'ทั้งหมด',popular:'ยอดนิยม',new_item:'ใหม่',sold_out:'หมดแล้ว',
+    no_items:'ไม่มีรายการในหมวดนี้',order_history:'ออร์เดอร์ของฉัน',
+    status_pending:'รอดำเนินการ',status_preparing:'กำลังทำ',status_ready:'พร้อมเสิร์ฟ ✓',status_delivered:'เสร็จสิ้น',
+    table:'โต๊ะ',items_ordered:'รายการ',subtotal:'ยอดรวม',vat:'ภาษีมูลค่าเพิ่ม',
+    grand_total:'ยอดรวมทั้งหมด',live_bill:'บิลปัจจุบัน',orders_count:'ออร์เดอร์',
+    add_more:'+ สั่งเพิ่ม',view_bill:'ดูบิลของฉัน'
+  },
+  zh:{
+    menu:'菜单',my_orders:'我的订单',items:'项目',min_prep:'分钟',session:'会话',
+    view_cart:'查看购物车',your_order:'您的订单',total:'合计',
+    send_kitchen:'发送到厨房 →',add_to_cart:'加入购物车 →',close:'关闭',
+    empty_cart:'购物车是空的',start_order:'浏览菜单开始点餐',
+    expired_title:'会话已过期',expired_desc:'您的桌位会话已结束。\n请重新扫描二维码。',
+    order_sent:'订单已发送！🎉',preparing:'厨房正在准备您的餐食',
+    browse_menu:'+ 继续点餐',view_orders:'查看我的账单',
+    all:'全部',popular:'热门',new_item:'新品',sold_out:'售罄',
+    no_items:'此分类暂无菜品',order_history:'我的订单',
+    status_pending:'等待中',status_preparing:'准备中',status_ready:'已就绪 ✓',status_delivered:'已完成',
+    table:'桌号',items_ordered:'项',subtotal:'小计',vat:'增值税',
+    grand_total:'含税总计',live_bill:'当前账单',orders_count:'订单',
+    add_more:'+ 继续点餐',view_bill:'查看账单'
+  },
+  ko:{
+    menu:'메뉴',my_orders:'내 주문',items:'항목',min_prep:'분',session:'세션',
+    view_cart:'장바구니 보기',your_order:'내 주문',total:'합계',
+    send_kitchen:'주방으로 보내기 →',add_to_cart:'장바구니에 추가 →',close:'닫기',
+    empty_cart:'장바구니가 비어 있습니다',start_order:'메뉴를 탐색하여 주문하세요',
+    expired_title:'세션 만료',expired_desc:'테이블 세션이 종료되었습니다.\nQR 코드를 다시 스캔해 주세요.',
+    order_sent:'주문 완료! 🎉',preparing:'주방에서 음식을 준비 중입니다',
+    browse_menu:'+ 더 주문하기',view_orders:'내 영수증 보기',
+    all:'전체',popular:'인기',new_item:'신메뉴',sold_out:'품절',
+    no_items:'이 카테고리에 메뉴가 없습니다',order_history:'내 주문',
+    status_pending:'대기 중',status_preparing:'준비 중',status_ready:'준비 완료 ✓',status_delivered:'완료',
+    table:'테이블',items_ordered:'개',subtotal:'소계',vat:'부가세',
+    grand_total:'총 합계(세금 포함)',live_bill:'현재 주문 내역',orders_count:'주문',
+    add_more:'+ 더 주문하기',view_bill:'영수증 보기'
+  }
 };
-let lang='en';
+
+// ── Save language preference so it persists on refresh ──
+let lang = localStorage.getItem('el_lang') || 'en';
+
 function tr(k){return T[lang]?.[k]||T.en[k]||k;}
+
 function setLang(l){
   lang=l;
+  // Save to localStorage — persists on refresh
+  localStorage.setItem('el_lang', l);
+  // Update language selector
+  const sel=document.getElementById('langSel');
+  if(sel) sel.value=l;
+  // Update all static text
   document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=tr(el.dataset.i18n));
-  if(qrSess){renderCats();renderMenu(curCat);renderCart();renderCustOrders();}
+  // Re-render menu with new language
+  if(qrSess){renderCats();renderMenu(curCat);renderCustOrders();}
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4219,6 +4304,8 @@ function openOwItemModal(){
   document.getElementById('mIemoji').value='🍽️';
   document.getElementById('mIbadge').value='';
   document.getElementById('mIstatus').value='active';
+  const zhEl=document.getElementById('mIdescZh');if(zhEl) zhEl.value='';
+  const koEl=document.getElementById('mIdescKo');if(koEl) koEl.value='';
   document.getElementById('mIimgData').value='';
   const prev=document.getElementById('mIimgPreview');
   prev.textContent='🍽️';prev.style.fontSize='26px';
@@ -4246,7 +4333,7 @@ async function saveOwItem(){
   const price=parseInt(document.getElementById('mIprice').value);
   const cat=document.getElementById('mIcat').value;
   if(!name||!price||!cat){notifyD('⚠ Fill required fields');return;}
-  const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:document.getElementById('mIimgData').value||'',badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,id:'m'+Date.now()};
+  const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),dZh:document.getElementById('mIdescZh')?.value.trim()||'',dKo:document.getElementById('mIdescKo')?.value.trim()||'',emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:document.getElementById('mIimgData').value||'',badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,id:'m'+Date.now()};
   const menu=[...(r.menu||[])];
   if(editItemId!==null) menu[editItemId]={...menu[editItemId],...data};
   else menu.push(data);
@@ -4706,6 +4793,12 @@ function setupCustomerUI(r,sess){
   document.getElementById('cPrepTime').textContent=r.prep||15;
   document.getElementById('cSessLeft').textContent=(sess?.duration||2)+'h';
   custVatRate=r.vat||0;
+  // Apply saved language preference
+  const savedLang=localStorage.getItem('el_lang')||'en';
+  lang=savedLang;
+  const sel=document.getElementById('langSel');
+  if(sel) sel.value=savedLang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=tr(el.dataset.i18n));
   // Update title immediately to restaurant name
   document.title=r.name+' · Table '+(sess?.tNum||qrSess?.tNum||'')+(r.addr?' · '+r.addr:'');
   // Apply restaurant theme
@@ -4780,6 +4873,8 @@ function setCat(c){
 function itemDesc(item){
   if(lang==='lo'&&item.dLo) return item.dLo;
   if(lang==='th'&&item.dTh) return item.dTh;
+  if(lang==='zh'&&item.dZh) return item.dZh;
+  if(lang==='ko'&&item.dKo) return item.dKo;
   return item.desc||'';
 }
 
