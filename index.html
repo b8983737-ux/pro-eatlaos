@@ -2045,15 +2045,19 @@ tr:hover td{background:rgba(255,255,255,.015);}
           </div>
           <div class="ep-dropdown" id="catEP">
             <div class="ep-tabs">
-              <button class="ep-tab on" onclick="epTab('catEP','tags',this)">🏷️ Tags</button>
+              <button class="ep-tab on" onclick="epTab('catEP','tags',this)">🏷️ All</button>
               <button class="ep-tab" onclick="epTab('catEP','food',this)">🍽️ Food</button>
-              <button class="ep-tab" onclick="epTab('catEP','other',this)">🎯 Other</button>
+              <button class="ep-tab" onclick="epTab('catEP','drink',this)">🥤 Drinks</button>
+              <button class="ep-tab" onclick="epTab('catEP','other',this)">⭐ More</button>
             </div>
             <div class="ep-tab-content on" id="catEP-tags">
               <div class="ep-grid" id="catEP-tags-grid"></div>
             </div>
             <div class="ep-tab-content" id="catEP-food">
               <div class="ep-grid" id="catEP-food-grid2"></div>
+            </div>
+            <div class="ep-tab-content" id="catEP-drink">
+              <div class="ep-grid" id="catEP-drink-grid2"></div>
             </div>
             <div class="ep-tab-content" id="catEP-other">
               <div class="ep-grid" id="catEP-other-grid2"></div>
@@ -2908,11 +2912,22 @@ async function saveResto(){
       if(!pw){notifyD('⚠ Please set a password for the owner');return;}
       data.pass=pw;
       data.createdAt=Date.now();
-      data.cats=[{id:'c1',name:'Main Course',icon:'🍽️'}];
+      // Default categories — owner can edit/add more
+      data.cats=[
+        {id:'c1',name:'Main Course',icon:'🍽️'},
+        {id:'c2',name:'Starters',icon:'🥗'},
+        {id:'c3',name:'Drinks',icon:'🥤'},
+        {id:'c4',name:'Desserts',icon:'🍰'},
+      ];
       data.menu=[];
       data.tables=[];
+      // Generate URL slug from restaurant name
+      data.slug=(data.name||'restaurant')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g,'-')
+        .replace(/^-|-$/g,'');
       await fbPush('restaurants',data);
-      notifyD('✓ Restaurant added successfully!');
+      notifyD('✓ Restaurant "'+data.name+'" created! Owner can now login with: '+data.user);
     }
     closeModal('mAddResto');
     loadAndRenderRestos();
@@ -3512,7 +3527,32 @@ const EP_EMOJIS = {
     // Events & special
     '⭐','🌟','👑','💎','🏆','🔥','✨','💫','🎯',
   ],
-  tags:['🏷️','🔖','📌','📍','🎯','⭐','🌟','💫','🔥','✨','🍽️','🥗','🥤','🍲','🫕','🍔','🍕','🌮','🍣','🥘','🍗','🍟','🧁','☕','🍵','🍺','🍹','🥩','🦐','🌽','🥦','🍱','🎪','💎','👑','🏆'],
+  tags:[
+    // Category labels
+    '🏷️','🔖','📌','📍','🗂️','📋','📝','🗒️',
+    // Ratings & quality  
+    '⭐','🌟','💫','✨','🔥','💎','👑','🏆','🥇','🎯',
+    // Food category icons
+    '🍽️','🥢','🍴','🔪','🫕','🥘','🍲','🥗',
+    // Meat & protein
+    '🥩','🍗','🍖','🥓','🧆','🍳','🥚','🦐',
+    // Asian
+    '🍣','🍱','🍜','🍛','🍚','🙏','🥟','🦪',
+    // Western  
+    '🍔','🍕','🌮','🌯','🥙','🧀','🥪','🍟',
+    // Vegetarian/healthy
+    '🥗','🥦','🥕','🌽','🍅','🥑','🥬','🌿',
+    // Seafood
+    '🦞','🦀','🦑','🐟','🦈','🐠','🍤','🦐',
+    // Starters/soups
+    '🥣','🍲','🫕','🥗','🧄','🧅','🫑','🍄',
+    // Desserts & sweet
+    '🍰','🎂','🧁','🍩','🍪','🍫','🍬','🍭','🍮','🍯','🍧','🍨',
+    // Drinks
+    '🥤','🧋','☕','🍵','🫖','🧃','🍺','🍻','🥂','🍷','🍸','🍹',
+    // Special/events
+    '❤️','💚','💛','🧡','💜','🎊','🎉','🎈','🌈','☀️','🌙','⚡',
+  ],
   star:['⭐','🌟','💫','✨','🏆','👑','💎','🔥','❤️','💚','💛','🧡','💜','🤍','🎯','🎪','🎭','🎨','🎬','🎵','🎤','🎸','🏅','🥇','🎊','🎉','🎈','🎀','🌈','☀️','🌙','⚡','🌊','🍀','🦁','🐯','🦅','🐉','🦄']
 };
 
@@ -3669,9 +3709,10 @@ function initEmojiPickers(){
     renderEPGrid('restoEP-star-grid', EP_EMOJIS.star, 'resto');
   } catch(e){ console.warn('Emoji picker init error:', e); }
   // Category picker
-  renderEPGrid('catEP-tags-grid', EP_EMOJIS.tags, 'cat');
+  renderEPGrid('catEP-tags-grid', EP_EMOJIS.tags.flat(), 'cat');
   renderEPGrid('catEP-food-grid2', EP_EMOJIS.food, 'cat');
-  renderEPGrid('catEP-other-grid2', EP_EMOJIS.other, 'cat');
+  renderEPGrid('catEP-drink-grid2', EP_EMOJIS.drink, 'cat');
+  renderEPGrid('catEP-other-grid2', EP_EMOJIS.star, 'cat');
   // Owner Profile picker (rendered after owProfile() injects HTML)
   const flatIconsP=EP_EMOJIS.icons.flat();
   try{
@@ -4185,6 +4226,18 @@ async function startCustomerSession(rId,tId,sessId){
   cart=[];
   showPage('pg-customer');
   setupCustomerUI(r,sess);
+  // Update browser URL to show restaurant name — looks professional!
+  // e.g. eatlaos.com/amazone  or  eatlaos.com/savaan-kitchen
+  try{
+    const slug=(r.name||'menu')
+      .toLowerCase()
+      .replace(/[^a-z0-9฀-๿຀-໿]+/g,'-') // keep Lao chars too
+      .replace(/^-|-$/g,'');
+    const newUrl=window.location.origin+'/'+slug+'?table='+qrSess.tNum;
+    window.history.replaceState({rId,tId,sessId},'',newUrl);
+    // Also update page title
+    document.title=r.name+' · Table '+qrSess.tNum+' · EATLAOS';
+  }catch(e){console.log('URL update skipped:',e);}
   startSessTimer();
   // Listen for order updates — listen to restaurant's orders and filter by sessId client-side
   // (avoids Firebase index requirement for orderByChild)
