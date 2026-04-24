@@ -1940,7 +1940,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       You can order more items anytime during your session
     </div>
     <div class="os-btns">
-      <button class="os-btn-primary" onclick="closeOrderSuccess()" data-i18n="browse_menu">🍽️ Order More Items</button>
+      <button class="os-btn-primary" onclick="closeOrderSuccess()">🍽️ Order More Items</button>
       <button class="os-btn-secondary" onclick="closeOrderSuccess('orders')">📋 View My Bill</button>
     </div>
   </div>
@@ -4953,10 +4953,10 @@ async function placeOrder(){
     // Close cart panel
     document.getElementById('cCartOv').classList.remove('open');
     document.getElementById('cCartPanel').classList.remove('open');
-    // After 4 seconds → auto go to orders tab so customer sees their order status
+    // After 4 seconds → dismiss success and go back to MENU so customer can order more
     clearTimeout(window._successTimer);
     window._successTimer=setTimeout(()=>{
-      closeOrderSuccess('orders');
+      closeOrderSuccess(); // goes to menu, NOT orders
     }, 4000);
   } catch(e){
     notifyC('❌ Failed to send order. Check connection.');
