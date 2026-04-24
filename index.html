@@ -2538,12 +2538,12 @@ async function init(){
     autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
       // Check if already logged in as SA
-      const saved=sessionStorage.getItem('el_session');
+      const saved=localStorage.getItem('el_session');
       if(saved){const ss=JSON.parse(saved);if(ss.role==='superadmin'){me=ss;restoreSA();return;}}
       showPage('pg-sa-login');
     } else {
       // Restore owner session on refresh
-      const saved=sessionStorage.getItem('el_session');
+      const saved=localStorage.getItem('el_session');
       if(saved){
         try{
           const ss=JSON.parse(saved);
@@ -2558,7 +2558,7 @@ async function init(){
             hideLoading();
             return;
           }
-        }catch(e){sessionStorage.removeItem('el_session');}
+        }catch(e){localStorage.removeItem('el_session');}
       }
       showPage('pg-land');
     }
@@ -2737,7 +2737,7 @@ async function doOwnerLogin(){
   }
   me={name:u,role:'owner',restoId:found.id,restoName:found.name};
   restoId=found.id;
-  sessionStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
+  localStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
   document.getElementById('owSbN').textContent=found.name;
   document.getElementById('owSbR').textContent=found.cuisine||'';
   showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;
@@ -2769,7 +2769,7 @@ async function doSALogin(){
   const SA_PASS='6699@BillS';
   if(u===SA_USER&&p===SA_PASS){
     me={name:'Super Admin',role:'superadmin'};
-    sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
+    localStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
     showPage('pg-sa');
     saP('dashboard',document.querySelector('#pg-sa .sb-item'));
     startSAListeners();
@@ -2786,7 +2786,7 @@ function logout(){
     if(saOrdersListener) db.ref('orders').off();
   }
   me=null;restoId=null;cachedOrders=[];
-  sessionStorage.removeItem('el_session');
+  localStorage.removeItem('el_session');
   ['owU','owP','saU','saP'].forEach(id=>{const e=document.getElementById(id);if(e) e.value='';});
   showPage('pg-land');
 }
@@ -3636,51 +3636,60 @@ function billsResetFilter(){
   renderBills();
 }
 
+// Cache bills data so filter doesn't re-fetch
+let _billsCache={sessions:null,r:null,ts:0};
+
 async function renderBills(){
   const con=document.getElementById('billsContainer');
-  con.innerHTML='<div style="text-align:center;padding:30px;color:var(--s-muted)">Loading...</div>';
-  const sessions=await fbGet('sessions')||{};
-  const r=await fbGet('restaurants/'+restoId);
-  const comm=r?.comm??0;
-  const vatRate=r?.vat||0;
 
-  // All active sessions for this restaurant
-  let allSess=Object.entries(sessions).filter(([k,s])=>s.rId===restoId&&Date.now()<(s.exp||0));
-
-  // Populate table dropdown
-  const bfTable=document.getElementById('bfTable');
-  if(bfTable){
-    const cur=bfTable.value;
-    bfTable.innerHTML='<option value="">All Tables</option>'+
-      allSess.map(([k,s])=>`<option value="${k}" ${cur===k?'selected':''}>${'Table '+s.tNum}</option>`).join('');
-    if(cur) bfTable.value=cur;
-  }
-
-  // Read filters
+  // Read filter values BEFORE any DOM changes
   const filterTable=document.getElementById('bfTable')?.value||'';
   const filterStatus=document.getElementById('bfStatus')?.value||'';
   const sortBy=document.getElementById('bfSort')?.value||'newest';
 
+  // Fetch data (use cache if <10s old)
+  const now=Date.now();
+  if(now-_billsCache.ts>10000){
+    const [sessions,r]=await Promise.all([
+      fbGet('sessions'),
+      fbGet('restaurants/'+restoId)
+    ]);
+    _billsCache={sessions:sessions||{},r,ts:now};
+  }
+  const {sessions,r}=_billsCache;
+  const comm=r?.comm??0;
+  const vatRate=r?.vat||0;
+
+  // All active sessions for this restaurant
+  const allSess=Object.entries(sessions).filter(([k,s])=>s.rId===restoId&&Date.now()<(s.exp||0));
+
+  // Populate table dropdown without losing selected value
+  const bfTable=document.getElementById('bfTable');
+  if(bfTable){
+    const opts='<option value="">All Tables</option>'+
+      allSess.map(([k,s])=>`<option value="${k}">${'Table '+s.tNum}</option>`).join('');
+    if(bfTable.innerHTML!==opts) bfTable.innerHTML=opts;
+    if(filterTable) bfTable.value=filterTable;
+  }
+
   if(!allSess.length){
-    ['bsTables','bsTotal','bsEarn','bsPending'].forEach(id=>{
-      const el=document.getElementById(id);if(el) el.textContent='0';
-    });
-    document.getElementById('bsTotal').textContent='₭0';
-    document.getElementById('bsEarn').textContent='₭0';
+    ['bsTables','bsEarn','bsPending'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0';});
+    const et=document.getElementById('bsTotal');if(et)et.textContent='₭0';
+    const ee=document.getElementById('bsEarn');if(ee)ee.textContent='₭0';
     con.innerHTML=`<div style="text-align:center;padding:60px;color:var(--s-muted)"><div style="font-size:48px;margin-bottom:14px">🪑</div><div style="font-size:14px">No active table sessions.<br>Generate QR codes to start sessions.</div></div>`;
     return;
   }
 
-  // Build session data with totals
+  // Build session data — always use ALL orders for totals, filter only for display
   let sessData=allSess.map(([sessKey,sess])=>{
-    let orders=cachedOrders.filter(o=>o.sessId===sessKey);
-    if(filterStatus) orders=orders.filter(o=>o.status===filterStatus);
-    const total=orders.reduce((s,o)=>s+(o.total||0),0);
+    const allOrders=cachedOrders.filter(o=>o.sessId===sessKey);
+    const dispOrders=filterStatus?allOrders.filter(o=>o.status===filterStatus):allOrders;
+    const total=allOrders.reduce((s,o)=>s+(o.total||0),0); // total always uses all orders
     const vatAmt=Math.round(total*vatRate/100);
     const grandTotal=total+vatAmt;
     const earn=Math.round(grandTotal*(1-(comm/100)));
-    const pending=orders.filter(o=>o.status==='pending').length;
-    return{sessKey,sess,orders,total,vatAmt,grandTotal,earn,pending};
+    const pending=allOrders.filter(o=>o.status==='pending').length;
+    return{sessKey,sess,allOrders,dispOrders,total,vatAmt,grandTotal,earn,pending};
   });
 
   // Apply table filter
@@ -3689,21 +3698,14 @@ async function renderBills(){
   // Sort
   if(sortBy==='highest') sessData.sort((a,b)=>b.grandTotal-a.grandTotal);
   else if(sortBy==='table') sessData.sort((a,b)=>String(a.sess.tNum).localeCompare(String(b.sess.tNum),undefined,{numeric:true}));
-  else if(sortBy==='orders') sessData.sort((a,b)=>b.orders.length-a.orders.length);
+  else if(sortBy==='orders') sessData.sort((a,b)=>b.allOrders.length-a.allOrders.length);
   else sessData.sort((a,b)=>(b.sess.start||0)-(a.sess.start||0));
 
-  // Update summary strip
-  const sumTotal=sessData.reduce((s,d)=>s+d.grandTotal,0);
-  const sumEarn=sessData.reduce((s,d)=>s+d.earn,0);
-  const sumPending=sessData.reduce((s,d)=>s+d.pending,0);
-  const el_t=document.getElementById('bsTables');
-  const el_tot=document.getElementById('bsTotal');
-  const el_e=document.getElementById('bsEarn');
-  const el_p=document.getElementById('bsPending');
-  if(el_t) el_t.textContent=sessData.length;
-  if(el_tot) el_tot.textContent=fmtK(sumTotal);
-  if(el_e) el_e.textContent=fmtK(sumEarn);
-  if(el_p) el_p.textContent=sumPending;
+  // Update summary
+  animateNum('bsTables',sessData.length,false);
+  const el_tot=document.getElementById('bsTotal');if(el_tot)el_tot.textContent=fmtK(sessData.reduce((s,d)=>s+d.grandTotal,0));
+  const el_e=document.getElementById('bsEarn');if(el_e)el_e.textContent=fmtK(sessData.reduce((s,d)=>s+d.earn,0));
+  animateNum('bsPending',sessData.reduce((s,d)=>s+d.pending,0),false);
 
   con.innerHTML=sessData.map(({sessKey,sess,orders,total,vatAmt,grandTotal,earn,pending})=>{
     const allOrdersForSess=cachedOrders.filter(o=>o.sessId===sessKey);
@@ -5206,10 +5208,8 @@ async function placeOrder(){
     document.getElementById('cCartOv').classList.remove('open');
     document.getElementById('cCartPanel').classList.remove('open');
     // After 4 seconds → dismiss success and go back to MENU so customer can order more
+    // No auto-redirect — customer decides when to continue
     clearTimeout(window._successTimer);
-    window._successTimer=setTimeout(()=>{
-      closeOrderSuccess(); // goes to menu, NOT orders
-    }, 4000);
   } catch(e){
     notifyC('❌ Failed to send order. Check connection.');
     console.error(e);
