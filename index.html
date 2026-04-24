@@ -1862,7 +1862,32 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <input type="hidden" id="mRestoId">
       <div class="form-row"><div class="fg"><label>Restaurant Name</label><input class="fi" id="mRname" placeholder="e.g. Savaan Kitchen"></div><div class="fg"><label>Cuisine Type</label><input class="fi" id="mRcuisine" placeholder="e.g. Lao, Thai, Mixed"></div></div>
       <div class="form-row"><div class="fg"><label>Owner Username</label><input class="fi" id="mRuser" placeholder="login username"></div><div class="fg"><label>Owner Password</label><input class="fi" type="password" id="mRpass" placeholder="set a strong password"></div></div>
-      <div class="form-row"><div class="fg"><label>Commission % (platform takes)</label><input class="fi" type="number" id="mRcomm" value="15" min="0" max="100" step="0.5" placeholder="0 = free"></div><div class="fg"><label>Restaurant Emoji</label><input class="fi" id="mRemoji" placeholder="🍽️" maxlength="4"></div></div>
+      <div class="form-row">
+        <div class="fg"><label>Commission % (platform takes)</label><input class="fi" type="number" id="mRcomm" value="15" min="0" max="100" step="0.5" placeholder="0 = free" onchange="if(this.value==='')this.value=0"></div>
+        <div class="fg">
+          <label>Restaurant Icon Emoji</label>
+          <input type="hidden" id="mRemoji" value="🍽️">
+          <div class="ep-wrap" style="margin-top:6px">
+            <div class="ep-trigger" onclick="toggleEP('restoEP')" style="padding:8px 12px">
+              <div class="ep-preview" id="mRemojiPreview" style="width:44px;height:44px;font-size:26px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:4px;overflow:hidden">🍽️</div>
+              <div class="ep-trigger-label"><div class="ep-trigger-title" style="font-size:12px">Choose Restaurant Icon</div><div class="ep-trigger-sub">Click to open picker</div></div>
+              <span class="ep-arrow">▼</span>
+            </div>
+            <div class="ep-dropdown" id="restoEP">
+              <div class="ep-tabs">
+                <button class="ep-tab on" onclick="epTab('restoEP','icons',this)">🏪 Restos</button>
+                <button class="ep-tab" onclick="epTab('restoEP','food',this)">🍽️ Food</button>
+                <button class="ep-tab" onclick="epTab('restoEP','drink',this)">🥤 Drinks</button>
+                <button class="ep-tab" onclick="epTab('restoEP','star',this)">⭐ Special</button>
+              </div>
+              <div class="ep-tab-content on" id="restoEP-icons"><div class="ep-grid" id="restoEP-icons-grid"></div></div>
+              <div class="ep-tab-content" id="restoEP-food"><div class="ep-grid" id="restoEP-food-grid"></div></div>
+              <div class="ep-tab-content" id="restoEP-drink"><div class="ep-grid" id="restoEP-drink-grid"></div></div>
+              <div class="ep-tab-content" id="restoEP-star"><div class="ep-grid" id="restoEP-star-grid"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="fg"><label>Address</label><input class="fi" id="mRaddr" placeholder="Vientiane, Laos"></div>
       <div class="fg">
         <label>Restaurant Logo (optional)</label>
@@ -2460,7 +2485,7 @@ async function saStats(){
   const active=restoList.filter(r=>r.status==='active').length;
   const filtered=filterOrdersByPeriod(cachedOrders,saFilter);
   const orders=filtered.length;
-  const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm??CFG.commission??0)/100),0);
+  const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm===0?0:(o.comm??CFG.commission??0))/100),0);
   const sessions=await fbGet('sessions')||{};
   const activeSess=Object.values(sessions).filter(s=>Date.now()<(s.exp||0)).length;
   document.getElementById('sa-s1').textContent=active;
@@ -2550,7 +2575,7 @@ function renderRevSummary(filtered){
 
 async function saRevenue(){
   const gross=cachedOrders.reduce((s,o)=>s+(o.total||0),0);
-  const comm=cachedOrders.reduce((s,o)=>s+(o.total||0)*((o.comm??0)/100),0);
+  const comm=cachedOrders.reduce((s,o)=>s+(o.total||0)*((o.comm===0?0:(o.comm??0))/100),0);
   document.getElementById('sa-gr').textContent=fmtK(gross);
   document.getElementById('sa-co').textContent=fmtK(comm);
   document.getElementById('sa-po').textContent=fmtK(gross-comm);
@@ -2609,7 +2634,7 @@ async function loadAndRenderRestos(){
 
 function saOrders(){
   document.getElementById('sa-ordtbl').innerHTML=cachedOrders.map(o=>{
-    const comm=Math.round((o.total||0)*(o.comm||15)/100);
+    const comm=Math.round((o.total||0)*((o.comm===0?0:(o.comm||0))/100));
     return`<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td>${o.items?.length||0}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('')||nd(8);
 }
@@ -2745,6 +2770,12 @@ function resetRestoModal(){
   selectTheme('classic',false);
   document.getElementById('mRlogoData').value='';
   document.getElementById('logoPreview').textContent='🍽️';
+  // Reset emoji picker
+  document.getElementById('mRemoji').value='🍽️';
+  const prev=document.getElementById('mRemojiPreview');
+  if(prev){prev.textContent='🍽️';prev.style.fontSize='26px';}
+  // Re-init picker grids
+  setTimeout(()=>initEmojiPickers(), 50);
 }
 
 async function previewRestoTheme(id){
@@ -2878,10 +2909,17 @@ async function editResto(id){
   const restoTheme=r.theme||'classic';
   document.getElementById('mRtheme').value=restoTheme;
   selectTheme(restoTheme, false);
-  // Restore emoji preview
-  document.getElementById('mRemoji').value=r.emoji||'🍽️';
+  // Restore emoji preview — works with both old text input and new picker
+  const emojiVal=r.emoji||'🍽️';
+  document.getElementById('mRemoji').value=emojiVal;
   const rEmojiPrev=document.getElementById('mRemojiPreview');
-  if(rEmojiPrev){rEmojiPrev.textContent=r.emoji||'🍽️';rEmojiPrev.style.fontSize='26px';}
+  if(rEmojiPrev){
+    rEmojiPrev.textContent=emojiVal;
+    rEmojiPrev.style.fontSize='26px';
+    rEmojiPrev.style.fontFamily='serif';
+  }
+  // Re-init picker grids in case modal was just opened
+  setTimeout(()=>initEmojiPickers(), 50);
   document.getElementById('mRlogoData').value=r.logo||'';
   const prev=document.getElementById('logoPreview');
   if(r.logo) prev.innerHTML=`<img src="${r.logo}" style="width:100%;height:100%;object-fit:cover">`;
@@ -2975,7 +3013,7 @@ async function owStats(){
   const r=await fbGet('restaurants/'+restoId);
   const filtered=filterOrdersByPeriod(cachedOrders,owFilter);
   const gross=filtered.reduce((s,o)=>s+(o.total||0),0);
-  const comm=(r?.comm??0)/100;
+  const comm=(r?.comm===0?0:(r?.comm??0))/100;
   const earn=Math.round(gross*(1-comm));
   const pend=cachedOrders.filter(o=>o.status==='pending').length;
   const vatCollected=Math.round(gross*((r?.vat||0)/100));
@@ -3242,7 +3280,7 @@ async function printBill(sessKey){
 
 function renderHistory(){
   document.getElementById('ow-histtbl').innerHTML=cachedOrders.map(o=>{
-    const earn=Math.round((o.total||0)*(1-(o.comm||15)/100));
+    const earn=Math.round((o.total||0)*(1-((o.comm===0?0:(o.comm||0))/100)));
     return`<tr><td style="font-size:11px"><b>${o.id||''}</b>${o.edited?'<span style="color:var(--s-orange);font-size:9px;margin-left:4px">edited</span>':''}</td><td>T${o.tNum||'?'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.items?.map(i=>i.emoji+''+i.name).join(', ')||''}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(earn)}</td><td style="color:var(--s-muted);font-size:11px">${o.date||''}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('')||nd(8);
 }
@@ -3251,7 +3289,7 @@ function exportCSV(){
   if(!cachedOrders.length){notifyD('No orders to export');return;}
   const header=['Order ID','Table','Restaurant','Items','Total (LAK)','Earn (LAK)','Date','Time','Status'];
   const rows=cachedOrders.map(o=>{
-    const earn=Math.round((o.total||0)*(1-(o.comm||15)/100));
+    const earn=Math.round((o.total||0)*(1-((o.comm===0?0:(o.comm||0))/100)));
     return[o.id||'',`T${o.tNum||'?'}`,o.rName||'',(o.items?.map(i=>`${i.name}x${i.qty}`).join('; ')||''),o.total||0,earn,o.date||'',o.time||'',o.status||''];
   });
   const csv=[header,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
@@ -3503,11 +3541,13 @@ function initEmojiPickers(){
   renderEPGrid('itemEP-drink-grid', EP_EMOJIS.drink, 'item');
   renderEPGrid('itemEP-other-grid', EP_EMOJIS.other, 'item');
   // Restaurant picker — 4 tabs, flatten icons array
-  const flatIcons = EP_EMOJIS.icons.flat();
-  renderEPGrid('restoEP-icons-grid', flatIcons, 'resto');
-  renderEPGrid('restoEP-food-grid', EP_EMOJIS.food, 'resto');
-  renderEPGrid('restoEP-drink-grid', EP_EMOJIS.drink, 'resto');
-  renderEPGrid('restoEP-star-grid', EP_EMOJIS.star, 'resto');
+  try {
+    const flatIcons = EP_EMOJIS.icons.flat();
+    renderEPGrid('restoEP-icons-grid', flatIcons, 'resto');
+    renderEPGrid('restoEP-food-grid', EP_EMOJIS.food, 'resto');
+    renderEPGrid('restoEP-drink-grid', EP_EMOJIS.drink, 'resto');
+    renderEPGrid('restoEP-star-grid', EP_EMOJIS.star, 'resto');
+  } catch(e){ console.warn('Emoji picker init error:', e); }
   // Category picker
   renderEPGrid('catEP-tags-grid', EP_EMOJIS.tags, 'cat');
   renderEPGrid('catEP-food-grid2', EP_EMOJIS.food, 'cat');
@@ -4207,7 +4247,7 @@ async function placeOrder(){
       rId:qrSess.rId, rName:qrSess.rName||r?.name||'',
       tId:qrSess.tId, tNum:qrSess.tNum,
       items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty})),
-      total:tot, comm:r?.comm??0,
+      total:tot, comm:Number(r?.comm??0), // stored as number, 0% stays 0
       status:'pending', ts:Date.now(),
       time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
       date:new Date().toLocaleDateString()
