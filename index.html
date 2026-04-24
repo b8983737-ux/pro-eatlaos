@@ -4663,10 +4663,12 @@ async function startCustomerSession(rId,tId,sessId){
       });
       orders.sort((a,b)=>(b.ts||0)-(a.ts||0));
       customerCachedOrders=orders;
-      // Update orders view if open
-      const ordersView=document.getElementById('cOrdersView');
-      if(ordersView&&ordersView.style.display!=='none') renderCustOrders();
-      // Update order count badge in tab bar
+      // Mark orders as stale so next tab switch re-renders
+      const el=document.getElementById('cOrdersList');
+      if(el) el.dataset.stale='1';
+      // If orders tab is currently open — update it instantly
+      if(currentTab==='orders') renderCustOrders();
+      // Update order count badge
       updateOrderBadge(orders.length);
     });
     }); // end loadFirebaseSDK
@@ -4945,6 +4947,9 @@ async function placeOrder(){
     document.getElementById('orderSuccessOv').classList.add('show');
     // Clear cart so customer can order again
     cart=[];updateCart();
+    // Mark orders as stale so it refreshes when customer taps My Orders
+    const ordEl=document.getElementById('cOrdersList');
+    if(ordEl) ordEl.dataset.stale='1';
     // Close cart panel
     document.getElementById('cCartOv').classList.remove('open');
     document.getElementById('cCartPanel').classList.remove('open');
@@ -4969,35 +4974,36 @@ async function placeOrder(){
 
 function closeOrderSuccess(tab){
   document.getElementById('orderSuccessOv').classList.remove('show');
-  // Always re-enable the Send to Kitchen button
+  // Re-enable the Send to Kitchen button
   const btn=document.getElementById('cOrderBtn');
   if(btn){btn.disabled=false;btn.textContent=tr('send_kitchen');btn.style.opacity='1';btn.onclick=placeOrder;}
+  // Force tab switch even if same tab (override currentTab guard)
+  currentTab='';
   if(tab==='orders'){
     cTab('orders');
   } else {
     cTab('menu');
-    loadRestoForCustomer().then(r=>{
-      if(r){renderCats(r);renderMenu(curCat,r);}
-    });
-    window.scrollTo({top:0,behavior:'smooth'});
   }
 }
 
+let currentTab='menu';
 function cTab(tab){
+  if(currentTab===tab) return; // already on this tab — do nothing
+  currentTab=tab;
+  // Instant CSS switch — no re-render, no flash
   document.getElementById('cMenuView').style.display=tab==='menu'?'block':'none';
   document.getElementById('cOrdersView').style.display=tab==='orders'?'block':'none';
   document.getElementById('ctMenu').classList.toggle('on',tab==='menu');
   document.getElementById('ctOrders').classList.toggle('on',tab==='orders');
+  // Instant scroll to top — no animation delay
+  window.scrollTo(0,0);
+  // Only render orders if content is stale or empty
   if(tab==='orders'){
-    renderCustOrders();
-    // Scroll page to top immediately so bill is visible
-    window.scrollTo({top:0,behavior:'instant'});
-    document.getElementById('pg-customer').scrollTop=0;
-    const ov=document.getElementById('cOrdersView');
-    if(ov){ov.scrollTop=0;}
-  } else {
-    // Going back to menu — scroll to top too
-    window.scrollTo({top:0,behavior:'instant'});
+    const el=document.getElementById('cOrdersList');
+    if(!el||!el.children.length||el.dataset.stale==='1'){
+      renderCustOrders();
+      if(el) el.dataset.stale='0';
+    }
   }
 }
 
