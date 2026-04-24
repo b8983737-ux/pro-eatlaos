@@ -1737,6 +1737,29 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <div class="fg"><label>Default Session Duration</label><select class="fi" id="setSessH" style="max-width:240px"><option value="1">1 hour</option><option value="2" selected>2 hours</option><option value="4">4 hours</option><option value="8">8 hours</option><option value="24">1 day</option></select></div>
             <button class="btn btn-gold" onclick="saveSettings()">Save Settings</button>
           </div></div>
+          <!-- Data Management -->
+          <div class="card" style="margin-top:16px">
+            <div class="card-h"><div class="card-title">🗑️ Data Management</div></div>
+            <div style="padding:20px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+                <div style="padding:16px;background:var(--s-surf3);border:1px solid var(--s-border)">
+                  <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:6px">Auto Cleanup</div>
+                  <div style="font-size:13px;color:var(--s-text);margin-bottom:4px">Orders older than <b style="color:var(--s-gold)">1 year</b> auto-deleted</div>
+                  <div style="font-size:11px;color:var(--s-muted)">Sessions older than 7 days auto-deleted</div>
+                  <div style="font-size:10px;color:var(--s-green);margin-top:6px">✓ Runs automatically on every admin login</div>
+                </div>
+                <div style="padding:16px;background:var(--s-surf3);border:1px solid var(--s-border)" id="dbStatsBox">
+                  <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:6px">Database Stats</div>
+                  <div style="font-size:12px;color:var(--s-muted)">Loading...</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-gold" onclick="manualCleanup()">🗑️ Export & Clean (1yr+)</button>
+                <button class="btn" onclick="exportAllOrders()">📥 Export ALL Orders</button>
+                <button class="btn" onclick="loadDbStats()">📊 Refresh Stats</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -2160,29 +2183,73 @@ tr:hover td{background:rgba(255,255,255,.015);}
 <div class="new-ord-bar" id="newOrdBar" onclick="owP('liveorders',null)">🔔 New order! Click to view</div>
 <div class="firebase-status" id="globalFbStatus" style="display:none"><div class="fb-dot" id="globalFbDot"></div><span id="globalFbTxt"></span></div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
+// ═══ FIREBASE LOADER ═══
+// Load Firebase SDK only for admin/owner paths
+// Customer QR path uses direct REST API (zero SDK needed)
+const DB_URL='https://eatlaos-fe224-default-rtdb.asia-southeast1.firebasedatabase.app';
+const API_KEY=['AIzaSyAa5x8mnggt','etqH3ap3Cbs9VDke','Hw-sN38'].join('');
+
+// REST API functions — no SDK, works instantly for customers
+async function restGet(path){
+  const r=await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY);
+  return r.ok?r.json():null;
+}
+async function restPush(path,data){
+  const r=await fetch(DB_URL+'/'+path+'.json',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
+  });
+  const j=await r.json();
+  return{key:j.name};
+}
+async function restUpdate(path,data){
+  await fetch(DB_URL+'/'+path+'.json',{
+    method:'PATCH',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
+  });
+}
+
+// Firebase SDK loader — only for admin/owner
+let fbSDKLoaded=false;
+let fbSDKPromise=null;
+function loadFirebaseSDK(){
+  if(fbSDKLoaded) return Promise.resolve();
+  if(fbSDKPromise) return fbSDKPromise;
+  fbSDKPromise=new Promise(resolve=>{
+    const s1=document.createElement('script');
+    s1.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js';
+    s1.onload=()=>{
+      const s2=document.createElement('script');
+      s2.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js';
+      s2.onload=()=>{
+        if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        db=firebase.database();
+        fbSDKLoaded=true;
+        resolve();
+      };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  });
+  return fbSDKPromise;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE CONFIG
 // ═══════════════════════════════════════════════════════════════
-// Firebase configuration — assembled at runtime
-// Note: Firebase API keys are designed to be public (security via DB rules)
-const _a = ["AIzaSyAa5x8mnggt", "etqH3ap3Cbs9VDke", "Hw-sN38"].join('');
 const _b = "eatlaos-fe224";
 const _c = ["466160640741:web:", "984c715ce6d56ce21caa0c"].join('');
 const firebaseConfig = {
-  apiKey: _a,
+  apiKey: API_KEY,
   authDomain: _b + ".firebaseapp.com",
-  databaseURL: "https://" + _b + "-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: DB_URL,
   projectId: _b,
   storageBucket: _b + ".firebasestorage.app",
   messagingSenderId: "466160640741",
   appId: "1:" + _c
 };
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+let db = null; // set after SDK loads for admin
 
 // ═══════════════════════════════════════════════════════════════
 // I18N
@@ -2215,11 +2282,21 @@ let cachedOrders=[], cachedSessions=[];
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE HELPERS
 // ═══════════════════════════════════════════════════════════════
-function fbRef(path){return db.ref(path);}
-function fbSet(path,data){return db.ref(path).set(data);}
-function fbPush(path,data){return db.ref(path).push(data);}
-function fbUpdate(path,data){return db.ref(path).update(data);}
-function fbGet(path){return db.ref(path).once('value').then(s=>s.val());}
+// Smart Firebase functions — use REST for speed, SDK for real-time
+function fbRef(path){return db?db.ref(path):null;}
+function fbSet(path,data){return db?db.ref(path).set(data):restUpdate(path,data);}
+async function fbPush(path,data){
+  if(db) return db.ref(path).push(data);
+  return restPush(path,data);
+}
+function fbUpdate(path,data){
+  if(db) return db.ref(path).update(data);
+  return restUpdate(path,data);
+}
+async function fbGet(path){
+  // Use REST API — no SDK needed, much faster
+  return restGet(path);
+}
 
 function setFbStatus(connected, isOwner=false){
   const dot=document.getElementById(isOwner?'owFbDot':'globalFbDot');
@@ -2228,12 +2305,15 @@ function setFbStatus(connected, isOwner=false){
   if(txt) txt.textContent=connected?'Live 🟢':'Reconnecting...';
 }
 
-// Monitor connection
-db.ref('.info/connected').on('value', snap=>{
-  const connected=snap.val()===true;
-  setFbStatus(connected, true);
-  setFbStatus(connected, false);
-});
+// Monitor connection — only after SDK loads
+function startConnectionMonitor(){
+  if(!db) return;
+  db.ref('.info/connected').on('value', snap=>{
+    const connected=snap.val()===true;
+    setFbStatus(connected, true);
+    setFbStatus(connected, false);
+  });
+}
 
 // ═══════════════════════════════════════════════════════════════
 // PLATFORM CONFIG (Firebase)
@@ -2278,6 +2358,8 @@ async function init(){
     await loadCFG();
     // Seed only if needed (don't block admin login)
     seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
+    // Auto-cleanup old data (runs silently in background)
+    autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
       // Check if already logged in as SA
       const saved=sessionStorage.getItem('el_session');
@@ -2324,6 +2406,66 @@ function restoreSA(){
 // ═══════════════════════════════════════════════════════════════
 // SEED DATA — runs once if Firebase is empty
 // ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// AUTO CLEANUP — runs silently, deletes data older than 4 months
+// ═══════════════════════════════════════════════════════════════
+async function autoCleanOldData(){
+  const FOUR_MONTHS=12*30*24*60*60*1000; // 12 months (1 year) in ms
+  const SEVEN_DAYS=7*24*60*60*1000;     // 7 days in ms
+  const cutoff1y=Date.now()-FOUR_MONTHS;
+  const cutoff7d=Date.now()-SEVEN_DAYS;
+  let deletedOrders=0, deletedSessions=0;
+
+  try{
+    // Clean old ORDERS (older than 4 months)
+    const orders=await restGet('orders');
+    if(orders){
+      const deletes={};
+      Object.entries(orders).forEach(([k,o])=>{
+        if((o.ts||0)<cutoff1y){
+          deletes['orders/'+k]=null;
+          deletedOrders++;
+        }
+      });
+      if(Object.keys(deletes).length>0){
+        // Delete in batches using REST PATCH with null values
+        await fetch(DB_URL+'/.json',{
+          method:'PATCH',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(deletes)
+        });
+        console.log('🗑 Auto-cleaned '+deletedOrders+' orders older than 1 year');
+      }
+    }
+
+    // Clean expired SESSIONS (older than 7 days)
+    const sessions=await restGet('sessions');
+    if(sessions){
+      const deletes={};
+      Object.entries(sessions).forEach(([k,s])=>{
+        if((s.exp||0)<cutoff7d){
+          deletes['sessions/'+k]=null;
+          deletedSessions++;
+        }
+      });
+      if(Object.keys(deletes).length>0){
+        await fetch(DB_URL+'/.json',{
+          method:'PATCH',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(deletes)
+        });
+        console.log('🗑 Auto-cleaned '+deletedSessions+' expired sessions');
+      }
+    }
+
+    if(deletedOrders>0||deletedSessions>0){
+      console.log('✅ Auto-cleanup done: '+deletedOrders+' orders + '+deletedSessions+' sessions removed');
+    }
+  }catch(e){
+    console.log('Auto-cleanup error (non-critical):', e);
+  }
+}
+
 async function seedFirebaseIfEmpty(){
   const existing = await fbGet('restaurants');
   if(existing && Object.keys(existing).length > 0) return; // already has data
@@ -2399,6 +2541,11 @@ async function doOwnerLogin(){
   const p=document.getElementById('owP').value;
   document.getElementById('owErr').textContent='';
   if(!u||!p){document.getElementById('owErr').textContent='Enter username and password';return;}
+  document.getElementById('owErr').textContent='Signing in...';
+  // Load Firebase SDK for real-time features
+  await loadFirebaseSDK();
+  startConnectionMonitor();
+  document.getElementById('owErr').textContent='';
   // Find restaurant in Firebase
   const restos=await fbGet('restaurants');
   if(!restos){document.getElementById('owErr').textContent='No restaurants found';return;}
@@ -2437,6 +2584,10 @@ async function doSALogin(){
   const p=document.getElementById('saP').value;
   document.getElementById('saErr').textContent='';
   if(!u||!p){document.getElementById('saErr').textContent='Enter credentials';return;}
+  document.getElementById('saErr').textContent='Signing in...';
+  await loadFirebaseSDK();
+  startConnectionMonitor();
+  document.getElementById('saErr').textContent='';
   // Hardcoded credentials — not stored in Firebase
   const SA_USER='superadmin@SouB';
   const SA_PASS='6699@BillS';
@@ -2454,8 +2605,10 @@ async function doSALogin(){
 }
 
 function logout(){
-  if(owOrdersListener) db.ref('orders').off();
-  if(saOrdersListener) db.ref('orders').off();
+  if(db){
+    if(owOrdersListener) db.ref('orders').off();
+    if(saOrdersListener) db.ref('orders').off();
+  }
   me=null;restoId=null;cachedOrders=[];
   sessionStorage.removeItem('el_session');
   ['owU','owP','saU','saP'].forEach(id=>{const e=document.getElementById(id);if(e) e.value='';});
@@ -2781,6 +2934,71 @@ async function saveSettings(){
   await saveCFG();
 }
 
+async function manualCleanup(){
+  const btn=event.target;
+  btn.textContent='Cleaning...';btn.disabled=true;
+  await autoCleanOldData();
+  await loadDbStats();
+  btn.textContent='✓ Done!';
+  setTimeout(()=>{btn.textContent='🗑️ Clean Now (1 year+)';btn.disabled=false;},2000);
+  notifyD('✓ Old data cleaned successfully');
+}
+
+async function exportAllOrders(){
+  const btn=event.target;
+  btn.textContent='Exporting...';btn.disabled=true;
+  const orders=await restGet('orders');
+  if(!orders||Object.keys(orders).length===0){
+    notifyD('No orders to export');
+    btn.textContent='📥 Export ALL Orders';btn.disabled=false;
+    return;
+  }
+  const allOrders=Object.entries(orders).map(([k,o])=>({...o,fbKey:k}));
+  allOrders.sort((a,b)=>(b.ts||0)-(a.ts||0));
+  exportOldOrdersToExcel(allOrders);
+  btn.textContent='✓ Downloaded!';
+  setTimeout(()=>{btn.textContent='📥 Export ALL Orders';btn.disabled=false;},3000);
+}
+
+async function loadDbStats(){
+  const box=document.getElementById('dbStatsBox');
+  if(!box) return;
+  try{
+    const [orders,sessions,restos]=await Promise.all([
+      restGet('orders'),
+      restGet('sessions'),
+      restGet('restaurants')
+    ]);
+    const orderCount=orders?Object.keys(orders).length:0;
+    const sessCount=sessions?Object.keys(sessions).length:0;
+    const restoCount=restos?Object.keys(restos).length:0;
+    const FOUR_MONTHS=12*30*24*60*60*1000;
+    const oldOrders=orders?Object.values(orders).filter(o=>(o.ts||0)<Date.now()-FOUR_MONTHS).length:0;
+    box.innerHTML=`
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px">Database Stats</div>
+      <div style="display:grid;gap:4px">
+        <div style="display:flex;justify-content:space-between;font-size:11px">
+          <span style="color:var(--s-muted)">Restaurants</span>
+          <b>${restoCount}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px">
+          <span style="color:var(--s-muted)">Total Orders</span>
+          <b>${orderCount}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px">
+          <span style="color:var(--s-muted)">Active Sessions</span>
+          <b>${sessCount}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px">
+          <span style="color:var(--s-red)">Old Orders (1yr+)</span>
+          <b style="color:var(--s-red)">${oldOrders}</b>
+        </div>
+      </div>`;
+  }catch(e){
+    if(box) box.innerHTML='<div style="font-size:11px;color:var(--s-muted)">Stats unavailable</div>';
+  }
+}
+
 // SA Charts
 let saCI2=null;
 function initSACharts(){
@@ -3066,7 +3284,8 @@ async function editResto(id){
 
 async function delResto(id){
   if(!confirm('Delete this restaurant? This cannot be undone.')) return;
-  await db.ref('restaurants/'+id).remove();
+  if(db) await db.ref('restaurants/'+id).remove();
+  else await fetch(DB_URL+'/restaurants/'+id+'.json',{method:'DELETE'});
   notifyD('🗑 Restaurant deleted');
   loadAndRenderRestos();
 }
@@ -4284,7 +4503,10 @@ async function generateSession(){
     const sessions=await fbGet('sessions')||{};
     const updates={};
     Object.entries(sessions).forEach(([k,s])=>{if(s.tId===tId&&Date.now()<(s.exp||0)) updates['sessions/'+k+'/exp']=now-1;});
-    if(Object.keys(updates).length) await db.ref().update(updates);
+    if(Object.keys(updates).length){
+      if(db) await db.ref().update(updates);
+      else{for(const[k,v] of Object.entries(updates)) await restUpdate(k.replace(/^\//,''),v);}
+    }
     // Create new session
     const sessData={rId,rName:r?.name||'',tId,tNum,start:now,exp,duration:hours,
       startTime:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
@@ -4423,10 +4645,11 @@ async function startCustomerSession(rId,tId,sessId){
     document.title=r.name+' · Table '+qrSess.tNum+' · EATLAOS';
   }catch(e){console.log('URL update skipped:',e);}
   startSessTimer();
-  // Listen for order updates — listen to restaurant's orders and filter by sessId client-side
-  // (avoids Firebase index requirement for orderByChild)
+  // Load Firebase SDK in background for real-time order updates
+  // Page already shows — SDK loads silently in background
   if(sessId && rId){
-    db.ref('orders').orderByChild('rId').equalTo(rId).on('value', snap=>{
+    loadFirebaseSDK().then(()=>{
+      db.ref('orders').orderByChild('rId').equalTo(rId).on('value', snap=>{
       const seen=new Set();
       const orders=[];
       snap.forEach(c=>{
@@ -4446,6 +4669,7 @@ async function startCustomerSession(rId,tId,sessId){
       // Update order count badge in tab bar
       updateOrderBadge(orders.length);
     });
+    }); // end loadFirebaseSDK
   }
 }
 
