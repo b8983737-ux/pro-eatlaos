@@ -1534,7 +1534,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <p class="land-card-desc">Manage your menu, view live orders, generate QR codes for your tables</p>
       <div class="land-card-cta">Enter Owner Portal →</div>
     </button>
-    <div class="land-footer">© 2026 EATLAOS · Powered by Firebase</div>
+    <div class="land-footer">© 2026 EATLAOS · Powered by Bill</div>
   </div>
 </div>
 
@@ -2146,13 +2146,13 @@ db.ref('.info/connected').on('value', snap=>{
 // ═══════════════════════════════════════════════════════════════
 // PLATFORM CONFIG (Firebase)
 // ═══════════════════════════════════════════════════════════════
-let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'admin123'};
+let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
 
 async function loadCFG(){
   const v=await fbGet('cfg');
   if(v) CFG={...CFG,...v};
   // Ensure SA password exists
-  if(!v?.saPass) await fbSet('cfg/saPass','admin123');
+  if(!v?.saPass) await fbSet('cfg/saPass','6699@BillS');
 }
 
 async function saveCFG(){
@@ -2172,7 +2172,7 @@ async function init(){
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
       if(r&&t) await startCustomerSession(r,t,s);
       else showPage('pg-land');
-    } else if(p.get('admin')==='eatlaos2026'){
+    } else if(p.get('admin')==='EatLaos2026SecretAdmin'){
       // Check if already logged in as SA
       const saved=sessionStorage.getItem('el_session');
       if(saved){const ss=JSON.parse(saved);if(ss.role==='superadmin'){me=ss;restoreSA();return;}}
@@ -2333,7 +2333,7 @@ async function doSALogin(){
   if(!u||!p){document.getElementById('saErr').textContent='Enter credentials';return;}
   // Load CFG to get latest password
   await loadCFG();
-  if(u==='superadmin'&&p===CFG.saPass){
+  if(u==='superadmin@SouB'&&p===CFG.saPass){
     me={name:'Super Admin',role:'superadmin'};
     sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
     showPage('pg-sa');
