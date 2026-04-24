@@ -2986,7 +2986,7 @@ function owP(panel,btn){
   if(panel==='categories') owCats();
   if(panel==='tables') owTables();
   if(panel==='history') renderHistory();
-  if(panel==='profile') owProfile();
+  if(panel==='profile') owProfile().then(()=>setTimeout(()=>initEmojiPickers(),100));
 }
 
 let owFilter='today';
@@ -3552,6 +3552,14 @@ function initEmojiPickers(){
   renderEPGrid('catEP-tags-grid', EP_EMOJIS.tags, 'cat');
   renderEPGrid('catEP-food-grid2', EP_EMOJIS.food, 'cat');
   renderEPGrid('catEP-other-grid2', EP_EMOJIS.other, 'cat');
+  // Owner Profile picker (rendered after owProfile() injects HTML)
+  const flatIconsP=EP_EMOJIS.icons.flat();
+  try{
+    renderEPGrid('profileEP-icons-grid', flatIconsP, 'profile');
+    renderEPGrid('profileEP-food-grid', EP_EMOJIS.food, 'profile');
+    renderEPGrid('profileEP-drink-grid', EP_EMOJIS.drink, 'profile');
+    renderEPGrid('profileEP-star-grid', EP_EMOJIS.star, 'profile');
+  }catch(e){}
 }
 
 function renderEPGrid(gridId, emojis, target){
@@ -3595,6 +3603,13 @@ function selectEmoji(e, target){
     const prev=document.getElementById('mCatEmojiPrev');
     if(prev){prev.textContent=e;prev.style.fontSize='26px';}
     document.querySelectorAll('#catEP .ep-emoji-btn').forEach(b=>{b.classList.toggle('sel',b.textContent===e);});
+    closeAllEP();
+  } else if(target==='profile'){
+    const inp=document.getElementById('opE');
+    if(inp) inp.value=e;
+    const prev=document.getElementById('opEPreview');
+    if(prev){prev.textContent=e;prev.style.fontSize='28px';}
+    document.querySelectorAll('#profileEP .ep-emoji-btn').forEach(b=>{b.classList.toggle('sel',b.textContent===e);});
     closeAllEP();
   }
 }
@@ -3743,7 +3758,32 @@ async function owProfile(){
   const expTxt=!exp?'Lifetime':(exp<Date.now()?'<span style="color:var(--s-red)">EXPIRED</span>':`${Math.ceil((exp-Date.now())/86400000)} days remaining`);
   document.getElementById('ow-profilebody').innerHTML=`
     <div class="form-row" style="margin-bottom:12px"><div class="fg"><label>Name</label><input class="fi" value="${r.name}" id="opN"></div><div class="fg"><label>Cuisine</label><input class="fi" value="${r.cuisine||''}" id="opC"></div></div>
-    <div class="form-row" style="margin-bottom:12px"><div class="fg"><label>Emoji Icon</label><input class="fi" value="${r.emoji}" id="opE" maxlength="4"></div><div class="fg"><label>Prep Time (mins)</label><input class="fi" type="number" value="${r.prep||15}" id="opP"></div></div>
+    <div class="form-row" style="margin-bottom:12px">
+      <div class="fg">
+        <label>Restaurant Icon Emoji</label>
+        <input type="hidden" id="opE" value="${r.emoji||'🍽️'}">
+        <div class="ep-wrap" style="margin-top:6px">
+          <div class="ep-trigger" onclick="toggleEP('profileEP')" style="padding:8px 12px">
+            <div class="ep-preview" id="opEPreview" style="width:44px;height:44px;font-size:28px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:4px">${r.emoji||'🍽️'}</div>
+            <div class="ep-trigger-label"><div class="ep-trigger-title" style="font-size:12px">Choose Icon Emoji</div><div class="ep-trigger-sub">Click to open picker</div></div>
+            <span class="ep-arrow">▼</span>
+          </div>
+          <div class="ep-dropdown" id="profileEP">
+            <div class="ep-tabs">
+              <button class="ep-tab on" onclick="epTab('profileEP','icons',this)">🏪 Restos</button>
+              <button class="ep-tab" onclick="epTab('profileEP','food',this)">🍽️ Food</button>
+              <button class="ep-tab" onclick="epTab('profileEP','drink',this)">🥤 Drinks</button>
+              <button class="ep-tab" onclick="epTab('profileEP','star',this)">⭐ Special</button>
+            </div>
+            <div class="ep-tab-content on" id="profileEP-icons"><div class="ep-grid" id="profileEP-icons-grid"></div></div>
+            <div class="ep-tab-content" id="profileEP-food"><div class="ep-grid" id="profileEP-food-grid"></div></div>
+            <div class="ep-tab-content" id="profileEP-drink"><div class="ep-grid" id="profileEP-drink-grid"></div></div>
+            <div class="ep-tab-content" id="profileEP-star"><div class="ep-grid" id="profileEP-star-grid"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="fg"><label>Prep Time (mins)</label><input class="fi" type="number" value="${r.prep||15}" id="opP" style="margin-top:6px"></div>
+    </div>
     <div class="fg"><label>Address</label><input class="fi" value="${r.addr||''}" id="opA"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
       <div style="padding:14px;background:var(--s-surf3);border:1px solid var(--s-border)">
@@ -3768,13 +3808,15 @@ async function saveOwProfile(){
   await fbUpdate('restaurants/'+restoId,{
     name:document.getElementById('opN').value.trim(),
     cuisine:document.getElementById('opC').value.trim(),
-    emoji:document.getElementById('opE').value.trim(),
+    emoji:document.getElementById('opE').value||'🍽️',
     prep:parseInt(document.getElementById('opP').value)||15,
     addr:document.getElementById('opA').value.trim(),
     vat:isNaN(vatV)?0:Math.max(0,Math.min(50,vatV))
   });
   notifyD('✓ Profile saved');
   owProfile();
+  // Re-init picker after HTML re-renders
+  setTimeout(()=>initEmojiPickers(),100);
 }
 
 // Owner Chart — respects owFilter
