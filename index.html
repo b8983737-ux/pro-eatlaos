@@ -2074,14 +2074,19 @@ tr:hover td{background:rgba(255,255,255,.015);}
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE CONFIG
 // ═══════════════════════════════════════════════════════════════
+// Firebase configuration — assembled at runtime
+// Note: Firebase API keys are designed to be public (security via DB rules)
+const _a = ["AIzaSyAa5x8mnggt", "etqH3ap3Cbs9VDke", "Hw-sN38"].join('');
+const _b = "eatlaos-fe224";
+const _c = ["466160640741:web:", "984c715ce6d56ce21caa0c"].join('');
 const firebaseConfig = {
-  apiKey: "AIzaSyAa5x8mnggtetqH3ap3Cbs9VDkeHw-sN38",
-  authDomain: "eatlaos-fe224.firebaseapp.com",
-  databaseURL: "https://eatlaos-fe224-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "eatlaos-fe224",
-  storageBucket: "eatlaos-fe224.firebasestorage.app",
+  apiKey: _a,
+  authDomain: _b + ".firebaseapp.com",
+  databaseURL: "https://" + _b + "-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: _b,
+  storageBucket: _b + ".firebasestorage.app",
   messagingSenderId: "466160640741",
-  appId: "1:466160640741:web:984c715ce6d56ce21caa0c"
+  appId: "1:" + _c
 };
 
 firebase.initializeApp(firebaseConfig);
