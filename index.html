@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>EATLAOS</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <!-- Firebase SDK (compat version - works without bundler) -->
@@ -2331,9 +2334,10 @@ async function doSALogin(){
   const p=document.getElementById('saP').value;
   document.getElementById('saErr').textContent='';
   if(!u||!p){document.getElementById('saErr').textContent='Enter credentials';return;}
-  // Load CFG to get latest password
-  await loadCFG();
-  if(u==='superadmin@SouB'&&p===CFG.saPass){
+  // Hardcoded credentials — not stored in Firebase
+  const SA_USER='superadmin@SouB';
+  const SA_PASS='6699@BillS';
+  if(u===SA_USER&&p===SA_PASS){
     me={name:'Super Admin',role:'superadmin'};
     sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
     showPage('pg-sa');
