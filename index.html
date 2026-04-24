@@ -1327,10 +1327,44 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .c-meta-val{font-family:var(--ff);font-size:20px;font-weight:900;color:var(--c-gold2);}
 .c-meta-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px;}
 
-.c-cats{background:var(--c-surf);border-bottom:1px solid var(--c-border);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 14px;position:sticky;top:58px;z-index:90;box-shadow:0 2px 8px rgba(26,18,9,.05);}
+.c-cats{
+  background:var(--c-surf);
+  border-bottom:1px solid var(--c-border);
+  display:flex;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch; /* smooth iOS scroll */
+  scroll-behavior:smooth;
+  padding:0 8px;
+  position:sticky;
+  top:58px;
+  z-index:90;
+  box-shadow:0 2px 8px rgba(26,18,9,.05);
+  /* Prevent vertical bounce on iOS */
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+}
 .c-cats::-webkit-scrollbar{display:none;}
-.c-cat{padding:13px 16px;background:none;border:none;border-bottom:2px solid transparent;font-size:12px;letter-spacing:.5px;color:var(--c-muted);cursor:pointer;white-space:nowrap;transition:all .25s;margin-bottom:-1px;font-weight:500;}
+.c-cat{
+  padding:13px 14px;
+  background:none;
+  border:none;
+  border-bottom:2px solid transparent;
+  font-size:12px;
+  letter-spacing:.5px;
+  color:var(--c-muted);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s ease;
+  margin-bottom:-1px;
+  font-weight:500;
+  flex-shrink:0; /* prevent squishing */
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
 .c-cat:hover{color:var(--c-text);}
+.c-cat:active{opacity:.7;}
 .c-cat.on{color:var(--c-text);border-bottom-color:var(--c-gold);font-weight:600;}
 
 .c-menu{padding:16px 14px 130px;}
@@ -4226,16 +4260,20 @@ async function startCustomerSession(rId,tId,sessId){
   cart=[];
   showPage('pg-customer');
   setupCustomerUI(r,sess);
-  // Update browser URL to show restaurant name — looks professional!
-  // e.g. eatlaos.com/amazone  or  eatlaos.com/savaan-kitchen
+  // Update browser URL to show restaurant name — works on GitHub Pages
+  // Uses hash routing: eatlaos.com/#amazone · Table VIP1
   try{
     const slug=(r.name||'menu')
       .toLowerCase()
-      .replace(/[^a-z0-9฀-๿຀-໿]+/g,'-') // keep Lao chars too
-      .replace(/^-|-$/g,'');
-    const newUrl=window.location.origin+'/'+slug+'?table='+qrSess.tNum;
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'') // remove accents
+      .replace(/[^a-z0-9]+/g,'-')
+      .replace(/^-|-$/g,'')
+      ||'menu';
+    // Use hash — works everywhere without server config
+    const newUrl=window.location.origin+window.location.pathname+'#'+slug;
     window.history.replaceState({rId,tId,sessId},'',newUrl);
-    // Also update page title
+    // Update page title — shows in browser tab
     document.title=r.name+' · Table '+qrSess.tNum+' · EATLAOS';
   }catch(e){console.log('URL update skipped:',e);}
   startSessTimer();
@@ -4350,7 +4388,20 @@ function renderCats(r){
   `).join('');
 }
 
-function setCat(c){curCat=c;loadRestoForCustomer().then(r=>{renderCats(r);renderMenu(c,r);});}
+function setCat(c){
+  curCat=c;
+  loadRestoForCustomer().then(r=>{
+    renderCats(r);
+    renderMenu(c,r);
+    // Auto-scroll active category button into view
+    setTimeout(()=>{
+      const activeBtn=document.querySelector('#cCatTabs .c-cat.on');
+      if(activeBtn){
+        activeBtn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+      }
+    },50);
+  });
+}
 
 function itemDesc(item){
   if(lang==='lo'&&item.dLo) return item.dLo;
