@@ -19,9 +19,7 @@
 <!-- Fonts: only load weights we actually use -->
 <!-- Fonts load in background — system fonts show instantly as fallback -->
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,400&family=Geist:wght@400;500&display=optional" rel="stylesheet">
-<!-- Firebase: load with async — starts downloading immediately, doesn't block HTML parsing -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" async></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js" async></script>
+<!-- Firebase scripts — loaded synchronously just before our JS -->
 <!-- Chart.js: only needed for admin dashboards, load lazily -->
 <script>
 // Lazy load Chart.js only when admin logs in
@@ -1109,11 +1107,12 @@ button,input,select,textarea{font-family:var(--fb);}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 
 /* ═══ LOADING SCREEN ═══ */
-#loadingScreen{position:fixed;inset:0;background:var(--s-bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-.load-logo{font-family:var(--ff);font-size:48px;font-weight:900;letter-spacing:-2px;}
-.load-logo em{color:var(--s-gold);font-style:italic;}
-.load-spinner{width:32px;height:32px;border:2px solid var(--s-border);border-top-color:var(--s-gold);border-radius:50%;animation:spin 1s linear infinite;}
-.load-txt{font-size:12px;color:var(--s-muted);letter-spacing:2px;text-transform:uppercase;}
+#loadingScreen{position:fixed;inset:0;background:#080808;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .3s ease;}
+#loadingScreen.fade-out{opacity:0;pointer-events:none;}
+.load-logo{font-family:'Fraunces',Georgia,serif;font-size:48px;font-weight:900;letter-spacing:-2px;animation:fadeUp .4s ease;}
+.load-logo em{color:#c8973a;font-style:italic;}
+.load-spinner{width:28px;height:28px;border:2px solid #222;border-top-color:#c8973a;border-radius:50%;animation:spin .8s linear infinite;}
+.load-txt{font-size:10px;color:#444;letter-spacing:3px;text-transform:uppercase;}
 
 /* ═══ LANDING ═══ */
 #pg-land{background:var(--s-bg);min-height:100vh;align-items:center;justify-content:center;position:relative;overflow:hidden;}
@@ -1596,9 +1595,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 <!-- LOADING -->
 <div id="loadingScreen">
-  <div class="load-logo">EAT<em>LAOS</em></div>
-  <div class="load-spinner"></div>
-  <div class="load-txt">Connecting to server...</div>
+  <div id="loadSplash">
+    <!-- Default EATLAOS splash (shown for admin) -->
+    <div class="load-logo">EAT<em>LAOS</em></div>
+    <div class="load-spinner"></div>
+    <div class="load-txt" id="loadTxt">Loading...</div>
+  </div>
 </div>
 
 <!-- LANDING -->
@@ -2158,6 +2160,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
 <div class="new-ord-bar" id="newOrdBar" onclick="owP('liveorders',null)">🔔 New order! Click to view</div>
 <div class="firebase-status" id="globalFbStatus" style="display:none"><div class="fb-dot" id="globalFbDot"></div><span id="globalFbTxt"></span></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE CONFIG
@@ -2251,29 +2255,23 @@ async function saveCFG(){
 // ═══════════════════════════════════════════════════════════════
 // INIT — Load Firebase & Check URL
 // ═══════════════════════════════════════════════════════════════
-// Wait for Firebase SDK to be ready
-function waitForFirebase(){
-  return new Promise(resolve=>{
-    const check=()=>{
-      if(window.firebase&&window.firebase.database){resolve();}
-      else setTimeout(check,20);
-    };
-    check();
-  });
+function hideLoading(){
+  const ls=document.getElementById('loadingScreen');
+  if(!ls) return;
+  ls.classList.add('fade-out');
+  setTimeout(()=>ls.style.display='none',300);
 }
 
 async function init(){
   try {
     const p=new URLSearchParams(window.location.search);
     const isCustomer=p.get('qr')==='1';
-    // Wait for Firebase
-    await waitForFirebase();
     if(isCustomer){
       // CUSTOMER PATH: fast! Only load restaurant+session, skip CFG/seed
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
       if(r&&t) await startCustomerSession(r,t,s);
       else showPage('pg-land');
-      document.getElementById('loadingScreen').style.display='none';
+      hideLoading();
       return;
     }
     // ADMIN PATH: load config + seed
@@ -2299,7 +2297,7 @@ async function init(){
             owP('dashboard',document.querySelector('#pg-ow .sb-item'));
             startOwnerListeners();
             setTimeout(()=>initOwChart('rev'),300);
-            document.getElementById('loadingScreen').style.display='none';
+            hideLoading();
             return;
           }
         }catch(e){sessionStorage.removeItem('el_session');}
@@ -2310,7 +2308,7 @@ async function init(){
     console.error('Init error:',e);
     showPage('pg-land');
   }
-  document.getElementById('loadingScreen').style.display='none';
+  hideLoading();
   initEmojiPickers();
   initThemePicker();
 }
@@ -2320,7 +2318,7 @@ function restoreSA(){
   saP('dashboard',document.querySelector('#pg-sa .sb-item'));
   startSAListeners();
   setTimeout(()=>initSACharts(),300);
-  document.getElementById('loadingScreen').style.display='none';
+  hideLoading();
 }
 
 // ═══════════════════════════════════════════════════════════════
