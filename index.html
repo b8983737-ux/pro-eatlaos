@@ -1260,14 +1260,13 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 /* ═══ TABLES GRID ═══ */
 .tbl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:18px;}
-.tcard{background:var(--s-surf3);border:1px solid var(--s-border);padding:16px;text-align:center;position:relative;transition:all .25s;}
-.tcard:hover{border-color:var(--s-gold);}
-.tcard.occ{border-color:var(--s-green);}
-.tcard.occ::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--s-green);}
-.tcard-num{font-family:var(--ff);font-size:32px;font-weight:900;line-height:1;margin-bottom:4px;}
+.tcard{background:var(--s-surf2);border:1px solid var(--s-border);text-align:center;position:relative;transition:all .25s;border-radius:8px;overflow:hidden;}
+.tcard:hover{border-color:var(--s-gold);box-shadow:0 4px 16px rgba(0,0,0,.2);}
+.tcard.occ{border-color:var(--s-green);box-shadow:0 0 0 1px var(--s-green);}
+.tcard-num{font-family:var(--ff);font-size:26px;font-weight:900;line-height:1;margin-bottom:2px;}
 .tcard-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);}
 .tcard-info{font-size:10px;margin-top:6px;}
-.tcard-acts{display:flex;gap:5px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+.tcard-acts{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;}
 
 /* ═══ QR ═══ */
 .qr-box-wrap{background:#fff;padding:16px;display:inline-block;margin:12px auto;}
@@ -3518,21 +3517,107 @@ async function owTables(){
   const r=await fbGet('restaurants/'+restoId);
   const tables=r?.tables||[];
   const sessions=await fbGet('sessions')||{};
-  document.getElementById('ow-tablegrid').innerHTML=tables.map((t,i)=>{
+
+  // Calculate stats
+  let occupied=0, available=0, totalOrders=0, totalRevenue=0;
+  const tableData=tables.map((t,i)=>{
     const activeSess=Object.entries(sessions).find(([k,s])=>s.tId===t.id&&Date.now()<(s.exp||0));
-    const cnt=activeSess?cachedOrders.filter(o=>o.sessId===activeSess[0]).length:0;
-    return`<div class="tcard ${activeSess?'occ':''}">
-      <div class="tcard-num">${t.num}</div>
-      <div class="tcard-lbl">${t.seats} seats</div>
-      <div class="tcard-info" style="color:${activeSess?'var(--s-green)':'var(--s-muted)'}">
-        ${activeSess?`🟢 ${cnt} orders`:'Available'}
+    const sessOrders=activeSess?cachedOrders.filter(o=>o.sessId===activeSess[0]):[];
+    const sessTotal=sessOrders.reduce((s,o)=>s+(o.total||0),0);
+    if(activeSess){occupied++;totalOrders+=sessOrders.length;totalRevenue+=sessTotal;}
+    else available++;
+    return{t,i,activeSess,sessOrders,sessTotal};
+  });
+
+  // Summary bar
+  const summaryHTML=`
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--s-border);margin-bottom:0">
+    <div style="background:var(--s-surf);padding:14px 16px;text-align:center">
+      <div style="font-family:var(--ff);font-size:26px;font-weight:900">${tables.length}</div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-top:3px">Total Tables</div>
+    </div>
+    <div style="background:var(--s-surf);padding:14px 16px;text-align:center">
+      <div style="font-family:var(--ff);font-size:26px;font-weight:900;color:var(--s-green)">${occupied}</div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-top:3px">🟢 Occupied</div>
+    </div>
+    <div style="background:var(--s-surf);padding:14px 16px;text-align:center">
+      <div style="font-family:var(--ff);font-size:26px;font-weight:900;color:var(--s-muted)">${available}</div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-top:3px">⚪ Available</div>
+    </div>
+    <div style="background:var(--s-surf);padding:14px 16px;text-align:center">
+      <div style="font-family:var(--ff);font-size:26px;font-weight:900;color:var(--s-gold)">${fmtK(totalRevenue)}</div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-top:3px">Live Revenue</div>
+    </div>
+  </div>`;
+
+  // Table cards
+  const cardsHTML=tableData.length?tableData.map(({t,i,activeSess,sessOrders,sessTotal})=>{
+    const isOcc=!!activeSess;
+    const sessKey=activeSess?activeSess[0]:null;
+    // Timer remaining
+    let timeLeft='';
+    if(activeSess){
+      const rem=activeSess[1].exp-Date.now();
+      if(rem>0){
+        const h=Math.floor(rem/3600000);
+        const m=Math.floor((rem%3600000)/60000);
+        timeLeft=h>0?`${h}h ${m}m left`:`${m}m left`;
+      }
+    }
+    return`
+    <div class="tcard ${isOcc?'occ':''}" style="border-radius:8px;overflow:hidden;padding:0">
+      <!-- Card header with status color -->
+      <div style="padding:12px 14px 10px;background:${isOcc?'rgba(29,185,84,.08)':'rgba(255,255,255,.02)'};border-bottom:1px solid ${isOcc?'rgba(29,185,84,.2)':'var(--s-border)'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="tcard-num" style="font-size:26px;margin-bottom:2px">${t.num}</div>
+            <div class="tcard-lbl">${t.seats} seats</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;font-weight:700;color:${isOcc?'var(--s-green)':'var(--s-muted)'};letter-spacing:.5px">
+              ${isOcc?'🟢 OCCUPIED':'⚪ FREE'}
+            </div>
+            ${isOcc&&timeLeft?`<div style="font-size:9px;color:var(--s-muted);margin-top:2px">⏱ ${timeLeft}</div>`:''}
+          </div>
+        </div>
       </div>
-      <div class="tcard-acts">
-        <button class="btn btn-sm btn-gold" onclick="showQR('${restoId}','${t.id}','${t.num}')">📱 QR</button>
-        <button class="btn btn-sm btn-red" onclick="delOwTable(${i})">Del</button>
+      <!-- Card body -->
+      <div style="padding:10px 14px">
+        ${isOcc?`
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <div style="font-size:10px;color:var(--s-muted)">Orders</div>
+            <div style="font-size:11px;font-weight:700;color:var(--s-text)">${sessOrders.length}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <div style="font-size:10px;color:var(--s-muted)">Bill Total</div>
+            <div style="font-size:12px;font-weight:900;font-family:var(--ff);color:var(--s-gold)">${fmtK(sessTotal)}</div>
+          </div>
+        `:`
+          <div style="font-size:10px;color:var(--s-muted2);margin-bottom:8px;text-align:center">
+            Ready to seat guests
+          </div>
+        `}
+        <div class="tcard-acts">
+          <button class="btn btn-sm btn-gold" onclick="showQR('${restoId}','${t.id}','${t.num}')" style="flex:1">📱 QR</button>
+          ${isOcc?`<button class="btn btn-sm" onclick="owP('bills',null)" style="color:var(--s-green);border-color:var(--s-green)">🧾 Bill</button>`:''}
+          <button class="btn btn-sm btn-red" onclick="delOwTable(${i})">✕</button>
+        </div>
       </div>
     </div>`;
-  }).join('')||'<div style="color:var(--s-muted);text-align:center;padding:40px;grid-column:1/-1">No tables yet. Add your first table.</div>';
+  }).join('')
+  :'<div style="color:var(--s-muted);text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:48px;margin-bottom:12px">🪑</div><div>No tables yet. Click "+ Add Table" to get started.</div></div>';
+
+  // Inject into page
+  const container=document.getElementById('ow-tablegrid').parentElement;
+  // Find existing summary and remove
+  const existingSummary=document.getElementById('tableSummaryBar');
+  if(existingSummary) existingSummary.remove();
+  // Insert summary before grid
+  const summaryEl=document.createElement('div');
+  summaryEl.id='tableSummaryBar';
+  summaryEl.innerHTML=summaryHTML;
+  container.insertBefore(summaryEl,document.getElementById('ow-tablegrid'));
+  document.getElementById('ow-tablegrid').innerHTML=cardsHTML;
 }
 
 // Owner Item CRUD
@@ -4260,20 +4345,24 @@ async function startCustomerSession(rId,tId,sessId){
   cart=[];
   showPage('pg-customer');
   setupCustomerUI(r,sess);
-  // Update browser URL to show restaurant name — works on GitHub Pages
-  // Uses hash routing: eatlaos.com/#amazone · Table VIP1
+  // Update browser URL — keep QR params so URL still works when shared
+  // Adds restaurant name so URL is readable and professional
+  // Result: eatlaos.com/?qr=1&r=abc&t=xyz&s=sess&at=amazone&tb=VIP1
   try{
     const slug=(r.name||'menu')
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g,'') // remove accents
+      .replace(/[\u0300-\u036f]/g,'')
       .replace(/[^a-z0-9]+/g,'-')
       .replace(/^-|-$/g,'')
       ||'menu';
-    // Use hash — works everywhere without server config
-    const newUrl=window.location.origin+window.location.pathname+'#'+slug;
+    // Keep all existing params + add readable restaurant name + table
+    const params=new URLSearchParams(window.location.search);
+    params.set('at', slug);           // restaurant name slug
+    params.set('tb', qrSess.tNum);    // table number readable
+    const newUrl=window.location.origin+window.location.pathname+'?'+params.toString();
     window.history.replaceState({rId,tId,sessId},'',newUrl);
-    // Update page title — shows in browser tab
+    // Update browser tab title
     document.title=r.name+' · Table '+qrSess.tNum+' · EATLAOS';
   }catch(e){console.log('URL update skipped:',e);}
   startSessTimer();
