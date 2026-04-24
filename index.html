@@ -1199,16 +1199,17 @@ select.fi{cursor:pointer;}
 .panel.on{display:block;animation:fadeUp .4s ease;}
 
 /* ═══ STATS ═══ */
-.stats-row{display:grid;gap:1px;background:var(--s-border);margin-bottom:18px;}
+.stats-row{display:grid;gap:12px;margin-bottom:20px;}
 .s4{grid-template-columns:repeat(4,1fr);}
 .s3{grid-template-columns:repeat(3,1fr);}
 .s2{grid-template-columns:repeat(2,1fr);}
-.stat-box{background:var(--s-surf);padding:20px;position:relative;overflow:hidden;}
-.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--s-gold);}
-.stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px;}
-.stat-val{font-family:var(--ff);font-size:28px;font-weight:900;line-height:1;}
-.stat-sub{font-size:10px;color:var(--s-green);margin-top:5px;}
-.stat-ico{position:absolute;right:14px;top:14px;font-size:22px;opacity:.15;}
+.stat-box{background:var(--s-surf);border:1px solid var(--s-border);border-radius:6px;padding:20px 20px 16px;position:relative;overflow:hidden;transition:box-shadow .2s;}
+.stat-box:hover{box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.stat-box::after{content:'';position:absolute;top:0;left:0;width:3px;bottom:0;background:var(--s-gold);border-radius:6px 0 0 6px;}
+.stat-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--s-muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.stat-val{font-family:var(--ff);font-size:30px;font-weight:900;line-height:1;letter-spacing:-1px;}
+.stat-sub{font-size:10px;color:var(--s-muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--s-border);}
+.stat-ico{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.07;}
 
 /* ═══ CARD/TABLE ═══ */
 .card{background:var(--s-surf);border:1px solid var(--s-border);margin-bottom:16px;}
@@ -1695,10 +1696,30 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <span id="saFilterRange" style="color:var(--s-muted2)"></span>
           </div>
           <div class="stats-row s4">
-            <div class="stat-box"><div class="stat-ico">🏪</div><div class="stat-lbl">Restaurants</div><div class="stat-val" id="sa-s1">—</div><div class="stat-sub">Active</div></div>
-            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl">Orders (filtered)</div><div class="stat-val" id="sa-s2">—</div></div>
-            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl">Commission (filtered)</div><div class="stat-val" id="sa-s3">—</div></div>
-            <div class="stat-box"><div class="stat-ico">📱</div><div class="stat-lbl">Active Sessions</div><div class="stat-val" id="sa-s4">—</div></div>
+            <div class="stat-box">
+              <div class="stat-ico">🏪</div>
+              <div class="stat-lbl">Restaurants</div>
+              <div class="stat-val" id="sa-s1">—</div>
+              <div class="stat-sub">Active on platform</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-ico">🧾</div>
+              <div class="stat-lbl">Orders</div>
+              <div class="stat-val" id="sa-s2">—</div>
+              <div class="stat-sub">Filtered period</div>
+            </div>
+            <div class="stat-box" style="--stat-color:var(--s-gold)">
+              <div class="stat-ico">💰</div>
+              <div class="stat-lbl">Commission</div>
+              <div class="stat-val" id="sa-s3" style="color:var(--s-gold)">—</div>
+              <div class="stat-sub">Platform earnings</div>
+            </div>
+            <div class="stat-box" style="--stat-color:var(--s-green)">
+              <div class="stat-ico">📱</div>
+              <div class="stat-lbl">Live Sessions</div>
+              <div class="stat-val" id="sa-s4" style="color:var(--s-green)">—</div>
+              <div class="stat-sub">Active right now</div>
+            </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
             <div class="chart-card"><div class="chart-h"><div class="chart-title">Revenue (₭)</div><div class="ctabs"><button class="ctab on" onclick="saChartSwitch('week',this)">Week</button><button class="ctab" onclick="saChartSwitch('month',this)">Month</button></div></div><div class="chart-wrap"><canvas id="saRC"></canvas></div></div>
@@ -1801,10 +1822,30 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <span style="font-size:11px;color:var(--s-muted)" id="owFilterLabel">Today</span>
           </div>
           <div class="stats-row s4">
-            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl" id="ow-s1-lbl">Today's Orders</div><div class="stat-val" id="ow-s1">—</div></div>
-            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl" id="ow-s2-lbl">Today's Revenue</div><div class="stat-val" id="ow-s2">—</div><div class="stat-sub" id="ow-comm-n">After commission</div></div>
-            <div class="stat-box"><div class="stat-ico">🍽️</div><div class="stat-lbl">Active Items</div><div class="stat-val" id="ow-s3">—</div></div>
-            <div class="stat-box"><div class="stat-ico">⏳</div><div class="stat-lbl">Pending Now</div><div class="stat-val" id="ow-s4">—</div></div>
+            <div class="stat-box">
+              <div class="stat-ico">🧾</div>
+              <div class="stat-lbl" id="ow-s1-lbl">Orders</div>
+              <div class="stat-val" id="ow-s1">—</div>
+              <div class="stat-sub">This period</div>
+            </div>
+            <div class="stat-box" style="--stat-color:var(--s-gold)">
+              <div class="stat-ico">💰</div>
+              <div class="stat-lbl" id="ow-s2-lbl">Revenue</div>
+              <div class="stat-val" id="ow-s2" style="color:var(--s-gold)">—</div>
+              <div class="stat-sub" id="ow-comm-n">After commission · VAT</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-ico">🍽️</div>
+              <div class="stat-lbl">Active Menu Items</div>
+              <div class="stat-val" id="ow-s3">—</div>
+              <div class="stat-sub">On menu now</div>
+            </div>
+            <div class="stat-box" style="--stat-color:var(--s-red)">
+              <div class="stat-ico">⏳</div>
+              <div class="stat-lbl">Pending</div>
+              <div class="stat-val" id="ow-s4" style="color:var(--s-red)">—</div>
+              <div class="stat-sub">Need attention</div>
+            </div>
           </div>
           <div class="chart-card"><div class="chart-h"><div class="chart-title">Sales</div><div class="ctabs"><button class="ctab on" onclick="owChartSw('rev',this)">Revenue</button><button class="ctab" onclick="owChartSw('ord',this)">Orders</button><button class="ctab" onclick="owChartSw('items',this)">Top Items</button></div></div><div class="chart-wrap"><canvas id="owC"></canvas></div></div>
           <div class="card"><div class="card-h"><div class="card-title">Recent Orders</div><button class="btn btn-sm" onclick="owP('liveorders',null)">View All Live</button></div><div class="tbl-wrap"><table><thead><tr><th>Order</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>Time</th><th>Status</th><th>Update</th></tr></thead><tbody id="ow-recent"></tbody></table></div></div>
@@ -1846,45 +1887,35 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
         <!-- TABLE BILLS -->
         <div class="panel" id="ow-bills">
-          <!-- ── BILLS FILTER BAR ── -->
-          <div class="bills-filter-bar">
-            <div class="bills-filter-row">
-              <div class="bills-filter-group">
-                <div class="bills-filter-label">🪑 Table</div>
-                <select class="bills-select" id="bfTable" onchange="renderBills()">
-                  <option value="">All Tables</option>
-                </select>
-              </div>
-              <div class="bills-filter-group">
-                <div class="bills-filter-label">📋 Status</div>
-                <select class="bills-select" id="bfStatus" onchange="renderBills()">
-                  <option value="">All Orders</option>
-                  <option value="pending">⏳ Pending</option>
-                  <option value="preparing">👨‍🍳 Preparing</option>
-                  <option value="ready">✅ Ready</option>
-                  <option value="delivered">📦 Delivered</option>
-                </select>
-              </div>
-              <div class="bills-filter-group">
-                <div class="bills-filter-label">↕ Sort</div>
-                <select class="bills-select" id="bfSort" onchange="renderBills()">
-                  <option value="newest">Newest First</option>
-                  <option value="highest">Highest Bill</option>
-                  <option value="table">By Table</option>
-                  <option value="orders">Most Orders</option>
-                </select>
-              </div>
-              <button class="bills-reset-btn" onclick="billsResetFilter()">↺ Reset</button>
+          <!-- ── BILLS TOOLBAR ── -->
+          <div class="btools">
+            <div class="btools-filters">
+              <select class="btools-sel" id="bfTable" onchange="renderBills()">
+                <option value="">All Tables</option>
+              </select>
+              <select class="btools-sel" id="bfStatus" onchange="renderBills()">
+                <option value="">All Statuses</option>
+                <option value="pending">⏳ Pending</option>
+                <option value="preparing">👨‍🍳 Preparing</option>
+                <option value="ready">✅ Ready</option>
+                <option value="delivered">📦 Delivered</option>
+              </select>
+              <select class="btools-sel" id="bfSort" onchange="renderBills()">
+                <option value="newest">Newest</option>
+                <option value="highest">Highest Bill</option>
+                <option value="table">Table No.</option>
+                <option value="orders">Most Orders</option>
+              </select>
+              <button class="btools-reset" onclick="billsResetFilter()" title="Reset filters">↺</button>
             </div>
-            <!-- Summary strip -->
-            <div class="bills-summary-strip">
-              <div class="bills-sum-item"><span class="bills-sum-lbl">Active Tables</span><span class="bills-sum-val" id="bsTables">—</span></div>
-              <div class="bills-sum-sep"></div>
-              <div class="bills-sum-item"><span class="bills-sum-lbl">Total Bills</span><span class="bills-sum-val gold" id="bsTotal">—</span></div>
-              <div class="bills-sum-sep"></div>
-              <div class="bills-sum-item"><span class="bills-sum-lbl">Your Earnings</span><span class="bills-sum-val green" id="bsEarn">—</span></div>
-              <div class="bills-sum-sep"></div>
-              <div class="bills-sum-item"><span class="bills-sum-lbl">Pending Orders</span><span class="bills-sum-val red" id="bsPending">—</span></div>
+            <div class="btools-stats">
+              <div class="btools-stat"><div class="btools-stat-v" id="bsTables">—</div><div class="btools-stat-l">Tables</div></div>
+              <div class="btools-divider"></div>
+              <div class="btools-stat"><div class="btools-stat-v" id="bsTotal" style="color:var(--s-gold)">—</div><div class="btools-stat-l">Total Bills</div></div>
+              <div class="btools-divider"></div>
+              <div class="btools-stat"><div class="btools-stat-v" id="bsEarn" style="color:var(--s-green)">—</div><div class="btools-stat-l">Your Earnings</div></div>
+              <div class="btools-divider"></div>
+              <div class="btools-stat"><div class="btools-stat-v" id="bsPending" style="color:var(--s-red)">—</div><div class="btools-stat-l">Pending</div></div>
             </div>
           </div>
           <div id="billsContainer"><div style="text-align:center;padding:40px;color:var(--s-muted)">Loading bills...</div></div>
@@ -2388,7 +2419,29 @@ function setLang(l){
 
 const STAFF_T={en:{dashboard:'Dashboard',live_orders:'Live Orders',table_bills:'Table Bills',menu_items:'Menu Items',categories:'Categories',tables_qr:'Tables & QR',order_history:'Order History',profile:'Profile',today_orders:"Today's Orders",today_revenue:"Today's Revenue",active_items:'Active Items',pending_now:'Pending Now',this_period:'This period',after_commission:'After commission',on_menu:'On menu',need_attention:'Need attention',all:'All',pending:'Pending',preparing:'Preparing',ready:'Ready',sign_out:'Sign Out',total:'Total',occupied:'Occupied',available:'Available',print_bill:'Print Bill',close_table:'Close Table',orders:'Orders',revenue:'Revenue',top_items:'Top Items',save:'Save',cancel:'Cancel',edit:'Edit',delete:'Delete',sold_out:'Sold Out',no_orders:'No orders yet',loading:'Loading...'},lo:{dashboard:'ໜ້າຫຼັກ',live_orders:'ອໍເດີສົດ',table_bills:'ໃບເກັບເງິນ',menu_items:'ລາຍການເມນູ',categories:'ໝວດໝູ່',tables_qr:'ໂຕະ & QR',order_history:'ປະຫວັດ',profile:'ໂປຣໄຟລ໌',today_orders:'ອໍເດີວັນນີ້',today_revenue:'ລາຍຮັບວັນນີ້',active_items:'ລາຍການໃຊ້ງານ',pending_now:'ລໍຖ້າ',this_period:'ໄລຍະນີ້',after_commission:'ຫຼັງຄ່ານາຍໜ້າ',on_menu:'ໃນເມນູ',need_attention:'ຕ້ອງດູແລ',all:'ທັງໝົດ',pending:'ລໍຖ້າ',preparing:'ກຳລັງກຽມ',ready:'ພ້ອມ',sign_out:'ອອກ',total:'ລວມ',occupied:'ມີໃຜຢູ່',available:'ວ່າງ',print_bill:'ພິມໃບເກັບເງິນ',close_table:'ປິດໂຕະ',orders:'ອໍເດີ',revenue:'ລາຍຮັບ',top_items:'ຂາຍດີ',save:'ບັນທຶກ',cancel:'ຍົກເລີກ',edit:'ແກ້ໄຂ',delete:'ລຶບ',sold_out:'ໝົດ',no_orders:'ຍັງບໍ່ມີ',loading:'ກຳລັງໂຫຼດ...'},th:{dashboard:'แดชบอร์ด',live_orders:'ออร์เดอร์สด',table_bills:'บิลโต๊ะ',menu_items:'รายการเมนู',categories:'หมวดหมู่',tables_qr:'โต๊ะ & QR',order_history:'ประวัติ',profile:'โปรไฟล์',today_orders:'ออร์เดอร์วันนี้',today_revenue:'รายได้วันนี้',active_items:'รายการที่ใช้',pending_now:'รอดำเนินการ',this_period:'ช่วงนี้',after_commission:'หลังค่าคอมมิชชัน',on_menu:'ในเมนู',need_attention:'ต้องดูแล',all:'ทั้งหมด',pending:'รอ',preparing:'กำลังทำ',ready:'พร้อม',sign_out:'ออก',total:'รวม',occupied:'มีลูกค้า',available:'ว่าง',print_bill:'พิมพ์บิล',close_table:'ปิดโต๊ะ',orders:'ออร์เดอร์',revenue:'รายได้',top_items:'ขายดี',save:'บันทึก',cancel:'ยกเลิก',edit:'แก้ไข',delete:'ลบ',sold_out:'หมด',no_orders:'ยังไม่มี',loading:'กำลังโหลด...'},zh:{dashboard:'控制台',live_orders:'实时订单',table_bills:'桌台账单',menu_items:'菜单项目',categories:'分类',tables_qr:'桌台 & QR',order_history:'订单历史',profile:'餐厅资料',today_orders:'今日订单',today_revenue:'今日营收',active_items:'在售商品',pending_now:'待处理',this_period:'本期',after_commission:'扣除佣金后',on_menu:'菜单中',need_attention:'需处理',all:'全部',pending:'待处理',preparing:'准备中',ready:'就绪',sign_out:'退出',total:'合计',occupied:'使用中',available:'空闲',print_bill:'打印账单',close_table:'关闭桌台',orders:'订单',revenue:'营收',top_items:'热销',save:'保存',cancel:'取消',edit:'编辑',delete:'删除',sold_out:'售罄',no_orders:'暂无订单',loading:'加载中...'},ko:{dashboard:'대시보드',live_orders:'실시간 주문',table_bills:'테이블 청구서',menu_items:'메뉴 항목',categories:'카테고리',tables_qr:'테이블 & QR',order_history:'주문 내역',profile:'프로필',today_orders:'오늘의 주문',today_revenue:'오늘의 수익',active_items:'활성 메뉴',pending_now:'대기 중',this_period:'이번 기간',after_commission:'수수료 제외',on_menu:'메뉴에서',need_attention:'처리 필요',all:'전체',pending:'대기',preparing:'준비 중',ready:'완료',sign_out:'로그아웃',total:'합계',occupied:'사용 중',available:'빈 자리',print_bill:'영수증 출력',close_table:'테이블 종료',orders:'주문',revenue:'수익',top_items:'인기 메뉴',save:'저장',cancel:'취소',edit:'편집',delete:'삭제',sold_out:'품절',no_orders:'주문 없음',loading:'로딩 중...'}};
 function ts(k){return STAFF_T[lang]?.[k]||STAFF_T.en[k]||k;}
-function setStaffLang(l){lang=l;localStorage.setItem('el_lang',l);const s=document.getElementById('staffLangSel');if(s)s.value=l;const c=document.getElementById('langSel');if(c)c.value=l;notifyD('🌐 '+{en:'English',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'}[l]);}
+function setStaffLang(l){
+  lang=l;
+  localStorage.setItem('el_lang',l);
+  const s=document.getElementById('staffLangSel');if(s)s.value=l;
+  const c=document.getElementById('langSel');if(c)c.value=l;
+  // Translate sidebar
+  const sbMap={dashboard:'dashboard',liveorders:'live_orders',bills:'table_bills',menu:'menu_items',cats:'categories',tables:'tables_qr',history:'order_history',profile:'profile'};
+  Object.entries(sbMap).forEach(([id,key])=>{
+    const el=document.querySelector('#sb-'+id+' .sb-txt');
+    if(el) el.textContent=ts(key);
+  });
+  // Translate stat labels
+  const s1=document.getElementById('ow-s1-lbl');if(s1)s1.textContent=ts('orders');
+  const s2=document.getElementById('ow-s2-lbl');if(s2)s2.textContent=ts('revenue');
+  // Translate dashboard tab buttons
+  document.querySelectorAll('#ow-dashboard .ctab').forEach(btn=>{
+    const t=btn.textContent.trim().toLowerCase();
+    if(t==='revenue'||t==='rev') btn.textContent=ts('revenue');
+    else if(t==='orders') btn.textContent=ts('orders');
+    else if(t==='top items') btn.textContent=ts('top_items');
+  });
+  notifyD('🌐 '+{en:'English',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'}[l]);
+}
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
