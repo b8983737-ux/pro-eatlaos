@@ -1334,21 +1334,21 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .c-cat.on{color:var(--c-text);border-bottom-color:var(--c-gold);font-weight:600;}
 
 .c-menu{padding:16px 14px 130px;}
-.c-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.c-item{background:var(--c-surf);border:1.5px solid var(--c-border);cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;border-radius:8px;}
-.c-item:hover{border-color:var(--c-border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,18,9,.1);}
-.c-item:active{transform:scale(.98);}
-.c-item-img{height:120px;background:var(--c-surf2);display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden;transition:transform .4s ease;}
-.c-item:hover .c-item-img{transform:scale(1.05);}
-.c-item-body{padding:12px 13px;}
-.c-item-cat{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--c-gold);margin-bottom:4px;}
-.c-item-name{font-family:var(--ff);font-size:14px;font-weight:700;color:var(--c-text);margin-bottom:4px;line-height:1.2;}
-.c-item-desc{font-size:11px;color:var(--c-muted);line-height:1.55;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.c-item-foot{display:flex;align-items:center;justify-content:space-between;}
-.c-item-price{font-family:var(--ff);font-size:15px;font-weight:900;color:var(--c-text);}
-.c-item-add{width:30px;height:30px;background:var(--c-text);border:none;color:var(--c-bg);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;border-radius:4px;}
-.c-item-add:hover{background:var(--c-gold);}
-.c-badge{position:absolute;top:8px;left:8px;font-size:9px;letter-spacing:1.5px;padding:3px 8px;font-weight:800;text-transform:uppercase;border-radius:2px;}
+.c-menu-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+.c-item{background:var(--c-surf);border:1px solid var(--c-border);cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;border-radius:12px;display:flex;flex-direction:row;align-items:stretch;min-height:110px;}
+.c-item:hover{border-color:var(--c-border2);box-shadow:0 4px 20px rgba(26,18,9,.1);}
+.c-item:active{transform:scale(.99);}
+.c-item-img{width:110px;min-width:110px;height:auto;min-height:110px;background:var(--c-surf2);display:flex;align-items:center;justify-content:center;font-size:44px;overflow:hidden;transition:transform .4s ease;flex-shrink:0;border-radius:11px 0 0 11px;}
+.c-item:hover .c-item-img{transform:scale(1.04);}
+.c-item-body{padding:14px 14px;flex:1;display:flex;flex-direction:column;justify-content:space-between;min-width:0;}
+.c-item-cat{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--c-gold);margin-bottom:3px;}
+.c-item-name{font-family:var(--ff);font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:3px;line-height:1.2;}
+.c-item-desc{font-size:11px;color:var(--c-muted);line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.c-item-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+.c-item-price{font-family:var(--ff);font-size:16px;font-weight:900;color:var(--c-gold);}
+.c-item-add{width:32px;height:32px;background:var(--c-text);border:none;color:var(--c-bg);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;border-radius:50%;flex-shrink:0;}
+.c-item-add:hover{background:var(--c-gold);transform:scale(1.1);}
+.c-badge{position:absolute;top:8px;left:8px;font-size:8px;letter-spacing:1.5px;padding:3px 8px;font-weight:800;text-transform:uppercase;border-radius:20px;}
 .c-badge-new{background:var(--c-gold);color:#000;}
 .c-badge-pop{background:rgba(26,18,9,.85);color:#e8c46a;border:1px solid rgba(184,130,30,.4);}
 .c-badge-sold{background:rgba(26,18,9,.7);color:rgba(255,255,255,.5);}
@@ -3955,34 +3955,44 @@ async function showQR(rId,tId,tNum){
 }
 
 async function generateSession(){
-  if(!curQRData) return;
+  if(!curQRData){notifyD('⚠ No table selected');return;}
   const {rId,tId,tNum}=curQRData;
   const hours=parseInt(document.getElementById('qrDurSel').value)||2;
-  const r=await fbGet('restaurants/'+rId);
-  const now=Date.now();
-  const exp=now+(hours*3600000);
-  // End any existing session for this table
-  const sessions=await fbGet('sessions')||{};
-  const updates={};
-  Object.entries(sessions).forEach(([k,s])=>{if(s.tId===tId&&Date.now()<(s.exp||0)) updates['sessions/'+k+'/exp']=now-1;});
-  if(Object.keys(updates).length) await db.ref().update(updates);
-  // Create new session
-  const sessData={rId,rName:r?.name||'',tId,tNum,start:now,exp,duration:hours,startTime:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),startDate:new Date().toLocaleDateString()};
-  const sessRef=await fbPush('sessions',sessData);
-  const sessKey=sessRef.key;
-  curQRData.sessKey=sessKey;
-  // Generate QR
-  const url=qrURL(rId,tId,sessKey);
-  document.getElementById('qrUrlTxt').textContent=url;
-  const qrEl=document.getElementById('qrCodeEl');qrEl.innerHTML='';
-  new QRCode(qrEl,{text:url,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-  document.getElementById('qrActiveSess').style.display='block';
-  document.getElementById('qrSessLeft').textContent=`${hours}h 0m`;
-  document.getElementById('mQRSub').textContent=`Table ${tNum} · ${hours}h session · Scan with phone camera`;
-  notifyD(`✓ ${hours}h session started for Table ${tNum}`);
-  // Refresh tables view
-  const activePanel=document.querySelector('#pg-ow .panel.on');
-  if(activePanel?.id==='ow-tables') owTables();
+  try {
+    const r=await fbGet('restaurants/'+rId);
+    const now=Date.now();
+    const exp=now+(hours*3600000);
+    // End any existing session for this table
+    const sessions=await fbGet('sessions')||{};
+    const updates={};
+    Object.entries(sessions).forEach(([k,s])=>{if(s.tId===tId&&Date.now()<(s.exp||0)) updates['sessions/'+k+'/exp']=now-1;});
+    if(Object.keys(updates).length) await db.ref().update(updates);
+    // Create new session
+    const sessData={rId,rName:r?.name||'',tId,tNum,start:now,exp,duration:hours,
+      startTime:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+      startDate:new Date().toLocaleDateString()};
+    const sessRef=await fbPush('sessions',sessData);
+    const sessKey=sessRef.key;
+    curQRData.sessKey=sessKey;
+    // Generate QR
+    const url=qrURL(rId,tId,sessKey);
+    document.getElementById('qrUrlTxt').textContent=url;
+    const qrEl=document.getElementById('qrCodeEl');
+    qrEl.innerHTML='';
+    new QRCode(qrEl,{text:url,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    document.getElementById('qrActiveSess').style.display='block';
+    document.getElementById('qrSessLeft').textContent=hours+'h 0m';
+    document.getElementById('mQRSub').textContent='Table '+tNum+' · '+hours+'h session · Scan with phone camera';
+    notifyD('✓ '+hours+'h session started for Table '+tNum);
+    // Refresh tables view
+    const activePanel=document.querySelector('#pg-ow .panel.on');
+    if(activePanel?.id==='ow-tables') owTables();
+  } catch(err){
+    console.error('Session error:',err);
+    notifyD('❌ Cannot create session: '+err.message);
+    // Show Firebase rules reminder
+    alert('Cannot save session. Please check Firebase Database Rules:\n\nGo to Firebase Console → Realtime Database → Rules\nSet sessions: { ".write": true }');
+  }
 }
 
 function openQRLink(){if(!curQRData?.sessKey) return;window.open(qrURL(curQRData.rId,curQRData.tId,curQRData.sessKey),'_blank');}
@@ -4202,7 +4212,7 @@ function renderMenu(cat,r){
       ${item.badge==='new'?`<div class="c-badge c-badge-new">${tr('new_item')}</div>`:''}
       ${item.badge==='popular'?`<div class="c-badge c-badge-pop">★ ${tr('popular')}</div>`:''}
       ${item.badge==='sold'?`<div class="c-badge c-badge-sold">${tr('sold_out')}</div>`:''}
-      <div class="c-item-img">${item.img?`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover">`:item.emoji||'🍽️'}</div>
+      <div class="c-item-img">${item.img?`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover;display:block;">`:item.emoji||'🍽️'}</div>
       <div class="c-item-body">
         <div class="c-item-cat">${item.cat||''}</div>
         <div class="c-item-name">${item.name}</div>
