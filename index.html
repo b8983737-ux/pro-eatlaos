@@ -1348,10 +1348,22 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .c-item-price{font-family:var(--ff);font-size:16px;font-weight:900;color:var(--c-gold);}
 .c-item-add{width:32px;height:32px;background:var(--c-text);border:none;color:var(--c-bg);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;border-radius:50%;flex-shrink:0;}
 .c-item-add:hover{background:var(--c-gold);transform:scale(1.1);}
-.c-badge{position:absolute;top:8px;left:8px;font-size:8px;letter-spacing:1.5px;padding:3px 8px;font-weight:800;text-transform:uppercase;border-radius:20px;}
-.c-badge-new{background:var(--c-gold);color:#000;}
-.c-badge-pop{background:rgba(26,18,9,.85);color:#e8c46a;border:1px solid rgba(184,130,30,.4);}
-.c-badge-sold{background:rgba(26,18,9,.7);color:rgba(255,255,255,.5);}
+.c-badge{position:absolute;top:8px;left:8px;font-size:8px;letter-spacing:1.5px;padding:3px 10px;font-weight:800;text-transform:uppercase;border-radius:20px;z-index:2;}
+.c-badge-new{background:var(--c-gold);color:#000;box-shadow:0 2px 8px rgba(184,130,30,.3);}
+.c-badge-pop{background:rgba(26,18,9,.9);color:#e8c46a;border:1px solid rgba(184,130,30,.5);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.c-badge-sold{background:rgba(30,30,30,.85);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(4px);}
+/* Sold out item styles */
+.c-item.sold-out{cursor:default;}
+.c-item.sold-out .c-item-img{filter:grayscale(60%);}
+.c-item.sold-out .c-item-name{color:var(--c-muted);}
+.c-item.sold-out .c-item-price{color:var(--c-muted);}
+.c-item.sold-out:hover{transform:none;box-shadow:none;border-color:var(--c-border);}
+/* Sold out overlay on image */
+.c-sold-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+.c-sold-overlay-text{background:rgba(0,0,0,.7);color:#fff;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.2);}
+/* Sold out button */
+.c-item-add-sold{width:32px;height:32px;background:var(--c-surf3);border:1px solid var(--c-border);color:var(--c-muted);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:not-allowed;}
+/* Quick toggle sold out (owner sets badge=sold) */
 
 /* ═══ CART (bottom sheet) ═══ */
 .c-cart-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;backdrop-filter:blur(6px);}
@@ -3131,39 +3143,58 @@ async function renderBills(){
     const sessOrders=cachedOrders.filter(o=>o.sessId===sessKey);
     const total=sessOrders.reduce((s,o)=>s+(o.total||0),0);
     const earn=Math.round(total*(1-comm/100));
-    if(!sessOrders.length) return `<div class="bill-card"><div class="bill-h"><div class="bill-table-num">Table ${sess.tNum||'?'}</div><span class="tag tm">No orders yet</span></div></div>`;
-    return`<div class="bill-card">
-      <div class="bill-h">
-        <div>
-          <div class="bill-table-num">Table ${sess.tNum||'?'}</div>
-          <div style="font-size:10px;color:var(--s-muted);margin-top:2px">${sessOrders.length} order${sessOrders.length>1?'s':''} · Session active</div>
+    if(!sessOrders.length) return `
+      <div class="bill-card">
+        <div class="bill-header-top">
+          <div><div class="bill-table-num">Table ${sess.tNum||'?'}</div><div class="bill-table-sub">No orders yet</div></div>
         </div>
-        <div style="text-align:right">
-          <div style="font-family:var(--ff);font-size:22px;font-weight:900;color:var(--s-gold)">${fmtK(total)}</div>
-          <div style="font-size:10px;color:var(--s-green)">Your earn: ${fmtK(earn)}</div>
+      </div>`;
+    const vatRate=r?.vat||0;
+    const vatAmt=Math.round(total*vatRate/100);
+    const grandTotal=total+vatAmt;
+    return`<div class="bill-card">
+      <div class="bill-header-top">
+        <div>
+          <div class="bill-table-num">🪑 Table ${sess.tNum||'?'}</div>
+          <div class="bill-table-sub">${sessOrders.length} order${sessOrders.length>1?'s':''} · Session active · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div class="bill-header-total">
+          <div class="bill-grand-total">${fmtK(grandTotal)}</div>
+          <div class="bill-earn-label">Your earn: ${fmtK(Math.round(grandTotal*(1-(comm/100))))}</div>
         </div>
       </div>
       <div class="bill-body">
         ${sessOrders.map(o=>`
           <div class="bill-order-group">
-            <div class="bill-order-title">Order ${o.id||''} · ${o.time||''}</div>
+            <div class="bill-order-title">
+              <span>${o.id||''}</span>
+              <span class="bill-order-time">${o.time||''}</span>
+            </div>
             ${o.items?.map(i=>`
               <div class="bill-row">
-                <span>${i.emoji||''} ${i.name}</span>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <input type="number" class="bill-edit-input" value="${i.qty}" min="0" onchange="editBillItem('${o.fbKey}','${i.id||i.name}',this.value,'${o.sessId}')" style="width:50px">
-                  <span style="min-width:70px;text-align:right">× ${fmtK(i.price)} = <b>${fmtK(i.price*i.qty)}</b></span>
+                <div class="bill-item-left">
+                  <span class="bill-item-emoji">${i.emoji||'🍽️'}</span>
+                  <span class="bill-item-name">${i.name}</span>
+                </div>
+                <div class="bill-item-right">
+                  <input type="number" class="bill-edit-input" value="${i.qty}" min="0"
+                    onchange="editBillItem('${o.fbKey}','${i.id||i.name}',this.value,'${o.sessId}')">
+                  <span class="bill-item-subtotal">${fmtK(i.price*i.qty)}</span>
                 </div>
               </div>`).join('')||''}
           </div>`).join('')}
-        <div class="bill-total-row"><span>TOTAL BILL</span><span style="color:var(--s-gold)">${fmtK(total)}</span></div>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <button class="btn btn-gold btn-sm" onclick="printBill('${sessKey}')">🖨️ Print Bill</button>
-          <button class="btn btn-sm" onclick="endSession('${sessKey}');renderBills()">✕ Close Table</button>
+        <div class="bill-totals">
+          <div class="bill-subtotal-row"><span>Subtotal</span><span>${fmtK(total)}</span></div>
+          ${vatRate>0?`<div class="bill-vat-row"><span>VAT (${vatRate}%)</span><span>${fmtK(vatAmt)}</span></div>`:''}
+          <div class="bill-total-row"><span>TOTAL</span><span style="color:var(--s-gold)">${fmtK(grandTotal)}</span></div>
         </div>
-        <button class="bill-history-btn" onclick="toggleBillHistory('bh-${sessKey}')">📋 Edit History</button>
-        <div class="bill-history" id="bh-${sessKey}" style="display:none">Loading history...</div>
       </div>
+      <div class="bill-actions">
+        <button class="btn btn-gold" onclick="printBill('${sessKey}')">🖨️ Print Bill</button>
+        <button class="btn" onclick="endSession('${sessKey}');renderBills()">✕ Close Table</button>
+        <button class="bill-history-btn" onclick="toggleBillHistory('bh-${sessKey}')">📋 Edit History</button>
+      </div>
+      <div class="bill-history" id="bh-${sessKey}"></div>
     </div>`;
   }).join('');
 }
@@ -3223,76 +3254,110 @@ async function printBill(sessKey){
   }));
   const mergedItems=Object.values(allItems);
   const now=new Date();
-  const logoHtml = r?.logo
-    ? `<img src="${r.logo}" style="width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid #d4a03c;display:block;margin:0 auto 8px">`
-    : `<div style="font-size:52px;text-align:center;margin-bottom:6px">${r?.emoji||'🍽️'}</div>`;
+  const orderId='BILL-'+now.getFullYear()+(now.getMonth()+1).toString().padStart(2,'0')+now.getDate()+''+now.getHours().toString().padStart(2,'0')+now.getMinutes().toString().padStart(2,'0');
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bill · T${sess?.tNum}</title>
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bill · Table ${sess?.tNum}</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    @page{size:80mm auto;margin:4mm;}
-    body{font-family:'Courier New',monospace;background:#fff;color:#111;width:72mm;margin:0 auto;}
-    .outer{border:1px solid #1a0e03;overflow:hidden;}
-    /* HEADER with logo */
-    .bill-header{background:#1a0e03;padding:16px 14px 12px;text-align:center;}
-    .bill-logo-img{width:60px;height:60px;object-fit:cover;border-radius:50%;border:2px solid #d4a03c;display:block;margin:0 auto 8px;}
-    .bill-logo-emoji{font-size:44px;display:block;text-align:center;margin-bottom:6px;}
-    .bill-rname{font-family:Georgia,serif;font-size:18px;font-weight:900;color:#fff;letter-spacing:1px;}
-    .bill-addr{font-size:9px;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.5px;}
-    /* TABLE BADGE */
-    .table-badge{background:#d4a03c;color:#000;text-align:center;padding:6px;font-size:16px;font-weight:900;font-family:Georgia,serif;letter-spacing:2px;}
-    /* META */
-    .meta-section{padding:8px 12px;border-bottom:1px dashed #ccc;}
-    .meta-row{display:flex;justify-content:space-between;font-size:10px;color:#555;margin:2px 0;}
-    /* ITEMS */
-    .items-section{padding:8px 12px;}
-    .item-row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px dotted #eee;}
-    .item-row:last-child{border:none;}
-    .item-name{flex:1;padding-right:8px;}
-    .item-qty{color:#888;font-size:10px;}
-    .item-price{font-weight:700;white-space:nowrap;}
-    /* TOTALS */
-    .totals-section{padding:8px 12px;border-top:1px dashed #ccc;}
-    .subtotal-row{display:flex;justify-content:space-between;font-size:11px;color:#666;margin:2px 0;}
-    .vat-row{display:flex;justify-content:space-between;font-size:11px;color:#888;margin:2px 0;}
-    .total-row{display:flex;justify-content:space-between;font-size:16px;font-weight:900;margin-top:8px;padding-top:8px;border-top:2px solid #1a0e03;}
-    .vat-note{text-align:center;font-size:9px;color:#aaa;margin-top:4px;}
-    /* FOOTER */
-    .bill-footer{background:#1a0e03;color:rgba(255,255,255,.5);text-align:center;padding:10px;font-size:9px;letter-spacing:.5px;line-height:1.8;}
-    .bill-footer .thanks{color:#d4a03c;font-size:13px;font-weight:900;display:block;margin-bottom:4px;}
-    @media print{body{width:72mm;}.outer{border:none;}}
+    @page{size:80mm auto;margin:0;}
+    body{font-family:'Helvetica Neue',Arial,sans-serif;background:#fff;color:#1a1a1a;width:80mm;margin:0 auto;-webkit-print-color-adjust:exact;}
+    /* ── HEADER ── */
+    .hd{background:#111;padding:20px 16px 16px;text-align:center;position:relative;}
+    .hd::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#c8973a,#e0b55a,#c8973a);}
+    .hd-logo{width:56px;height:56px;border-radius:50%;border:2px solid #c8973a;object-fit:cover;display:block;margin:0 auto 10px;}
+    .hd-emoji{font-size:42px;display:block;margin-bottom:8px;line-height:1;}
+    .hd-name{font-size:16px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:3px;}
+    .hd-addr{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.5px;}
+    .hd-tagline{font-size:8px;color:#c8973a;letter-spacing:3px;text-transform:uppercase;margin-top:6px;}
+    /* ── TABLE BANNER ── */
+    .tb{background:#c8973a;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;}
+    .tb-left{font-size:18px;font-weight:900;color:#000;letter-spacing:1px;}
+    .tb-right{font-size:9px;color:rgba(0,0,0,.6);text-align:right;letter-spacing:.5px;}
+    /* ── META ── */
+    .meta{padding:10px 16px;border-bottom:1px dashed #e0e0e0;display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+    .meta-item{font-size:9px;color:#888;}
+    .meta-item b{color:#333;display:block;font-size:10px;}
+    /* ── SECTION TITLE ── */
+    .sec-title{padding:8px 16px 4px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#999;border-bottom:1px solid #f0f0f0;}
+    /* ── ITEMS ── */
+    .items{padding:4px 0;}
+    .item{display:flex;align-items:center;padding:7px 16px;border-bottom:1px solid #f8f8f8;}
+    .item:last-child{border:none;}
+    .item-em{font-size:14px;width:22px;flex-shrink:0;}
+    .item-info{flex:1;padding:0 8px;}
+    .item-name{font-size:11px;font-weight:600;color:#1a1a1a;}
+    .item-unit{font-size:9px;color:#aaa;margin-top:1px;}
+    .item-qty{font-size:10px;color:#888;width:24px;text-align:center;flex-shrink:0;}
+    .item-price{font-size:11px;font-weight:700;color:#1a1a1a;min-width:70px;text-align:right;flex-shrink:0;}
+    /* ── TOTALS ── */
+    .totals{padding:10px 16px;background:#fafafa;border-top:1px solid #ebebeb;}
+    .tot-row{display:flex;justify-content:space-between;font-size:10px;color:#888;padding:2px 0;}
+    .tot-divider{border:none;border-top:1px solid #e0e0e0;margin:8px 0;}
+    .tot-main{display:flex;justify-content:space-between;padding:4px 0;}
+    .tot-main-l{font-size:15px;font-weight:900;color:#1a1a1a;}
+    .tot-main-r{font-size:18px;font-weight:900;color:#c8973a;}
+    .tot-vat-note{font-size:8px;color:#bbb;text-align:right;margin-top:3px;}
+    /* ── QR / ORDER REF ── */
+    .ref{padding:8px 16px;text-align:center;border-top:1px dashed #e0e0e0;}
+    .ref-id{font-size:9px;color:#bbb;letter-spacing:2px;font-family:'Courier New',monospace;}
+    /* ── FOOTER ── */
+    .ft{background:#111;padding:14px 16px;text-align:center;}
+    .ft-thanks{font-size:14px;font-weight:700;color:#c8973a;letter-spacing:1px;display:block;margin-bottom:6px;}
+    .ft-langs{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;}
+    .ft-site{font-size:9px;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;}
+    .ft-line{width:40px;height:1px;background:#c8973a;margin:8px auto;}
+    @media print{body{width:80mm;}@page{margin:0;}}
   </style></head><body>
-  <div class="outer">
-    <div class="bill-header">
-      ${r?.logo?`<img src="${r.logo}" class="bill-logo-img">`:`<span class="bill-logo-emoji">${r?.emoji||'🍽️'}</span>`}
-      <div class="bill-rname">${r?.name||'Restaurant'}</div>
-      <div class="bill-addr">${r?.addr||'Vientiane, Laos'}</div>
-    </div>
-    <div class="table-badge">🪑 TABLE ${sess?.tNum||'?'}</div>
-    <div class="meta-section">
-      <div class="meta-row"><span>Date</span><span>${now.toLocaleDateString()}</span></div>
-      <div class="meta-row"><span>Time</span><span>${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</span></div>
-      <div class="meta-row"><span>Orders</span><span>${sessOrders.length}</span></div>
-    </div>
-    <div class="items-section">
-      ${mergedItems.map(i=>`<div class="item-row">
-        <span class="item-name">${i.emoji||''} ${i.name}</span>
-        <span class="item-qty">×${i.qty}</span>
-        <span class="item-price">₭${Math.round(i.price*i.qty).toLocaleString()}</span>
-      </div>`).join('')}
-    </div>
-    <div class="totals-section">
-      ${vatRate>0?`<div class="subtotal-row"><span>Subtotal</span><span>₭${Math.round(total).toLocaleString()}</span></div>
-      <div class="vat-row"><span>VAT (${vatRate}%)</span><span>₭${vatAmt.toLocaleString()}</span></div>`:''}
-      <div class="total-row"><span>TOTAL</span><span>₭${grandTotal.toLocaleString()}</span></div>
-      ${vatRate>0?`<div class="vat-note">VAT included: ₭${vatAmt.toLocaleString()}</div>`:''}
-    </div>
-    <div class="bill-footer">
-      <span class="thanks">ຂອບໃຈ · ขอบคุณ · Thank You 🙏</span>
-      eatlaos.la · Platform by EATLAOS
-    </div>
+  <div class="hd">
+    ${r?.logo
+      ? `<img src="${r.logo}" class="hd-logo">`
+      : `<span class="hd-emoji">${r?.emoji||'🍽️'}</span>`}
+    <div class="hd-name">${r?.name||'Restaurant'}</div>
+    <div class="hd-addr">${r?.addr||'Vientiane, Laos'}</div>
+    <div class="hd-tagline">Official Receipt</div>
   </div>
-  <script>window.onload=()=>setTimeout(()=>window.print(),500);<\/script>
+  <div class="tb">
+    <div class="tb-left">TABLE ${sess?.tNum||'?'}</div>
+    <div class="tb-right">${sessOrders.length} order${sessOrders.length>1?'s':''}<br>${sess?.startTime||''}</div>
+  </div>
+  <div class="meta">
+    <div class="meta-item"><b>${now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</b>Date</div>
+    <div class="meta-item" style="text-align:right"><b>${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</b>Time</div>
+  </div>
+  <div class="sec-title">Order Summary</div>
+  <div class="items">
+    ${mergedItems.map(i=>`
+    <div class="item">
+      <span class="item-em">${i.emoji||'🍽️'}</span>
+      <div class="item-info">
+        <div class="item-name">${i.name}</div>
+        <div class="item-unit">₭${Math.round(i.price).toLocaleString()} each</div>
+      </div>
+      <span class="item-qty">×${i.qty}</span>
+      <span class="item-price">₭${Math.round(i.price*i.qty).toLocaleString()}</span>
+    </div>`).join('')}
+  </div>
+  <div class="totals">
+    ${vatRate>0?`
+    <div class="tot-row"><span>Subtotal</span><span>₭${Math.round(total).toLocaleString()}</span></div>
+    <div class="tot-row"><span>VAT ${vatRate}%</span><span>₭${vatAmt.toLocaleString()}</span></div>`:''}
+    <hr class="tot-divider">
+    <div class="tot-main">
+      <span class="tot-main-l">TOTAL</span>
+      <span class="tot-main-r">₭${grandTotal.toLocaleString()}</span>
+    </div>
+    ${vatRate>0?`<div class="tot-vat-note">Incl. VAT ₭${vatAmt.toLocaleString()}</div>`:''}
+  </div>
+  <div class="ref">
+    <div class="ref-id">${orderId}</div>
+  </div>
+  <div class="ft">
+    <span class="ft-thanks">Thank You</span>
+    <div class="ft-langs">ຂອບໃຈ &nbsp;·&nbsp; ขอบคุณ &nbsp;·&nbsp; 谢谢</div>
+    <div class="ft-line"></div>
+    <div class="ft-site">eatlaos.com &nbsp;·&nbsp; Powered by Bill</div>
+  </div>
+  <script>window.onload=()=>setTimeout(()=>window.print(),600);<\/script>
   </body></html>`);
   w.document.close();
 }
@@ -3323,12 +3388,48 @@ function exportCSV(){
 async function owMenu(){
   const r=await fbGet('restaurants/'+restoId);if(!r) return;
   const menu=r.menu||[];
-  document.getElementById('ow-menutbl').innerHTML=menu.map((item,i)=>`
-    <tr><td><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:var(--s-surf3);display:flex;align-items:center;justify-content:center;font-size:18px">${item.emoji||'🍽️'}</div><div><div class="td-main">${item.name}</div><div class="td-sub">${(item.desc||'').substring(0,38)}...</div></div></div></td>
-    <td style="color:var(--s-gold)">${item.cat||''}</td><td style="font-weight:600">${fmtK(item.price)}</td>
-    <td><span class="tag ${item.status==='active'?'tg':'tm'}">${item.status}</span></td>
-    <td><div class="btn-acts"><button class="btn btn-sm" onclick="editOwItem(${i})">Edit</button><button class="btn btn-sm btn-red" onclick="delOwItem(${i})">Del</button></div></td></tr>
-  `).join('')||nd(5);
+  document.getElementById('ow-menutbl').innerHTML=menu.map((item,i)=>{
+    const isSold=item.badge==='sold';
+    const imgEl=item.img
+      ?`<img src="${item.img}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;">`
+      :`<div style="width:36px;height:36px;background:var(--s-surf3);display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:4px">${item.emoji||'🍽️'}</div>`;
+    return`<tr style="${isSold?'opacity:.6':''}">
+      <td><div style="display:flex;align-items:center;gap:10px">
+        ${imgEl}
+        <div>
+          <div class="td-main">${item.name}${isSold?` <span style="font-size:9px;color:var(--s-red);letter-spacing:1px;text-transform:uppercase">SOLD OUT</span>`:''}</div>
+          <div class="td-sub">${(item.desc||'').substring(0,36)}${item.desc?.length>36?'...':''}</div>
+        </div>
+      </div></td>
+      <td style="color:var(--s-gold)">${item.cat||''}</td>
+      <td style="font-weight:600">${fmtK(item.price)}</td>
+      <td>
+        <span class="tag ${item.status==='active'?'tg':'tm'}">${item.status}</span>
+        ${item.badge==='new'?`<span class="tag tgo" style="margin-left:4px">NEW</span>`:''}
+        ${item.badge==='popular'?`<span class="tag tb" style="margin-left:4px">⭐</span>`:''}
+      </td>
+      <td><div class="btn-acts">
+        <button class="btn btn-sm" onclick="editOwItem(${i})">Edit</button>
+        <button class="btn btn-sm ${isSold?'btn-gold':'btn-red'}" onclick="toggleSoldOut(${i})" title="${isSold?'Mark Available':'Mark Sold Out'}">
+          ${isSold?'✓ Available':'⊘ Sold Out'}
+        </button>
+        <button class="btn btn-sm btn-red" onclick="delOwItem(${i})">Del</button>
+      </div></td>
+    </tr>`;
+  }).join('')||nd(5);
+}
+
+async function toggleSoldOut(idx){
+  const r=await fbGet('restaurants/'+restoId);
+  const menu=[...(r?.menu||[])];
+  const item=menu[idx];if(!item) return;
+  const isSold=item.badge==='sold';
+  menu[idx]={...item,badge:isSold?'':''};
+  // Toggle: if sold → clear badge, if not sold → set sold
+  menu[idx].badge=isSold?'':'sold';
+  await fbUpdate('restaurants/'+restoId,{menu});
+  notifyD(isSold?`✓ ${item.name} — now Available`:`⊘ ${item.name} — marked Sold Out`);
+  owMenu();
 }
 
 async function owCats(){
@@ -4206,24 +4307,48 @@ function itemDesc(item){
 
 function renderMenu(cat,r){
   if(!r) return;
+  // Show all active items — sold out items show as unavailable (not hidden)
   const items=(r.menu||[]).filter(m=>m.status!=='inactive'&&(cat==='All'||m.cat===cat));
-  document.getElementById('cMenuGrid').innerHTML=items.map(item=>`
-    <div class="c-item" onclick="openDetail('${item.id||item.name}')">
-      ${item.badge==='new'?`<div class="c-badge c-badge-new">${tr('new_item')}</div>`:''}
+  // Sort: available first, sold out at bottom
+  items.sort((a,b)=>{
+    const aSold=a.badge==='sold'?1:0;
+    const bSold=b.badge==='sold'?1:0;
+    return aSold-bSold;
+  });
+  document.getElementById('cMenuGrid').innerHTML=items.map(item=>{
+    const isSold=item.badge==='sold';
+    const imgContent=item.img
+      ?`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover;display:block;">`
+      :item.emoji||'🍽️';
+    return`
+    <div class="c-item${isSold?' sold-out':''}"
+      onclick="${isSold?'':` openDetail('${item.id||item.name}')`}">
+      ${item.badge==='new'?`<div class="c-badge c-badge-new">✦ ${tr('new_item')}</div>`:''}
       ${item.badge==='popular'?`<div class="c-badge c-badge-pop">★ ${tr('popular')}</div>`:''}
-      ${item.badge==='sold'?`<div class="c-badge c-badge-sold">${tr('sold_out')}</div>`:''}
-      <div class="c-item-img">${item.img?`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover;display:block;">`:item.emoji||'🍽️'}</div>
+      <!-- Image with sold out overlay -->
+      <div class="c-item-img" style="position:relative">
+        ${imgContent}
+        ${isSold?`<div class="c-sold-overlay"><span class="c-sold-overlay-text">⊘ ${tr('sold_out')}</span></div>`:''}
+      </div>
       <div class="c-item-body">
         <div class="c-item-cat">${item.cat||''}</div>
         <div class="c-item-name">${item.name}</div>
         <div class="c-item-desc">${itemDesc(item)}</div>
         <div class="c-item-foot">
-          <div class="c-item-price">${fmtK(item.price)}</div>
-          <button class="c-item-add" onclick="event.stopPropagation();quickAdd('${item.id||item.name}')">+</button>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div class="c-item-price" style="${isSold?'text-decoration:line-through;opacity:.5':''}">
+              ${fmtK(item.price)}
+            </div>
+            ${isSold?`<div style="font-size:9px;letter-spacing:1px;color:var(--c-muted);text-transform:uppercase">${tr('sold_out')}</div>`:''}
+          </div>
+          ${isSold
+            ? `<div class="c-item-add-sold">⊘</div>`
+            : `<button class="c-item-add" onclick="event.stopPropagation();quickAdd('${item.id||item.name}')">+</button>`
+          }
         </div>
       </div>
-    </div>
-  `).join('')||`<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--c-muted)">${tr('no_items')}</div>`;
+    </div>`;
+  }).join('')||`<div style="text-align:center;padding:60px;color:var(--c-muted)">${tr('no_items')}</div>`;
 }
 
 // Item detail
@@ -4243,8 +4368,20 @@ function openDetail(itemId){
 }
 function dq(d){detQty=Math.max(1,detQty+d);document.getElementById('detQty').textContent=detQty;updateDetRun();}
 function updateDetRun(){if(!detItem) return;document.getElementById('detRun').textContent=`${detQty} × ${fmtK(detItem.price)} = ${fmtK(detItem.price*detQty)}`;}
-function addDetailToCart(){if(!detItem) return;addToCart(detItem,detQty);closeModal('mDetail');}
-function quickAdd(itemId){loadRestoForCustomer().then(r=>{const item=(r?.menu||[]).find(m=>m.id===itemId||m.name===itemId);if(item) addToCart(item,1);});}
+function addDetailToCart(){
+  if(!detItem) return;
+  if(detItem.badge==='sold'){notifyC('⊘ '+detItem.name+' — '+tr('sold_out'));return;}
+  addToCart(detItem,detQty);
+  closeModal('mDetail');
+}
+function quickAdd(itemId){
+  loadRestoForCustomer().then(r=>{
+    const item=(r?.menu||[]).find(m=>m.id===itemId||m.name===itemId);
+    if(!item) return;
+    if(item.badge==='sold'){notifyC('⊘ '+item.name+' — '+tr('sold_out'));return;}
+    addToCart(item,1);
+  });
+}
 function addToCart(item,qty){
   const ex=cart.find(c=>c.id===item.id||c.name===item.name);
   if(ex) ex.qty+=qty; else cart.push({...item,qty});
