@@ -1199,17 +1199,16 @@ select.fi{cursor:pointer;}
 .panel.on{display:block;animation:fadeUp .4s ease;}
 
 /* ═══ STATS ═══ */
-.stats-row{display:grid;gap:12px;margin-bottom:20px;}
+.stats-row{display:grid;gap:1px;background:var(--s-border);margin-bottom:18px;}
 .s4{grid-template-columns:repeat(4,1fr);}
 .s3{grid-template-columns:repeat(3,1fr);}
 .s2{grid-template-columns:repeat(2,1fr);}
-.stat-box{background:var(--s-surf);border:1px solid var(--s-border);border-radius:6px;padding:20px 20px 16px;position:relative;overflow:hidden;transition:box-shadow .2s;}
-.stat-box:hover{box-shadow:0 4px 20px rgba(0,0,0,.2);}
-.stat-box::after{content:'';position:absolute;top:0;left:0;width:3px;bottom:0;background:var(--s-gold);border-radius:6px 0 0 6px;}
-.stat-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--s-muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.stat-val{font-family:var(--ff);font-size:30px;font-weight:900;line-height:1;letter-spacing:-1px;}
-.stat-sub{font-size:10px;color:var(--s-muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--s-border);}
-.stat-ico{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.07;}
+.stat-box{background:var(--s-surf);padding:20px;position:relative;overflow:hidden;}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--s-gold);}
+.stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px;}
+.stat-val{font-family:var(--ff);font-size:28px;font-weight:900;line-height:1;}
+.stat-sub{font-size:10px;color:var(--s-green);margin-top:5px;}
+.stat-ico{position:absolute;right:14px;top:14px;font-size:22px;opacity:.15;}
 
 /* ═══ CARD/TABLE ═══ */
 .card{background:var(--s-surf);border:1px solid var(--s-border);margin-bottom:16px;}
@@ -1272,7 +1271,20 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .loc-new-badge{position:absolute;top:0;right:0;background:var(--s-red);color:#fff;font-size:9px;font-weight:700;padding:3px 10px;letter-spacing:1px;text-transform:uppercase;}
 
 /* ═══ BILL VIEW (per table) ═══ */
-.bill-card{background:var(--s-surf);border:1px solid var(--s-border);margin-bottom:12px;}
+/* ── Bills Toolbar ── */
+.btools{background:var(--s-surf);border:1px solid var(--s-border);border-radius:6px;margin-bottom:16px;overflow:hidden;}
+.btools-filters{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--s-border);flex-wrap:wrap;}
+.btools-sel{background:var(--s-surf2);border:1px solid var(--s-border);color:var(--s-text);padding:7px 10px;font-size:12px;border-radius:4px;cursor:pointer;outline:none;transition:border-color .15s;min-width:130px;}
+.btools-sel:hover,.btools-sel:focus{border-color:var(--s-gold);}
+.btools-reset{background:none;border:1px solid var(--s-border);color:var(--s-muted);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:16px;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.btools-reset:hover{border-color:var(--s-gold);color:var(--s-gold);}
+.btools-stats{display:flex;align-items:stretch;}
+.btools-stat{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:14px 20px;flex:1;min-width:80px;}
+.btools-stat-v{font-family:var(--ff);font-size:22px;font-weight:900;line-height:1;}
+.btools-stat-l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--s-muted);}
+.btools-divider{width:1px;background:var(--s-border);flex-shrink:0;margin:10px 0;}
+/* ── Bill Cards ── */
+.bill-card{background:var(--s-surf);border:1px solid var(--s-border);margin-bottom:16px;border-radius:6px;overflow:hidden;}
 .bill-h{padding:14px 18px;border-bottom:1px solid var(--s-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .bill-table-num{font-family:var(--ff);font-size:22px;font-weight:900;}
 .bill-body{padding:14px 18px;}
@@ -1696,30 +1708,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <span id="saFilterRange" style="color:var(--s-muted2)"></span>
           </div>
           <div class="stats-row s4">
-            <div class="stat-box">
-              <div class="stat-ico">🏪</div>
-              <div class="stat-lbl">Restaurants</div>
-              <div class="stat-val" id="sa-s1">—</div>
-              <div class="stat-sub">Active on platform</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-ico">🧾</div>
-              <div class="stat-lbl">Orders</div>
-              <div class="stat-val" id="sa-s2">—</div>
-              <div class="stat-sub">Filtered period</div>
-            </div>
-            <div class="stat-box" style="--stat-color:var(--s-gold)">
-              <div class="stat-ico">💰</div>
-              <div class="stat-lbl">Commission</div>
-              <div class="stat-val" id="sa-s3" style="color:var(--s-gold)">—</div>
-              <div class="stat-sub">Platform earnings</div>
-            </div>
-            <div class="stat-box" style="--stat-color:var(--s-green)">
-              <div class="stat-ico">📱</div>
-              <div class="stat-lbl">Live Sessions</div>
-              <div class="stat-val" id="sa-s4" style="color:var(--s-green)">—</div>
-              <div class="stat-sub">Active right now</div>
-            </div>
+            <div class="stat-box"><div class="stat-ico">🏪</div><div class="stat-lbl">Restaurants</div><div class="stat-val" id="sa-s1">—</div><div class="stat-sub">Active</div></div>
+            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl">Orders (filtered)</div><div class="stat-val" id="sa-s2">—</div></div>
+            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl">Commission (filtered)</div><div class="stat-val" id="sa-s3">—</div></div>
+            <div class="stat-box"><div class="stat-ico">📱</div><div class="stat-lbl">Active Sessions</div><div class="stat-val" id="sa-s4">—</div></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
             <div class="chart-card"><div class="chart-h"><div class="chart-title">Revenue (₭)</div><div class="ctabs"><button class="ctab on" onclick="saChartSwitch('week',this)">Week</button><button class="ctab" onclick="saChartSwitch('month',this)">Month</button></div></div><div class="chart-wrap"><canvas id="saRC"></canvas></div></div>
@@ -1807,7 +1799,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">🏪</div><div><div class="sb-un" id="owSbN">Owner</div><div class="sb-ur" id="owSbR">Restaurant</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
     </aside>
     <main class="staff-main">
-      <div class="topbar"><div class="topbar-title" id="owTbar">Dashboard</div><div class="topbar-r"><div class="firebase-status"><div class="fb-dot" id="owFbDot"></div><span id="owFbTxt">Connecting...</span></div><button class="btn" id="owSound" onclick="toggleSound()">🔔 ON</button></div></div>
+      <div class="topbar"><div class="topbar-title" id="owTbar">Dashboard</div><div class="topbar-r"><select id="staffLangSel" onchange="setStaffLang(this.value)" style="background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-muted);padding:5px 8px;font-size:11px;border-radius:4px;cursor:pointer"><option value="en">🇬🇧 EN</option><option value="lo">🇱🇦 ລາວ</option><option value="th">🇹🇭 ไทย</option><option value="zh">🇨🇳 中文</option><option value="ko">🇰🇷 한국어</option></select><div class="firebase-status"><div class="fb-dot" id="owFbDot"></div><span id="owFbTxt">Connecting...</span></div><button class="btn" id="owSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="ow-dashboard">
           <!-- Filter buttons -->
@@ -1822,30 +1814,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <span style="font-size:11px;color:var(--s-muted)" id="owFilterLabel">Today</span>
           </div>
           <div class="stats-row s4">
-            <div class="stat-box">
-              <div class="stat-ico">🧾</div>
-              <div class="stat-lbl" id="ow-s1-lbl">Orders</div>
-              <div class="stat-val" id="ow-s1">—</div>
-              <div class="stat-sub">This period</div>
-            </div>
-            <div class="stat-box" style="--stat-color:var(--s-gold)">
-              <div class="stat-ico">💰</div>
-              <div class="stat-lbl" id="ow-s2-lbl">Revenue</div>
-              <div class="stat-val" id="ow-s2" style="color:var(--s-gold)">—</div>
-              <div class="stat-sub" id="ow-comm-n">After commission · VAT</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-ico">🍽️</div>
-              <div class="stat-lbl">Active Menu Items</div>
-              <div class="stat-val" id="ow-s3">—</div>
-              <div class="stat-sub">On menu now</div>
-            </div>
-            <div class="stat-box" style="--stat-color:var(--s-red)">
-              <div class="stat-ico">⏳</div>
-              <div class="stat-lbl">Pending</div>
-              <div class="stat-val" id="ow-s4" style="color:var(--s-red)">—</div>
-              <div class="stat-sub">Need attention</div>
-            </div>
+            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl" id="ow-s1-lbl">Today's Orders</div><div class="stat-val" id="ow-s1">—</div></div>
+            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl" id="ow-s2-lbl">Today's Revenue</div><div class="stat-val" id="ow-s2">—</div><div class="stat-sub" id="ow-comm-n">After commission</div></div>
+            <div class="stat-box"><div class="stat-ico">🍽️</div><div class="stat-lbl">Active Items</div><div class="stat-val" id="ow-s3">—</div></div>
+            <div class="stat-box"><div class="stat-ico">⏳</div><div class="stat-lbl">Pending Now</div><div class="stat-val" id="ow-s4">—</div></div>
           </div>
           <div class="chart-card"><div class="chart-h"><div class="chart-title">Sales</div><div class="ctabs"><button class="ctab on" onclick="owChartSw('rev',this)">Revenue</button><button class="ctab" onclick="owChartSw('ord',this)">Orders</button><button class="ctab" onclick="owChartSw('items',this)">Top Items</button></div></div><div class="chart-wrap"><canvas id="owC"></canvas></div></div>
           <div class="card"><div class="card-h"><div class="card-title">Recent Orders</div><button class="btn btn-sm" onclick="owP('liveorders',null)">View All Live</button></div><div class="tbl-wrap"><table><thead><tr><th>Order</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>Time</th><th>Status</th><th>Update</th></tr></thead><tbody id="ow-recent"></tbody></table></div></div>
@@ -1887,7 +1859,6 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
         <!-- TABLE BILLS -->
         <div class="panel" id="ow-bills">
-          <!-- ── BILLS TOOLBAR ── -->
           <div class="btools">
             <div class="btools-filters">
               <select class="btools-sel" id="bfTable" onchange="renderBills()">
@@ -1906,19 +1877,31 @@ tr:hover td{background:rgba(255,255,255,.015);}
                 <option value="table">Table No.</option>
                 <option value="orders">Most Orders</option>
               </select>
-              <button class="btools-reset" onclick="billsResetFilter()" title="Reset filters">↺</button>
+              <button class="btools-reset" onclick="billsResetFilter()" title="Reset">↺</button>
             </div>
             <div class="btools-stats">
-              <div class="btools-stat"><div class="btools-stat-v" id="bsTables">—</div><div class="btools-stat-l">Tables</div></div>
+              <div class="btools-stat">
+                <div class="btools-stat-v" id="bsTables">—</div>
+                <div class="btools-stat-l">Tables</div>
+              </div>
               <div class="btools-divider"></div>
-              <div class="btools-stat"><div class="btools-stat-v" id="bsTotal" style="color:var(--s-gold)">—</div><div class="btools-stat-l">Total Bills</div></div>
+              <div class="btools-stat">
+                <div class="btools-stat-v" id="bsTotal" style="color:var(--s-gold)">—</div>
+                <div class="btools-stat-l">Total Bills</div>
+              </div>
               <div class="btools-divider"></div>
-              <div class="btools-stat"><div class="btools-stat-v" id="bsEarn" style="color:var(--s-green)">—</div><div class="btools-stat-l">Your Earnings</div></div>
+              <div class="btools-stat">
+                <div class="btools-stat-v" id="bsEarn" style="color:var(--s-green)">—</div>
+                <div class="btools-stat-l">Your Earnings</div>
+              </div>
               <div class="btools-divider"></div>
-              <div class="btools-stat"><div class="btools-stat-v" id="bsPending" style="color:var(--s-red)">—</div><div class="btools-stat-l">Pending</div></div>
+              <div class="btools-stat">
+                <div class="btools-stat-v" id="bsPending" style="color:var(--s-red)">—</div>
+                <div class="btools-stat-l">Pending</div>
+              </div>
             </div>
           </div>
-          <div id="billsContainer"><div style="text-align:center;padding:40px;color:var(--s-muted)">Loading bills...</div></div>
+          <div id="billsContainer"></div>
         </div>
 
         <div class="panel" id="ow-menu"><div class="card"><div class="card-h"><div class="card-title">Menu Items</div><button class="btn btn-gold" onclick="openOwItemModal()">+ Add Item</button></div><div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>Price (₭)</th><th>Status</th><th>Actions</th></tr></thead><tbody id="ow-menutbl"></tbody></table></div></div></div>
@@ -2417,31 +2400,9 @@ function setLang(l){
   if(qrSess){renderCats();renderMenu(curCat);renderCustOrders();}
 }
 
-const STAFF_T={en:{dashboard:'Dashboard',live_orders:'Live Orders',table_bills:'Table Bills',menu_items:'Menu Items',categories:'Categories',tables_qr:'Tables & QR',order_history:'Order History',profile:'Profile',today_orders:"Today's Orders",today_revenue:"Today's Revenue",active_items:'Active Items',pending_now:'Pending Now',this_period:'This period',after_commission:'After commission',on_menu:'On menu',need_attention:'Need attention',all:'All',pending:'Pending',preparing:'Preparing',ready:'Ready',sign_out:'Sign Out',total:'Total',occupied:'Occupied',available:'Available',print_bill:'Print Bill',close_table:'Close Table',orders:'Orders',revenue:'Revenue',top_items:'Top Items',save:'Save',cancel:'Cancel',edit:'Edit',delete:'Delete',sold_out:'Sold Out',no_orders:'No orders yet',loading:'Loading...'},lo:{dashboard:'ໜ້າຫຼັກ',live_orders:'ອໍເດີສົດ',table_bills:'ໃບເກັບເງິນ',menu_items:'ລາຍການເມນູ',categories:'ໝວດໝູ່',tables_qr:'ໂຕະ & QR',order_history:'ປະຫວັດ',profile:'ໂປຣໄຟລ໌',today_orders:'ອໍເດີວັນນີ້',today_revenue:'ລາຍຮັບວັນນີ້',active_items:'ລາຍການໃຊ້ງານ',pending_now:'ລໍຖ້າ',this_period:'ໄລຍະນີ້',after_commission:'ຫຼັງຄ່ານາຍໜ້າ',on_menu:'ໃນເມນູ',need_attention:'ຕ້ອງດູແລ',all:'ທັງໝົດ',pending:'ລໍຖ້າ',preparing:'ກຳລັງກຽມ',ready:'ພ້ອມ',sign_out:'ອອກ',total:'ລວມ',occupied:'ມີໃຜຢູ່',available:'ວ່າງ',print_bill:'ພິມໃບເກັບເງິນ',close_table:'ປິດໂຕະ',orders:'ອໍເດີ',revenue:'ລາຍຮັບ',top_items:'ຂາຍດີ',save:'ບັນທຶກ',cancel:'ຍົກເລີກ',edit:'ແກ້ໄຂ',delete:'ລຶບ',sold_out:'ໝົດ',no_orders:'ຍັງບໍ່ມີ',loading:'ກຳລັງໂຫຼດ...'},th:{dashboard:'แดชบอร์ด',live_orders:'ออร์เดอร์สด',table_bills:'บิลโต๊ะ',menu_items:'รายการเมนู',categories:'หมวดหมู่',tables_qr:'โต๊ะ & QR',order_history:'ประวัติ',profile:'โปรไฟล์',today_orders:'ออร์เดอร์วันนี้',today_revenue:'รายได้วันนี้',active_items:'รายการที่ใช้',pending_now:'รอดำเนินการ',this_period:'ช่วงนี้',after_commission:'หลังค่าคอมมิชชัน',on_menu:'ในเมนู',need_attention:'ต้องดูแล',all:'ทั้งหมด',pending:'รอ',preparing:'กำลังทำ',ready:'พร้อม',sign_out:'ออก',total:'รวม',occupied:'มีลูกค้า',available:'ว่าง',print_bill:'พิมพ์บิล',close_table:'ปิดโต๊ะ',orders:'ออร์เดอร์',revenue:'รายได้',top_items:'ขายดี',save:'บันทึก',cancel:'ยกเลิก',edit:'แก้ไข',delete:'ลบ',sold_out:'หมด',no_orders:'ยังไม่มี',loading:'กำลังโหลด...'},zh:{dashboard:'控制台',live_orders:'实时订单',table_bills:'桌台账单',menu_items:'菜单项目',categories:'分类',tables_qr:'桌台 & QR',order_history:'订单历史',profile:'餐厅资料',today_orders:'今日订单',today_revenue:'今日营收',active_items:'在售商品',pending_now:'待处理',this_period:'本期',after_commission:'扣除佣金后',on_menu:'菜单中',need_attention:'需处理',all:'全部',pending:'待处理',preparing:'准备中',ready:'就绪',sign_out:'退出',total:'合计',occupied:'使用中',available:'空闲',print_bill:'打印账单',close_table:'关闭桌台',orders:'订单',revenue:'营收',top_items:'热销',save:'保存',cancel:'取消',edit:'编辑',delete:'删除',sold_out:'售罄',no_orders:'暂无订单',loading:'加载中...'},ko:{dashboard:'대시보드',live_orders:'실시간 주문',table_bills:'테이블 청구서',menu_items:'메뉴 항목',categories:'카테고리',tables_qr:'테이블 & QR',order_history:'주문 내역',profile:'프로필',today_orders:'오늘의 주문',today_revenue:'오늘의 수익',active_items:'활성 메뉴',pending_now:'대기 중',this_period:'이번 기간',after_commission:'수수료 제외',on_menu:'메뉴에서',need_attention:'처리 필요',all:'전체',pending:'대기',preparing:'준비 중',ready:'완료',sign_out:'로그아웃',total:'합계',occupied:'사용 중',available:'빈 자리',print_bill:'영수증 출력',close_table:'테이블 종료',orders:'주문',revenue:'수익',top_items:'인기 메뉴',save:'저장',cancel:'취소',edit:'편집',delete:'삭제',sold_out:'품절',no_orders:'주문 없음',loading:'로딩 중...'}};
+const STAFF_T={en:{dashboard:'Dashboard',live_orders:'Live Orders',table_bills:'Table Bills',menu_items:'Menu Items',categories:'Categories',tables_qr:'Tables & QR',order_history:'Order History',profile:'Profile',orders:'Orders',revenue:'Revenue',top_items:'Top Items',pending:'Pending',preparing:'Preparing',ready:'Ready',all:'All',sign_out:'Sign Out',save:'Save',cancel:'Cancel',edit:'Edit',delete:'Delete',sold_out:'Sold Out'},lo:{dashboard:'ໜ້າຫຼັກ',live_orders:'ອໍເດີສົດ',table_bills:'ໃບເກັບເງິນ',menu_items:'ລາຍການເມນູ',categories:'ໝວດໝູ່',tables_qr:'ໂຕະ & QR',order_history:'ປະຫວັດ',profile:'ໂປຣໄຟລ໌',orders:'ອໍເດີ',revenue:'ລາຍຮັບ',top_items:'ຂາຍດີ',pending:'ລໍຖ້າ',preparing:'ກຳລັງກຽມ',ready:'ພ້ອມ',all:'ທັງໝົດ',sign_out:'ອອກ',save:'ບັນທຶກ',cancel:'ຍົກເລີກ',edit:'ແກ້ໄຂ',delete:'ລຶບ',sold_out:'ໝົດ'},th:{dashboard:'แดชบอร์ด',live_orders:'ออร์เดอร์สด',table_bills:'บิลโต๊ะ',menu_items:'รายการเมนู',categories:'หมวดหมู่',tables_qr:'โต๊ะ & QR',order_history:'ประวัติ',profile:'โปรไฟล์',orders:'ออร์เดอร์',revenue:'รายได้',top_items:'ขายดี',pending:'รอ',preparing:'กำลังทำ',ready:'พร้อม',all:'ทั้งหมด',sign_out:'ออก',save:'บันทึก',cancel:'ยกเลิก',edit:'แก้ไข',delete:'ลบ',sold_out:'หมด'},zh:{dashboard:'控制台',live_orders:'实时订单',table_bills:'桌台账单',menu_items:'菜单项目',categories:'分类',tables_qr:'桌台 & QR',order_history:'订单历史',profile:'餐厅资料',orders:'订单',revenue:'营收',top_items:'热销',pending:'待处理',preparing:'准备中',ready:'就绪',all:'全部',sign_out:'退出',save:'保存',cancel:'取消',edit:'编辑',delete:'删除',sold_out:'售罄'},ko:{dashboard:'대시보드',live_orders:'실시간 주문',table_bills:'테이블 청구서',menu_items:'메뉴 항목',categories:'카테고리',tables_qr:'테이블 & QR',order_history:'주문 내역',profile:'프로필',orders:'주문',revenue:'수익',top_items:'인기 메뉴',pending:'대기',preparing:'준비 중',ready:'완료',all:'전체',sign_out:'로그아웃',save:'저장',cancel:'취소',edit:'편집',delete:'삭제',sold_out:'품절'}};
 function ts(k){return STAFF_T[lang]?.[k]||STAFF_T.en[k]||k;}
-function setStaffLang(l){
-  lang=l;
-  localStorage.setItem('el_lang',l);
-  const s=document.getElementById('staffLangSel');if(s)s.value=l;
-  const c=document.getElementById('langSel');if(c)c.value=l;
-  // Translate sidebar
-  const sbMap={dashboard:'dashboard',liveorders:'live_orders',bills:'table_bills',menu:'menu_items',cats:'categories',tables:'tables_qr',history:'order_history',profile:'profile'};
-  Object.entries(sbMap).forEach(([id,key])=>{
-    const el=document.querySelector('#sb-'+id+' .sb-txt');
-    if(el) el.textContent=ts(key);
-  });
-  // Translate stat labels
-  const s1=document.getElementById('ow-s1-lbl');if(s1)s1.textContent=ts('orders');
-  const s2=document.getElementById('ow-s2-lbl');if(s2)s2.textContent=ts('revenue');
-  // Translate dashboard tab buttons
-  document.querySelectorAll('#ow-dashboard .ctab').forEach(btn=>{
-    const t=btn.textContent.trim().toLowerCase();
-    if(t==='revenue'||t==='rev') btn.textContent=ts('revenue');
-    else if(t==='orders') btn.textContent=ts('orders');
-    else if(t==='top items') btn.textContent=ts('top_items');
-  });
-  notifyD('🌐 '+{en:'English',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'}[l]);
-}
+function setStaffLang(l){lang=l;localStorage.setItem('el_lang',l);const s=document.getElementById('staffLangSel');if(s)s.value=l;const c=document.getElementById('langSel');if(c)c.value=l;notifyD('🌐 '+{en:'English',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'}[l]);}
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
@@ -2551,7 +2512,7 @@ async function init(){
             me=ss;restoId=ss.restoId;
             document.getElementById('owSbN').textContent=ss.name||'';
             document.getElementById('owSbR').textContent=ss.restoName||'';
-            showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;
+            showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;
             owP('dashboard',document.querySelector('#pg-ow .sb-item'));
             startOwnerListeners();
             setTimeout(()=>initOwChart('rev'),300);
@@ -2740,7 +2701,7 @@ async function doOwnerLogin(){
   localStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
   document.getElementById('owSbN').textContent=found.name;
   document.getElementById('owSbR').textContent=found.cuisine||'';
-  showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;
+  showPage('pg-ow');
   // Check expiry warning (within 7 days)
   if(found.expiresAt){
     const daysLeft=Math.ceil((found.expiresAt-Date.now())/86400000);
@@ -3626,70 +3587,63 @@ async function updStatus(fbKey,status){
 }
 
 // ═══ TABLE BILLS ═══
+let _billsCache={sessions:null,r:null,ts:0};
 function billsResetFilter(){
-  const t=document.getElementById('bfTable');
-  const s=document.getElementById('bfStatus');
-  const o=document.getElementById('bfSort');
-  if(t) t.value='';
-  if(s) s.value='';
-  if(o) o.value='newest';
+  ['bfTable','bfStatus','bfSort'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=(id==='bfSort'?'newest':'');
+  });
   renderBills();
 }
-
-// Cache bills data so filter doesn't re-fetch
-let _billsCache={sessions:null,r:null,ts:0};
 
 async function renderBills(){
   const con=document.getElementById('billsContainer');
 
-  // Read filter values BEFORE any DOM changes
+  // Read filter values FIRST before any DOM changes
   const filterTable=document.getElementById('bfTable')?.value||'';
   const filterStatus=document.getElementById('bfStatus')?.value||'';
   const sortBy=document.getElementById('bfSort')?.value||'newest';
 
-  // Fetch data (use cache if <10s old)
-  const now=Date.now();
-  if(now-_billsCache.ts>10000){
-    const [sessions,r]=await Promise.all([
-      fbGet('sessions'),
-      fbGet('restaurants/'+restoId)
-    ]);
-    _billsCache={sessions:sessions||{},r,ts:now};
+  // Cache data for 8 seconds so filter changes are instant
+  if(Date.now()-_billsCache.ts>8000){
+    con.innerHTML='<div style="padding:30px;text-align:center;color:var(--s-muted);font-size:13px">Loading...</div>';
+    const [sessions,r]=await Promise.all([fbGet('sessions'),fbGet('restaurants/'+restoId)]);
+    _billsCache={sessions:sessions||{},r,ts:Date.now()};
   }
   const {sessions,r}=_billsCache;
   const comm=r?.comm??0;
   const vatRate=r?.vat||0;
 
-  // All active sessions for this restaurant
+  // Active sessions for this restaurant
   const allSess=Object.entries(sessions).filter(([k,s])=>s.rId===restoId&&Date.now()<(s.exp||0));
 
-  // Populate table dropdown without losing selected value
+  // Update table dropdown without resetting value
   const bfTable=document.getElementById('bfTable');
   if(bfTable){
-    const opts='<option value="">All Tables</option>'+
-      allSess.map(([k,s])=>`<option value="${k}">${'Table '+s.tNum}</option>`).join('');
-    if(bfTable.innerHTML!==opts) bfTable.innerHTML=opts;
+    const newOpts='<option value="">All Tables</option>'+allSess.map(([k,s])=>`<option value="${k}">Table ${s.tNum}</option>`).join('');
+    bfTable.innerHTML=newOpts;
     if(filterTable) bfTable.value=filterTable;
   }
 
+  // Empty state
   if(!allSess.length){
-    ['bsTables','bsEarn','bsPending'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0';});
-    const et=document.getElementById('bsTotal');if(et)et.textContent='₭0';
-    const ee=document.getElementById('bsEarn');if(ee)ee.textContent='₭0';
-    con.innerHTML=`<div style="text-align:center;padding:60px;color:var(--s-muted)"><div style="font-size:48px;margin-bottom:14px">🪑</div><div style="font-size:14px">No active table sessions.<br>Generate QR codes to start sessions.</div></div>`;
+    ['bsTables','bsPending'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0';});
+    ['bsTotal','bsEarn'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='₭0';});
+    con.innerHTML=`<div style="text-align:center;padding:60px;color:var(--s-muted)"><div style="font-size:48px;margin-bottom:12px">🪑</div><div>No active table sessions.<br>Generate QR codes to start sessions.</div></div>`;
     return;
   }
 
-  // Build session data — always use ALL orders for totals, filter only for display
+  // Build session data
   let sessData=allSess.map(([sessKey,sess])=>{
     const allOrders=cachedOrders.filter(o=>o.sessId===sessKey);
-    const dispOrders=filterStatus?allOrders.filter(o=>o.status===filterStatus):allOrders;
-    const total=allOrders.reduce((s,o)=>s+(o.total||0),0); // total always uses all orders
-    const vatAmt=Math.round(total*vatRate/100);
+    const total=allOrders.reduce((s,o)=>s+(o.total||0),0);
+    const vatAmt=Math.round(total*(vatRate/100));
     const grandTotal=total+vatAmt;
-    const earn=Math.round(grandTotal*(1-(comm/100)));
-    const pending=allOrders.filter(o=>o.status==='pending').length;
-    return{sessKey,sess,allOrders,dispOrders,total,vatAmt,grandTotal,earn,pending};
+    const earn=Math.round(grandTotal*(1-comm/100));
+    const pendingCnt=allOrders.filter(o=>o.status==='pending').length;
+    // For display, optionally filter by status
+    const dispOrders=filterStatus?allOrders.filter(o=>o.status===filterStatus):allOrders;
+    return{sessKey,sess,allOrders,dispOrders,total,vatAmt,grandTotal,earn,pendingCnt};
   });
 
   // Apply table filter
@@ -3702,66 +3656,70 @@ async function renderBills(){
   else sessData.sort((a,b)=>(b.sess.start||0)-(a.sess.start||0));
 
   // Update summary
-  animateNum('bsTables',sessData.length,false);
-  const el_tot=document.getElementById('bsTotal');if(el_tot)el_tot.textContent=fmtK(sessData.reduce((s,d)=>s+d.grandTotal,0));
-  const el_e=document.getElementById('bsEarn');if(el_e)el_e.textContent=fmtK(sessData.reduce((s,d)=>s+d.earn,0));
-  animateNum('bsPending',sessData.reduce((s,d)=>s+d.pending,0),false);
+  const sumGrand=sessData.reduce((s,d)=>s+d.grandTotal,0);
+  const sumEarn=sessData.reduce((s,d)=>s+d.earn,0);
+  const sumPending=sessData.reduce((s,d)=>s+d.pendingCnt,0);
+  const bsT=document.getElementById('bsTables');if(bsT)bsT.textContent=sessData.length;
+  const bsTot=document.getElementById('bsTotal');if(bsTot)bsTot.textContent=fmtK(sumGrand);
+  const bsE=document.getElementById('bsEarn');if(bsE)bsE.textContent=fmtK(sumEarn);
+  const bsP=document.getElementById('bsPending');if(bsP)bsP.textContent=sumPending;
 
-  con.innerHTML=sessData.map(({sessKey,sess,orders,total,vatAmt,grandTotal,earn,pending})=>{
-    const allOrdersForSess=cachedOrders.filter(o=>o.sessId===sessKey);
-    if(!allOrdersForSess.length) return`
-      <div class="bill-card">
-        <div class="bill-header-top">
-          <div><div class="bill-table-num">Table ${sess.tNum||'?'}</div><div class="bill-table-sub">No orders yet</div></div>
-        </div>
-      </div>`;
-    const showOrders=orders.length?orders:allOrdersForSess;
-    const showTotal=showOrders.reduce((s,o)=>s+(o.total||0),0);
-    const showVat=Math.round(showTotal*vatRate/100);
-    const showGrand=showTotal+showVat;
+  // Render cards
+  if(!sessData.length){
+    con.innerHTML=`<div style="text-align:center;padding:40px;color:var(--s-muted)">No tables match the current filter.</div>`;
+    return;
+  }
+
+  const vatRate2=vatRate; // alias for template
+  const comm2=comm;
+  con.innerHTML=sessData.map(({sessKey,sess,allOrders,dispOrders,total,vatAmt,grandTotal,earn,pendingCnt})=>{
+    if(!allOrders.length) return '';
+    const vatRate2=r?.vat||0;
+    const showOrders=dispOrders.length?dispOrders:allOrders;
     return`<div class="bill-card">
-      <div class="bill-header-top">
+      <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,var(--s-surf2),var(--s-surf3));border-bottom:2px solid var(--s-gold)">
         <div>
-          <div class="bill-table-num">🪑 Table ${sess.tNum||'?'}</div>
-          <div class="bill-table-sub">${allOrdersForSess.length} order${allOrdersForSess.length>1?'s':''} · Active · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>
+          <div style="font-family:var(--ff);font-size:22px;font-weight:900">🪑 Table ${sess.tNum||'?'}</div>
+          <div style="font-size:10px;color:var(--s-muted);margin-top:2px">${allOrders.length} order${allOrders.length!==1?'s':''} · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>
         </div>
-        <div class="bill-header-total">
-          <div class="bill-grand-total">${fmtK(showGrand)}</div>
-          <div class="bill-earn-label">Your earn: ${fmtK(Math.round(showGrand*(1-(comm/100))))}</div>
+        <div style="text-align:right">
+          <div style="font-family:var(--ff);font-size:26px;font-weight:900;color:var(--s-gold)">${fmtK(grandTotal)}</div>
+          <div style="font-size:10px;color:var(--s-green);margin-top:2px">Earn: ${fmtK(earn)}</div>
         </div>
       </div>
-      <div class="bill-body">
+      <div style="padding:8px 0">
         ${showOrders.map(o=>`
-          <div class="bill-order-group">
-            <div class="bill-order-title">
-              <span>${o.id||''}</span>
-              <span class="bill-order-time">${o.time||''}</span>
+          <div style="border-bottom:1px solid var(--s-border)">
+            <div style="padding:8px 20px 4px;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:10px;letter-spacing:1px;color:var(--s-muted)">${o.id||''}</span>
+              <span style="font-size:10px;color:var(--s-muted)">${o.time||''}</span>
             </div>
-            ${o.items?.map(i=>`
-              <div class="bill-row">
-                <div class="bill-item-left">
-                  <span class="bill-item-emoji">${i.emoji||'🍽️'}</span>
-                  <span class="bill-item-name">${i.name}</span>
-                </div>
-                <div class="bill-item-right">
-                  <input type="number" class="bill-edit-input" value="${i.qty}" min="0"
-                    onchange="editBillItem('${o.fbKey}','${i.id||i.name}',this.value,'${o.sessId}')">
-                  <span class="bill-item-subtotal">${fmtK(i.price*i.qty)}</span>
-                </div>
-              </div>`).join('')||''}
+            ${(o.items||[]).map(i=>`
+              <div style="display:flex;align-items:center;padding:7px 20px;gap:10px">
+                <span style="font-size:16px;width:22px">${i.emoji||'🍽️'}</span>
+                <span style="flex:1;font-size:13px">${i.name}</span>
+                <input type="number" style="width:48px;padding:4px 6px;text-align:center;background:var(--s-surf2);border:1px solid var(--s-border);color:var(--s-text);border-radius:4px;font-size:12px;font-family:var(--ff);font-weight:700" value="${i.qty}" min="0"
+                  onchange="editBillItem('${o.fbKey}','${i.id||i.name}',this.value,'${o.sessId}')">
+                <span style="min-width:80px;text-align:right;font-family:var(--ff);font-size:13px;font-weight:700">${fmtK(i.price*i.qty)}</span>
+              </div>`).join('')}
           </div>`).join('')}
-        <div class="bill-totals">
-          <div class="bill-subtotal-row"><span>Subtotal</span><span>${fmtK(showTotal)}</span></div>
-          ${vatRate>0?`<div class="bill-vat-row"><span>VAT (${vatRate}%)</span><span>${fmtK(showVat)}</span></div>`:''}
-          <div class="bill-total-row"><span>TOTAL</span><span style="color:var(--s-gold)">${fmtK(showGrand)}</span></div>
+      </div>
+      <div style="padding:14px 20px;background:var(--s-surf2);border-top:1px solid var(--s-border)">
+        ${vatRate2>0?`
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--s-muted);padding:2px 0"><span>Subtotal</span><span>${fmtK(total)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--s-muted);padding:2px 0"><span>VAT (${vatRate2}%)</span><span>${fmtK(vatAmt)}</span></div>
+          <div style="height:1px;background:var(--s-border);margin:8px 0"></div>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:var(--ff);font-size:16px;font-weight:900">TOTAL</span>
+          <span style="font-family:var(--ff);font-size:22px;font-weight:900;color:var(--s-gold)">${fmtK(grandTotal)}</span>
         </div>
       </div>
-      <div class="bill-actions">
+      <div style="padding:12px 16px;display:flex;gap:8px;border-top:1px solid var(--s-border);background:var(--s-surf);flex-wrap:wrap;align-items:center">
         <button class="btn btn-gold" onclick="printBill('${sessKey}')">🖨️ Print Bill</button>
-        <button class="btn" onclick="endSession('${sessKey}');renderBills()">✕ Close Table</button>
+        <button class="btn" onclick="endSession('${sessKey}');_billsCache.ts=0;renderBills()">✕ Close Table</button>
         <button class="bill-history-btn" onclick="toggleBillHistory('bh-${sessKey}')">📋 Edit History</button>
       </div>
-      <div class="bill-history" id="bh-${sessKey}"></div>
+      <div class="bill-history" id="bh-${sessKey}" style="display:none"></div>
     </div>`;
   }).join('');
 }
@@ -5208,7 +5166,6 @@ async function placeOrder(){
     document.getElementById('cCartOv').classList.remove('open');
     document.getElementById('cCartPanel').classList.remove('open');
     // After 4 seconds → dismiss success and go back to MENU so customer can order more
-    // No auto-redirect — customer decides when to continue
     clearTimeout(window._successTimer);
   } catch(e){
     notifyC('❌ Failed to send order. Check connection.');
