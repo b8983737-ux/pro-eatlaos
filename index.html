@@ -2491,16 +2491,15 @@ async function init(){
       hideLoading();
       return;
     }
-    // ADMIN PATH: load config + seed
+    // ADMIN PATH: load Firebase SDK first, then config
+    await loadFirebaseSDK();
     await loadCFG();
-    // Seed only if needed (don't block admin login)
     seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
-    // Auto-cleanup old data (runs silently in background)
     autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
       // Check if already logged in as SA
       const saved=localStorage.getItem('el_session');
-      if(saved){const ss=JSON.parse(saved);if(ss.role==='superadmin'){me=ss;restoreSA();return;}}
+      if(saved){const ss=JSON.parse(saved);if(ss.role==='superadmin'){me=ss;await loadFirebaseSDK();restoreSA();return;}}
       showPage('pg-sa-login');
     } else {
       // Restore owner session on refresh
@@ -2512,7 +2511,8 @@ async function init(){
             me=ss;restoId=ss.restoId;
             document.getElementById('owSbN').textContent=ss.name||'';
             document.getElementById('owSbR').textContent=ss.restoName||'';
-            showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;
+            await loadFirebaseSDK();
+            showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;
             owP('dashboard',document.querySelector('#pg-ow .sb-item'));
             startOwnerListeners();
             setTimeout(()=>initOwChart('rev'),300);
@@ -2525,6 +2525,7 @@ async function init(){
     }
   } catch(e){
     console.error('Init error:',e);
+    hideLoading();
     showPage('pg-land');
   }
   hideLoading();
