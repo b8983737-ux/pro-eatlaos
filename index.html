@@ -1681,7 +1681,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <nav class="sb-nav">
         <div class="sb-sec">Overview</div>
         <button class="sb-item on" onclick="saP('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
-        <button class="sb-item" onclick="saP('revenue',this)"><span class="sb-ico">💰</span>Revenue</button>
+        <button class="sb-item" onclick="saP('revenue',this)"><span class="sb-ico">💰</span data-ts="revenue">Revenue</button>
         <div class="sb-sec">Management</div>
         <button class="sb-item" onclick="saP('restaurants',this)"><span class="sb-ico">🏪</span>Restaurants<span class="sb-num" id="pendNum" style="display:none">!</span></button>
         <button class="sb-item" onclick="saP('orders',this)"><span class="sb-ico">🧾</span>All Orders</button>
@@ -1692,7 +1692,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">👑</div><div><div class="sb-un">Super Admin</div><div class="sb-ur">Platform Owner</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
     </aside>
     <main class="staff-main">
-      <div class="topbar"><div class="topbar-title" id="saTbar">Dashboard</div><div class="topbar-r"><button class="btn btn-gold" onclick="resetRestoModal();openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
+      <div class="topbar"><div class="topbar-title" id="saTbar" data-ts="dashboard">Dashboard</div><div class="topbar-r"><button class="btn btn-gold" onclick="resetRestoModal();openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="sa-dashboard">
           <div style="display:flex;justify-content:flex-end;gap:5px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
@@ -1733,7 +1733,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
         <div class="panel" id="sa-revenue">
           <div id="saVatContainer"></div>
           <div class="stats-row s3"><div class="stat-box"><div class="stat-lbl">Gross Revenue</div><div class="stat-val" id="sa-gr">—</div></div><div class="stat-box"><div class="stat-ico">👑</div><div class="stat-lbl">Your Commission</div><div class="stat-val" id="sa-co">—</div></div><div class="stat-box"><div class="stat-lbl">Paid to Restaurants</div><div class="stat-val" id="sa-po">—</div></div></div>
-          <div class="card"><div class="card-h"><div class="card-title">Revenue by Restaurant</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Orders</th><th>Gross (₭)</th><th>Commission %</th><th>Your Earn</th><th>Restaurant Earn</th><th>VAT Collected</th></tr></thead><tbody id="sa-revtbl"></tbody></table></div></div>
+          <div class="card"><div class="card-h"><div class="card-title">Revenue by Restaurant</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th data-ts="orders">Orders</th><th>Gross (₭)</th><th>Commission %</th><th>Your Earn</th><th>Restaurant Earn</th><th>VAT Collected</th></tr></thead><tbody id="sa-revtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-restaurants">
           <div class="card"><div class="card-h"><div class="card-title">All Restaurants</div><button class="btn btn-gold" onclick="openModal('mAddResto');resetRestoModal()">+ Add Restaurant</button></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Theme</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
@@ -1788,7 +1788,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="sb-brand"><div class="sb-logo">EAT<em>LAOS</em></div><div class="sb-badge badge-ow">🏪 Owner</div></div>
       <nav class="sb-nav">
         <button class="sb-item on" onclick="owP('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
-        <button class="sb-item" onclick="owP('liveorders',this)"><span class="sb-ico">🔴</span>Live Orders<span class="sb-num" id="owNewBadge" style="display:none">!</span></button>
+        <button class="sb-item" onclick="owP('liveorders',this)"><span class="sb-ico">🔴</span data-ts="live_orders">Live Orders<span class="sb-num" id="owNewBadge" style="display:none">!</span></button>
         <button class="sb-item" onclick="owP('bills',this)"><span class="sb-ico">🧾</span>Table Bills</button>
         <button class="sb-item" onclick="owP('menu',this)"><span class="sb-ico">🍽️</span>Menu Items</button>
         <button class="sb-item" onclick="owP('categories',this)"><span class="sb-ico">🏷️</span>Categories</button>
@@ -1814,13 +1814,13 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <span style="font-size:11px;color:var(--s-muted)" id="owFilterLabel">Today</span>
           </div>
           <div class="stats-row s4">
-            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl" id="ow-s1-lbl">Today's Orders</div><div class="stat-val" id="ow-s1">—</div></div>
-            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl" id="ow-s2-lbl">Today's Revenue</div><div class="stat-val" id="ow-s2">—</div><div class="stat-sub" id="ow-comm-n">After commission</div></div>
-            <div class="stat-box"><div class="stat-ico">🍽️</div><div class="stat-lbl">Active Items</div><div class="stat-val" id="ow-s3">—</div></div>
-            <div class="stat-box"><div class="stat-ico">⏳</div><div class="stat-lbl">Pending Now</div><div class="stat-val" id="ow-s4">—</div></div>
+            <div class="stat-box"><div class="stat-ico">🧾</div><div class="stat-lbl" id="ow-s1-lbl" data-ts="todays_orders">Today's Orders</div><div class="stat-val" id="ow-s1">—</div></div>
+            <div class="stat-box"><div class="stat-ico">💰</div><div class="stat-lbl" id="ow-s2-lbl" data-ts="todays_revenue">Today's Revenue</div><div class="stat-val" id="ow-s2">—</div><div class="stat-sub" id="ow-comm-n">After commission</div></div>
+            <div class="stat-box"><div class="stat-ico">🍽️</div><div class="stat-lbl" data-ts="active_items">Active Items</div><div class="stat-val" id="ow-s3">—</div></div>
+            <div class="stat-box"><div class="stat-ico">⏳</div><div class="stat-lbl" data-ts="pending_now">Pending Now</div><div class="stat-val" id="ow-s4">—</div></div>
           </div>
-          <div class="chart-card"><div class="chart-h"><div class="chart-title">Sales</div><div class="ctabs"><button class="ctab on" onclick="owChartSw('rev',this)">Revenue</button><button class="ctab" onclick="owChartSw('ord',this)">Orders</button><button class="ctab" onclick="owChartSw('items',this)">Top Items</button></div></div><div class="chart-wrap"><canvas id="owC"></canvas></div></div>
-          <div class="card"><div class="card-h"><div class="card-title">Recent Orders</div><button class="btn btn-sm" onclick="owP('liveorders',null)">View All Live</button></div><div class="tbl-wrap"><table><thead><tr><th>Order</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>Time</th><th>Status</th><th>Update</th></tr></thead><tbody id="ow-recent"></tbody></table></div></div>
+          <div class="chart-card"><div class="chart-h"><div class="chart-title" data-ts="sales">Sales</div><div class="ctabs"><button class="ctab on" onclick="owChartSw('rev',this)">Revenue</button><button class="ctab" onclick="owChartSw('ord',this)">Orders</button><button class="ctab" onclick="owChartSw('items',this)" data-ts="top_items">Top Items</button></div></div><div class="chart-wrap"><canvas id="owC"></canvas></div></div>
+          <div class="card"><div class="card-h"><div class="card-title" data-ts="recent_orders">Recent Orders</div><button class="btn btn-sm" onclick="owP('liveorders',null)">View All Live</button></div><div class="tbl-wrap"><table><thead><tr><th data-ts="orders">Order</th><th data-ts="table">Table</th><th data-ts="items">Items</th><th data-ts="total">Total (₭)</th><th data-ts="time">Time</th><th data-ts="status">Status</th><th>Update</th></tr></thead><tbody id="ow-recent"></tbody></table></div></div>
           <div class="card">
             <div class="card-h"><div class="card-title">🏆 Top Selling Items</div><span style="font-size:10px;color:var(--s-muted)" id="owTopItemsLabel">This month</span></div>
             <div id="owTopItemsList" style="padding:8px 0"></div>
@@ -1862,53 +1862,53 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div class="btools">
             <div class="btools-filters">
               <select class="btools-sel" id="bfTable" onchange="renderBills()">
-                <option value="">All Tables</option>
+                <option value="" data-ts="all_tables">All Tables</option>
               </select>
               <select class="btools-sel" id="bfStatus" onchange="renderBills()">
-                <option value="">All Statuses</option>
+                <option value="" data-ts="all_statuses">All Statuses</option>
                 <option value="pending">⏳ Pending</option>
                 <option value="preparing">👨‍🍳 Preparing</option>
                 <option value="ready">✅ Ready</option>
                 <option value="delivered">📦 Delivered</option>
               </select>
               <select class="btools-sel" id="bfSort" onchange="renderBills()">
-                <option value="newest">Newest</option>
-                <option value="highest">Highest Bill</option>
-                <option value="table">Table No.</option>
-                <option value="orders">Most Orders</option>
+                <option value="newest" data-ts="newest">Newest</option>
+                <option value="highest" data-ts="highest_bill">Highest Bill</option>
+                <option value="table" data-ts="by_table">Table No.</option>
+                <option value="orders" data-ts="most_orders">Most Orders</option>
               </select>
               <button class="btools-reset" onclick="billsResetFilter()" title="Reset">↺</button>
             </div>
             <div class="btools-stats">
               <div class="btools-stat">
                 <div class="btools-stat-v" id="bsTables">—</div>
-                <div class="btools-stat-l">Tables</div>
+                <div class="btools-stat-l" data-ts="active_tables">Tables</div>
               </div>
               <div class="btools-divider"></div>
               <div class="btools-stat">
                 <div class="btools-stat-v" id="bsTotal" style="color:var(--s-gold)">—</div>
-                <div class="btools-stat-l">Total Bills</div>
+                <div class="btools-stat-l" data-ts="total_bills">Total Bills</div>
               </div>
               <div class="btools-divider"></div>
               <div class="btools-stat">
                 <div class="btools-stat-v" id="bsEarn" style="color:var(--s-green)">—</div>
-                <div class="btools-stat-l">Your Earnings</div>
+                <div class="btools-stat-l" data-ts="your_earnings">Your Earnings</div>
               </div>
               <div class="btools-divider"></div>
               <div class="btools-stat">
                 <div class="btools-stat-v" id="bsPending" style="color:var(--s-red)">—</div>
-                <div class="btools-stat-l">Pending</div>
+                <div class="btools-stat-l" data-ts="pending">Pending</div>
               </div>
             </div>
           </div>
           <div id="billsContainer"></div>
         </div>
 
-        <div class="panel" id="ow-menu"><div class="card"><div class="card-h"><div class="card-title">Menu Items</div><button class="btn btn-gold" onclick="openOwItemModal()">+ Add Item</button></div><div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>Price (₭)</th><th>Status</th><th>Actions</th></tr></thead><tbody id="ow-menutbl"></tbody></table></div></div></div>
-        <div class="panel" id="ow-categories"><div class="card"><div class="card-h"><div class="card-title">Categories</div><button class="btn btn-gold" onclick="editCatIdx=null;document.getElementById('mCatModalTitle').textContent='Add Category';document.getElementById('mCatName').value='';document.getElementById('mCatEmoji').value='🏷️';document.getElementById('mCatEmojiPrev').textContent='🏷️';openModal('mOwCat')">+ Add Category</button></div><table><thead><tr><th>Name</th><th>Icon</th><th>Items</th><th>Actions</th></tr></thead><tbody id="ow-cattbl"></tbody></table></div></div>
+        <div class="panel" id="ow-menu"><div class="card"><div class="card-h"><div class="card-title" data-ts="menu_items">Menu Items</div><button class="btn btn-gold" onclick="openOwItemModal()" data-ts="add_item">+ Add Item</button></div><div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>Price (₭)</th><th>Status</th><th>Actions</th></tr></thead><tbody id="ow-menutbl"></tbody></table></div></div></div>
+        <div class="panel" id="ow-categories"><div class="card"><div class="card-h"><div class="card-title" data-ts="categories">Categories</div><button class="btn btn-gold" onclick="editCatIdx=null;document.getElementById('mCatModalTitle').textContent='Add Category';document.getElementById('mCatName').value='';document.getElementById('mCatEmoji').value='🏷️';document.getElementById('mCatEmojiPrev').textContent='🏷️';openModal('mOwCat')" data-ts="add_category">+ Add Category</button></div><table><thead><tr><th>Name</th><th>Icon</th><th>Items</th><th>Actions</th></tr></thead><tbody id="ow-cattbl"></tbody></table></div></div>
         <div class="panel" id="ow-tables">
           <div class="card">
-            <div class="card-h"><div class="card-title">Tables &amp; QR Codes</div><button class="btn btn-gold" onclick="openModal('mOwAddTable')">+ Add Table</button></div>
+            <div class="card-h"><div class="card-title">Tables &amp; QR Codes</div><button class="btn btn-gold" onclick="openModal('mOwAddTable')" data-ts="add_table">+ Add Table</button></div>
             <div style="padding:12px 18px;border-bottom:1px solid var(--s-border);font-size:12px;color:var(--s-muted)">Click <b style="color:var(--s-gold)">📱 QR</b> → choose session duration → click <b style="color:var(--s-gold)">▶ Start</b> → print QR for table</div>
             <div class="tbl-grid" id="ow-tablegrid"></div>
           </div>
@@ -2525,9 +2525,189 @@ function setLang(l){
   if(qrSess){renderCats();renderMenu(curCat);renderCustOrders();}
 }
 
-const STAFF_T={en:{dashboard:'Dashboard',live_orders:'Live Orders',table_bills:'Table Bills',menu_items:'Menu Items',categories:'Categories',tables_qr:'Tables & QR',order_history:'Order History',profile:'Profile',orders:'Orders',revenue:'Revenue',top_items:'Top Items',pending:'Pending',preparing:'Preparing',ready:'Ready',all:'All',sign_out:'Sign Out',save:'Save',cancel:'Cancel',edit:'Edit',delete:'Delete',sold_out:'Sold Out'},lo:{dashboard:'ໜ້າຫຼັກ',live_orders:'ອໍເດີສົດ',table_bills:'ໃບເກັບເງິນ',menu_items:'ລາຍການເມນູ',categories:'ໝວດໝູ່',tables_qr:'ໂຕະ & QR',order_history:'ປະຫວັດ',profile:'ໂປຣໄຟລ໌',orders:'ອໍເດີ',revenue:'ລາຍຮັບ',top_items:'ຂາຍດີ',pending:'ລໍຖ້າ',preparing:'ກຳລັງກຽມ',ready:'ພ້ອມ',all:'ທັງໝົດ',sign_out:'ອອກ',save:'ບັນທຶກ',cancel:'ຍົກເລີກ',edit:'ແກ້ໄຂ',delete:'ລຶບ',sold_out:'ໝົດ'},th:{dashboard:'แดชบอร์ด',live_orders:'ออร์เดอร์สด',table_bills:'บิลโต๊ะ',menu_items:'รายการเมนู',categories:'หมวดหมู่',tables_qr:'โต๊ะ & QR',order_history:'ประวัติ',profile:'โปรไฟล์',orders:'ออร์เดอร์',revenue:'รายได้',top_items:'ขายดี',pending:'รอ',preparing:'กำลังทำ',ready:'พร้อม',all:'ทั้งหมด',sign_out:'ออก',save:'บันทึก',cancel:'ยกเลิก',edit:'แก้ไข',delete:'ลบ',sold_out:'หมด'},zh:{dashboard:'控制台',live_orders:'实时订单',table_bills:'桌台账单',menu_items:'菜单项目',categories:'分类',tables_qr:'桌台 & QR',order_history:'订单历史',profile:'餐厅资料',orders:'订单',revenue:'营收',top_items:'热销',pending:'待处理',preparing:'准备中',ready:'就绪',all:'全部',sign_out:'退出',save:'保存',cancel:'取消',edit:'编辑',delete:'删除',sold_out:'售罄'},ko:{dashboard:'대시보드',live_orders:'실시간 주문',table_bills:'테이블 청구서',menu_items:'메뉴 항목',categories:'카테고리',tables_qr:'테이블 & QR',order_history:'주문 내역',profile:'프로필',orders:'주문',revenue:'수익',top_items:'인기 메뉴',pending:'대기',preparing:'준비 중',ready:'완료',all:'전체',sign_out:'로그아웃',save:'저장',cancel:'취소',edit:'편집',delete:'삭제',sold_out:'품절'}};
+const STAFF_T={
+  en:{
+    // Navigation
+    dashboard:'Dashboard',live_orders:'Live Orders',table_bills:'Table Bills',
+    menu_items:'Menu Items',categories:'Categories',tables_qr:'Tables & QR',
+    order_history:'Order History',profile:'Profile',sign_out:'Sign Out',
+    // Stats
+    orders:'Orders',revenue:'Revenue',top_items:'Top Items',
+    todays_orders:"Today's Orders",todays_revenue:"Today's Revenue",
+    active_items:'Active Items',pending_now:'Pending Now',
+    this_period:'This period',after_comm:'After commission',
+    on_menu:'On menu',need_attention:'Need attention',
+    // Order status
+    pending:'Pending',preparing:'Preparing',ready:'Ready ✓',delivered:'Delivered',
+    all:'All',all_statuses:'All Statuses',all_tables:'All Tables',
+    // Actions
+    save:'Save',cancel:'Cancel',edit:'Edit',delete:'Delete',add:'Add',
+    print_bill:'Print Bill',close_table:'Close Table',view_bill:'View Bill',
+    add_item:'+ Add Item',add_category:'+ Add Category',add_table:'+ Add Table',
+    sold_out:'Sold Out',available:'Available',occupied:'Occupied',
+    // Table bills
+    total_bills:'Total Bills',your_earnings:'Your Earnings',active_tables:'Active Tables',
+    newest:'Newest',highest_bill:'Highest Bill',by_table:'Table No.',most_orders:'Most Orders',
+    no_sessions:'No active table sessions.',
+    // Live orders
+    live_orders_title:'Live Orders',no_orders:'No orders yet',
+    update_status:'Update Status',
+    // Dashboard
+    sales:'Sales',recent_orders:'Recent Orders',top_selling:'Top Selling Items',
+    // Profile
+    restaurant_name:'Restaurant Name',cuisine_type:'Cuisine Type',address:'Address',
+    prep_time:'Prep Time (mins)',vat_rate:'VAT Rate (%)',
+    // Common
+    loading:'Loading...',search:'Search',filter:'Filter',sort:'Sort',reset:'Reset',
+    table:'Table',items:'Items',total:'Total',time:'Time',status:'Status',
+    qty:'Qty',price:'Price',name:'Name',
+  },
+  lo:{
+    dashboard:'ໜ້າຫຼັກ',live_orders:'ອໍເດີສົດ',table_bills:'ໃບເກັບເງິນ',
+    menu_items:'ລາຍການເມນູ',categories:'ໝວດໝູ່',tables_qr:'ໂຕະ & QR',
+    order_history:'ປະຫວັດການສັ່ງ',profile:'ໂປຣໄຟລ໌',sign_out:'ອອກລະບົບ',
+    orders:'ອໍເດີ',revenue:'ລາຍຮັບ',top_items:'ຂາຍດີ',
+    todays_orders:'ອໍເດີວັນນີ້',todays_revenue:'ລາຍຮັບວັນນີ້',
+    active_items:'ລາຍການທີ່ໃຊ້ງານ',pending_now:'ລໍຖ້າດຽວນີ້',
+    this_period:'ໄລຍະນີ້',after_comm:'ຫຼັງຄ່ານາຍໜ້າ',
+    on_menu:'ໃນເມນູ',need_attention:'ຕ້ອງດູແລ',
+    pending:'ລໍຖ້າ',preparing:'ກຳລັງກຽມ',ready:'ພ້ອມ ✓',delivered:'ສຳເລັດ',
+    all:'ທັງໝົດ',all_statuses:'ທຸກສະຖານະ',all_tables:'ທຸກໂຕະ',
+    save:'ບັນທຶກ',cancel:'ຍົກເລີກ',edit:'ແກ້ໄຂ',delete:'ລຶບ',add:'ເພີ່ມ',
+    print_bill:'ພິມໃບເກັບເງິນ',close_table:'ປິດໂຕະ',view_bill:'ເບິ່ງໃບເກັບເງິນ',
+    add_item:'+ ເພີ່ມລາຍການ',add_category:'+ ເພີ່ມໝວດ',add_table:'+ ເພີ່ມໂຕະ',
+    sold_out:'ໝົດ',available:'ວ່າງ',occupied:'ມີໃຜຢູ່',
+    total_bills:'ໃບເກັບເງິນທັງໝົດ',your_earnings:'ລາຍຮັບຂອງທ່ານ',active_tables:'ໂຕະທີ່ໃຊ້ງານ',
+    newest:'ໃໝ່ສຸດ',highest_bill:'ໃບເກັບເງິນສູງສຸດ',by_table:'ເລກໂຕະ',most_orders:'ອໍເດີຫຼາຍສຸດ',
+    no_sessions:'ບໍ່ມີເຊດຊັນໂຕະທີ່ໃຊ້ງານ',
+    live_orders_title:'ອໍເດີສົດ',no_orders:'ຍັງບໍ່ມີອໍເດີ',
+    update_status:'ອັບເດດສະຖານະ',
+    sales:'ຍອດຂາຍ',recent_orders:'ອໍເດີຫຼ້າສຸດ',top_selling:'ສິນຄ້າຂາຍດີ',
+    restaurant_name:'ຊື່ຮ້ານ',cuisine_type:'ປະເພດອາຫານ',address:'ທີ່ຢູ່',
+    prep_time:'ເວລາກຽມ (ນາທີ)',vat_rate:'ອາກອນ VAT (%)',
+    loading:'ກຳລັງໂຫຼດ...',search:'ຄົ້ນຫາ',filter:'ກັ່ນຕອງ',sort:'ຈັດລຽງ',reset:'ຣີເຊັດ',
+    table:'ໂຕະ',items:'ລາຍການ',total:'ລວມ',time:'ເວລາ',status:'ສະຖານະ',
+    qty:'ຈຳນວນ',price:'ລາຄາ',name:'ຊື່',
+  },
+  th:{
+    dashboard:'แดชบอร์ด',live_orders:'ออร์เดอร์สด',table_bills:'บิลโต๊ะ',
+    menu_items:'รายการเมนู',categories:'หมวดหมู่',tables_qr:'โต๊ะ & QR',
+    order_history:'ประวัติออร์เดอร์',profile:'โปรไฟล์',sign_out:'ออกจากระบบ',
+    orders:'ออร์เดอร์',revenue:'รายได้',top_items:'ขายดี',
+    todays_orders:'ออร์เดอร์วันนี้',todays_revenue:'รายได้วันนี้',
+    active_items:'รายการที่ใช้งาน',pending_now:'รอดำเนินการ',
+    this_period:'ช่วงนี้',after_comm:'หลังหักค่าคอมมิชชัน',
+    on_menu:'ในเมนู',need_attention:'ต้องดูแล',
+    pending:'รอ',preparing:'กำลังทำ',ready:'พร้อมเสิร์ฟ ✓',delivered:'เสร็จสิ้น',
+    all:'ทั้งหมด',all_statuses:'ทุกสถานะ',all_tables:'ทุกโต๊ะ',
+    save:'บันทึก',cancel:'ยกเลิก',edit:'แก้ไข',delete:'ลบ',add:'เพิ่ม',
+    print_bill:'พิมพ์บิล',close_table:'ปิดโต๊ะ',view_bill:'ดูบิล',
+    add_item:'+ เพิ่มรายการ',add_category:'+ เพิ่มหมวด',add_table:'+ เพิ่มโต๊ะ',
+    sold_out:'หมดแล้ว',available:'ว่าง',occupied:'มีลูกค้า',
+    total_bills:'ยอดบิลทั้งหมด',your_earnings:'รายได้ของคุณ',active_tables:'โต๊ะที่ใช้งาน',
+    newest:'ใหม่สุด',highest_bill:'บิลสูงสุด',by_table:'หมายเลขโต๊ะ',most_orders:'ออร์เดอร์มากสุด',
+    no_sessions:'ไม่มีเซสชันโต๊ะที่ใช้งาน',
+    live_orders_title:'ออร์เดอร์สด',no_orders:'ยังไม่มีออร์เดอร์',
+    update_status:'อัปเดตสถานะ',
+    sales:'ยอดขาย',recent_orders:'ออร์เดอร์ล่าสุด',top_selling:'สินค้าขายดี',
+    restaurant_name:'ชื่อร้าน',cuisine_type:'ประเภทอาหาร',address:'ที่อยู่',
+    prep_time:'เวลาเตรียม (นาที)',vat_rate:'ภาษี VAT (%)',
+    loading:'กำลังโหลด...',search:'ค้นหา',filter:'กรอง',sort:'จัดเรียง',reset:'รีเซ็ต',
+    table:'โต๊ะ',items:'รายการ',total:'รวม',time:'เวลา',status:'สถานะ',
+    qty:'จำนวน',price:'ราคา',name:'ชื่อ',
+  },
+  zh:{
+    dashboard:'控制台',live_orders:'实时订单',table_bills:'桌台账单',
+    menu_items:'菜单管理',categories:'菜品分类',tables_qr:'桌台 & 二维码',
+    order_history:'订单历史',profile:'餐厅资料',sign_out:'退出登录',
+    orders:'订单',revenue:'营收',top_items:'热销商品',
+    todays_orders:'今日订单',todays_revenue:'今日营收',
+    active_items:'在售商品',pending_now:'待处理',
+    this_period:'本期',after_comm:'扣除佣金后',
+    on_menu:'菜单中',need_attention:'需要处理',
+    pending:'待处理',preparing:'准备中',ready:'已就绪 ✓',delivered:'已完成',
+    all:'全部',all_statuses:'所有状态',all_tables:'所有桌台',
+    save:'保存',cancel:'取消',edit:'编辑',delete:'删除',add:'添加',
+    print_bill:'打印账单',close_table:'关闭桌台',view_bill:'查看账单',
+    add_item:'+ 添加菜品',add_category:'+ 添加分类',add_table:'+ 添加桌台',
+    sold_out:'售罄',available:'空闲',occupied:'使用中',
+    total_bills:'账单总额',your_earnings:'您的收益',active_tables:'使用中桌台',
+    newest:'最新',highest_bill:'最高账单',by_table:'桌台编号',most_orders:'最多订单',
+    no_sessions:'暂无活跃桌台会话',
+    live_orders_title:'实时订单',no_orders:'暂无订单',
+    update_status:'更新状态',
+    sales:'销售额',recent_orders:'最近订单',top_selling:'热销商品',
+    restaurant_name:'餐厅名称',cuisine_type:'菜系类型',address:'地址',
+    prep_time:'备餐时间（分钟）',vat_rate:'增值税率（%）',
+    loading:'加载中...',search:'搜索',filter:'筛选',sort:'排序',reset:'重置',
+    table:'桌台',items:'项目',total:'合计',time:'时间',status:'状态',
+    qty:'数量',price:'价格',name:'名称',
+  },
+  ko:{
+    dashboard:'대시보드',live_orders:'실시간 주문',table_bills:'테이블 청구서',
+    menu_items:'메뉴 관리',categories:'카테고리',tables_qr:'테이블 & QR코드',
+    order_history:'주문 내역',profile:'레스토랑 프로필',sign_out:'로그아웃',
+    orders:'주문',revenue:'수익',top_items:'인기 메뉴',
+    todays_orders:'오늘의 주문',todays_revenue:'오늘의 수익',
+    active_items:'판매 중인 메뉴',pending_now:'대기 중',
+    this_period:'이번 기간',after_comm:'수수료 차감 후',
+    on_menu:'메뉴에서',need_attention:'처리 필요',
+    pending:'대기 중',preparing:'준비 중',ready:'준비 완료 ✓',delivered:'완료',
+    all:'전체',all_statuses:'모든 상태',all_tables:'모든 테이블',
+    save:'저장',cancel:'취소',edit:'편집',delete:'삭제',add:'추가',
+    print_bill:'영수증 출력',close_table:'테이블 종료',view_bill:'청구서 보기',
+    add_item:'+ 메뉴 추가',add_category:'+ 카테고리 추가',add_table:'+ 테이블 추가',
+    sold_out:'품절',available:'빈 자리',occupied:'사용 중',
+    total_bills:'총 청구액',your_earnings:'귀하의 수익',active_tables:'사용 중인 테이블',
+    newest:'최신순',highest_bill:'최고 청구액',by_table:'테이블 번호',most_orders:'주문 많은 순',
+    no_sessions:'활성 테이블 세션 없음',
+    live_orders_title:'실시간 주문',no_orders:'주문 없음',
+    update_status:'상태 업데이트',
+    sales:'매출',recent_orders:'최근 주문',top_selling:'인기 메뉴',
+    restaurant_name:'레스토랑 이름',cuisine_type:'요리 유형',address:'주소',
+    prep_time:'준비 시간 (분)',vat_rate:'VAT 세율 (%)',
+    loading:'로딩 중...',search:'검색',filter:'필터',sort:'정렬',reset:'초기화',
+    table:'테이블',items:'항목',total:'합계',time:'시간',status:'상태',
+    qty:'수량',price:'가격',name:'이름',
+  }
+};
 function ts(k){return STAFF_T[lang]?.[k]||STAFF_T.en[k]||k;}
-function setStaffLang(l){lang=l;localStorage.setItem('el_lang',l);const s=document.getElementById('staffLangSel');if(s)s.value=l;const c=document.getElementById('langSel');if(c)c.value=l;notifyD('🌐 '+{en:'English',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'}[l]);}
+function setStaffLang(l){
+  lang=l;
+  localStorage.setItem('el_lang',l);
+  // Sync both lang selectors
+  const s=document.getElementById('staffLangSel');if(s)s.value=l;
+  const c=document.getElementById('langSel');if(c)c.value=l;
+  // Translate ALL elements with data-ts attribute
+  document.querySelectorAll('[data-ts]').forEach(el=>{
+    const key=el.getAttribute('data-ts');
+    const t=ts(key);
+    // Preserve children (like badges/counts) — only update text nodes
+    if(el.children.length===0){
+      el.textContent=t;
+    } else {
+      // Update first text node only
+      for(const node of el.childNodes){
+        if(node.nodeType===3&&node.textContent.trim()){
+          node.textContent=t+' ';
+          break;
+        }
+      }
+    }
+  });
+  // Translate dynamic stat labels
+  const s1=document.getElementById('ow-s1-lbl');if(s1)s1.textContent=ts('todays_orders');
+  const s2=document.getElementById('ow-s2-lbl');if(s2)s2.textContent=ts('todays_revenue');
+  // Re-render current panel with new language
+  const active=document.querySelector('#pg-ow .panel.on');
+  if(active){
+    const pid=active.id.replace('ow-','');
+    if(pid==='liveorders') owLiveOrders();
+    else if(pid==='bills') renderBills();
+    else if(pid==='dashboard'){owStats();owRecentOrders();}
+  }
+  notifyD('🌐 '+{en:'English',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'}[l]);
+}
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
@@ -2637,7 +2817,7 @@ async function init(){
             document.getElementById('owSbN').textContent=ss.name||'';
             document.getElementById('owSbR').textContent=ss.restoName||'';
             await loadFirebaseSDK();
-            showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl)_sl.value=lang;
+            showPage('pg-ow');const _sl=document.getElementById('staffLangSel');if(_sl){_sl.value=lang;if(lang!=='en')setStaffLang(lang);}
             owP('dashboard',document.querySelector('#pg-ow .sb-item'));
             startOwnerListeners();
             setTimeout(()=>initOwChart('rev'),300);
@@ -3638,7 +3818,7 @@ async function owStats(){
   smoothStat('ow-s2', fmtK(earn));
   smoothStat('ow-s3', r?.menu?.filter(m=>m.status==='active').length||0);
   smoothStat('ow-s4', pend);
-  document.getElementById('ow-comm-n').textContent=`After ${r?.comm??0}% comm${(r?.vat||0)>0?' · VAT: '+fmtK(vatCollected):''}`;
+  document.getElementById('ow-comm-n').textContent=ts('after_comm')+' '+(`${r?.comm??0}%`)+(r?.vat>0?' · VAT: '+fmtK(vatCollected):'');
 }
 
 function owRecentOrders(){
@@ -5349,7 +5529,7 @@ function renderCustOrders(){
       <div style="font-size:10px;color:var(--c-muted);margin-top:4px;text-align:right">🔴 Live — updates automatically</div>
     </div>
   </div>`;
-  el.innerHTML=billHtml+`<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--c-muted);margin-bottom:8px;padding:0 2px">Order History</div>`+orders.map(o=>`
+  el.innerHTML=billHtml+`<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--c-muted);margin-bottom:8px;padding:0 2px" data-ts="order_history">Order History</div>`+orders.map(o=>`
     <div class="c-ocard">
       <div class="c-oc-h">
         <div><div class="c-oc-id">${o.id||''}</div><div class="c-oc-time">${o.time||''}</div></div>
