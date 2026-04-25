@@ -2669,43 +2669,249 @@ const STAFF_T={
     loading:'로딩 중...',search:'검색',filter:'필터',sort:'정렬',reset:'초기화',
     table:'테이블',items:'항목',total:'합계',time:'시간',status:'상태',
     qty:'수량',price:'가격',name:'이름',
+    // Extra keys
+    actions:'작업',active:'활성',inactive:'비활성',seats:'좌석',
+    week:'주간',month:'월간',all_time:'전체',today:'오늘',
+    commission:'수수료',avg_order:'평균 주문',gross_revenue:'총 매출',
+    platform_commission:'플랫폼 수수료',monthly_revenue:'월간 매출',
+    live_revenue:'실시간 매출',total_orders:'총 주문',
+    owner_username:'소유자 아이디',owner_password:'소유자 비밀번호',
+    cuisine:'요리 유형',badge:'배지',icon:'아이콘',
+    table_number:'테이블 번호/이름',subscription:'구독 만료',
+    save_profile:'프로필 저장',save_restaurant:'레스토랑 저장',
+    add_menu_item:'메뉴 항목 추가',add_category_title:'카테고리 추가',
+    category_name:'카테고리 이름',item_name:'메뉴 이름',
+    item_image:'메뉴 이미지/이모지',close:'닫기',remove:'제거',change:'변경',
+    no_data:'데이터 없음',no_edits:'수정 없음',view_all_live:'전체 보기',
+    bill_total:'청구액 합계',live:'실시간',update:'업데이트',
+    restaurant_profile:'레스토랑 프로필',vat_collected:'부가세 징수액',
+  }
+};
+
+// Full phrase translation map — covers ALL UI text
+const PHRASE_MAP = {
+  lo:{
+    "Dashboard":"ໜ້າຫຼັກ","Live Orders":"ອໍເດີສົດ","Table Bills":"ໃບເກັບເງິນ",
+    "Menu Items":"ລາຍການເມນູ","Categories":"ໝວດໝູ່","Tables & QR":"ໂຕະ & QR",
+    "Order History":"ປະຫວັດການສັ່ງ","Profile":"ໂປຣໄຟລ໌","Sign Out":"ອອກລະບົບ",
+    "Today's Orders":"ອໍເດີວັນນີ້","Today's Revenue":"ລາຍຮັບວັນນີ້",
+    "Active Items":"ລາຍການທີ່ໃຊ້ງານ","Pending Now":"ລໍຖ້າດຽວນີ້",
+    "This period":"ໄລຍະນີ້","After commission":"ຫຼັງຄ່ານາຍໜ້າ",
+    "On menu":"ໃນເມນູ","Need attention":"ຕ້ອງດູແລ",
+    "Revenue":"ລາຍຮັບ","Orders":"ອໍເດີ","Top Items":"ສິນຄ້າຂາຍດີ",
+    "Sales":"ຍອດຂາຍ","Recent Orders":"ອໍເດີຫຼ້າສຸດ","Live":"ສົດ",
+    "Today":"ວັນນີ້","Week":"ອາທິດ","Month":"ເດືອນ","3 Months":"3 ເດືອນ","All Time":"ທັງໝົດ",
+    "Pending":"ລໍຖ້າ","Preparing":"ກຳລັງກຽມ","Ready":"ພ້ອມ","Delivered":"ສຳເລັດ",
+    "All":"ທັງໝົດ","All Statuses":"ທຸກສະຖານະ","All Tables":"ທຸກໂຕະ",
+    "Newest":"ໃໝ່ສຸດ","Highest Bill":"ໃບເກັບເງິນສູງສຸດ","Table No.":"ເລກໂຕະ","Most Orders":"ອໍເດີຫຼາຍສຸດ",
+    "Tables":"ໂຕະ","Total Bills":"ໃບເກັບເງິນທັງໝົດ","Your Earnings":"ລາຍຮັບຂອງທ່ານ",
+    "Active Tables":"ໂຕະທີ່ໃຊ້ງານ",
+    "Table":"ໂຕະ","Items":"ລາຍການ","Total":"ລວມ","Time":"ເວລາ","Status":"ສະຖານະ",
+    "Update":"ອັບເດດ","Actions":"ການດຳເນີນການ","Name":"ຊື່","Price":"ລາຄາ","Qty":"ຈຳນວນ",
+    "Save":"ບັນທຶກ","Cancel":"ຍົກເລີກ","Edit":"ແກ້ໄຂ","Delete":"ລຶບ","Close":"ປິດ",
+    "Remove":"ລຶບ","Change":"ປ່ຽນ","Add":"ເພີ່ມ","Active":"ໃຊ້ງານ","Inactive":"ຍົກເລີກ",
+    "Seats":"ທີ່ນັ່ງ","Icon":"ໄອຄອນ","Badge":"ປ້າຍ","Cuisine":"ປະເພດ",
+    "Save Profile":"ບັນທຶກໂປຣໄຟລ໌","Save Restaurant":"ບັນທຶກຮ້ານ",
+    "Add Menu Item":"ເພີ່ມລາຍການເມນູ","Add Category":"ເພີ່ມໝວດໝູ່","Add Table":"ເພີ່ມໂຕະ",
+    "+ Add Item":"+ ເພີ່ມລາຍການ","+ Add Category":"+ ເພີ່ມໝວດ","+ Add Table":"+ ເພີ່ມໂຕະ",
+    "Category Name":"ຊື່ໝວດໝູ່","Item Name":"ຊື່ລາຍການ","Table Number / Name":"ເລກ/ຊື່ໂຕະ",
+    "Restaurant Name":"ຊື່ຮ້ານ","Cuisine Type":"ປະເພດອາຫານ","Address":"ທີ່ຢູ່",
+    "Owner Username":"ຊື່ຜູ້ໃຊ້","Owner Password":"ລະຫັດຜ່ານ",
+    "Avg Order Value":"ມູນຄ່າອໍເດີສະເລ່ຍ","Gross Revenue":"ລາຍຮັບລວມ",
+    "Platform Commission":"ຄ່ານາຍໜ້າ","Monthly Revenue":"ລາຍຮັບລາຍເດືອນ",
+    "Live Revenue":"ລາຍຮັບສົດ","Total Orders":"ອໍເດີທັງໝົດ","Total Tables":"ໂຕະທັງໝົດ",
+    "Commission Earned":"ຄ່ານາຍໜ້າທີ່ໄດ້ຮັບ","VAT Collected":"VAT ທີ່ເກັບໄດ້","VAT Rate":"ອັດຕາ VAT",
+    "Restaurant Profile":"ໂປຣໄຟລ໌ຮ້ານ","Subscription Expiry":"ວັນໝົດສັນຍາ",
+    "View All Live":"ເບິ່ງທັງໝົດ","Bill Total":"ລວມໃບເກັບເງິນ",
+    "No data":"ບໍ່ມີຂໍ້ມູນ","No edits yet":"ຍັງບໍ່ມີການແກ້ໄຂ",
+    "Sold Out":"ໝົດ","SOLD OUT":"ໝົດ",
+    "Item Image / Emoji":"ຮູບ/ໄອຄອນ","Category Icon Emoji":"ໄອຄອນໝວດ",
+    "Restaurant Icon Emoji":"ໄອຄອນຮ້ານ","Choose Restaurant Icon":"ເລືອກໄອຄອນຮ້ານ",
+    "Choose Category Icon":"ເລືອກໄອຄອນໝວດ","Choose Emoji or Upload Photo":"ເລືອກ emoji ຫຼືອັບໂຫຼດຮູບ",
+    "Click to open picker":"ຄລິກເພື່ອເລືອກ",
+  },
+  th:{
+    "Dashboard":"แดชบอร์ด","Live Orders":"ออร์เดอร์สด","Table Bills":"บิลโต๊ะ",
+    "Menu Items":"รายการเมนู","Categories":"หมวดหมู่","Tables & QR":"โต๊ะ & QR",
+    "Order History":"ประวัติออร์เดอร์","Profile":"โปรไฟล์","Sign Out":"ออกจากระบบ",
+    "Today's Orders":"ออร์เดอร์วันนี้","Today's Revenue":"รายได้วันนี้",
+    "Active Items":"รายการที่ใช้งาน","Pending Now":"รอดำเนินการ",
+    "This period":"ช่วงนี้","After commission":"หลังหักค่าคอมมิชชัน",
+    "On menu":"ในเมนู","Need attention":"ต้องดูแล",
+    "Revenue":"รายได้","Orders":"ออร์เดอร์","Top Items":"สินค้าขายดี",
+    "Sales":"ยอดขาย","Recent Orders":"ออร์เดอร์ล่าสุด","Live":"สด",
+    "Today":"วันนี้","Week":"สัปดาห์","Month":"เดือน","3 Months":"3 เดือน","All Time":"ทั้งหมด",
+    "Pending":"รอ","Preparing":"กำลังทำ","Ready":"พร้อมเสิร์ฟ","Delivered":"เสร็จสิ้น",
+    "All":"ทั้งหมด","All Statuses":"ทุกสถานะ","All Tables":"ทุกโต๊ะ",
+    "Newest":"ใหม่สุด","Highest Bill":"บิลสูงสุด","Table No.":"หมายเลขโต๊ะ","Most Orders":"ออร์เดอร์มากสุด",
+    "Tables":"โต๊ะ","Total Bills":"ยอดบิลทั้งหมด","Your Earnings":"รายได้ของคุณ",
+    "Active Tables":"โต๊ะที่ใช้งาน",
+    "Table":"โต๊ะ","Items":"รายการ","Total":"รวม","Time":"เวลา","Status":"สถานะ",
+    "Update":"อัปเดต","Actions":"การดำเนินการ","Name":"ชื่อ","Price":"ราคา","Qty":"จำนวน",
+    "Save":"บันทึก","Cancel":"ยกเลิก","Edit":"แก้ไข","Delete":"ลบ","Close":"ปิด",
+    "Remove":"ลบ","Change":"เปลี่ยน","Add":"เพิ่ม","Active":"ใช้งาน","Inactive":"ปิดใช้งาน",
+    "Seats":"ที่นั่ง","Icon":"ไอคอน","Badge":"ป้าย","Cuisine":"ประเภท",
+    "Save Profile":"บันทึกโปรไฟล์","Save Restaurant":"บันทึกร้าน",
+    "Add Menu Item":"เพิ่มรายการเมนู","Add Category":"เพิ่มหมวดหมู่","Add Table":"เพิ่มโต๊ะ",
+    "+ Add Item":"+ เพิ่มรายการ","+ Add Category":"+ เพิ่มหมวด","+ Add Table":"+ เพิ่มโต๊ะ",
+    "Category Name":"ชื่อหมวดหมู่","Item Name":"ชื่อรายการ","Table Number / Name":"หมายเลข/ชื่อโต๊ะ",
+    "Restaurant Name":"ชื่อร้าน","Cuisine Type":"ประเภทอาหาร","Address":"ที่อยู่",
+    "Owner Username":"ชื่อผู้ใช้","Owner Password":"รหัสผ่าน",
+    "Avg Order Value":"มูลค่าออร์เดอร์เฉลี่ย","Gross Revenue":"รายได้รวม",
+    "Platform Commission":"ค่าคอมมิชชัน","Monthly Revenue":"รายได้รายเดือน",
+    "Live Revenue":"รายได้สด","Total Orders":"ออร์เดอร์ทั้งหมด","Total Tables":"โต๊ะทั้งหมด",
+    "Commission Earned":"ค่าคอมมิชชันที่ได้รับ","VAT Collected":"VAT ที่เก็บได้","VAT Rate":"อัตรา VAT",
+    "Restaurant Profile":"โปรไฟล์ร้าน","Subscription Expiry":"วันหมดอายุ",
+    "View All Live":"ดูทั้งหมด","Bill Total":"ยอดบิลรวม",
+    "No data":"ไม่มีข้อมูล","No edits yet":"ยังไม่มีการแก้ไข",
+    "Sold Out":"หมดแล้ว","SOLD OUT":"หมดแล้ว",
+    "Item Image / Emoji":"รูป/ไอคอน","Category Icon Emoji":"ไอคอนหมวด",
+    "Restaurant Icon Emoji":"ไอคอนร้าน","Choose Restaurant Icon":"เลือกไอคอนร้าน",
+    "Choose Category Icon":"เลือกไอคอนหมวด","Choose Emoji or Upload Photo":"เลือก emoji หรืออัปโหลดรูป",
+    "Click to open picker":"คลิกเพื่อเลือก",
+  },
+  zh:{
+    "Dashboard":"控制台","Live Orders":"实时订单","Table Bills":"桌台账单",
+    "Menu Items":"菜单管理","Categories":"菜品分类","Tables & QR":"桌台 & 二维码",
+    "Order History":"订单历史","Profile":"餐厅资料","Sign Out":"退出登录",
+    "Today's Orders":"今日订单","Today's Revenue":"今日营收",
+    "Active Items":"在售商品","Pending Now":"待处理",
+    "This period":"本期","After commission":"扣除佣金后",
+    "On menu":"菜单中","Need attention":"需要处理",
+    "Revenue":"营收","Orders":"订单","Top Items":"热销商品",
+    "Sales":"销售额","Recent Orders":"最近订单","Live":"实时",
+    "Today":"今天","Week":"本周","Month":"本月","3 Months":"3个月","All Time":"全部",
+    "Pending":"待处理","Preparing":"准备中","Ready":"已就绪","Delivered":"已完成",
+    "All":"全部","All Statuses":"所有状态","All Tables":"所有桌台",
+    "Newest":"最新","Highest Bill":"最高账单","Table No.":"桌台编号","Most Orders":"最多订单",
+    "Tables":"桌台","Total Bills":"账单总额","Your Earnings":"您的收益",
+    "Active Tables":"使用中桌台",
+    "Table":"桌台","Items":"项目","Total":"合计","Time":"时间","Status":"状态",
+    "Update":"更新","Actions":"操作","Name":"名称","Price":"价格","Qty":"数量",
+    "Save":"保存","Cancel":"取消","Edit":"编辑","Delete":"删除","Close":"关闭",
+    "Remove":"移除","Change":"更改","Add":"添加","Active":"使用中","Inactive":"停用",
+    "Seats":"座位","Icon":"图标","Badge":"标签","Cuisine":"菜系",
+    "Save Profile":"保存资料","Save Restaurant":"保存餐厅",
+    "Add Menu Item":"添加菜品","Add Category":"添加分类","Add Table":"添加桌台",
+    "+ Add Item":"+ 添加菜品","+ Add Category":"+ 添加分类","+ Add Table":"+ 添加桌台",
+    "Category Name":"分类名称","Item Name":"菜品名称","Table Number / Name":"桌台编号/名称",
+    "Restaurant Name":"餐厅名称","Cuisine Type":"菜系类型","Address":"地址",
+    "Owner Username":"管理员账号","Owner Password":"管理员密码",
+    "Avg Order Value":"平均订单金额","Gross Revenue":"总收入",
+    "Platform Commission":"平台佣金","Monthly Revenue":"月度营收",
+    "Live Revenue":"实时营收","Total Orders":"总订单数","Total Tables":"桌台总数",
+    "Commission Earned":"已赚佣金","VAT Collected":"已收增值税","VAT Rate":"增值税率",
+    "Restaurant Profile":"餐厅资料","Subscription Expiry":"订阅到期",
+    "View All Live":"查看全部","Bill Total":"账单合计",
+    "No data":"暂无数据","No edits yet":"暂无修改记录",
+    "Sold Out":"售罄","SOLD OUT":"售罄",
+    "Item Image / Emoji":"菜品图片/图标","Category Icon Emoji":"分类图标",
+    "Restaurant Icon Emoji":"餐厅图标","Choose Restaurant Icon":"选择餐厅图标",
+    "Choose Category Icon":"选择分类图标","Choose Emoji or Upload Photo":"选择表情或上传图片",
+    "Click to open picker":"点击选择",
+  },
+  ko:{
+    "Dashboard":"대시보드","Live Orders":"실시간 주문","Table Bills":"테이블 청구서",
+    "Menu Items":"메뉴 관리","Categories":"카테고리","Tables & QR":"테이블 & QR코드",
+    "Order History":"주문 내역","Profile":"프로필","Sign Out":"로그아웃",
+    "Today's Orders":"오늘의 주문","Today's Revenue":"오늘의 수익",
+    "Active Items":"판매 중인 메뉴","Pending Now":"대기 중",
+    "This period":"이번 기간","After commission":"수수료 차감 후",
+    "On menu":"메뉴에서","Need attention":"처리 필요",
+    "Revenue":"수익","Orders":"주문","Top Items":"인기 메뉴",
+    "Sales":"매출","Recent Orders":"최근 주문","Live":"실시간",
+    "Today":"오늘","Week":"이번 주","Month":"이번 달","3 Months":"3개월","All Time":"전체",
+    "Pending":"대기 중","Preparing":"준비 중","Ready":"준비 완료","Delivered":"완료",
+    "All":"전체","All Statuses":"모든 상태","All Tables":"모든 테이블",
+    "Newest":"최신순","Highest Bill":"최고 청구액","Table No.":"테이블 번호","Most Orders":"주문 많은 순",
+    "Tables":"테이블","Total Bills":"총 청구액","Your Earnings":"귀하의 수익",
+    "Active Tables":"사용 중인 테이블",
+    "Table":"테이블","Items":"항목","Total":"합계","Time":"시간","Status":"상태",
+    "Update":"업데이트","Actions":"작업","Name":"이름","Price":"가격","Qty":"수량",
+    "Save":"저장","Cancel":"취소","Edit":"편집","Delete":"삭제","Close":"닫기",
+    "Remove":"제거","Change":"변경","Add":"추가","Active":"활성","Inactive":"비활성",
+    "Seats":"좌석","Icon":"아이콘","Badge":"배지","Cuisine":"요리 유형",
+    "Save Profile":"프로필 저장","Save Restaurant":"레스토랑 저장",
+    "Add Menu Item":"메뉴 항목 추가","Add Category":"카테고리 추가","Add Table":"테이블 추가",
+    "+ Add Item":"+ 메뉴 추가","+ Add Category":"+ 카테고리 추가","+ Add Table":"+ 테이블 추가",
+    "Category Name":"카테고리 이름","Item Name":"메뉴 이름","Table Number / Name":"테이블 번호/이름",
+    "Restaurant Name":"레스토랑 이름","Cuisine Type":"요리 유형","Address":"주소",
+    "Owner Username":"관리자 아이디","Owner Password":"관리자 비밀번호",
+    "Avg Order Value":"평균 주문 금액","Gross Revenue":"총 매출",
+    "Platform Commission":"플랫폼 수수료","Monthly Revenue":"월간 매출",
+    "Live Revenue":"실시간 매출","Total Orders":"총 주문 수","Total Tables":"총 테이블 수",
+    "Commission Earned":"수수료 수익","VAT Collected":"부가세 징수액","VAT Rate":"부가세율",
+    "Restaurant Profile":"레스토랑 프로필","Subscription Expiry":"구독 만료일",
+    "View All Live":"전체 보기","Bill Total":"청구액 합계",
+    "No data":"데이터 없음","No edits yet":"수정 기록 없음",
+    "Sold Out":"품절","SOLD OUT":"품절",
+    "Item Image / Emoji":"메뉴 이미지/아이콘","Category Icon Emoji":"카테고리 아이콘",
+    "Restaurant Icon Emoji":"레스토랑 아이콘","Choose Restaurant Icon":"레스토랑 아이콘 선택",
+    "Choose Category Icon":"카테고리 아이콘 선택","Choose Emoji or Upload Photo":"이모지 선택 또는 사진 업로드",
+    "Click to open picker":"클릭하여 선택",
   }
 };
 function ts(k){return STAFF_T[lang]?.[k]||STAFF_T.en[k]||k;}
 function setStaffLang(l){
   lang=l;
   localStorage.setItem('el_lang',l);
-  // Sync both lang selectors
   const s=document.getElementById('staffLangSel');if(s)s.value=l;
   const c=document.getElementById('langSel');if(c)c.value=l;
-  // Translate ALL elements with data-ts attribute
-  document.querySelectorAll('[data-ts]').forEach(el=>{
-    const key=el.getAttribute('data-ts');
-    const t=ts(key);
-    // Preserve children (like badges/counts) — only update text nodes
-    if(el.children.length===0){
-      el.textContent=t;
-    } else {
-      // Update first text node only
-      for(const node of el.childNodes){
-        if(node.nodeType===3&&node.textContent.trim()){
-          node.textContent=t+' ';
-          break;
-        }
+
+  if(l==='en'){
+    // Reload page to restore English (simplest approach)
+    window.location.reload();
+    return;
+  }
+
+  const map=PHRASE_MAP[l]||{};
+
+  // Walk ALL text nodes in the entire document and translate
+  function translateNode(node){
+    if(node.nodeType===3){ // text node
+      const orig=node.textContent;
+      const trimmed=orig.trim();
+      if(trimmed && map[trimmed]){
+        node.textContent=orig.replace(trimmed, map[trimmed]);
       }
+    } else if(node.nodeType===1){ // element
+      // Skip script/style tags and input values
+      const tag=node.tagName;
+      if(tag==='SCRIPT'||tag==='STYLE') return;
+      // Translate placeholder attributes
+      if(node.placeholder && map[node.placeholder]){
+        node.placeholder=map[node.placeholder];
+      }
+      // Translate title attributes
+      if(node.title && map[node.title]){
+        node.title=map[node.title];
+      }
+      // Translate option elements
+      if(tag==='OPTION' && map[node.text]){
+        node.text=map[node.text];
+      }
+      // Recurse into children
+      node.childNodes.forEach(translateNode);
     }
-  });
-  // Translate dynamic stat labels
-  const s1=document.getElementById('ow-s1-lbl');if(s1)s1.textContent=ts('todays_orders');
-  const s2=document.getElementById('ow-s2-lbl');if(s2)s2.textContent=ts('todays_revenue');
-  // Re-render current panel with new language
+  }
+
+  // Translate the owner page
+  const owPage=document.getElementById('pg-ow');
+  if(owPage) translateNode(owPage);
+
+  // Translate all open modals
+  document.querySelectorAll('.modal-ov.open').forEach(m=>translateNode(m));
+
+  // Re-render panels to apply translation to dynamic content too
   const active=document.querySelector('#pg-ow .panel.on');
   if(active){
     const pid=active.id.replace('ow-','');
     if(pid==='liveorders') owLiveOrders();
     else if(pid==='bills') renderBills();
     else if(pid==='dashboard'){owStats();owRecentOrders();}
+    else if(pid==='tables') owTables();
   }
+
   notifyD('🌐 '+{en:'English',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'}[l]);
 }
 
@@ -3909,6 +4115,13 @@ async function renderBills(){
   const filterTable=document.getElementById('bfTable')?.value||'';
   const filterStatus=document.getElementById('bfStatus')?.value||'';
   const sortBy=document.getElementById('bfSort')?.value||'newest';
+
+  // Translate bill filter labels dynamically
+  const bfStatus=document.getElementById('bfStatus');
+  if(bfStatus&&lang!=='en'&&PHRASE_MAP[lang]){
+    const map=PHRASE_MAP[lang];
+    bfStatus.querySelectorAll('option').forEach(o=>{if(map[o.defaultValue?.charAt(0).toUpperCase()+o.defaultValue?.slice(1)||o.text])o.text=map[o.text]||o.text;});
+  }
 
   // Cache data for 8 seconds so filter changes are instant
   if(Date.now()-_billsCache.ts>8000){
