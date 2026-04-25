@@ -1203,12 +1203,12 @@ select.fi{cursor:pointer;}
 .s4{grid-template-columns:repeat(4,1fr);}
 .s3{grid-template-columns:repeat(3,1fr);}
 .s2{grid-template-columns:repeat(2,1fr);}
-.stat-box{background:var(--s-surf);padding:20px;position:relative;overflow:hidden;}
-.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--s-gold);}
+.stat-box{background:var(--s-surf);padding:22px 20px 18px;position:relative;overflow:hidden;}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--s-gold);}
 .stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px;}
-.stat-val{font-family:var(--ff);font-size:28px;font-weight:900;line-height:1;}
-.stat-sub{font-size:10px;color:var(--s-green);margin-top:5px;}
-.stat-ico{position:absolute;right:14px;top:14px;font-size:22px;opacity:.15;}
+.stat-val{font-family:var(--ff);font-size:28px;font-weight:900;line-height:1;letter-spacing:-.5px;transition:opacity .25s ease;}
+.stat-sub{font-size:10px;color:var(--s-green);margin-top:5px;letter-spacing:.3px;}
+.stat-ico{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.07;}
 
 /* ═══ CARD/TABLE ═══ */
 .card{background:var(--s-surf);border:1px solid var(--s-border);margin-bottom:16px;}
@@ -3509,10 +3509,10 @@ async function owStats(){
   const earn=Math.round(gross*(1-comm));
   const pend=cachedOrders.filter(o=>o.status==='pending').length;
   const vatCollected=Math.round(gross*((r?.vat||0)/100));
-  document.getElementById('ow-s1').textContent=filtered.length;
-  document.getElementById('ow-s2').textContent=fmtK(earn);
-  document.getElementById('ow-s3').textContent=(r?.menu?.filter(m=>m.status==='active').length||0);
-  document.getElementById('ow-s4').textContent=pend;
+  smoothStat('ow-s1', filtered.length);
+  smoothStat('ow-s2', fmtK(earn));
+  smoothStat('ow-s3', r?.menu?.filter(m=>m.status==='active').length||0);
+  smoothStat('ow-s4', pend);
   document.getElementById('ow-comm-n').textContent=`After ${r?.comm??0}% comm${(r?.vat||0)>0?' · VAT: '+fmtK(vatCollected):''}`;
 }
 
@@ -4101,56 +4101,124 @@ async function owTables(){
 // Owner Item CRUD
 // ═══ EMOJI PICKER SYSTEM ═══
 const EP_EMOJIS = {
-  food:['🍽️','🫕','🍲','🍜','🍛','🍣','🍱','🥘','🍝','🍗','🍖','🥩','🍔','🍟','🌮','🌯','🥙','🥗','🥚','🍳','🥞','🧇','🥓','🧆','🫔','🍤','🦐','🦞','🦀','🦑','🐟','🍕','🥪','🧀','🥨','🥐','🍞','🥖','🍰','🎂','🧁','🍩','🍪','🍫','🍬','🫕','🥜','🌽','🥦','🧅','🥕','🍅','🥑','🍋','🍊','🍇','🍓','🍑','🍍','🥭'],
-  drink:['🥤','🧋','🍵','☕','🫖','🧃','🍺','🍻','🥂','🍷','🍸','🍹','🫗','🍶','🥛','🧉','🍾'],
-  other:['⭐','🔥','✨','💎','👑','🎯','🎪','🎭','🎨','🏆','💫','🌟','❤️','💚','💛','🧡','💜','🤍'],
-  icons:[
-    // Restaurants & buildings
-    '🏪','🏬','🏨','🍽️','🥂','🫕','🍴','🥄','🔪',
+  // ── FOOD ── used in: Menu Items picker
+  food:[
+    // Rice & noodles
+    '🍚','🍜','🍝','🍛','🍲','🫕','🍱','🥘','🍙','🍘','🍡',
     // Meat & grill
-    '🍔','🌭','🍗','🍖','🥩','🥓','🧆','🫕','🍱',
-    // Asian
-    '🍣','🍜','🍛','🍚','🍙','🍘','🍡','🥟','🦪',
+    '🍗','🍖','🥩','🥓','🧆','🥚','🍳','🥞','🧇','🌭','🍔',
     // International
-    '🍕','🌮','🌯','🥙','🧇','🥞','🫔','🥨','🧀',
-    // Seafood
-    '🦐','🦞','🦀','🦑','🐟','🍤','🐠','🦈','🐙',
-    // Dessert & cafe
-    '🎂','🧁','🍰','🍩','🍪','🍫','🍮','☕','🫖',
-    // Drinks
-    '🥤','🧋','🍵','🍺','🍻','🥂','🍷','🍸','🍹',
-    // Fruits & fresh
-    '🥗','🥦','🌽','🥕','🍅','🥑','🍋','🍊','🍇',
-    // Events & special
-    '⭐','🌟','👑','💎','🏆','🔥','✨','💫','🎯',
+    '🍕','🌮','🌯','🥙','🫔','🥪','🥗','🧀','🥨','🥐','🍞','🥖',
+    // Asian specialties
+    '🍣','🍤','🦐','🦞','🦀','🦑','🦪','🐟','🐠','🐙','🥟',
+    // Soups & stews
+    '🥣','🍲','🫕','🥘',
+    // Vegetables & sides
+    '🥦','🌽','🥕','🍅','🥑','🥬','🌿','🧄','🧅','🫑','🍄','🥜',
+    // Fruits
+    '🍋','🍊','🍇','🍓','🍑','🍍','🥭','🍒','🍎','🍐','🫐','🍌','🍉','🍈',
+    // Desserts
+    '🍰','🎂','🧁','🍩','🍪','🍫','🍬','🍭','🍮','🍯','🍧','🍨','🍦',
+    // Snacks
+    '🍿','🧂','🫙','🥫',
+    // Tools
+    '🍽️','🥢','🍴','🥄','🔪',
   ],
+  // ── DRINKS ── used in: Menu Items picker
+  drink:[
+    // Soft drinks
+    '🥤','🧋','🧃','🫗',
+    // Hot drinks
+    '☕','🫖','🍵','🧉',
+    // Alcohol
+    '🍺','🍻','🥂','🍷','🍸','🍹','🍾','🍶','🥛',
+    // Water & fresh
+    '💧','🫙',
+  ],
+  // ── OTHER / SPECIAL ── used in: Menu Items picker
+  other:[
+    // Stars & quality
+    '⭐','🌟','💫','✨','🔥','💎','👑','🏆','🥇','🏅',
+    // Emotions & hearts
+    '❤️','🧡','💛','💚','💙','💜','🤍','🖤','❤️‍🔥',
+    // Nature
+    '🌸','🌺','🌻','🌹','🍀','🌿','🌱','🌊','⚡','☀️','🌙','🌈',
+    // Animals (popular for kids menus)
+    '🐄','🐖','🐔','🐟','🦐','🦀','🐙','🦑','🦞',
+    // Events
+    '🎊','🎉','🎈','🎀','🎁','🎯','🎪','🎭','🎨',
+    // Symbols
+    '✅','⭕','❌','💯','🆕','🔝','🆓','🔥',
+  ],
+  // ── ICONS ── used in: Restaurant picker (4 tabs)
+  icons:[
+    // Buildings & restaurant types
+    '🏪','🏬','🏨','🏩','🏯','🏰','🏛️','🏠','🏡','🏘️',
+    // Dining & tools
+    '🍽️','🥢','🍴','🥄','🔪','🫙','🧂',
+    // Asian restaurants
+    '🍣','🍜','🍛','🍚','🍱','🥟','🍡','🍙','🍘','🦪',
+    // Western restaurants
+    '🍔','🍕','🌮','🌯','🥙','🧀','🍟','🌭','🥪',
+    // Meat & grill restaurants
+    '🥩','🍗','🍖','🥓','🧆','🫕','🍲','🥘',
+    // Seafood restaurants
+    '🦐','🦞','🦀','🦑','🐟','🍤','🐠','🐙',
+    // Dessert & cafe
+    '🎂','🧁','🍰','🍩','☕','🫖','🍵','🧋','🥐','🍞',
+    // Drinks & bar
+    '🥂','🍷','🍸','🍹','🍺','🍻','🥤','🍾',
+    // Fruits & healthy
+    '🥗','🥦','🌽','🍅','🥑','🍋','🍊','🍇','🥭','🍓',
+    // Special & branded
+    '⭐','🌟','👑','💎','🏆','🔥','✨','💫','🎯','🎪',
+  ],
+  // ── TAGS ── used in: Category picker (All tab)
   tags:[
-    // Category labels
-    '🏷️','🔖','📌','📍','🗂️','📋','📝','🗒️',
-    // Ratings & quality  
-    '⭐','🌟','💫','✨','🔥','💎','👑','🏆','🥇','🎯',
-    // Food category icons
-    '🍽️','🥢','🍴','🔪','🫕','🥘','🍲','🥗',
+    // Category labels & markers
+    '🏷️','🔖','📌','📍','🗂️','📋','📝','🗒️','🔑','🗝️',
+    // Quality ratings
+    '⭐','🌟','💫','✨','🔥','💎','👑','🏆','🥇','🎯','🏅',
+    // Meal types
+    '🌅','🌞','🌆','🌙','🌃',
+    // Diet & style labels
+    '🌿','🥬','♻️','🌱','💚','🔴','⚡',
+    // Food categories
+    '🍽️','🥢','🍴','🫕','🥘','🍲','🥗','🥣',
     // Meat & protein
-    '🥩','🍗','🍖','🥓','🧆','🍳','🥚','🦐',
-    // Asian
-    '🍣','🍱','🍜','🍛','🍚','🙏','🥟','🦪',
-    // Western  
+    '🥩','🍗','🍖','🥓','🧆','🍳','🥚','🦐','🦞',
+    // Rice & noodles
+    '🍚','🍜','🍛','🍱','🍙','🥟','🍣',
+    // Western
     '🍔','🍕','🌮','🌯','🥙','🧀','🥪','🍟',
-    // Vegetarian/healthy
-    '🥗','🥦','🥕','🌽','🍅','🥑','🥬','🌿',
+    // Vegetarian
+    '🥦','🥕','🌽','🍅','🥑','🥬','🌿','🍄','🧅',
     // Seafood
-    '🦞','🦀','🦑','🐟','🦈','🐠','🍤','🦐',
-    // Starters/soups
-    '🥣','🍲','🫕','🥗','🧄','🧅','🫑','🍄',
-    // Desserts & sweet
-    '🍰','🎂','🧁','🍩','🍪','🍫','🍬','🍭','🍮','🍯','🍧','🍨',
+    '🦞','🦀','🦑','🐟','🍤','🦐','🐙','🦪',
+    // Soups
+    '🥣','🍲','🫕','🍜','🧄',
+    // Desserts
+    '🍰','🎂','🧁','🍩','🍪','🍫','🍬','🍧','🍦',
     // Drinks
-    '🥤','🧋','☕','🍵','🫖','🧃','🍺','🍻','🥂','🍷','🍸','🍹',
-    // Special/events
+    '🥤','🧋','☕','🍵','🫖','🍺','🍻','🥂','🍷','🍹',
+    // Special & events
     '❤️','💚','💛','🧡','💜','🎊','🎉','🎈','🌈','☀️','🌙','⚡',
   ],
-  star:['⭐','🌟','💫','✨','🏆','👑','💎','🔥','❤️','💚','💛','🧡','💜','🤍','🎯','🎪','🎭','🎨','🎬','🎵','🎤','🎸','🏅','🥇','🎊','🎉','🎈','🎀','🌈','☀️','🌙','⚡','🌊','🍀','🦁','🐯','🦅','🐉','🦄']
+  // ── STAR / SPECIAL ── used in: Category & Restaurant pickers
+  star:[
+    // Stars & quality
+    '⭐','🌟','💫','✨','🔥','💎','👑','🏆','🥇','🏅','🎖️',
+    // Hearts & emotions
+    '❤️','🧡','💛','💚','💙','💜','🤍','🖤','❤️‍🔥','💕','💝',
+    // Nature
+    '🌸','🌺','🌻','🌹','🌷','🍀','🌿','🌱','🌊','⚡','☀️','🌙','🌈','🌴','🎋',
+    // Celebration
+    '🎊','🎉','🎈','🎀','🎁','🎯','🎪','🎭','🎨','🎬','🎵','🎤','🎸',
+    // Animals & symbols
+    '🦁','🐯','🦅','🐉','🦄','🦋','🐬','🦊','🐺','🦚','🦜',
+    // Symbols
+    '💯','🔝','🆕','✅','🌐','⚡','💥','🌀','☯️','🔮',
+  ],
 };
 
 let currentEPTarget=null; // which picker is open
@@ -5285,6 +5353,14 @@ function renderCustOrders(){
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
+function smoothStat(id, val){
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(el.textContent===String(val)) return; // no change — no flicker
+  el.style.opacity='0';
+  setTimeout(()=>{el.textContent=val;el.style.opacity='1';}, 120);
+}
+
 function fmtK(n){return'₭'+Math.round(n||0).toLocaleString();}
 function stag(s){return{pending:'to',preparing:'tb',ready:'tg',delivered:'tm'}[s]||'tm';}
 function nd(c){return`<tr><td colspan="${c}" style="text-align:center;color:var(--s-muted);padding:30px">No data</td></tr>`;}
