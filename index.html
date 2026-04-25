@@ -1311,25 +1311,41 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .tcard-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);}
 .tcard-info{font-size:10px;margin-top:6px;}
 .tcard-acts{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;}
-/* Booking tab switcher */
-.book-tabs{display:flex;gap:0;border-bottom:1px solid var(--s-border);margin-bottom:16px;}
-.book-tab{padding:10px 20px;font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;border-bottom:2px solid transparent;color:var(--s-muted);background:none;border-left:none;border-right:none;border-top:none;transition:all .2s;}
+/* ── BOOKING SYSTEM ── */
+.book-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 0;}
+.book-tabs{display:flex;gap:0;border-bottom:1px solid var(--s-border);padding:0 20px;}
+.book-tab{padding:11px 18px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;color:var(--s-muted);background:none;border-left:none;border-right:none;border-top:none;transition:all .2s;}
+.book-tab:hover{color:var(--s-text);}
 .book-tab.on{color:var(--s-gold);border-bottom-color:var(--s-gold);}
-/* Booking list */
-.booking-item{background:var(--s-surf);border:1px solid var(--s-border);border-radius:6px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
-.booking-item.upcoming{border-left:3px solid #f59e0b;}
-.booking-item.today{border-left:3px solid var(--s-green);}
-.booking-item.past{border-left:3px solid var(--s-muted);opacity:.6;}
-.booking-item.cancelled{border-left:3px solid var(--s-red);opacity:.5;}
-.booking-avatar{width:40px;height:40px;border-radius:50%;background:var(--s-surf3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.booking-info{flex:1;min-width:0;}
-.booking-name{font-weight:700;font-size:14px;color:var(--s-text);}
-.booking-meta{font-size:11px;color:var(--s-muted);margin-top:2px;}
-.booking-badge{font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:20px;text-transform:uppercase;}
-.booking-badge.today{background:rgba(29,185,84,.15);color:var(--s-green);}
-.booking-badge.upcoming{background:rgba(245,158,11,.15);color:#f59e0b;}
-.booking-badge.past{background:var(--s-surf3);color:var(--s-muted);}
-.booking-badge.cancelled{background:rgba(220,38,38,.1);color:var(--s-red);}
+.book-list{padding:16px 20px;}
+.book-empty{text-align:center;padding:48px 20px;color:var(--s-muted);}
+.book-empty-icon{font-size:40px;margin-bottom:12px;}
+/* Booking card */
+.bcard{background:var(--s-surf);border:1px solid var(--s-border);border-radius:8px;margin-bottom:10px;overflow:hidden;transition:box-shadow .2s;}
+.bcard:hover{box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.bcard.is-today{border-left:3px solid var(--s-green);}
+.bcard.is-upcoming{border-left:3px solid #f59e0b;}
+.bcard.is-past{border-left:3px solid var(--s-border);opacity:.65;}
+.bcard.is-cancelled{border-left:3px solid var(--s-red);opacity:.5;}
+.bcard-top{display:flex;align-items:center;gap:12px;padding:14px 16px 10px;}
+.bcard-avatar{width:42px;height:42px;border-radius:50%;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.bcard-main{flex:1;min-width:0;}
+.bcard-name{font-size:15px;font-weight:700;color:var(--s-text);line-height:1.2;}
+.bcard-sub{font-size:11px;color:var(--s-muted);margin-top:3px;}
+.bcard-status{flex-shrink:0;}
+.bstatus{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.bstatus.confirmed{background:rgba(29,185,84,.12);color:var(--s-green);border:1px solid rgba(29,185,84,.2);}
+.bstatus.pending{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.2);}
+.bstatus.cancelled{background:rgba(220,38,38,.1);color:var(--s-red);border:1px solid rgba(220,38,38,.2);}
+.bcard-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;padding:0 16px 12px;}
+.bcard-detail{display:flex;align-items:center;gap:6px;}
+.bcard-detail-ico{font-size:13px;opacity:.7;}
+.bcard-detail-txt{font-size:11px;color:var(--s-muted);}
+.bcard-detail-txt strong{color:var(--s-text);font-weight:600;}
+.bcard-notes{margin:0 16px 12px;padding:8px 10px;background:var(--s-surf2);border-radius:4px;font-size:11px;color:var(--s-muted);border-left:2px solid var(--s-gold);}
+.bcard-footer{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--s-border);background:var(--s-surf2);}
+/* Booking modal time display */
+.time-range-display{background:var(--s-surf2);border:1px solid var(--s-border);border-radius:6px;padding:10px 14px;text-align:center;font-family:var(--ff);font-size:18px;font-weight:700;color:var(--s-gold);letter-spacing:1px;margin-top:6px;}
 
 /* ═══ QR ═══ */
 .qr-box-wrap{background:#fff;padding:16px;display:inline-block;margin:12px auto;}
@@ -1928,7 +1944,34 @@ tr:hover td{background:rgba(255,255,255,.015);}
         <div class="panel" id="ow-categories"><div class="card"><div class="card-h"><div class="card-title" data-ts="categories">Categories</div><button class="btn btn-gold" onclick="editCatIdx=null;document.getElementById('mCatModalTitle').textContent='Add Category';document.getElementById('mCatName').value='';document.getElementById('mCatEmoji').value='🏷️';document.getElementById('mCatEmojiPrev').textContent='🏷️';openModal('mOwCat')" data-ts="add_category">+ Add Category</button></div><table><thead><tr><th>Name</th><th>Icon</th><th>Items</th><th>Actions</th></tr></thead><tbody id="ow-cattbl"></tbody></table></div></div>
         <div class="panel" id="ow-tables">
           <div class="card">
-            <div class="card-h"><div class="card-title">Tables &amp; QR Codes</div><button class="btn btn-gold" onclick="openModal('mOwAddTable')" data-ts="add_table">+ Add Table</button></div>
+            <div class="card-h">
+              <div class="card-title">Tables &amp; QR Codes</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn" onclick="showBookingPanel()" id="btnShowBooking">📅 Bookings</button>
+                <button class="btn btn-gold" onclick="openModal('mOwAddTable')" data-ts="add_table">+ Add Table</button>
+              </div>
+            </div>
+            <!-- BOOKING PANEL -->
+            <div id="bookingPanel" style="display:none;border-top:1px solid var(--s-border);margin-top:4px">
+              <div class="book-header">
+                <div>
+                  <div style="font-size:16px;font-weight:700">📅 Table Reservations</div>
+                  <div style="font-size:11px;color:var(--s-muted);margin-top:2px">Manage guest bookings and reservations</div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button class="btn btn-gold" onclick="openBookingModal()">+ New Booking</button>
+                  <button class="btn" onclick="hideBookingPanel()">✕</button>
+                </div>
+              </div>
+              <div class="book-tabs" style="margin-top:14px">
+                <button class="book-tab on" onclick="bookTab('today',this)">Today</button>
+                <button class="book-tab" onclick="bookTab('upcoming',this)">Upcoming</button>
+                <button class="book-tab" onclick="bookTab('all',this)">All</button>
+                <button class="book-tab" onclick="bookTab('past',this)">Past</button>
+                <button class="book-tab" onclick="bookTab('cancelled',this)">Cancelled</button>
+              </div>
+              <div id="bookingList" class="book-list"></div>
+            </div>
             <div style="padding:12px 18px;border-bottom:1px solid var(--s-border);font-size:12px;color:var(--s-muted)">Click <b style="color:var(--s-gold)">📱 QR</b> → choose session duration → click <b style="color:var(--s-gold)">▶ Start</b> → print QR for table</div>
             <div class="tbl-grid" id="ow-tablegrid"></div>
           </div>
@@ -5026,32 +5069,31 @@ function bookTab(tab, btn){
 async function renderBookings(){
   const el=document.getElementById('bookingList');
   if(!el) return;
-  el.innerHTML='<div style="color:var(--s-muted);padding:20px 0;text-align:center;font-size:13px">Loading...</div>';
 
   const bookings=await fbGet('restaurants/'+restoId+'/bookings')||{};
-  const now=new Date();
-  const todayStr=now.toISOString().slice(0,10);
+  const todayStr=new Date().toISOString().slice(0,10);
 
   let list=Object.entries(bookings).map(([k,b])=>({...b,id:k}));
 
   // Filter by tab
   list=list.filter(b=>{
-    if(b.status==='cancelled'&&currentBookTab!=='all') return false;
     const d=b.date||'';
-    if(currentBookTab==='today') return d===todayStr;
-    if(currentBookTab==='upcoming') return d>todayStr;
-    if(currentBookTab==='past') return d<todayStr;
+    if(currentBookTab==='today') return d===todayStr&&b.status!=='cancelled';
+    if(currentBookTab==='upcoming') return d>todayStr&&b.status!=='cancelled';
+    if(currentBookTab==='past') return d<todayStr&&b.status!=='cancelled';
+    if(currentBookTab==='cancelled') return b.status==='cancelled';
     return true; // all
   });
 
-  // Sort by date+time
+  // Sort: today by time, others by date+time
   list.sort((a,b)=>(a.date+a.time)<(b.date+b.time)?-1:1);
 
   if(!list.length){
-    el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--s-muted)">
-      <div style="font-size:36px;margin-bottom:10px">📅</div>
-      <div>No reservations ${currentBookTab==='today'?'today':currentBookTab==='upcoming'?'upcoming':currentBookTab==='past'?'in the past':'found'}.</div>
-      <button class="btn btn-gold btn-sm" style="margin-top:12px" onclick="openBookingModal()">+ New Booking</button>
+    const msgs={today:'No reservations today',upcoming:'No upcoming reservations',past:'No past reservations',cancelled:'No cancelled reservations',all:'No reservations yet'};
+    el.innerHTML=`<div class="book-empty">
+      <div class="book-empty-icon">📅</div>
+      <div style="font-size:14px;margin-bottom:14px">${msgs[currentBookTab]||'No reservations'}</div>
+      <button class="btn btn-gold" onclick="openBookingModal()">+ New Booking</button>
     </div>`;
     return;
   }
@@ -5060,32 +5102,78 @@ async function renderBookings(){
     const isToday=b.date===todayStr;
     const isPast=b.date<todayStr;
     const isCancelled=b.status==='cancelled';
-    const badgeClass=isCancelled?'cancelled':isToday?'today':isPast?'past':'upcoming';
-    const badgeText=isCancelled?'Cancelled':isToday?'Today':isPast?'Past':'Upcoming';
-    // Format date nicely
-    const d=b.date?new Date(b.date+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}):'';
-    const timeRange=b.time+(b.endTime?' – '+b.endTime:'');
-    const tableLabel=b.tableNum?'Table '+b.tableNum:'Any table';
+    const cardClass=isCancelled?'is-cancelled':isToday?'is-today':isPast?'is-past':'is-upcoming';
+    const statusClass=b.status||'confirmed';
+    const statusLabel={confirmed:'✅ Confirmed',pending:'⏳ Pending',cancelled:'❌ Cancelled'}[statusClass]||statusClass;
+    // Format date
+    const dateObj=b.date?new Date(b.date+'T12:00:00'):null;
+    const dateStr=dateObj?dateObj.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'—';
+    const isDateToday=b.date===todayStr;
+    const dateDisplay=isDateToday?'📅 Today':('📅 '+dateStr);
+    // Time range
+    const timeDisplay=b.time?(b.endTime?`⏰ ${b.time} – ${b.endTime}`:`⏰ ${b.time}`):null;
+    // Guest avatar emoji
+    const avatar=b.guests>=8?'👨‍👩‍👧‍👦':b.guests>=4?'👥':b.guests>=2?'👫':'🙂';
     return`
-    <div class="booking-item ${badgeClass}">
-      <div class="booking-avatar">${b.guests>4?'👥':'🙂'}</div>
-      <div class="booking-info">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <div class="booking-name">${b.name||'Guest'}</div>
-          <span class="booking-badge ${badgeClass}">${badgeText}</span>
+    <div class="bcard ${cardClass}">
+      <div class="bcard-top">
+        <div class="bcard-avatar">${avatar}</div>
+        <div class="bcard-main">
+          <div class="bcard-name">${b.name||'Guest'}</div>
+          <div class="bcard-sub">${b.phone||'No phone number'}</div>
         </div>
-        <div class="booking-meta">
-          📅 ${d} &nbsp;⏰ ${timeRange} &nbsp;👤 ${b.guests||1} guests &nbsp;🪑 ${tableLabel}
+        <div class="bcard-status">
+          <span class="bstatus ${statusClass}">${statusLabel}</span>
         </div>
-        ${b.phone?`<div class="booking-meta">📞 ${b.phone}</div>`:''}
-        ${b.notes?`<div class="booking-meta" style="color:var(--s-gold)">💬 ${b.notes}</div>`:''}
       </div>
-      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-        <button class="btn btn-sm" onclick="editBooking('${b.id}')">✏️</button>
-        ${!isCancelled?`<button class="btn btn-sm btn-red" onclick="cancelBooking('${b.id}')">✕</button>`:''}
+      <div class="bcard-details">
+        <div class="bcard-detail">
+          <span class="bcard-detail-ico">📅</span>
+          <span class="bcard-detail-txt"><strong>${isDateToday?'Today':dateObj?dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—'}</strong></span>
+        </div>
+        ${timeDisplay?`<div class="bcard-detail">
+          <span class="bcard-detail-ico">⏰</span>
+          <span class="bcard-detail-txt"><strong>${b.time}${b.endTime?' — '+b.endTime:''}</strong></span>
+        </div>`:''}
+        <div class="bcard-detail">
+          <span class="bcard-detail-ico">👤</span>
+          <span class="bcard-detail-txt"><strong>${b.guests||1}</strong> guest${b.guests>1?'s':''}</span>
+        </div>
+        <div class="bcard-detail">
+          <span class="bcard-detail-ico">🪑</span>
+          <span class="bcard-detail-txt"><strong>${b.tableNum?'Table '+b.tableNum:'Any table'}</strong></span>
+        </div>
+      </div>
+      ${b.notes?`<div class="bcard-notes">💬 ${b.notes}</div>`:''}
+      <div class="bcard-footer">
+        <button class="btn btn-sm btn-gold" onclick="editBooking('${b.id}')">✏️ Edit</button>
+        ${!isCancelled?`<button class="btn btn-sm" onclick="changeBookingStatus('${b.id}','confirmed')" ${statusClass==='confirmed'?'disabled':''}>✅ Confirm</button>
+        <button class="btn btn-sm btn-red" onclick="changeBookingStatus('${b.id}','cancelled')">✕ Cancel</button>`:`
+        <button class="btn btn-sm" onclick="changeBookingStatus('${b.id}','confirmed')">↩ Restore</button>`}
+        <button class="btn btn-sm" onclick="deleteBooking('${b.id}')" style="margin-left:auto;color:var(--s-muted)">🗑</button>
       </div>
     </div>`;
   }).join('');
+}
+
+function updateTimeDisplay(){
+  const arrival=document.getElementById('mBookTime')?.value;
+  const end=document.getElementById('mBookEnd')?.value;
+  const date=document.getElementById('mBookDate')?.value;
+  const el=document.getElementById('timeRangeDisplay');
+  if(!el) return;
+  if(arrival&&end&&date){
+    const d=new Date(date+'T12:00:00');
+    const dayLabel=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    el.textContent=`${dayLabel}  ·  ${arrival} – ${end}`;
+    el.style.color='var(--s-gold)';
+  } else if(arrival||end){
+    el.textContent=arrival||'??' + ' – ' + (end||'??');
+    el.style.color='var(--s-muted)';
+  } else {
+    el.textContent='Select arrival and end time';
+    el.style.color='var(--s-muted)';
+  }
 }
 
 function openBookingModal(bookId){
@@ -5099,6 +5187,7 @@ function openBookingModal(bookId){
   document.getElementById('mBookGuests').value='2';
   document.getElementById('mBookNotes').value='';
   document.getElementById('mBookStatus').value='confirmed';
+  updateTimeDisplay();
   // Populate table selector
   fbGet('restaurants/'+restoId).then(r=>{
     const sel=document.getElementById('mBookTable');
@@ -5125,6 +5214,7 @@ async function editBooking(id){
   const sel=document.getElementById('mBookTable');
   sel.innerHTML='<option value="">Any Table</option>'+
     (r?.tables||[]).map(t=>`<option value="${t.id}" data-num="${t.num}" ${t.id===b.tableId?'selected':''}>Table ${t.num} (${t.seats} seats)</option>`).join('');
+  setTimeout(()=>updateTimeDisplay(), 50);
   openModal('mBooking');
 }
 
@@ -5160,10 +5250,18 @@ async function saveBooking(){
   renderBookings();
 }
 
-async function cancelBooking(id){
-  if(!confirm('Cancel this reservation?')) return;
-  await fbUpdate('restaurants/'+restoId+'/bookings/'+id, {status:'cancelled'});
-  notifyD('Reservation cancelled');
+async function changeBookingStatus(id, status){
+  const labels={confirmed:'confirmed',cancelled:'cancelled',pending:'pending'};
+  await fbUpdate('restaurants/'+restoId+'/bookings/'+id,{status});
+  notifyD({confirmed:'✅ Reservation confirmed',cancelled:'❌ Reservation cancelled',pending:'⏳ Marked as pending'}[status]||'Updated');
+  renderBookings();
+}
+
+async function deleteBooking(id){
+  if(!confirm('Permanently delete this reservation?')) return;
+  // Firebase REST delete
+  await fetch(DB_URL+'/restaurants/'+restoId+'/bookings/'+id+'.json',{method:'DELETE'});
+  notifyD('🗑 Reservation deleted');
   renderBookings();
 }
 
@@ -5979,5 +6077,47 @@ function printReceipt(){const c=document.getElementById('receiptContent').innerH
 // START
 init();
 </script>
+<!-- BOOKING MODAL -->
+<div class="modal-ov" id="mBooking">
+  <div class="modal-box" style="max-width:520px;max-height:92vh;display:flex;flex-direction:column">
+    <div class="modal-h" style="flex-shrink:0">
+      <div>
+        <div class="modal-title" id="mBookingTitle">New Reservation</div>
+        <div style="font-size:11px;color:var(--s-muted);margin-top:2px">Fill in guest details and booking time</div>
+      </div>
+      <button class="modal-x" onclick="closeModal('mBooking')">✕</button>
+    </div>
+    <div class="modal-b" style="overflow-y:auto;flex:1">
+      <input type="hidden" id="mBookId">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:10px">Guest Information</div>
+      <div class="form-row">
+        <div class="fg"><label>Full Name *</label><input class="fi" id="mBookName" placeholder="e.g. Somphone Vongsa"></div>
+        <div class="fg"><label>Phone Number</label><input class="fi" id="mBookPhone" placeholder="+856 20 xxx xxxx" type="tel"></div>
+      </div>
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Date &amp; Time</div>
+      <div class="form-row">
+        <div class="fg"><label>Reservation Date *</label><input class="fi" type="date" id="mBookDate" onchange="updateTimeDisplay()"></div>
+        <div class="fg"><label>Number of Guests *</label><input class="fi" type="number" id="mBookGuests" min="1" max="100" value="2"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Arrival Time *</label><input class="fi" type="time" id="mBookTime" onchange="updateTimeDisplay()"></div>
+        <div class="fg"><label>End Time / Checkout *</label><input class="fi" type="time" id="mBookEnd" onchange="updateTimeDisplay()"></div>
+      </div>
+      <div class="time-range-display" id="timeRangeDisplay">Select arrival and end time</div>
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Table &amp; Status</div>
+      <div class="form-row">
+        <div class="fg"><label>Assign Table</label><select class="fi" id="mBookTable"><option value="">🪑 Any Available Table</option></select></div>
+        <div class="fg"><label>Status</label><select class="fi" id="mBookStatus"><option value="confirmed">✅ Confirmed</option><option value="pending">⏳ Pending</option></select></div>
+      </div>
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Special Requests</div>
+      <textarea class="fi" id="mBookNotes" rows="3" placeholder="Birthday celebration, food allergies, seating preferences..." style="resize:vertical;width:100%"></textarea>
+    </div>
+    <div class="modal-f" style="flex-shrink:0">
+      <button class="btn" onclick="closeModal('mBooking')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveBooking()">💾 Save Reservation</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
