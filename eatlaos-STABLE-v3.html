@@ -96,7 +96,7 @@ function loadQRCode(cb){
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;
-  background:inherit;
+  background:var(--c-bg);
 }
 #cOrdersView{
   flex:1;
@@ -107,7 +107,7 @@ function loadQRCode(cb){
 }
 /* Fixed UI chrome — never compress */
 .c-topbar{flex-shrink:0;}
-.c-cats{flex-shrink:0;position:sticky;top:0;z-index:90;background:var(--c-bg);}
+.c-cats{flex-shrink:0;z-index:90;}
 .c-tabs-bar{
   flex-shrink:0;
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -191,7 +191,7 @@ button,input,select,textarea{font-family:var(--fb);}
 #pg-customer[data-theme="cny"] .lang-sel{background:#2a0000;border-color:#8b0000;color:#ffd700;}
 #pg-customer[data-theme="cny"] .sess-timer{background:#2a0000;border-color:#8b0000;color:#ff6b6b;}
 #pg-customer[data-theme="cny"] .c-cart-btn{background:linear-gradient(135deg,#cc0000,#ff0000);color:#ffd700;font-weight:900;}
-#pg-customer[data-theme="cny"] .c-hero{background:linear-gradient(160deg,#0d0000 0%,#1a0000 40%,#2a0000 100%);border-bottom:3px solid #cc0000;position:relative;min-height:200px;flex-shrink:0;}
+#pg-customer[data-theme="cny"] .c-hero{background:linear-gradient(160deg,#0d0000 0%,#1a0000 40%,#2a0000 100%);border-bottom:3px solid #cc0000;position:relative;min-height:200px;flex-shrink:0;margin-top:-1px;}
 #pg-customer[data-theme="cny"] .c-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(204,0,0,.05) 20px,rgba(204,0,0,.05) 40px);}
 #pg-customer[data-theme="cny"] .c-hero-tag{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.1);}
 #pg-customer[data-theme="cny"] .c-hero-tag-dot{background:#ffd700;box-shadow:0 0 10px #ffd700;}
@@ -228,7 +228,72 @@ button,input,select,textarea{font-family:var(--fb);}
 #pg-customer[data-theme="cny"] .c-order-btn{background:linear-gradient(135deg,#cc0000,#ff0000);color:#ffd700;font-weight:900;letter-spacing:1px;font-size:16px;}
 #pg-customer[data-theme="cny"] .c-ci-name{color:#ffd700;}
 #pg-customer[data-theme="cny"] .c-ci-em{background:#150000;}
-#pg-customer[data-theme="cny"] .c-fab{background:linear-gradient(135deg,#cc0000,#ff0000);color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-fab{
+  /* Hidden by default — appears when cart has items */
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  position:fixed;
+  bottom:72px;
+  left:16px;right:16px;
+  /* Background uses theme gold for a premium feel */
+  background:var(--c-gold);
+  color:#000;
+  border:none;
+  border-radius:50px;
+  padding:0 6px 0 20px;
+  height:52px;
+  font-family:var(--ff);
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.2px;
+  cursor:pointer;
+  z-index:150;
+  /* Layered shadow for depth */
+  box-shadow:0 8px 32px rgba(0,0,0,.28),
+             0 2px 8px rgba(0,0,0,.16);
+  /* Smooth scale-in animation */
+  transform:translateY(80px);
+  opacity:0;
+  transition:transform .35s cubic-bezier(.34,1.4,.64,1),
+             opacity .25s ease;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.c-fab.show{
+  display:flex;
+  transform:translateY(0);
+  opacity:1;
+}
+.c-fab:active{
+  transform:scale(.96) translateY(0);
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+.c-fab-left{
+  font-size:20px;
+  line-height:1;
+}
+.c-fab-mid{
+  flex:1;
+  text-align:center;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.3px;
+}
+.c-fab-cnt{
+  background:#000;
+  color:var(--c-gold);
+  min-width:36px;
+  height:36px;
+  border-radius:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:900;
+  padding:0 10px;
+}
+
 #pg-customer[data-theme="cny"] .c-fab-badge{background:#ffd700;color:#cc0000;}
 #pg-customer[data-theme="cny"] .c-session-summary,.c-ocard{background:#2a0000;border-color:#5c0000;}
 #pg-customer[data-theme="cny"] .c-summary-val{color:#ffd700;}
@@ -1721,6 +1786,14 @@ tr:hover td{background:rgba(255,255,255,.015);}
 @media(max-width:768px){.staff-wrap{grid-template-columns:1fr;}.sb{display:none;}.mob-sb{display:block;}body{padding-bottom:70px;}.body-p{padding:14px;}.topbar{padding:12px 14px;}.stats-row.s4{grid-template-columns:1fr 1fr;}.stats-row.s3{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}.tbl-grid{padding:12px;}}
 @media(max-width:480px){.land-logo{font-size:72px;}.stats-row.s4,.stats-row.s3{grid-template-columns:1fr;}.c-menu-grid{grid-template-columns:1fr;}}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--s-border);}
+
+/* FAB theme overrides */
+#pg-customer[data-theme="zen"] .c-fab{background:#2d4a1e;color:#f5f7f2;}
+#pg-customer[data-theme="zen"] .c-fab-cnt{background:#f5f7f2;color:#2d4a1e;}
+#pg-customer[data-theme="brasserie"] .c-fab{background:#1c2330;color:#f7f4ef;}
+#pg-customer[data-theme="brasserie"] .c-fab-cnt{background:#f7f4ef;color:#1c2330;}
+#pg-customer[data-theme="terroir"] .c-fab{background:#7a1f2e;color:#faf3ea;}
+#pg-customer[data-theme="terroir"] .c-fab-cnt{background:#faf3ea;color:#7a1f2e;}
 </style>
 </head>
 <body>
@@ -2095,6 +2168,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <button class="c-cart-btn" onclick="toggleCart()">🛒<span class="c-cart-count" id="cCartN">0</span></button>
     </div>
   </div>
+  <div class="c-cats" id="cCatTabs"></div>
   <div id="cMenuView">
     <div class="c-hero">
       <div class="c-hero-glow"></div>
@@ -2118,7 +2192,6 @@ tr:hover td{background:rgba(255,255,255,.015);}
         </div>
       </div>
     </div>
-    <div class="c-cats" id="cCatTabs"></div>
     <div class="c-menu"><div class="c-menu-grid" id="cMenuGrid"></div></div>
   </div>
   <div id="cOrdersView" style="display:none"><div class="c-orders-page" id="cOrdersList"></div></div>
@@ -2128,7 +2201,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <button class="c-tab-btn" id="ctOrders" onclick="cTab('orders')" style="position:relative"><span data-i18n="my_orders">My Orders</span><span class="c-tab-ico">📋</span><span data-i18n="my_orders">My Orders</span></button>
     </div>
   </div>
-  <button class="c-fab" id="cFab" onclick="toggleCart()">🛒 <span data-i18n="view_cart">View Cart</span><span class="c-fab-badge" id="cFabN">0</span></button>
+  <button class="c-fab" id="cFab" onclick="toggleCart()"><span class="c-fab-left">🛒</span><span class="c-fab-mid" data-i18n="view_cart">View Cart</span><span class="c-fab-cnt" id="cFabN">0</span></button>
   <div class="c-cart-ov" id="cCartOv" onclick="toggleCart()"></div>
   <div class="c-cart-panel" id="cCartPanel">
     <div class="c-cart-drag"></div>
@@ -3312,7 +3385,7 @@ let cachedOrders=[], cachedSessions=[];
 // Smart Firebase functions — use REST for speed, SDK for real-time
 function fbRef(path){return db?db.ref(path):null;}
 function fbSet(path,data){return db?db.ref(path).set(data):restUpdate(path,data);}
-async function fbPush(path,data){
+async async function fbPush(path,data){
   if(db) return db.ref(path).push(data);
   return restPush(path,data);
 }
@@ -5195,10 +5268,11 @@ function applyTheme(themeId){
   const tid=themeId||'classic';
   pg.setAttribute('data-theme', tid);
   // Set html/body background to match theme — fixes overscroll color bleed
+  // Use HERO background color for html (prevents overscroll color bleed)
   const BG={classic:'#1a1008',cny:'#1a0000',halloween:'#0a0005',
     christmas:'#020a02',ice:'#001020',tropical:'#001a10',sakura:'#1a0010',
     galaxy:'#02050f',neon:'#080012',luxury:'#0a0800',lao:'#0a1500',
-    zen:'#f5f7f2',ember:'#1a1410',brasserie:'#f7f4ef',terroir:'#faf3ea'};
+    zen:'#f5f7f2',ember:'#1a1410',brasserie:'#111820',terroir:'#120800'};
   const bg=BG[tid]||'#1a1008';
   document.documentElement.style.background=bg;
   document.body.style.background=bg;
@@ -6461,6 +6535,7 @@ function updateCart(){
   const n=cart.reduce((s,i)=>s+i.qty,0);
   document.getElementById('cCartN').textContent=n;
   document.getElementById('cFabN').textContent=n;
+
   const fab=document.getElementById('cFab');
   n>0?fab.classList.add('show'):fab.classList.remove('show');
   const el=document.getElementById('cCartItems'),f=document.getElementById('cCartF');
@@ -6542,8 +6617,9 @@ async function placeOrder(){
     // Close cart panel
     document.getElementById('cCartOv').classList.remove('open');
     document.getElementById('cCartPanel').classList.remove('open');
-    // After 4 seconds → dismiss success and go back to MENU so customer can order more
+    // Auto-dismiss success and return to menu after 3s
     clearTimeout(window._successTimer);
+    window._successTimer=setTimeout(()=>closeOrderSuccess('menu'),3000);
   } catch(e){
     notifyC('❌ Failed to send order. Check connection.');
     console.error(e);
@@ -6559,6 +6635,7 @@ async function placeOrder(){
 }
 
 function closeOrderSuccess(tab){
+  clearTimeout(window._successTimer);
   document.getElementById('orderSuccessOv').classList.remove('show');
   // Re-enable the Send to Kitchen button
   const btn=document.getElementById('cOrderBtn');
