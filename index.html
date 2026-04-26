@@ -2481,7 +2481,7 @@ async function restGet(path){
   const r=await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY);
   return r.ok?r.json():null;
 }
-async function restPush(path,data){
+async async function restPush(path,data){
   const r=await fetch(DB_URL+'/'+path+'.json',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify(data)
