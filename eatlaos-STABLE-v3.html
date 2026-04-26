@@ -2481,7 +2481,7 @@ async function restGet(path){
   const r=await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY);
   return r.ok?r.json():null;
 }
-async async function restPush(path,data){
+async function restPush(path,data){
   const r=await fetch(DB_URL+'/'+path+'.json',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify(data)
@@ -3385,7 +3385,7 @@ let cachedOrders=[], cachedSessions=[];
 // Smart Firebase functions — use REST for speed, SDK for real-time
 function fbRef(path){return db?db.ref(path):null;}
 function fbSet(path,data){return db?db.ref(path).set(data):restUpdate(path,data);}
-async async function fbPush(path,data){
+function fbPush(path,data){
   if(db) return db.ref(path).push(data);
   return restPush(path,data);
 }
