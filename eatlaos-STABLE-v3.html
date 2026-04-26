@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <meta property="og:title" id="ogTitle" content="EATLAOS">
+  <meta property="og:description" content="Scan & Order from your table">
+  <meta property="og:type" content="website">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>EATLAOS · Restaurant Platform</title>
+<title>EATLAOS</title>
 <meta name="application-name" content="EATLAOS">
 <meta name="apple-mobile-web-app-title" content="EATLAOS">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -117,10 +120,10 @@ button,input,select,textarea{font-family:var(--fb);}
 #pg-customer[data-theme="cny"] .c-hero-tag{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.1);}
 #pg-customer[data-theme="cny"] .c-hero-tag-dot{background:#ffd700;box-shadow:0 0 10px #ffd700;}
 #pg-customer[data-theme="cny"] .c-hero-tag-txt{color:#ffd700;}
-#pg-customer[data-theme="cny"] .c-hero-title{color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,.5);}
+#pg-customer[data-theme="cny"] .c-hero-title{font-family:var(--ff);font-size:clamp(28px,6vw,46px);font-weight:900;line-height:1.05;color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,.5);}
 #pg-customer[data-theme="cny"] .c-hero-title em{color:#ff4444;}
 #pg-customer[data-theme="cny"] .c-hero-sub{color:rgba(255,107,107,.6);}
-#pg-customer[data-theme="cny"] .c-meta-val{color:#ffd700;}
+#pg-customer[data-theme="cny"] .c-meta-val{font-family:var(--ff);font-size:22px;font-weight:900;line-height:1;color:#ffd700;}
 #pg-customer[data-theme="cny"] .c-meta-lbl{color:rgba(255,107,107,.5);}
 #pg-customer[data-theme="cny"] .c-cats{background:#1f0000;border-bottom:2px solid #8b0000;}
 #pg-customer[data-theme="cny"] .c-cat{color:#8b0000;}
@@ -3652,6 +3655,8 @@ async function doSALogin(){
     saP('dashboard',document.querySelector('#pg-sa .sb-item'));
     startSAListeners();
     setTimeout(()=>initSACharts(),300);
+    // Auto-migrate all restaurants on SA login
+    migrateAllRestaurants().catch(e=>console.log('Migration:',e));
   } else {
     document.getElementById('saErr').textContent='Access denied.';
     setTimeout(()=>document.getElementById('saErr').textContent='',3000);
@@ -4273,6 +4278,18 @@ async function saveResto(){
       if(!pw){notifyD('⚠ Please set a password for the owner');return;}
       data.pass=pw;
       data.createdAt=Date.now();
+      data.updatedAt=Date.now();
+      data.expiresAt=Date.now()+(365*24*3600000); // 1 year subscription
+      data.status='active';
+      data.theme=data.theme||'classic';
+      data.emoji=data.emoji||'🍽️';
+      data.prep=data.prep||15;
+      data.vat=data.vat||0;
+      data.comm=data.comm||0;
+      data.addr=data.addr||'';
+      data.cuisine=data.cuisine||'';
+      data.logo=data.logo||'';
+      data.bookings={};
       // Default categories — owner can edit/add more
       data.cats=[
         {id:'c1',name:'Main Course',icon:'🍽️'},
@@ -4288,6 +4305,7 @@ async function saveResto(){
         .replace(/[^a-z0-9]+/g,'-')
         .replace(/^-|-$/g,'');
       await fbPush('restaurants',data);
+      await migrateAllRestaurants().catch(()=>{});
       notifyD('✓ Restaurant "'+data.name+'" created! Owner can now login with: '+data.user);
     }
     closeModal('mAddResto');
@@ -4922,9 +4940,12 @@ async function owTables(){
   const bookings=r?.bookings||{};
   const todayStr=new Date().toISOString().slice(0,10);
 
+  // Sort tables: numbers 1-100 first, then text names (VIP, Garden...) at end
+  const sortedTables=sortTablesArray(tables);
+
   // Calculate stats
   let occupied=0, available=0, totalOrders=0, totalRevenue=0;
-  const tableData=tables.map((t,i)=>{
+  const tableData=sortedTables.map((t,i)=>{
     const activeSess=Object.entries(sessions).find(([k,s])=>s.tId===t.id&&Date.now()<(s.exp||0));
     const sessOrders=activeSess?cachedOrders.filter(o=>o.sessId===activeSess[0]):[];
     const sessTotal=sessOrders.reduce((s,o)=>s+(o.total||0),0);
@@ -5403,8 +5424,12 @@ async function saveOwTable(){
   const r=await fbGet('restaurants/'+restoId);
   const num=document.getElementById('mTnum').value.trim(),seats=parseInt(document.getElementById('mTseats').value)||4;
   if(!num){notifyD('⚠ Enter table number');return;}
-  const tables=[...(r?.tables||[]),{id:'t'+Date.now(),num,seats}];
-  await fbUpdate('restaurants/'+restoId,{tables});
+  // Prevent duplicate table numbers
+  if((r?.tables||[]).find(t=>String(t.num).toLowerCase()===num.toLowerCase())){
+    notifyD('⚠ Table "'+num+'" already exists');return;
+  }
+  const sorted=sortTablesArray([...(r?.tables||[]),{id:'t'+Date.now(),num,seats}]);
+  await fbUpdate('restaurants/'+restoId,{tables:sorted});
   closeModal('mOwAddTable');owTables();notifyD('✓ Table added');
 }
 // ═══ TABLE BOOKING SYSTEM ═══
@@ -6253,7 +6278,13 @@ function openDetail(itemId){
   loadRestoForCustomer().then(r=>{
     const item=(r?.menu||[]).find(m=>(m.id===itemId||m.name===itemId));if(!item) return;
     detItem=item;detQty=1;
-    document.getElementById('detEmoji').textContent=item.emoji||'🍽️';
+    // Show photo if available, otherwise show emoji
+    const detImgEl=document.getElementById('detEmoji');
+    if(item.img){
+      detImgEl.innerHTML=`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover;border-radius:0;display:block;" alt="${item.name}">`;
+    } else {
+      detImgEl.innerHTML=item.emoji||'🍽️';
+    }
     document.getElementById('detCat').textContent=item.cat||'';
     document.getElementById('detName').textContent=item.name;
     document.getElementById('detDesc').textContent=itemDesc(item);
@@ -6338,6 +6369,27 @@ function toggleCart(){
 }
 
 // PLACE ORDER → Firebase
+function updateGuestCounter(){
+  const myOrders=(typeof customerCachedOrders!=='undefined'?customerCachedOrders:[])
+    .filter(o=>o.sessId===qrSess?.id);
+  const orderCount=myOrders.length;
+  const el=document.getElementById('cGuestCount');
+  if(el) el.textContent=orderCount>0?orderCount+'↑':'—';
+}
+function updateSessBar(){
+  const myOrders=(typeof customerCachedOrders!=='undefined'?customerCachedOrders:[])
+    .filter(o=>o.sessId===qrSess?.id);
+  const totalOrders=myOrders.length;
+  const pending=myOrders.filter(o=>o.status==='pending').length;
+  const preparing=myOrders.filter(o=>o.status==='preparing').length;
+  let msg='Your session is active';
+  if(totalOrders===0) msg='Welcome! Browse the menu to start ordering 🍽️';
+  else if(pending>0) msg=pending+' order'+(pending>1?'s':'')+' sent to kitchen ⏳';
+  else if(preparing>0) msg=preparing+' order'+(preparing>1?'s':'')+' being prepared 👨‍🍳';
+  else msg=totalOrders+' order'+(totalOrders>1?'s':'')+' placed ✓';
+  const el=document.getElementById('cSessBarTxt');
+  if(el) el.textContent=msg;
+}
 async function placeOrder(){
   if(!cart.length||!qrSess) return;
   if(Date.now()>qrSess.exp){showExpired();return;}
@@ -6406,6 +6458,9 @@ let currentTab='menu';
 function cTab(tab){
   if(currentTab===tab) return; // already on this tab — do nothing
   currentTab=tab;
+  // Show/hide categories bar — only visible on Menu tab
+  const cats=document.getElementById('cCatTabs');
+  if(cats) cats.style.display=tab==='menu'?'':'none';
   // Instant CSS switch — no re-render, no flash
   document.getElementById('cMenuView').style.display=tab==='menu'?'block':'none';
   document.getElementById('cOrdersView').style.display=tab==='orders'?'block':'none';
