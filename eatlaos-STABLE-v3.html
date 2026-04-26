@@ -1,10 +1,16 @@
-no_orders:'주문 없음',no_orders:'暂无订单',no_orders:'ไม่มีออร์เดอร์',no_orders:'ບໍ່ມີອໍເດີ',delivered:'완료',delivered:'已完成',delivered:'เสร็จสิ้น',delivered:'ສຳເລັດ',<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="theme-color" content="#1a1008" id="themeColorMeta">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" id="appTitle" content="EATLAOS">
+  <meta property="og:title" id="ogTitle" content="EATLAOS">
+  <meta property="og:description" id="ogDesc" content="Scan & Order from your table">
+  <meta property="og:type" content="website">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>EATLAOS · Restaurant Platform</title>
+<title>EATLAOS</title>
 <meta name="application-name" content="EATLAOS">
 <meta name="apple-mobile-web-app-title" content="EATLAOS">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -84,8 +90,8 @@ function loadQRCode(cb){
   overscroll-behavior-y:contain;
 }
 /* Fixed UI chrome — never compress */
-.c-topbar{flex-shrink:0;position:sticky;top:0;z-index:100;}
-.c-cats{flex-shrink:0;position:sticky;top:0;z-index:90;}
+.c-topbar{flex-shrink:0;}
+.c-cats{flex-shrink:0;position:relative;z-index:90;}
 .c-tabs-bar{
   flex-shrink:0;
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -857,7 +863,7 @@ button,input,select,textarea{font-family:var(--fb);}
 }
 #pg-customer[data-theme="brasserie"] .c-tab-btn{color:#d8d0c4;letter-spacing:1px;font-size:8px;}
 #pg-customer[data-theme="brasserie"] .c-tab-btn.on{color:#1c2330;}
-#pg-customer[data-theme="brasserie"] .c-tab-ico{font-size:24px;}
+#pg-customer[data-theme="brasserie"] .c-tab-ico{font-size:20px;}
 
 /* Cart bottom sheet */
 #pg-customer[data-theme="brasserie"] .c-cart-panel{background:#ffffff;}
@@ -1569,7 +1575,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .c-order-btn:hover{background:var(--c-gold);}
 .c-order-btn:disabled{opacity:.5;cursor:not-allowed;}
 .c-cart-empty{text-align:center;padding:44px 20px;color:var(--c-muted);}
-.c-fab{position:fixed;bottom:74px;right:16px;z-index:200;background:var(--c-text);color:var(--c-bg);border:none;padding:12px 20px;font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:9px;box-shadow:0 8px 28px rgba(26,18,9,.25);transition:all .3s;border-radius:28px;}
+.c-fab{position:fixed;bottom:64px;right:16px;z-index:200;background:var(--c-text);color:var(--c-bg);border:none;padding:12px 20px;font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;gap:9px;box-shadow:0 8px 28px rgba(26,18,9,.25);transition:all .3s;border-radius:28px;}
 .c-fab.show{display:flex;animation:fadeUp .3s ease;}
 .c-fab:hover{background:var(--c-gold);transform:translateY(-2px);}
 .c-fab-badge{background:var(--c-gold);color:#000;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
@@ -1630,11 +1636,11 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .sp-delivered{background:#f3f4f6;color:#6b7280;}
 
 /* ═══ BOTTOM TAB BAR ═══ */
-.c-tabs-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-top:1px solid var(--c-border);padding:6px 0 env(safe-area-inset-bottom,8px);box-shadow:0 -4px 20px rgba(26,18,9,.08);}
-.c-tabs-inner{display:flex;justify-content:space-around;}
-.c-tab-btn{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 24px;cursor:pointer;color:var(--c-muted2);font-size:12px;letter-spacing:1px;text-transform:uppercase;transition:color .2s;font-family:var(--fb);}
+.c-tabs-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-top:1px solid var(--c-border);padding:4px 0 env(safe-area-inset-bottom,6px);box-shadow:0 -2px 12px rgba(26,18,9,.06);}
+.c-tabs-inner{display:flex;justify-content:space-around;width:100%;max-width:480px;margin:0 auto;}
+.c-tab-btn{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 20px;cursor:pointer;color:var(--c-muted2);font-size:10px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;font-family:var(--fb);}
 .c-tab-btn.on{color:var(--c-text);}
-.c-tab-ico{font-size:22px;transition:transform .2s;}
+.c-tab-ico{font-size:20px;transition:transform .2s;}
 .c-tab-btn.on .c-tab-ico{transform:scale(1.1);}
 
 /* ═══ RECEIPT ═══ */
@@ -1934,22 +1940,22 @@ tr:hover td{background:rgba(255,255,255,.015);}
             </div>
             <div style="background:var(--s-surf);padding:12px;text-align:center">
               <div style="font-family:var(--ff);font-size:24px;font-weight:900;color:var(--s-red)" id="loCount-pending">0</div>
-              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)">⏳ Pending</div>
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)" data-ts="pending" data-ts="pending">⏳ Pending</div>
             </div>
             <div style="background:var(--s-surf);padding:12px;text-align:center">
               <div style="font-family:var(--ff);font-size:24px;font-weight:900;color:var(--s-blue)" id="loCount-preparing">0</div>
-              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)">👨‍🍳 Preparing</div>
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)" data-ts="preparing" data-ts="preparing">👨‍🍳 Preparing</div>
             </div>
             <div style="background:var(--s-surf);padding:12px;text-align:center">
               <div style="font-family:var(--ff);font-size:24px;font-weight:900;color:var(--s-green)" id="loCount-ready">0</div>
-              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)">✅ Ready</div>
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)" data-ts="ready" data-ts="ready">✅ Ready</div>
             </div>
           </div>
           <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
             <button id="loFilter-all" onclick="owOrdFilter='all';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:700;letter-spacing:.5px;background:var(--s-gold);border:1px solid var(--s-gold);color:#000;cursor:pointer;transition:all .2s;border-radius:3px">All</button>
-            <button id="loFilter-pending" onclick="owOrdFilter='pending';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px">⏳ Pending</button>
-            <button id="loFilter-preparing" onclick="owOrdFilter='preparing';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px">👨‍🍳 Preparing</button>
-            <button id="loFilter-ready" onclick="owOrdFilter='ready';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px">✅ Ready</button>
+            <button id="loFilter-pending" onclick="owOrdFilter='pending';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px" data-ts="pending">⏳ Pending</button>
+            <button id="loFilter-preparing" onclick="owOrdFilter='preparing';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px" data-ts="preparing">👨‍🍳 Preparing</button>
+            <button id="loFilter-ready" onclick="owOrdFilter='ready';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px" data-ts="ready">✅ Ready</button>
           </div>
           <div id="liveOrdersContainer"><div style="text-align:center;padding:40px;color:var(--s-muted)">Loading orders...</div></div>
         </div>
@@ -1963,9 +1969,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
               </select>
               <select class="btools-sel" id="bfStatus" onchange="renderBills()">
                 <option value="" data-ts="all_statuses">All Statuses</option>
-                <option value="pending">⏳ Pending</option>
-                <option value="preparing">👨‍🍳 Preparing</option>
-                <option value="ready">✅ Ready</option>
+                <option value="pending" data-ts="pending">⏳ Pending</option>
+                <option value="preparing" data-ts="preparing">👨‍🍳 Preparing</option>
+                <option value="ready" data-ts="ready">✅ Ready</option>
                 <option value="delivered">📦 Delivered</option>
               </select>
               <select class="btools-sel" id="bfSort" onchange="renderBills()">
@@ -2073,6 +2079,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <button class="c-cart-btn" onclick="toggleCart()">🛒<span class="c-cart-count" id="cCartN">0</span></button>
     </div>
   </div>
+  <div class="c-cats" id="cCatTabs"></div>
   <div id="cMenuView">
     <div class="c-hero">
       <div class="c-hero-glow"></div>
@@ -2096,7 +2103,6 @@ tr:hover td{background:rgba(255,255,255,.015);}
         </div>
       </div>
     </div>
-    <div class="c-cats" id="cCatTabs"></div>
     <div class="c-menu"><div class="c-menu-grid" id="cMenuGrid"></div></div>
   </div>
   <div id="cOrdersView" style="display:none"><div class="c-orders-page" id="cOrdersList"></div></div>
@@ -2866,7 +2872,7 @@ const PHRASE_MAP = {
     "Revenue":"ລາຍຮັບ","Orders":"ອໍເດີ","Top Items":"ສິນຄ້າຂາຍດີ",
     "Sales":"ຍອດຂາຍ","Recent Orders":"ອໍເດີຫຼ້າສຸດ","Live":"ສົດ",
     "Today":"ວັນນີ້","Week":"ອາທິດ","Month":"ເດືອນ","3 Months":"3 ເດືອນ","All Time":"ທັງໝົດ",
-    "Pending":"ລໍຖ້າ","Preparing":"ກຳລັງກຽມ","Ready":"ພ້ອມ","Delivered":"ສຳເລັດ",
+    "Pending":"ລໍຖ້າ","Preparing":"ກຳລັງກຽມ","👨‍🍳 Preparing":"👨‍🍳 ກຳລັງກຽມ","✅ Ready":"✅ ພ້ອມ","⏳ Pending":"⏳ ລໍຖ້າ","✓ Delivered":"✓ ສຳເລັດ","Ready":"ພ້ອມ","Delivered":"ສຳເລັດ",
     "All":"ທັງໝົດ","All Statuses":"ທຸກສະຖານະ","All Tables":"ທຸກໂຕະ",
     "Newest":"ໃໝ່ສຸດ","Highest Bill":"ໃບເກັບເງິນສູງສຸດ","Table No.":"ເລກໂຕະ","Most Orders":"ອໍເດີຫຼາຍສຸດ",
     "Tables":"ໂຕະ","Total Bills":"ໃບເກັບເງິນທັງໝົດ","Your Earnings":"ລາຍຮັບຂອງທ່ານ",
@@ -2940,7 +2946,7 @@ const PHRASE_MAP = {
     "Revenue":"รายได้","Orders":"ออร์เดอร์","Top Items":"สินค้าขายดี",
     "Sales":"ยอดขาย","Recent Orders":"ออร์เดอร์ล่าสุด","Live":"สด",
     "Today":"วันนี้","Week":"สัปดาห์","Month":"เดือน","3 Months":"3 เดือน","All Time":"ทั้งหมด",
-    "Pending":"รอ","Preparing":"กำลังทำ","Ready":"พร้อมเสิร์ฟ","Delivered":"เสร็จสิ้น",
+    "Pending":"รอ","Preparing":"กำลังทำ","👨‍🍳 Preparing":"👨‍🍳 กำลังทำ","✅ Ready":"✅ พร้อม","⏳ Pending":"⏳ รอ","✓ Delivered":"✓ เสร็จ","Ready":"พร้อมเสิร์ฟ","Delivered":"เสร็จสิ้น",
     "All":"ทั้งหมด","All Statuses":"ทุกสถานะ","All Tables":"ทุกโต๊ะ",
     "Newest":"ใหม่สุด","Highest Bill":"บิลสูงสุด","Table No.":"หมายเลขโต๊ะ","Most Orders":"ออร์เดอร์มากสุด",
     "Tables":"โต๊ะ","Total Bills":"ยอดบิลทั้งหมด","Your Earnings":"รายได้ของคุณ",
@@ -3014,7 +3020,7 @@ const PHRASE_MAP = {
     "Revenue":"营收","Orders":"订单","Top Items":"热销商品",
     "Sales":"销售额","Recent Orders":"最近订单","Live":"实时",
     "Today":"今天","Week":"本周","Month":"本月","3 Months":"3个月","All Time":"全部",
-    "Pending":"待处理","Preparing":"准备中","Ready":"已就绪","Delivered":"已完成",
+    "Pending":"待处理","Preparing":"准备中","👨‍🍳 Preparing":"👨‍🍳 准备中","✅ Ready":"✅ 已就绪","⏳ Pending":"⏳ 待处理","✓ Delivered":"✓ 已完成","Ready":"已就绪","Delivered":"已完成",
     "All":"全部","All Statuses":"所有状态","All Tables":"所有桌台",
     "Newest":"最新","Highest Bill":"最高账单","Table No.":"桌台编号","Most Orders":"最多订单",
     "Tables":"桌台","Total Bills":"账单总额","Your Earnings":"您的收益",
@@ -3088,7 +3094,7 @@ const PHRASE_MAP = {
     "Revenue":"수익","Orders":"주문","Top Items":"인기 메뉴",
     "Sales":"매출","Recent Orders":"최근 주문","Live":"실시간",
     "Today":"오늘","Week":"이번 주","Month":"이번 달","3 Months":"3개월","All Time":"전체",
-    "Pending":"대기 중","Preparing":"준비 중","Ready":"준비 완료","Delivered":"완료",
+    "Pending":"대기 중","Preparing":"준비 중","👨‍🍳 Preparing":"👨‍🍳 준비 중","✅ Ready":"✅ 준비 완료","⏳ Pending":"⏳ 대기 중","✓ Delivered":"✓ 완료","Ready":"준비 완료","Delivered":"완료",
     "All":"전체","All Statuses":"모든 상태","All Tables":"모든 테이블",
     "Newest":"최신순","Highest Bill":"최고 청구액","Table No.":"테이블 번호","Most Orders":"주문 많은 순",
     "Tables":"테이블","Total Bills":"총 청구액","Your Earnings":"귀하의 수익",
@@ -3180,7 +3186,26 @@ function applyTranslation(root){
       if(node.title && map[node.title]) node.title=map[node.title];
       // Translate select options
       if(tag==='OPTION'){const t=node.textContent.trim();if(map[t])node.textContent=map[t];return;}
-      // Translate button/label text (skip if has children that aren't text)
+      // data-ts: translate using ts() (STAFF_T keys like pending/preparing/ready)
+      if(node.dataset&&node.dataset.ts){
+        const key=node.dataset.ts;
+        const translated=ts(key);
+        if(translated&&translated!==key){
+          // Preserve emoji prefix if present, replace text part only
+          for(const child of node.childNodes){
+            if(child.nodeType===3&&child.textContent.trim()){
+              const txt=child.textContent;
+              // Find text word (after emoji if any)
+              const match=txt.match(/^([\p{Emoji}\s]*?)([A-Za-z].+)$/u);
+              if(match) child.textContent=match[1]+translated;
+              else child.textContent=translated;
+              break;
+            }
+          }
+        }
+        return; // don't recurse into data-ts elements
+      }
+      // Translate button/label text
       node.childNodes.forEach(walk);
     }
   }
@@ -3335,7 +3360,11 @@ async function init(){
     if(isCustomer){
       // CUSTOMER PATH: fast! Only load restaurant+session, skip CFG/seed
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
-      if(r&&t) await startCustomerSession(r,t,s);
+      if(r&&t){
+        // Set a quick title from URL params before Firebase loads
+        document.title='Loading… | EATLAOS';
+        await startCustomerSession(r,t,s);
+      }
       else showPage('pg-land');
       hideLoading();
       return;
@@ -4306,6 +4335,16 @@ async function saveResto(){
       data.pass=pw;
       data.createdAt=Date.now();
       data.updatedAt=Date.now();
+      data.expiresAt=Date.now()+(365*86400000); // 1 year subscription
+      data.status='active';
+      data.theme=data.theme||'classic';
+      data.emoji=data.emoji||'🍽️';
+      data.prep=data.prep||15;
+      data.vat=data.vat||0;
+      data.comm=data.comm||0;
+      data.addr=data.addr||'';
+      data.cuisine=data.cuisine||'';
+      data.logo=data.logo||'';
       // Default categories — owner can edit/add more
       data.cats=[
         {id:'c1',name:'Main Course',icon:'🍽️'},
@@ -4315,8 +4354,7 @@ async function saveResto(){
       ];
       data.menu=[];
       data.tables=[];
-      data.bookings={};  // booking system
-      // Generate URL slug from restaurant name
+      data.bookings={};
       data.slug=(data.name||'restaurant')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g,'-')
@@ -4517,7 +4555,7 @@ function renderLiveOrders(){
       ${o.status==='pending'?'<div class="loc-new-badge">🔴 NEW</div>':''}
       <div class="loc-header">
         <div><div class="loc-table">${ts('table')} ${o.tNum||'?'}</div><div class="loc-id">${o.id||o.fbKey}</div></div>
-        <div style="text-align:right"><div class="loc-time">${o.time||''} · ${o.date||''}</div><span class="tag ${stag(o.status)}">${o.status}</span></div>
+        <div style="text-align:right"><div class="loc-time">${o.time||''} · ${o.date||''}</div><span class="tag ${stag(o.status)}">${ts(o.status)||o.status}</span></div>
       </div>
       <div class="loc-body">
         ${o.items?.map(i=>`<div class="loc-item-row"><span>${i.emoji||''} ${i.name} ×${i.qty}</span><span style="color:var(--s-gold);font-weight:600">${fmtK(i.price*i.qty)}</span></div>`).join('')||''}
@@ -6118,7 +6156,12 @@ async function startCustomerSession(rId,tId,sessId){
     const newUrl=window.location.origin+window.location.pathname+'?'+params.toString();
     window.history.replaceState({rId,tId,sessId},'',newUrl);
     // Update browser tab title
-    document.title=r.name+' · Table '+qrSess.tNum+' · EATLAOS';
+    // Update title + meta tags immediately with restaurant name
+  const titleStr=r.name+' · Table '+qrSess.tNum;
+  document.title=titleStr+' | EATLAOS';
+  const ogT=document.getElementById('ogTitle');if(ogT)ogT.setAttribute('content',titleStr);
+  const ogD=document.getElementById('ogDesc');if(ogD)ogD.setAttribute('content',r.cuisine||r.addr||'Scan & Order from your table');
+  const appT=document.getElementById('appTitle');if(appT)appT.setAttribute('content',r.name);
   }catch(e){console.log('URL update skipped:',e);}
   startSessTimer();
   // Load Firebase SDK in background for real-time order updates
@@ -6203,7 +6246,8 @@ function setupCustomerUI(r,sess){
   if(sel) sel.value=savedLang;
   document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=tr(el.dataset.i18n));
   // Update title immediately to restaurant name
-  document.title=r.name+' · Table '+(sess?.tNum||qrSess?.tNum||'')+(r.addr?' · '+r.addr:'');
+  const tNum2=sess?.tNum||qrSess?.tNum||'';
+  document.title=r.name+(tNum2?' · Table '+tNum2:'')+' | EATLAOS';
   // Apply restaurant theme
   applyTheme(r.theme||'classic');
   renderCats(r);renderMenu('All',r);updateCart();
@@ -6664,7 +6708,7 @@ init();
       <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Table &amp; Status</div>
       <div class="form-row">
         <div class="fg"><label>Assign Table</label><select class="fi" id="mBookTable"><option value="">🪑 Any Available Table</option></select></div>
-        <div class="fg"><label>Status</label><select class="fi" id="mBookStatus"><option value="confirmed">✅ Confirmed</option><option value="pending">⏳ Pending</option></select></div>
+        <div class="fg"><label>Status</label><select class="fi" id="mBookStatus"><option value="confirmed">✅ Confirmed</option><option value="pending" data-ts="pending">⏳ Pending</option></select></div>
       </div>
       <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Special Requests</div>
       <textarea class="fi" id="mBookNotes" rows="3" placeholder="Birthday celebration, food allergies, seating preferences..." style="resize:vertical;width:100%"></textarea>
