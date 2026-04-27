@@ -6683,7 +6683,7 @@ async function placeOrder(){
       id:ordId, sessId:qrSess.id,
       rId:qrSess.rId, rName:qrSess.rName||r?.name||'',
       tId:qrSess.tId, tNum:qrSess.tNum,
-      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,size:i.size||'',comment:i.comment||''}))),
+      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,size:i.size||'',comment:i.comment||''})),
       total:tot, comm:Number(r?.comm??0), // stored as number, 0% stays 0
       status:'pending', ts:Date.now(),
       time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
