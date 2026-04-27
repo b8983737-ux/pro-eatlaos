@@ -1818,6 +1818,35 @@ html,body{
           </div>
         </div>
         <div class="panel" id="sa-revenue">
+          <!-- Revenue Filters -->
+          <div class="card" style="margin-bottom:16px">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;padding:14px 16px">
+              <!-- Period filter -->
+              <div class="fg" style="min-width:160px;max-width:200px;margin:0">
+                <label style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--s-muted);display:block;margin-bottom:6px">Period</label>
+                <select class="fi" id="saRevPeriod" onchange="saRevenueFilter()" style="margin:0">
+                  <option value="all">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="week">This Week</option>
+                  <option value="month" selected>This Month</option>
+                  <option value="3month">Last 3 Months</option>
+                  <option value="year">This Year</option>
+                </select>
+              </div>
+              <!-- Restaurant filter -->
+              <div class="fg" style="min-width:200px;max-width:300px;margin:0">
+                <label style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--s-muted);display:block;margin-bottom:6px">Restaurant</label>
+                <select class="fi" id="saRevResto" onchange="saRevenueFilter()" style="margin:0">
+                  <option value="all">All Restaurants</option>
+                </select>
+              </div>
+              <!-- Summary pill -->
+              <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+                <button class="btn btn-sm" onclick="saRevenueFilter()">↻ Refresh</button>
+                <div id="saRevPill" style="font-size:12px;color:var(--s-muted);padding:4px 0"></div>
+              </div>
+            </div>
+          </div>
           <div id="saVatContainer"></div>
           <div class="stats-row s3"><div class="stat-box"><div class="stat-lbl">Gross Revenue</div><div class="stat-val" id="sa-gr">—</div></div><div class="stat-box"><div class="stat-ico">👑</div><div class="stat-lbl">Your Commission</div><div class="stat-val" id="sa-co">—</div></div><div class="stat-box"><div class="stat-lbl">Paid to Restaurants</div><div class="stat-val" id="sa-po">—</div></div></div>
           <div class="card"><div class="card-h"><div class="card-title">Revenue by Restaurant</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th data-ts="orders">Orders</th><th>Gross (₭)</th><th>Commission %</th><th>Your Earn</th><th>Restaurant Earn</th><th>VAT Collected</th></tr></thead><tbody id="sa-revtbl"></tbody></table></div></div>
@@ -2072,16 +2101,17 @@ html,body{
         <div class="c-hero-title" id="cHeroTitle"><em>Welcome</em></div>
         <div class="c-hero-sub" id="cHeroSub">Browse our menu and order directly from your table</div>
         <div class="c-hero-meta">
-          <div><div class="c-meta-val" id="cMenuCount">—</div><div class="c-meta-lbl" data-i18n="items">Items</div>
+          <div><div class="c-meta-val" id="cMenuCount">—</div><div class="c-meta-lbl" data-i18n="items">Items</div></div>
+          <div><div class="c-meta-val" id="cPrepTime">—</div><div class="c-meta-lbl" data-i18n="min_prep">Min</div></div>
+          <div><div class="c-meta-val" id="cSessLeft">—</div><div class="c-meta-lbl" data-i18n="session">Session</div></div>
+          <div><div class="c-meta-val" id="cGuestCount" style="color:var(--c-gold2)">—</div><div class="c-meta-lbl">At Table</div></div>
+        </div>
         <!-- Session status bar -->
         <div class="c-sess-bar" id="cSessBar" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(184,130,30,.1);border:1px solid rgba(184,130,30,.2);border-radius:6px;font-size:13px;">
           <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);">
             <span style="width:8px;height:8px;border-radius:50%;background:var(--c-gold2);flex-shrink:0;animation:blink 2s ease infinite;display:inline-block"></span>
             <span id="cSessBarTxt">Your session is active</span>
           </div>
-        </div></div>
-          <div><div class="c-meta-val" id="cPrepTime">—</div><div class="c-meta-lbl" data-i18n="min_prep">Min</div></div>
-          <div><div class="c-meta-val" id="cSessLeft">—</div><div class="c-meta-lbl" data-i18n="session">Session</div></div>
         </div>
       </div>
     </div>
@@ -2129,9 +2159,18 @@ html,body{
       <div class="c-detail-cat" id="detCat"></div>
       <div class="c-detail-name" id="detName"></div>
       <div class="c-detail-desc" id="detDesc"></div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:20px;flex-wrap:wrap">
+      <!-- SIZE OPTIONS (shown only if item has sizes) -->
+      <div id="detSizes" style="display:none;margin-bottom:12px">
+        <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--c-muted);margin-bottom:8px">Choose Size</div>
+        <div class="c-size-opts" id="detSizeOpts"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:16px;flex-wrap:wrap">
         <div><div class="c-detail-price" id="detPrice"></div><div class="c-detail-run" id="detRun"></div></div>
         <div class="c-qty-ctrl"><button class="c-qbtn" onclick="dq(-1)">−</button><span class="c-qnum" id="detQty">1</span><button class="c-qbtn" onclick="dq(1)">+</button></div>
+      </div>
+      <!-- COMMENT (shown only if item allows comment) -->
+      <div id="detCommentBox" style="display:none;margin-bottom:16px">
+        <textarea class="c-comment-box" id="detComment" rows="2" placeholder="Special request..."></textarea>
       </div>
       <div style="display:flex;gap:8px"><button class="c-add-btn" onclick="addDetailToCart()" data-i18n="add_to_cart">Add to Cart</button><button class="c-close-btn" onclick="closeModal('mDetail')" data-i18n="close">Close</button></div>
     </div>
@@ -2169,8 +2208,7 @@ html,body{
               <div class="ep-tab-content" id="restoEP-drink"><div class="ep-grid" id="restoEP-drink-grid"></div></div>
               <div class="ep-tab-content" id="restoEP-star"><div class="ep-grid" id="restoEP-star-grid"></div></div>
             </div>
-          </div
-          <div><div class="c-meta-val" id="cGuestCount" style="color:var(--c-gold2)">—</div><div class="c-meta-lbl">At Table</div></div>>
+          </div>
         </div>
       </div>
       <div class="fg"><label>Address</label><input class="fi" id="mRaddr" placeholder="Vientiane, Laos"></div>
@@ -2293,6 +2331,24 @@ html,body{
         </div>
       </div>
       <div class="form-row"><div class="fg"><label>Badge</label><select class="fi" id="mIbadge"><option value="">None</option><option value="new">🆕 New</option><option value="popular">⭐ Popular</option><option value="sold">Sold Out</option></select></div><div class="fg"><label>Status</label><select class="fi" id="mIstatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div></div>
+      <!-- SIZES -->
+      <div class="fg" style="margin-top:4px">
+        <label>Sizes <span style="color:var(--s-muted);font-weight:400">(optional — e.g. S, M, L, XL)</span></label>
+        <div id="mISizeList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+        <button type="button" class="btn" onclick="addSizeRow()" style="font-size:12px;padding:4px 12px">+ Add Size</button>
+      </div>
+      <!-- COMMENT -->
+      <div class="form-row" style="margin-top:4px">
+        <div class="fg"><label>Allow Customer Comment</label>
+          <select class="fi" id="mIcomment">
+            <option value="">No comment</option>
+            <option value="1">Yes — allow comment</option>
+          </select>
+        </div>
+        <div class="fg"><label>Comment Placeholder</label>
+          <input class="fi" id="mIcommentHint" placeholder="e.g. Extra spicy, No onion...">
+        </div>
+      </div>
     </div>
     <div class="modal-f"><button class="btn" onclick="closeModal('mOwItem')">Cancel</button><button class="btn btn-gold" onclick="saveOwItem()">Save</button></div>
   </div>
@@ -3487,7 +3543,19 @@ async function migrateAllRestaurants(){
     }
 
     // menu — empty array if missing
-    if(!r.menu) updates.menu = [];
+    if(!r.menu){
+      updates.menu=[];
+    } else if(Array.isArray(r.menu)){
+      let menuChanged=false;
+      const fixedMenu=r.menu.map(item=>{
+        const f={...item};
+        if(!f.sizes){f.sizes=[];menuChanged=true;}
+        if(f.allowComment===undefined){f.allowComment=false;menuChanged=true;}
+        if(!f.commentHint){f.commentHint='';menuChanged=true;}
+        return f;
+      });
+      if(menuChanged) updates.menu=fixedMenu;
+    }
 
     // tables — empty array if missing
     if(!r.tables) updates.tables = [];
@@ -3898,34 +3966,85 @@ function renderRevSummary(filtered){
 }
 
 async function saRevenue(){
-  const gross=cachedOrders.reduce((s,o)=>s+(o.total||0),0);
-  const comm=cachedOrders.reduce((s,o)=>s+(o.total||0)*((o.comm===0?0:(o.comm??0))/100),0);
+  const restos=await fbGet('restaurants')||{};
+  // Populate restaurant filter dropdown
+  const restoSel=document.getElementById('saRevResto');
+  if(restoSel){
+    const cur=restoSel.value;
+    restoSel.innerHTML='<option value="all">All Restaurants</option>'+
+      Object.entries(restos).map(([k,r])=>`<option value="${k}">${r.emoji||'🍽️'} ${r.name}</option>`).join('');
+    restoSel.value=cur;
+  }
+  saRevenueFilter(restos);
+}
+
+function saRevenueFilter(restos){
+  if(!restos){fbGet('restaurants').then(r=>saRevenueFilter(r||{}));return;}
+  const period=document.getElementById('saRevPeriod')?.value||'month';
+  const restoId=document.getElementById('saRevResto')?.value||'all';
+
+  // Calculate date range from period
+  const now=Date.now();
+  const d=new Date();
+  let fromTs=0;
+  if(period==='today'){const s=new Date(d.getFullYear(),d.getMonth(),d.getDate());fromTs=s.getTime();}
+  else if(period==='week'){fromTs=now-(7*86400000);}
+  else if(period==='month'){const s=new Date(d.getFullYear(),d.getMonth(),1);fromTs=s.getTime();}
+  else if(period==='3month'){fromTs=now-(90*86400000);}
+  else if(period==='year'){const s=new Date(d.getFullYear(),0,1);fromTs=s.getTime();}
+
+  // Filter orders by period + restaurant
+  let filtered=cachedOrders.filter(o=>(o.ts||0)>=fromTs);
+  if(restoId!=='all') filtered=filtered.filter(o=>o.rId===restoId);
+
+  // Update summary pill
+  const periodLabels={all:'All Time',today:'Today',week:'This Week',month:'This Month','3month':'Last 3 Months',year:'This Year'};
+  const pill=document.getElementById('saRevPill');
+  if(pill){
+    const restoName=restoId==='all'?'All Restaurants':(restos[restoId]?.name||restoId);
+    pill.textContent=`${periodLabels[period]||period} · ${restoName} · ${filtered.length} orders`;
+  }
+
+  // Stats
+  const gross=filtered.reduce((s,o)=>s+(o.total||0),0);
+  const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm===0?0:(o.comm??0))/100),0);
   document.getElementById('sa-gr').textContent=fmtK(gross);
   document.getElementById('sa-co').textContent=fmtK(comm);
   document.getElementById('sa-po').textContent=fmtK(gross-comm);
-  const restos=await fbGet('restaurants')||{};
-  // Monthly VAT summary
-  const now2=new Date();
-  const monthStart=new Date(now2.getFullYear(),now2.getMonth(),1).getTime();
-  const monthOrders=cachedOrders.filter(o=>(o.ts||0)>=monthStart);
+
+  // VAT summary
   const vatByResto={};
   for(const [k,r] of Object.entries(restos)){
-    if((r.vat||0)>0){
-      const ro=monthOrders.filter(o=>o.rId===k);
+    if((r.vat||0)>0&&(restoId==='all'||restoId===k)){
+      const ro=filtered.filter(o=>o.rId===k);
+      if(!ro.length) continue;
       const g=ro.reduce((s,o)=>s+(o.total||0),0);
       vatByResto[r.name]={vat:r.vat||0,gross:g,vatAmt:Math.round(g*(r.vat/100))};
     }
   }
-  const vatHtml=Object.keys(vatByResto).length?`<div class="card" style="margin-bottom:16px"><div class="card-h"><div class="card-title">🧾 VAT Summary — This Month</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>VAT Rate</th><th>Monthly Revenue</th><th>VAT Collected</th></tr></thead><tbody>${Object.entries(vatByResto).map(([name,v])=>`<tr><td><b>${name}</b></td><td><span class="comm">${v.vat}%</span></td><td>${fmtK(v.gross)}</td><td style="color:var(--s-blue);font-weight:600">${fmtK(v.vatAmt)}</td></tr>`).join('')}</tbody></table></div></div>`:'';
+  const periodLbl=periodLabels[period]||period;
+  const vatHtml=Object.keys(vatByResto).length?`<div class="card" style="margin-bottom:16px"><div class="card-h"><div class="card-title">🧾 VAT Summary — ${periodLbl}</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>VAT Rate</th><th>Revenue</th><th>VAT Collected</th></tr></thead><tbody>${Object.entries(vatByResto).map(([name,v])=>`<tr><td><b>${name}</b></td><td><span class="comm">${v.vat}%</span></td><td>${fmtK(v.gross)}</td><td style="color:var(--s-blue);font-weight:600">${fmtK(v.vatAmt)}</td></tr>`).join('')}</tbody></table></div></div>`:'';
   const vatContainer=document.getElementById('saVatContainer');
   if(vatContainer) vatContainer.innerHTML=vatHtml;
-  document.getElementById('sa-revtbl').innerHTML=Object.entries(restos).map(([k,r])=>{
-    const ro=cachedOrders.filter(o=>o.rId===k);
+
+  // Revenue by restaurant table
+  const entries=restoId==='all'?Object.entries(restos):[[restoId,restos[restoId]]].filter(([k,r])=>r);
+  document.getElementById('sa-revtbl').innerHTML=entries.map(([k,r])=>{
+    const ro=filtered.filter(o=>o.rId===k);
+    if(!ro.length&&restoId==='all') return''; // skip zero-revenue restos when viewing all
     const g=ro.reduce((s,o)=>s+(o.total||0),0);
     const mc=Math.round(g*(r.comm||0)/100);
     const vatAmt=Math.round(g*((r.vat||0)/100));
-    return`<tr><td><b>${r.emoji||'🍽️'} ${r.name}</b></td><td>${ro.length}</td><td>${fmtK(g)}</td><td><span class="comm">${r.comm||0}%</span></td><td style="color:var(--s-gold);font-weight:600">${fmtK(mc)}</td><td style="color:var(--s-green)">${fmtK(g-mc)}</td><td style="color:var(--s-blue)">${(r.vat||0)>0?fmtK(vatAmt):'—'}</td></tr>`;
-  }).join('')||nd(7);
+    return`<tr>
+      <td><b>${r.emoji||'🍽️'} ${r.name}</b></td>
+      <td>${ro.length}</td>
+      <td>${fmtK(g)}</td>
+      <td><span class="comm">${r.comm||0}%</span></td>
+      <td style="color:var(--s-gold);font-weight:600">${fmtK(mc)}</td>
+      <td style="color:var(--s-green)">${fmtK(g-mc)}</td>
+      <td style="color:var(--s-blue)">${(r.vat||0)>0?fmtK(vatAmt):'—'}</td>
+    </tr>`;
+  }).filter(Boolean).join('')||`<tr><td colspan="7" style="text-align:center;color:var(--s-muted);padding:24px">No orders for this period</td></tr>`;
 }
 
 async function loadAndRenderRestos(){
@@ -4158,6 +4277,9 @@ function resetRestoModal(){
   document.getElementById('mRestoId').value='';
   document.getElementById('mRestoTitle').textContent='Add Restaurant';
   document.getElementById('mRtheme').value='classic';
+  // Ensure theme picker grid is populated
+  const grid=document.getElementById('themePickerGrid');
+  if(grid&&!grid.children.length) initThemePicker();
   selectTheme('classic',false);
   document.getElementById('mRlogoData').value='';
   document.getElementById('logoPreview').textContent='🍽️';
@@ -4333,6 +4455,7 @@ async function editResto(id){
   // Restore theme
   const restoTheme=r.theme||'classic';
   document.getElementById('mRtheme').value=restoTheme;
+  const g2=document.getElementById('themePickerGrid');if(g2&&!g2.children.length)initThemePicker();
   selectTheme(restoTheme, false);
   // Restore emoji preview — works with both old text input and new picker
   const emojiVal=r.emoji||'🍽️';
@@ -4501,7 +4624,13 @@ function renderLiveOrders(){
         <div style="text-align:right"><div class="loc-time">${o.time||''} · ${o.date||''}</div><span class="tag ${stag(o.status)}">${o.status}</span></div>
       </div>
       <div class="loc-body">
-        ${o.items?.map(i=>`<div class="loc-item-row"><span>${i.emoji||''} ${i.name} ×${i.qty}</span><span style="color:var(--s-gold);font-weight:600">${fmtK(i.price*i.qty)}</span></div>`).join('')||''}
+        ${o.items?.map(i=>`<div class="loc-item-row">
+              <div>
+                <span>${i.emoji||''} ${i.name}${i.size?` <b style="background:var(--s-gold);color:#000;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700">${i.size}</b>`:''} ×${i.qty}</span>
+                ${i.comment?`<div style="font-size:11px;color:var(--s-muted);font-style:italic;margin-top:2px">"${i.comment}"</div>`:''}
+              </div>
+              <span style="color:var(--s-gold);font-weight:600">${fmtK(i.price*i.qty)}</span>
+            </div>`).join('')||''}
       </div>
       <div class="loc-footer">
         <div class="loc-total">${fmtK(o.total)}</div>
@@ -5326,11 +5455,23 @@ function clearItemImg(){
   if(photoInner) photoInner.innerHTML=`<div class="ep-upload-area" onclick="document.getElementById('mIimgFile').click()"><div class="ep-upload-icon">📷</div><div class="ep-upload-label">Click to upload photo<br><span style="font-size:10px;color:var(--s-muted2)">PNG, JPG, WEBP · Max 2MB</span></div></div>`;
 }
 
+function addSizeRow(lbl='',prc=''){
+  const list=document.getElementById('mISizeList');
+  const row=document.createElement('div');
+  row.className='size-row';
+  row.innerHTML=`<input class="fi size-lbl" placeholder="Size label (S/M/L/XL)" value="${lbl}" style="max-width:140px">
+    <input class="fi size-prc" type="number" placeholder="Price ₭" value="${prc}" step="1000" style="max-width:140px">
+    <button type="button" class="del-size" onclick="this.parentElement.remove()">✕</button>`;
+  list.appendChild(row);
+}
 function openOwItemModal(){
   editItemId=null;document.getElementById('mOwItemTitle').textContent='Add Menu Item';
   ['mOwItemId','mIname','mIdesc','mIdescLo','mIdescTh','mIprice'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('mIemoji').value='🍽️';
   document.getElementById('mIbadge').value='';
+  document.getElementById('mISizeList').innerHTML='';
+  document.getElementById('mIcomment').value='';
+  document.getElementById('mIcommentHint').value='';
   document.getElementById('mIstatus').value='active';
   const zhEl=document.getElementById('mIdescZh');if(zhEl) zhEl.value='';
   const koEl=document.getElementById('mIdescKo');if(koEl) koEl.value='';
@@ -5349,6 +5490,12 @@ async function editOwItem(idx){
   document.getElementById('mIdescLo').value=item.dLo||'';document.getElementById('mIdescTh').value=item.dTh||'';
   document.getElementById('mIprice').value=item.price;document.getElementById('mIemoji').value=item.emoji;
   document.getElementById('mIbadge').value=item.badge||'';document.getElementById('mIstatus').value=item.status;
+  // Populate sizes
+  document.getElementById('mISizeList').innerHTML='';
+  (item.sizes||[]).forEach(s=>addSizeRow(s.label,s.price));
+  // Populate comment
+  document.getElementById('mIcomment').value=item.allowComment?'1':'';
+  document.getElementById('mIcommentHint').value=item.commentHint||'';
   popCatSel(item.cat);openModal('mOwItem')
   setTimeout(()=>initEmojiPickers(),50);;
 }
@@ -5362,7 +5509,15 @@ async function saveOwItem(){
   const price=parseInt(document.getElementById('mIprice').value);
   const cat=document.getElementById('mIcat').value;
   if(!name||!price||!cat){notifyD('⚠ Fill required fields');return;}
-  const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),dZh:document.getElementById('mIdescZh')?.value.trim()||'',dKo:document.getElementById('mIdescKo')?.value.trim()||'',emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:document.getElementById('mIimgData').value||'',badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,id:'m'+Date.now()};
+  // Collect sizes from size rows
+const sizeRows=document.querySelectorAll('#mISizeList .size-row');
+const sizes=[];
+sizeRows.forEach(row=>{
+  const lbl=row.querySelector('.size-lbl')?.value.trim();
+  const prc=parseInt(row.querySelector('.size-prc')?.value)||0;
+  if(lbl) sizes.push({label:lbl,price:prc});
+});
+const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),dZh:document.getElementById('mIdescZh')?.value.trim()||'',dKo:document.getElementById('mIdescKo')?.value.trim()||'',emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:document.getElementById('mIimgData').value||'',badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,sizes:sizes,allowComment:document.getElementById('mIcomment').value==='1',commentHint:document.getElementById('mIcommentHint').value.trim(),id:'m'+Date.now()};
   const menu=[...(r.menu||[])];
   if(editItemId!==null) menu[editItemId]={...menu[editItemId],...data};
   else menu.push(data);
@@ -6290,16 +6445,75 @@ function openDetail(itemId){
     document.getElementById('detDesc').textContent=itemDesc(item);
     document.getElementById('detPrice').textContent=fmtK(item.price);
     document.getElementById('detQty').textContent=1;
+    // Render size options
+    const sizesWrap=document.getElementById('detSizes');
+    const sizeOpts=document.getElementById('detSizeOpts');
+    if(item.sizes&&item.sizes.length>0){
+      sizesWrap.style.display='block';
+      sizeOpts.innerHTML=item.sizes.map((s,i)=>`
+        <button class="c-size-btn${i===0?' on':''}" onclick="selectSize(this,${i})"
+          data-price="${s.price}" data-label="${s.label}">
+          <span class="c-size-btn-lbl">${s.label}</span>
+          <span class="c-size-btn-price">${s.price?fmtK(s.price):''}</span>
+        </button>`).join('');
+      // Set initial price to first size
+      if(item.sizes[0].price) detItem._sizePrice=item.sizes[0].price;
+      detItem._sizeLabel=item.sizes[0].label;
+    } else {
+      sizesWrap.style.display='none';
+      sizeOpts.innerHTML='';
+      detItem._sizePrice=0;
+      detItem._sizeLabel='';
+    }
+    // Comment box
+    const commentBox=document.getElementById('detCommentBox');
+    const commentEl=document.getElementById('detComment');
+    if(item.allowComment){
+      commentBox.style.display='block';
+      if(commentEl){
+        commentEl.placeholder=item.commentHint||'Special request, extra spicy...';
+        commentEl.value='';
+      }
+    } else {
+      commentBox.style.display='none';
+    }
     updateDetRun();
     openModal('mDetail');
   });
 }
+function selectSize(btn,idx){
+  document.querySelectorAll('.c-size-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const price=parseInt(btn.dataset.price)||0;
+  const label=btn.dataset.label||'';
+  detItem._sizePrice=price;
+  detItem._sizeLabel=label;
+  // Update price display
+  const basePrice=detItem.price;
+  const finalPrice=price||basePrice;
+  document.getElementById('detPrice').textContent=fmtK(finalPrice);
+  updateDetRun();
+}
 function dq(d){detQty=Math.max(1,detQty+d);document.getElementById('detQty').textContent=detQty;updateDetRun();}
-function updateDetRun(){if(!detItem) return;document.getElementById('detRun').textContent=`${detQty} × ${fmtK(detItem.price)} = ${fmtK(detItem.price*detQty)}`;}
+function updateDetRun(){
+  if(!detItem) return;
+  const p=detItem._sizePrice||detItem.price;
+  document.getElementById('detRun').textContent=`${detQty} × ${fmtK(p)} = ${fmtK(p*detQty)}`;
+}
 function addDetailToCart(){
   if(!detItem) return;
   if(detItem.badge==='sold'){notifyC('⊘ '+detItem.name+' — '+tr('sold_out'));return;}
-  addToCart(detItem,detQty);
+  const sizeLabel=detItem._sizeLabel||'';
+  const sizePrice=detItem._sizePrice||0;
+  const comment=document.getElementById('detComment')?.value.trim()||'';
+  // Build cart item with size + comment
+  const cartItem={...detItem,
+    price:sizePrice||detItem.price,
+    size:sizeLabel,
+    comment:comment,
+    displayName:detItem.name+(sizeLabel?' ('+sizeLabel+')':'')
+  };
+  addToCart(cartItem,detQty);
   closeModal('mDetail');
 }
 function quickAdd(itemId){
@@ -6333,7 +6547,8 @@ function updateCart(){
     <div class="c-ci">
       <div class="c-ci-em">${i.emoji||'🍽️'}</div>
       <div class="c-ci-info">
-        <div class="c-ci-name">${i.name}</div>
+        <div class="c-ci-name">${i.name}${i.size?` <span style="font-size:11px;background:var(--c-surf3);padding:1px 6px;border-radius:4px;font-weight:700">${i.size}</span>`:''}</div>
+        ${i.comment?`<div style="font-size:11px;color:var(--c-muted);font-style:italic">"${i.comment}"</div>`:''}
         <div class="c-ci-price">${fmtK(i.price*i.qty)}</div>
         <div class="c-ci-qty"><button class="c-ciqb" onclick="cQty('${i.id||i.name}',-1)">−</button><span class="c-ciqn">${i.qty}</span><button class="c-ciqb" onclick="cQty('${i.id||i.name}',1)">+</button></div>
       </div>
@@ -6404,7 +6619,7 @@ async function placeOrder(){
       id:ordId, sessId:qrSess.id,
       rId:qrSess.rId, rName:qrSess.rName||r?.name||'',
       tId:qrSess.tId, tNum:qrSess.tNum,
-      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty})),
+      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,size:i.size||'',comment:i.comment||''}))),
       total:tot, comm:Number(r?.comm??0), // stored as number, 0% stays 0
       status:'pending', ts:Date.now(),
       time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
