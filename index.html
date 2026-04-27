@@ -2465,7 +2465,7 @@ async function restGet(path){
 }
 async function restPush(path,data){
   try{
-    const r=await fetch(DB_URL+'/'+path+'.json',{
+    const r=await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify(data)
     });
@@ -2478,7 +2478,7 @@ async function restPush(path,data){
   }
 }
 async function restUpdate(path,data){
-  await fetch(DB_URL+'/'+path+'.json',{
+  await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY,{
     method:'PATCH',headers:{'Content-Type':'application/json'},
     body:JSON.stringify(data)
   });
