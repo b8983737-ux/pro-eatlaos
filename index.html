@@ -56,7 +56,7 @@ function loadQRCode(cb){
   --shadow:0 4px 20px rgba(0,0,0,.15);--shadow-lg:0 12px 48px rgba(0,0,0,.22);--shadow-xl:0 24px 80px rgba(0,0,0,.3);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:var(--fb);background:var(--s-bg);color:var(--s-text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;touch-action:pan-x pan-y;font-size:15px;}
+body{margin:0;padding:0;font-family:var(--fb);background:var(--s-bg);color:var(--s-text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;touch-action:pan-x pan-y;font-size:15px;}
 /* Prevent pinch zoom everywhere */
 #pg-customer{touch-action:pan-x pan-y;-ms-touch-action:pan-x pan-y;}
 button,input,select,textarea{font-family:var(--fb);}
@@ -1689,6 +1689,10 @@ html,body{
 .c-topbar,.c-tabs-bar{flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);}
 .c-cats{flex-shrink:0;z-index:90;}
 #pg-ow,#pg-sa,#pg-land{overflow-y:auto;height:100%;}
+#pg-ow{display:none;width:100%;min-height:100vh;}
+#pg-ow.on{display:flex!important;width:100%;min-height:100vh;}
+#pg-sa{display:none;width:100%;min-height:100vh;}
+#pg-sa.on{display:flex!important;width:100%;min-height:100vh;}
 
 /* SIZE SELECTOR */
 .c-size-opts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
@@ -1705,7 +1709,7 @@ html,body{
 </head>
 <body>
 <!-- DEBUG PANEL - owner/SA only, hidden from customers -->
-<div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:8px;height:8px;border-radius:50%;background:rgba(200,151,58,.3);cursor:pointer;display:none;" title="Debug"></div>
+<div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:10px;height:10px;border-radius:50%;background:rgba(200,151,58,.5);cursor:pointer;display:none;" title="Debug"></div>
 <div id="debugPanel" style="display:none;position:fixed;bottom:20px;left:10px;z-index:99999;background:rgba(0,0,0,.95);color:#0f0;font-family:monospace;font-size:11px;padding:12px;border:1px solid #333;max-width:340px;border-radius:6px;max-height:60vh;overflow-y:auto;">
   <div style="display:flex;justify-content:space-between;margin-bottom:8px">
     <span style="color:#ffd700;font-weight:bold">⚙ EATLAOS DEBUG</span>
@@ -1768,6 +1772,13 @@ window.onunhandledrejection=function(e){
   dbg('PROMISE: '+(e.reason?.message||e.reason||'rejected'),'err');
 };
 dbg('Page loaded');
+// Show debug dot on initial load (login/landing pages)
+setTimeout(function(){
+  var btn=document.getElementById('debugBtn');
+  var pg=document.querySelector('.page.on');
+  var adminIds=['pg-ow','pg-sa','pg-sa-login','pg-owner-login','pg-land'];
+  if(btn&&pg&&adminIds.indexOf(pg.id)>=0) btn.style.display='block';
+},500);
 </script>
 
 
@@ -3767,12 +3778,18 @@ function showPage(id){
     const flexPages=['pg-land','pg-owner-login','pg-sa-login','pg-ow','pg-sa','pg-customer'];
     el.style.display=flexPages.includes(id)?'flex':'block';
   }
+  // Debug btn: visible on all admin pages, hidden on QR customer page
+  var btn=document.getElementById('debugBtn');
+  if(btn) btn.style.display=id==='pg-customer'?'none':'block';
+  var panel=document.getElementById('debugPanel');
+  if(panel&&id==='pg-customer') panel.style.display='none';
 }
 
 async function doOwnerLogin(){
   const u=document.getElementById('owU').value.trim();
   const p=document.getElementById('owP').value;
   document.getElementById('owErr').textContent='';
+  if(typeof dbg==='function') dbg('Owner login attempt: '+u);
   if(!u||!p){document.getElementById('owErr').textContent='Enter username and password';return;}
   document.getElementById('owErr').textContent='Signing in...';
   // Load Firebase SDK for real-time features
@@ -3780,12 +3797,15 @@ async function doOwnerLogin(){
   startConnectionMonitor();
   document.getElementById('owErr').textContent='';
   // Find restaurant in Firebase
+  if(typeof dbg==='function') dbg('Loading Firebase SDK...');
   const restos=await fbGet('restaurants');
+  if(typeof dbg==='function') dbg('Restos loaded: '+(restos?Object.keys(restos).length:0)+' found');
   if(!restos){document.getElementById('owErr').textContent='No restaurants found';return;}
   let found=null;
   Object.entries(restos).forEach(([k,v])=>{
     if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
   });
+  if(typeof dbg==='function') dbg(found?'✅ Match found: '+found.name:'❌ No match');
   if(!found){document.getElementById('owErr').textContent='Incorrect username or password';return;}
   // Check subscription expiry
   if(found.expiresAt && Date.now()>found.expiresAt){
@@ -3824,7 +3844,9 @@ async function doSALogin(){
   // Hardcoded credentials — not stored in Firebase
   const SA_USER='superadmin@SouB';
   const SA_PASS='6699@BillS';
+  if(typeof dbg==='function') dbg('SA checking: '+u);
   if(u===SA_USER&&p===SA_PASS){
+    if(typeof dbg==='function') dbg('✅ SA login success');
     me={name:'Super Admin',role:'superadmin'};
     localStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
     showPage('pg-sa');
@@ -3834,6 +3856,7 @@ async function doSALogin(){
     // Auto-migrate all restaurants on SA login
     migrateAllRestaurants().catch(e=>console.log('Migration:',e));
   } else {
+    if(typeof dbg==='function') dbg('❌ SA login failed - wrong credentials','err');
     document.getElementById('saErr').textContent='Access denied.';
     setTimeout(()=>document.getElementById('saErr').textContent='',3000);
   }
