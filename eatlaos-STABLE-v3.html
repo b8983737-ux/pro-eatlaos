@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!-- EATLAOS BUILD v1777266252 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +6,7 @@
   <meta property="og:description" content="Scan & Order from your table">
   <meta property="og:type" content="website">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>EATLAOS</title>
+<title>EATLAOS</title><!-- EATLAOS-1777266531 -->
 <meta name="application-name" content="EATLAOS">
 <meta name="apple-mobile-web-app-title" content="EATLAOS">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2431,12 +2431,18 @@ async function restGet(path){
   return r.ok?r.json():null;
 }
 async function restPush(path,data){
-  const r=await fetch(DB_URL+'/'+path+'.json',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(data)
-  });
-  const j=await r.json();
-  return{key:j.name};
+  try{
+    const r=await fetch(DB_URL+'/'+path+'.json',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    return{key:j.name};
+  }catch(e){
+    console.warn('restPush failed:',path,e.message);
+    return null;
+  }
 }
 async function restUpdate(path,data){
   await fetch(DB_URL+'/'+path+'.json',{
@@ -3338,7 +3344,7 @@ function startConnectionMonitor(){
 // ═══════════════════════════════════════════════════════════════
 let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
 
-async function loadCFG(){
+async async function loadCFG(){
   const v=await fbGet('cfg');
   if(v) CFG={...CFG,...v};
   // Ensure SA password exists
@@ -6811,15 +6817,20 @@ function printReceipt(){const c=document.getElementById('receiptContent').innerH
 })();
 // START
 setTimeout(function(){
-  var ls=document.getElementById('loadScreen');
+  var ls=document.getElementById('loadingScreen');
   if(ls&&ls.style.display!=='none'&&ls.style.opacity!=='0'){
-    ls.style.opacity='0';
-    setTimeout(function(){ls.style.display='none';},400);
+    // Show connection error hint before hiding
+    var hint=ls.querySelector('.ls-loading');
+    if(hint) hint.textContent='Connection timeout — please refresh';
+    setTimeout(function(){
+      ls.style.opacity='0';
+      setTimeout(function(){ls.style.display='none';},400);
+    },2000);
   }
-},8000);
+},6000);
 try{init();}catch(e){
   console.error('init error:',e);
-  var ls=document.getElementById('loadScreen');
+  var ls=document.getElementById('loadingScreen');
   if(ls){ls.style.opacity='0';setTimeout(function(){ls.style.display='none';},400);}
 }
 </script>
