@@ -1704,25 +1704,72 @@ html,body{
 </style>
 </head>
 <body>
-<div id="debugPanel" style="position:fixed;top:10px;right:10px;z-index:99999;background:rgba(0,0,0,0.9);color:#0f0;font-family:monospace;font-size:12px;padding:10px;border:1px solid #0f0;max-width:300px;border-radius:4px;">
-<div style="color:#ff0;font-weight:bold;margin-bottom:5px">EATLAOS DEBUG</div>
-<div id="dbg1">⏳ Page loaded</div>
-<div id="dbg2">⏳ Waiting...</div>
-<div id="dbg3">⏳ Waiting...</div>
-<div id="dbg4">⏳ Waiting...</div>
-<div id="dbg5">⏳ Waiting...</div>
+<!-- DEBUG PANEL - owner/SA only, hidden from customers -->
+<div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:8px;height:8px;border-radius:50%;background:rgba(200,151,58,.3);cursor:pointer;display:none;" title="Debug"></div>
+<div id="debugPanel" style="display:none;position:fixed;bottom:20px;left:10px;z-index:99999;background:rgba(0,0,0,.95);color:#0f0;font-family:monospace;font-size:11px;padding:12px;border:1px solid #333;max-width:340px;border-radius:6px;max-height:60vh;overflow-y:auto;">
+  <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+    <span style="color:#ffd700;font-weight:bold">⚙ EATLAOS DEBUG</span>
+    <span onclick="toggleDebug()" style="cursor:pointer;color:#888">✕</span>
+  </div>
+  <div id="dbgLog" style="display:flex;flex-direction:column;gap:3px"></div>
+  <div style="margin-top:8px;border-top:1px solid #333;padding-top:8px">
+    <button onclick="dbgClear()" style="background:#333;border:none;color:#888;padding:2px 8px;font-size:10px;cursor:pointer;border-radius:3px">Clear</button>
+    <button onclick="dbgCopyLog()" style="background:#333;border:none;color:#888;padding:2px 8px;font-size:10px;cursor:pointer;border-radius:3px;margin-left:4px">Copy</button>
+  </div>
 </div>
 <script>
-function dbg(n,msg,color){
-  var el=document.getElementById('dbg'+n);
-  if(el){el.textContent=msg;el.style.color=color||'#0f0';}
+var _dbgLogs=[];
+function dbg(msg,type){
+  var color=type==='err'?'#f66':type==='warn'?'#fa0':'#8f8';
+  var ts=new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var entry={ts:ts,msg:msg,color:color};
+  _dbgLogs.push(entry);
+  var log=document.getElementById('dbgLog');
+  if(log){
+    var el=document.createElement('div');
+    el.style.color=color;
+    el.style.borderBottom='1px solid #111';
+    el.style.paddingBottom='2px';
+    el.textContent=ts+' '+msg;
+    log.appendChild(el);
+    log.scrollTop=log.scrollHeight;
+  }
 }
-dbg(1,'✅ HTML loaded','#0f0');
-window.onerror=function(msg,src,line){
-  dbg(2,'❌ JS ERROR: '+msg.substring(0,50),'#f00');
-  dbg(3,'Line: '+line,'#f00');
+function toggleDebug(){
+  var p=document.getElementById('debugPanel');
+  if(p) p.style.display=p.style.display==='none'?'block':'none';
+}
+function dbgClear(){
+  _dbgLogs=[];
+  var log=document.getElementById('dbgLog');
+  if(log) log.innerHTML='';
+}
+function dbgCopyLog(){
+  var txt=_dbgLogs.map(function(l){return l.ts+' '+l.msg;}).join('\n');
+  navigator.clipboard&&navigator.clipboard.writeText(txt);
+}
+// Show debug btn on owner/SA pages only
+function showDebugBtn(){
+  var btn=document.getElementById('debugBtn');
+  if(btn) btn.style.display='block';
+}
+function hideDebugBtn(){
+  var btn=document.getElementById('debugBtn');
+  if(btn) btn.style.display='none';
+  var panel=document.getElementById('debugPanel');
+  if(panel) panel.style.display='none';
+}
+// Capture JS errors
+window.onerror=function(msg,src,line,col){
+  dbg('ERROR: '+msg+' (L'+line+')','err');
+  return false;
 };
+window.onunhandledrejection=function(e){
+  dbg('PROMISE: '+(e.reason?.message||e.reason||'rejected'),'err');
+};
+dbg('Page loaded');
 </script>
+
 
 <!-- LOADING -->
 <div id="loadingScreen">
@@ -3406,14 +3453,12 @@ function hideLoading(){
 
 async function init(){
   try {
-    if(typeof dbg==='function'){dbg(2,'✅ init() started','#0f0');}
     const p=new URLSearchParams(window.location.search);
     const isCustomer=p.get('qr')==='1';
     // INSTANT: show login page immediately, no waiting
     if(!isCustomer){
       showPage('pg-land');
       hideLoading();
-      if(typeof dbg==='function'){dbg(3,'✅ showPage+hideLoading called','#0f0');}
     }
     if(isCustomer){
       // CUSTOMER PATH: fast! Only load restaurant+session, skip CFG/seed
@@ -3454,12 +3499,11 @@ async function init(){
       }catch(e){localStorage.removeItem('el_session');}
     }
     // No session — load Firebase then show login
-    if(typeof dbg==='function'){dbg(4,'⏳ Loading Firebase SDK...','#ff0');}
+    dbg('No session — loading Firebase');
     await loadFirebaseSDK();
-    if(typeof dbg==='function'){dbg(4,'✅ Firebase loaded','#0f0');}
-    if(typeof dbg==='function'){dbg(5,'⏳ Loading config...','#ff0');}
+    dbg('Firebase SDK loaded');
     await loadCFG();
-    if(typeof dbg==='function'){dbg(5,'✅ Config loaded','#0f0');}
+    dbg('Config loaded');
     seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
     autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
