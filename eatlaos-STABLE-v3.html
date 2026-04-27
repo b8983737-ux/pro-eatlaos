@@ -1704,6 +1704,25 @@ html,body{
 </style>
 </head>
 <body>
+<div id="debugPanel" style="position:fixed;top:10px;right:10px;z-index:99999;background:rgba(0,0,0,0.9);color:#0f0;font-family:monospace;font-size:12px;padding:10px;border:1px solid #0f0;max-width:300px;border-radius:4px;">
+<div style="color:#ff0;font-weight:bold;margin-bottom:5px">EATLAOS DEBUG</div>
+<div id="dbg1">⏳ Page loaded</div>
+<div id="dbg2">⏳ Waiting...</div>
+<div id="dbg3">⏳ Waiting...</div>
+<div id="dbg4">⏳ Waiting...</div>
+<div id="dbg5">⏳ Waiting...</div>
+</div>
+<script>
+function dbg(n,msg,color){
+  var el=document.getElementById('dbg'+n);
+  if(el){el.textContent=msg;el.style.color=color||'#0f0';}
+}
+dbg(1,'✅ HTML loaded','#0f0');
+window.onerror=function(msg,src,line){
+  dbg(2,'❌ JS ERROR: '+msg.substring(0,50),'#f00');
+  dbg(3,'Line: '+line,'#f00');
+};
+</script>
 
 <!-- LOADING -->
 <div id="loadingScreen">
@@ -3387,8 +3406,15 @@ function hideLoading(){
 
 async function init(){
   try {
+    if(typeof dbg==='function'){dbg(2,'✅ init() started','#0f0');}
     const p=new URLSearchParams(window.location.search);
     const isCustomer=p.get('qr')==='1';
+    // INSTANT: show login page immediately, no waiting
+    if(!isCustomer){
+      showPage('pg-land');
+      hideLoading();
+      if(typeof dbg==='function'){dbg(3,'✅ showPage+hideLoading called','#0f0');}
+    }
     if(isCustomer){
       // CUSTOMER PATH: fast! Only load restaurant+session, skip CFG/seed
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
@@ -3428,8 +3454,12 @@ async function init(){
       }catch(e){localStorage.removeItem('el_session');}
     }
     // No session — load Firebase then show login
+    if(typeof dbg==='function'){dbg(4,'⏳ Loading Firebase SDK...','#ff0');}
     await loadFirebaseSDK();
+    if(typeof dbg==='function'){dbg(4,'✅ Firebase loaded','#0f0');}
+    if(typeof dbg==='function'){dbg(5,'⏳ Loading config...','#ff0');}
     await loadCFG();
+    if(typeof dbg==='function'){dbg(5,'✅ Config loaded','#0f0');}
     seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
     autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
@@ -3682,8 +3712,17 @@ async function seedFirebaseIfEmpty(){
 // AUTH
 // ═══════════════════════════════════════════════════════════════
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.remove('on');
+    p.style.display='none';
+  });
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('on');
+    // Use flex for pages that need it, block for others
+    const flexPages=['pg-land','pg-owner-login','pg-sa-login','pg-ow','pg-sa','pg-customer'];
+    el.style.display=flexPages.includes(id)?'flex':'block';
+  }
 }
 
 async function doOwnerLogin(){
