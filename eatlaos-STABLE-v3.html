@@ -3454,24 +3454,29 @@ async function init(){
         }
       }catch(e){localStorage.removeItem('el_session');}
     }
-    // No session — load Firebase then show login
-    await loadFirebaseSDK().catch(e=>console.warn('Firebase SDK:',e));
-    await loadCFG().catch(e=>console.warn('loadCFG:',e));
-    seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
-    autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
+    // No session — show login INSTANTLY, load Firebase in background
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
       showPage('pg-sa-login');
     } else {
       showPage('pg-land');
     }
+    hideLoading();
+    initEmojiPickers();
+    initThemePicker();
+    // Load Firebase in background (non-blocking)
+    loadFirebaseSDK().then(()=>{
+      loadCFG().catch(e=>console.log('CFG:',e));
+      seedFirebaseIfEmpty().catch(e=>console.log('Seed:',e));
+      autoCleanOldData().catch(e=>console.log('Clean:',e));
+    }).catch(e=>console.warn('Firebase bg load:',e));
+    return;
   } catch(e){
     console.error('Init error:',e);
     hideLoading();
     showPage('pg-land');
+    initEmojiPickers();
+    initThemePicker();
   }
-  hideLoading();
-  initEmojiPickers();
-  initThemePicker();
 }
 
 function restoreSA(){
