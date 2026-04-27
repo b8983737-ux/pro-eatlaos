@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- EATLAOS BUILD v1777266252 -->
+<!DOCTYPE html><!-- BUILD:1777277802 --><!-- EATLAOS BUILD v1777266252 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1707,6 +1707,13 @@ html,body{
 
 <!-- LOADING -->
 <div id="loadingScreen">
+<script>
+// Force hide loading screen after 5 seconds NO MATTER WHAT
+setTimeout(function(){
+  var e=document.getElementById('loadingScreen');
+  if(e){e.style.opacity='0';e.style.transition='opacity 0.5s';setTimeout(function(){e.style.display='none';},500);}
+},5000);
+</script>
   <div id="loadSplash">
     <!-- Default EATLAOS splash (shown for admin) -->
     <div class="load-logo">EAT<em>LAOS</em></div>
