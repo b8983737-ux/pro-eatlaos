@@ -3344,7 +3344,7 @@ function startConnectionMonitor(){
 // ═══════════════════════════════════════════════════════════════
 let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
 
-async async function loadCFG(){
+async function loadCFG(){
   const v=await fbGet('cfg');
   if(v) CFG={...CFG,...v};
   // Ensure SA password exists
