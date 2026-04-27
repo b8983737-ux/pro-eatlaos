@@ -2490,21 +2490,34 @@ let fbSDKPromise=null;
 function loadFirebaseSDK(){
   if(fbSDKLoaded) return Promise.resolve();
   if(fbSDKPromise) return fbSDKPromise;
-  fbSDKPromise=new Promise(resolve=>{
+  fbSDKPromise=new Promise((resolve,reject)=>{
+    // Timeout: if SDK doesn't load in 8s, reject so init() can continue
+    const timer=setTimeout(()=>{
+      console.warn('Firebase SDK load timeout');
+      reject(new Error('Firebase SDK timeout'));
+    },8000);
     const s1=document.createElement('script');
     s1.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js';
+    s1.onerror=()=>{clearTimeout(timer);reject(new Error('Firebase app script failed'));};
     s1.onload=()=>{
       const s2=document.createElement('script');
       s2.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js';
+      s2.onerror=()=>{clearTimeout(timer);reject(new Error('Firebase DB script failed'));};
       s2.onload=()=>{
-        if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        db=firebase.database();
-        fbSDKLoaded=true;
+        clearTimeout(timer);
+        try{
+          if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+          db=firebase.database();
+          fbSDKLoaded=true;
+        }catch(e){console.warn('Firebase init:',e);}
         resolve();
       };
       document.head.appendChild(s2);
     };
     document.head.appendChild(s1);
+  }).catch(e=>{
+    console.warn('loadFirebaseSDK failed:',e.message);
+    fbSDKPromise=null; // allow retry
   });
   return fbSDKPromise;
 }
@@ -3418,7 +3431,7 @@ async function init(){
         const ss=JSON.parse(saved);
         if(ss.role==='superadmin'&&p.get('admin')==='EatLaos2026SecretAdmin'){
           me=ss;
-          await loadFirebaseSDK();
+          await loadFirebaseSDK().catch(e=>console.warn('Firebase:',e));
           restoreSA();
           hideLoading();
           return;
@@ -3442,8 +3455,8 @@ async function init(){
       }catch(e){localStorage.removeItem('el_session');}
     }
     // No session — load Firebase then show login
-    await loadFirebaseSDK();
-    await loadCFG();
+    await loadFirebaseSDK().catch(e=>console.warn('Firebase SDK:',e));
+    await loadCFG().catch(e=>console.warn('loadCFG:',e));
     seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
     autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
