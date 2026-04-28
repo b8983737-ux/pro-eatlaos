@@ -2195,10 +2195,10 @@ setTimeout(function(){
         <div class="c-hero-sub" id="cHeroSub">Browse our menu and order directly from your table</div>
         <div class="c-hero-meta">
           <div><div class="c-meta-val" id="cMenuCount">—</div><div class="c-meta-lbl" data-i18n="items">Items</div></div>
-          <div><div class="c-meta-val" id="cPeopleCount">—</div><div class="c-meta-lbl">Guests</div></div>
+          <div><div class="c-meta-val" id="cPeopleCount">—</div><div class="c-meta-lbl" data-i18n="guests">Guests</div></div>
           <div><div class="c-meta-val" id="cPrepTime">—</div><div class="c-meta-lbl" data-i18n="min_prep">Min</div></div>
           
-          <div><div class="c-meta-val" id="cGuestCount" style="color:var(--c-gold2)">—</div><div class="c-meta-lbl">Ordered</div></div>
+          <div><div class="c-meta-val" id="cGuestCount" style="color:var(--c-gold2)">—</div><div class="c-meta-lbl" data-i18n="ordered">Ordered</div></div>
         </div>
         <!-- Session status bar -->
         <div class="c-sess-bar" id="cSessBar" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(184,130,30,.1);border:1px solid rgba(184,130,30,.2);border-radius:6px;font-size:13px;">
@@ -2591,7 +2591,7 @@ let db = null; // set after SDK loads for admin
 // ═══════════════════════════════════════════════════════════════
 const T = {
   en:{
-    menu:'Menu',my_orders:'My Orders',items:'Items',min_prep:'Min',session:'Session',
+    menu:'Menu',my_orders:'My Orders',items:'Items',guests:'Guests',ordered:'Ordered',min_prep:'Min',session:'Session',
     view_cart:'View Cart',your_order:'Your Order',total:'Total',
     send_kitchen:'Send to Kitchen →',add_to_cart:'Add to Cart →',close:'Close',
     empty_cart:'Cart is empty',start_order:'Browse menu to start ordering',
@@ -2606,7 +2606,7 @@ const T = {
     add_more:'+ Order More Items',view_bill:'View My Bill'
   },
   lo:{
-    menu:'ເມນູ',my_orders:'ອໍເດີຂອງຂ້ອຍ',items:'ລາຍການ',min_prep:'ນາທີ',session:'ເຊດຊັນ',
+    menu:'ເມນູ',my_orders:'ອໍເດີຂອງຂ້ອຍ',items:'ລາຍການ',guests:'ແຂກ',ordered:'ສັ່ງແລ້ວ',min_prep:'ນາທີ',session:'ເຊດຊັນ',
     view_cart:'ເບິ່ງກະຕ່າ',your_order:'ອໍເດີຂອງທ່ານ',total:'ທັງໝົດ',
     send_kitchen:'ສົ່ງໄປຫ້ອງຄົວ →',add_to_cart:'ເພີ່ມໃສ່ກະຕ່າ →',close:'ປິດ',
     empty_cart:'ກະຕ່າຍັງຫວ່າງ',start_order:'ເບິ່ງເມນູເພື່ອເລີ່ມສັ່ງ',
@@ -2621,7 +2621,7 @@ const T = {
     add_more:'+ ສັ່ງເພີ່ມ',view_bill:'ເບິ່ງໃບເກັບເງິນ'
   },
   th:{
-    menu:'เมนู',my_orders:'ออร์เดอร์ของฉัน',items:'รายการ',min_prep:'นาที',session:'เซสชัน',
+    menu:'เมนู',my_orders:'ออร์เดอร์ของฉัน',items:'รายการ',guests:'แขก',ordered:'สั่งแล้ว',min_prep:'นาที',session:'เซสชัน',
     view_cart:'ดูตะกร้า',your_order:'ออร์เดอร์ของคุณ',total:'ทั้งหมด',
     send_kitchen:'ส่งไปครัว →',add_to_cart:'เพิ่มในตะกร้า →',close:'ปิด',
     empty_cart:'ตะกร้าว่างเปล่า',start_order:'เลือกเมนูเพื่อสั่งอาหาร',
@@ -2636,7 +2636,7 @@ const T = {
     add_more:'+ สั่งเพิ่ม',view_bill:'ดูบิลของฉัน'
   },
   zh:{
-    menu:'菜单',my_orders:'我的订单',items:'项目',min_prep:'分钟',session:'会话',
+    menu:'菜单',my_orders:'我的订单',items:'项目',guests:'宾客',ordered:'已点',min_prep:'分钟',session:'会话',
     view_cart:'查看购物车',your_order:'您的订单',total:'合计',
     send_kitchen:'发送到厨房 →',add_to_cart:'加入购物车 →',close:'关闭',
     empty_cart:'购物车是空的',start_order:'浏览菜单开始点餐',
@@ -2651,7 +2651,7 @@ const T = {
     add_more:'+ 继续点餐',view_bill:'查看账单'
   },
   ko:{
-    menu:'메뉴',my_orders:'내 주문',items:'항목',min_prep:'분',session:'세션',
+    menu:'메뉴',my_orders:'내 주문',items:'항목',guests:'손님',ordered:'주문수',min_prep:'분',session:'세션',
     view_cart:'장바구니 보기',your_order:'내 주문',total:'합계',
     send_kitchen:'주방으로 보내기 →',add_to_cart:'장바구니에 추가 →',close:'닫기',
     empty_cart:'장바구니가 비어 있습니다',start_order:'메뉴를 탐색하여 주문하세요',
@@ -6363,6 +6363,8 @@ async function startCustomerSession(rId,tId,sessId){
   }
   // Show page IMMEDIATELY — don't wait for anything else
   showPage('pg-customer');
+  // Re-apply translations to customer page elements
+  if(lang&&lang!=='en') setLang(lang);
   // Setup UI synchronously — instant render
   setupCustomerUI(r,sess);
   // Update browser URL — keep QR params so URL still works when shared
@@ -6570,10 +6572,19 @@ function renderMenu(cat,r){
         <div class="c-item-cat">${item.cat||''}</div>
         <div class="c-item-name">${item.name}</div>
         <div class="c-item-desc">${itemDesc(item)}</div>
+        ${item.sizes&&item.sizes.length>0?`
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px">
+          ${item.sizes.map(s=>`
+            <span style="background:var(--c-surf3);border:1px solid var(--c-border);
+              color:var(--c-muted);border-radius:4px;padding:2px 7px;
+              font-size:10px;font-weight:600;letter-spacing:.3px;">
+              ${s.label} ${fmtK(s.price)}
+            </span>`).join('')}
+        </div>`:''}
         <div class="c-item-foot">
           <div style="display:flex;flex-direction:column;gap:2px">
             <div class="c-item-price" style="${isSold?'text-decoration:line-through;opacity:.5':''}">
-              ${fmtK(item.price)}
+              ${item.sizes&&item.sizes.length>0?'from '+fmtK(Math.min(...item.sizes.map(s=>s.price))):fmtK(item.price)}
             </div>
             ${isSold?`<div style="font-size:9px;letter-spacing:1px;color:var(--c-muted);text-transform:uppercase">${tr('sold_out')}</div>`:''}
           </div>
