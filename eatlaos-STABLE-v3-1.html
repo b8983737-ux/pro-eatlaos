@@ -6703,6 +6703,11 @@ function quickAdd(itemId){
     const item=(r?.menu||[]).find(m=>m.id===itemId||m.name===itemId);
     if(!item) return;
     if(item.badge==='sold'){notifyC('⊘ '+item.name+' — '+tr('sold_out'));return;}
+    // If item has sizes → open detail modal to pick size
+    if(item.sizes&&item.sizes.length>0){
+      openDetail(itemId);
+      return;
+    }
     addToCart(item,1);
   });
 }
