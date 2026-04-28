@@ -1277,17 +1277,17 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 /* ═══ LIVE ORDER CARDS (Owner) ═══ */
 .live-order-card{background:var(--s-surf2);border:1px solid var(--s-border);margin-bottom:12px;position:relative;overflow:hidden;animation:fadeUp .4s ease;}
-.loc-header{padding:12px 16px;border-bottom:1px solid var(--s-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.loc-table{font-family:var(--ff);font-size:20px;font-weight:900;}
-.loc-time{font-size:10px;color:var(--s-muted);}
-.loc-id{font-size:10px;color:var(--s-muted2);}
-.loc-body{padding:12px 16px;}
+.loc-header{padding:14px 18px;border-bottom:1px solid var(--s-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.loc-table{font-family:var(--ff);font-size:28px;font-weight:900;letter-spacing:-.5px;}
+.loc-time{font-size:12px;color:var(--s-muted);}
+.loc-id{font-size:11px;color:var(--s-muted2);}
+.loc-body{padding:14px 18px;}
 .loc-item-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
 .loc-item-row:last-child{border:none;}
 .loc-footer{padding:10px 16px;border-top:1px solid var(--s-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:rgba(0,0,0,.2);}
-.loc-total{font-family:var(--ff);font-size:18px;font-weight:900;color:var(--s-gold);}
+.loc-total{font-family:var(--ff);font-size:24px;font-weight:900;color:var(--s-gold);}
 .loc-status-btns{display:flex;gap:6px;flex-wrap:wrap;}
-.loc-status-btn{padding:6px 14px;border:1px solid var(--s-border);background:none;color:var(--s-muted);font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.loc-status-btn{padding:9px 18px;border:1px solid var(--s-border);background:none;color:var(--s-muted);font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase;}
 .loc-status-btn:hover,.loc-status-btn.active{background:var(--s-gold);border-color:var(--s-gold);color:#000;font-weight:700;}
 .loc-status-btn.done{background:var(--s-green);border-color:var(--s-green);color:#000;}
 .loc-new-badge{position:absolute;top:0;right:0;background:var(--s-red);color:#fff;font-size:9px;font-weight:700;padding:3px 10px;letter-spacing:1px;text-transform:uppercase;}
@@ -1948,7 +1948,33 @@ setTimeout(function(){
           <div class="card"><div class="card-h"><div class="card-title">All Restaurants</div><button class="btn btn-gold" onclick="openModal('mAddResto');resetRestoModal()">+ Add Restaurant</button></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Theme</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-orders">
-          <div class="card"><div class="card-h"><div class="card-title">All Orders (Live Firebase)</div></div><div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Restaurant</th><th>Items</th><th>Total (₭)</th><th>Commission</th><th>Time</th><th>Status</th></tr></thead><tbody id="sa-ordtbl"></tbody></table></div></div>
+          <div class="card">
+            <div class="card-h"><div class="card-title">All Orders</div>
+              <button class="btn btn-sm" onclick="exportAllOrders()">📥 Export CSV</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;padding:12px 16px;border-bottom:1px solid var(--s-border)">
+              <select class="btools-sel" id="saOhPeriod" onchange="saOrders()" style="min-width:130px">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month" selected>This Month</option>
+                <option value="3month">Last 3 Months</option>
+              </select>
+              <select class="btools-sel" id="saOhResto" onchange="saOrders()" style="min-width:160px">
+                <option value="">All Restaurants</option>
+              </select>
+              <select class="btools-sel" id="saOhStatus" onchange="saOrders()" style="min-width:120px">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="preparing">Preparing</option>
+                <option value="ready">Ready</option>
+                <option value="delivered">Delivered</option>
+              </select>
+              <input class="btools-sel" id="saOhSearch" oninput="saOrders()" placeholder="🔍 Search..." style="min-width:160px;flex:1">
+              <button class="btn btn-sm" onclick="saOhReset()">↺ Reset</button>
+              <div id="saOhSummary" style="font-size:12px;color:var(--s-muted);padding:4px 0;align-self:center"></div>
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Restaurant</th><th>Items</th><th>Total (₭)</th><th>Commission</th><th>Time</th><th>Status</th></tr></thead><tbody id="sa-ordtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-sessions">
           <div class="card"><div class="card-h"><div class="card-title">Active QR Sessions</div><button class="btn btn-sm" onclick="loadSessions()">↻ Refresh</button></div><div class="tbl-wrap"><table><thead><tr><th>Session</th><th>Restaurant</th><th>Table</th><th>Started</th><th>Duration</th><th>Expires</th><th>Orders</th><th>Action</th></tr></thead><tbody id="sa-sesstbl"></tbody></table></div></div>
@@ -2057,7 +2083,14 @@ setTimeout(function(){
               <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted)" data-ts="ready">✅ Ready</div>
             </div>
           </div>
-          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+            <!-- Period filter -->
+            <select id="loPeriod" onchange="renderLiveOrders()" style="padding:9px 14px;font-size:13px;font-weight:700;background:var(--s-surf2);border:1px solid var(--s-border);color:var(--s-text);border-radius:3px;cursor:pointer">
+              <option value="today" selected>Today</option>
+              <option value="week">This Week</option>
+              <option value="all">All Time</option>
+            </select>
+            <div style="width:1px;height:24px;background:var(--s-border)"></div>
             <button id="loFilter-all" onclick="owOrdFilter='all';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:700;letter-spacing:.5px;background:var(--s-gold);border:1px solid var(--s-gold);color:#000;cursor:pointer;transition:all .2s;border-radius:3px">All</button>
             <button id="loFilter-pending" onclick="owOrdFilter='pending';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px">⏳ Pending</button>
             <button id="loFilter-preparing" onclick="owOrdFilter='preparing';renderLiveOrders()" style="padding:10px 22px;font-size:13px;font-weight:600;letter-spacing:.5px;background:none;border:1px solid var(--s-border);color:var(--s-muted);cursor:pointer;transition:all .2s;border-radius:3px">👨‍🍳 Preparing</button>
@@ -2150,7 +2183,31 @@ setTimeout(function(){
           </div>
         </div>
         <div class="panel" id="ow-history">
-          <div class="card"><div class="card-h"><div class="card-title">Order History (All Time)</div><button class="btn btn-sm" onclick="exportCSV()">📥 Export CSV</button></div><div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>Earn (₭)</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody id="ow-histtbl"></tbody></table></div></div>
+          <div class="card">
+            <div class="card-h"><div class="card-title">Order History</div>
+              <button class="btn btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+            </div>
+            <!-- Filters -->
+            <div style="display:flex;flex-wrap:wrap;gap:10px;padding:12px 16px;border-bottom:1px solid var(--s-border)">
+              <select class="btools-sel" id="ohPeriod" onchange="renderHistory()" style="min-width:130px">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month" selected>This Month</option>
+                <option value="3month">Last 3 Months</option>
+              </select>
+              <select class="btools-sel" id="ohStatus" onchange="renderHistory()" style="min-width:120px">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="preparing">Preparing</option>
+                <option value="ready">Ready</option>
+                <option value="delivered">Delivered</option>
+              </select>
+              <input class="btools-sel" id="ohSearch" oninput="renderHistory()" placeholder="🔍 Search order / table..." style="min-width:180px;flex:1">
+              <button class="btn btn-sm" onclick="ohResetFilter()">↺ Reset</button>
+              <div id="ohSummary" style="margin-left:auto;font-size:12px;color:var(--s-muted);padding:4px 0;align-self:center"></div>
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>Earn (₭)</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody id="ow-histtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="ow-profile"><div class="card"><div class="card-h"><div class="card-title">Restaurant Profile</div></div><div id="ow-profilebody" style="padding:20px"></div></div></div>
       </div>
@@ -4204,8 +4261,55 @@ async function loadAndRenderRestos(){
   }).join('')||nd(7);
 }
 
-function saOrders(){
-  document.getElementById('sa-ordtbl').innerHTML=cachedOrders.map(o=>{
+function saOhReset(){
+  ['saOhPeriod','saOhStatus','saOhSearch'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=id==='saOhPeriod'?'month':'';
+  });
+  saOrders();
+}
+
+async function saOrders(){
+  // Populate restaurant dropdown
+  const restos=await fbGet('restaurants')||{};
+  const restoSel=document.getElementById('saOhResto');
+  if(restoSel&&restoSel.options.length<=1){
+    Object.entries(restos).forEach(([k,r])=>{
+      const opt=document.createElement('option');
+      opt.value=k; opt.textContent=(r.emoji||'🍽️')+' '+r.name;
+      restoSel.appendChild(opt);
+    });
+  }
+
+  // Read filters
+  const period=document.getElementById('saOhPeriod')?.value||'all';
+  const restoId=document.getElementById('saOhResto')?.value||'';
+  const status=document.getElementById('saOhStatus')?.value||'';
+  const search=(document.getElementById('saOhSearch')?.value||'').toLowerCase();
+  const now=Date.now(); const d=new Date();
+  let fromTs=0;
+  if(period==='today'){fromTs=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();}
+  else if(period==='week'){fromTs=now-(7*86400000);}
+  else if(period==='month'){fromTs=new Date(d.getFullYear(),d.getMonth(),1).getTime();}
+  else if(period==='3month'){fromTs=now-(90*86400000);}
+
+  let filtered=cachedOrders.filter(o=>{
+    if(fromTs&&(o.ts||0)<fromTs) return false;
+    if(restoId&&o.rId!==restoId) return false;
+    if(status&&o.status!==status) return false;
+    if(search&&!(
+      (o.id||'').toLowerCase().includes(search)||
+      (o.rName||'').toLowerCase().includes(search)||
+      (o.tNum||'').toString().includes(search)
+    )) return false;
+    return true;
+  });
+
+  const total=filtered.reduce((s,o)=>s+(o.total||0),0);
+  const sumEl=document.getElementById('saOhSummary');
+  if(sumEl) sumEl.textContent=filtered.length+' orders · '+fmtK(total);
+
+  document.getElementById('sa-ordtbl').innerHTML=filtered.length?filtered.map(o=>{
     const comm=Math.round((o.total||0)*((o.comm===0?0:(o.comm||0))/100));
     return`<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td>${o.items?.length||0}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('')||nd(8);
@@ -4719,10 +4823,17 @@ function owRecentOrders(){
 function renderLiveOrders(){
   const f=owOrdFilter;
   // Update counts
-  const allC=cachedOrders.length;
-  const pendC=cachedOrders.filter(o=>o.status==='pending').length;
-  const prepC=cachedOrders.filter(o=>o.status==='preparing').length;
-  const readyC=cachedOrders.filter(o=>o.status==='ready').length;
+  // Period filter for counts
+  const _period=document.getElementById('loPeriod')?.value||'today';
+  const _now=Date.now(),_d=new Date();
+  let _from=0;
+  if(_period==='today') _from=new Date(_d.getFullYear(),_d.getMonth(),_d.getDate()).getTime();
+  else if(_period==='week') _from=_now-(7*86400000);
+  const _base=_from?cachedOrders.filter(o=>(o.ts||0)>=_from):cachedOrders;
+  const allC=_base.length;
+  const pendC=_base.filter(o=>o.status==='pending').length;
+  const prepC=_base.filter(o=>o.status==='preparing').length;
+  const readyC=_base.filter(o=>o.status==='ready').length;
   ['all','pending','preparing','ready'].forEach(s=>{
     const el=document.getElementById('loCount-'+s);
     if(el) el.textContent = s==='all'?allC:s==='pending'?pendC:s==='preparing'?prepC:readyC;
@@ -4741,7 +4852,14 @@ function renderLiveOrders(){
   // Update sidebar badge
   const badge=document.getElementById('owNewBadge');
   if(badge){badge.style.display=pendC>0?'inline':'none';badge.textContent=pendC;}
-  let orders=cachedOrders;
+  // Period filter — default Today
+  const period=document.getElementById('loPeriod')?.value||'today';
+  const now=Date.now(),d=new Date();
+  let fromTs=0;
+  if(period==='today') fromTs=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+  else if(period==='week') fromTs=now-(7*86400000);
+
+  let orders=fromTs?cachedOrders.filter(o=>(o.ts||0)>=fromTs):[...cachedOrders];
   if(f!=='all') orders=orders.filter(o=>o.status===f);
   const con=document.getElementById('liveOrdersContainer');
   if(!orders.length){con.innerHTML=`<div style="text-align:center;padding:60px;color:var(--s-muted)"><div style="font-size:48px;margin-bottom:14px">📭</div><div style="font-size:16px">No ${f==='all'?'':f} orders</div></div>`;return;}
@@ -4755,10 +4873,10 @@ function renderLiveOrders(){
       <div class="loc-body">
         ${o.items?.map(i=>`<div class="loc-item-row">
               <div>
-                <span>${i.emoji||''} ${i.name}${i.size?` <b style="background:var(--s-gold);color:#000;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:800">${i.size}</b>`:''} ×${i.qty}</span>
+                <span style="font-size:16px;font-weight:600">${i.emoji||''} ${i.name}${i.size?` <b style="background:var(--s-gold);color:#000;padding:2px 8px;border-radius:4px;font-size:13px;font-weight:800">${i.size}</b>`:''} <b style="color:var(--s-gold);font-size:18px">×${i.qty}</b></span>
                 ${i.comment?`<div style="margin-top:6px;padding:5px 10px;background:rgba(34,197,94,.15);border-left:3px solid #22c55e;border-radius:0 4px 4px 0;font-size:13px;color:#22c55e;font-weight:500;">💬 ${i.comment}</div>`:''}
               </div>
-              <span style="color:var(--s-gold);font-weight:600">${fmtK(i.price*i.qty)}</span>
+              <span style="color:var(--s-gold);font-weight:700;font-size:16px">${fmtK(i.price*i.qty)}</span>
             </div>`).join('')||''}
       </div>
       <div class="loc-footer">
@@ -5099,8 +5217,44 @@ async function printBill(sessKey){
   setTimeout(()=>{ window.focus(); },300);
 }
 
+function ohResetFilter(){
+  ['ohPeriod','ohStatus','ohSearch'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=id==='ohPeriod'?'month':'';
+  });
+  renderHistory();
+}
+
 function renderHistory(){
-  document.getElementById('ow-histtbl').innerHTML=cachedOrders.map(o=>{
+  // Apply filters
+  const period=document.getElementById('ohPeriod')?.value||'all';
+  const status=document.getElementById('ohStatus')?.value||'';
+  const search=(document.getElementById('ohSearch')?.value||'').toLowerCase().trim();
+
+  const now=Date.now(); const d=new Date();
+  let fromTs=0;
+  if(period==='today'){fromTs=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();}
+  else if(period==='week'){fromTs=now-(7*86400000);}
+  else if(period==='month'){fromTs=new Date(d.getFullYear(),d.getMonth(),1).getTime();}
+  else if(period==='3month'){fromTs=now-(90*86400000);}
+
+  let filtered=cachedOrders.filter(o=>{
+    if(fromTs&&(o.ts||0)<fromTs) return false;
+    if(status&&o.status!==status) return false;
+    if(search&&!(
+      (o.id||'').toLowerCase().includes(search)||
+      (o.tNum||'').toString().includes(search)||
+      (o.items||[]).some(i=>i.name.toLowerCase().includes(search))
+    )) return false;
+    return true;
+  });
+
+  // Summary pill
+  const total=filtered.reduce((s,o)=>s+(o.total||0),0);
+  const summary=document.getElementById('ohSummary');
+  if(summary) summary.textContent=filtered.length+' orders · '+fmtK(total);
+
+  document.getElementById('ow-histtbl').innerHTML=filtered.length?filtered.map(o=>{
     const earn=Math.round((o.total||0)*(1-((o.comm===0?0:(o.comm||0))/100)));
     return`<tr><td style="font-size:11px"><b>${o.id||''}</b>${o.edited?'<span style="color:var(--s-orange);font-size:9px;margin-left:4px">edited</span>':''}</td><td>T${o.tNum||'?'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.items?.map(i=>i.emoji+''+i.name).join(', ')||''}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(earn)}</td><td style="color:var(--s-muted);font-size:11px">${o.date||''}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('')||nd(8);
