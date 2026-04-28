@@ -56,7 +56,7 @@ function loadQRCode(cb){
   --shadow:0 4px 20px rgba(0,0,0,.15);--shadow-lg:0 12px 48px rgba(0,0,0,.22);--shadow-xl:0 24px 80px rgba(0,0,0,.3);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:var(--fb);background:var(--s-bg);color:var(--s-text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;touch-action:pan-x pan-y;font-size:15px;}
+body{margin:0;padding:0;font-family:var(--fb);background:var(--s-bg);color:var(--s-text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;touch-action:pan-x pan-y;font-size:15px;}
 /* Prevent pinch zoom everywhere */
 #pg-customer{touch-action:pan-x pan-y;-ms-touch-action:pan-x pan-y;}
 button,input,select,textarea{font-family:var(--fb);}
@@ -1115,7 +1115,8 @@ button,input,select,textarea{font-family:var(--fb);}
 /* ═══ PAGES ═══ */
 .page{display:none!important;}
 .page.on{display:block!important;}
-#pg-land.on,#pg-owner-login.on,#pg-sa-login.on,#pg-ow.on,#pg-sa.on{display:flex!important;}
+#pg-land.on,#pg-owner-login.on,#pg-sa-login.on{display:flex!important;}
+#pg-ow.on,#pg-sa.on{display:block!important;width:100%;min-height:100vh;}
 #pg-customer.on{display:flex!important;flex-direction:column;min-height:100vh;}
 
 /* ═══ ANIMATIONS ═══ */
@@ -1187,7 +1188,7 @@ select.fi{cursor:pointer;}
 .expiry-banner.show{display:block;}
 
 /* ═══ STAFF SHELL ═══ */
-.staff-wrap{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+.staff-wrap{display:grid;grid-template-columns:220px 1fr;min-height:100vh;width:100%;}
 .sb{background:var(--s-surf);border-right:1px solid var(--s-border);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
 .sb::-webkit-scrollbar{width:0;}
 .sb-brand{padding:20px;border-bottom:1px solid var(--s-border);}
@@ -1704,6 +1705,79 @@ html,body{
 </style>
 </head>
 <body>
+<!-- DEBUG PANEL - owner/SA only, hidden from customers -->
+<div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:10px;height:10px;border-radius:50%;background:rgba(200,151,58,.5);cursor:pointer;display:none;" title="Debug"></div>
+<div id="debugPanel" style="display:none;position:fixed;bottom:20px;left:10px;z-index:99999;background:rgba(0,0,0,.95);color:#0f0;font-family:monospace;font-size:11px;padding:12px;border:1px solid #333;max-width:340px;border-radius:6px;max-height:60vh;overflow-y:auto;">
+  <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+    <span style="color:#ffd700;font-weight:bold">⚙ EATLAOS DEBUG</span>
+    <span onclick="toggleDebug()" style="cursor:pointer;color:#888">✕</span>
+  </div>
+  <div id="dbgLog" style="display:flex;flex-direction:column;gap:3px"></div>
+  <div style="margin-top:8px;border-top:1px solid #333;padding-top:8px">
+    <button onclick="dbgClear()" style="background:#333;border:none;color:#888;padding:2px 8px;font-size:10px;cursor:pointer;border-radius:3px">Clear</button>
+    <button onclick="dbgCopyLog()" style="background:#333;border:none;color:#888;padding:2px 8px;font-size:10px;cursor:pointer;border-radius:3px;margin-left:4px">Copy</button>
+  </div>
+</div>
+<script>
+var _dbgLogs=[];
+function dbg(msg,type){
+  var color=type==='err'?'#f66':type==='warn'?'#fa0':'#8f8';
+  var ts=new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var entry={ts:ts,msg:msg,color:color};
+  _dbgLogs.push(entry);
+  var log=document.getElementById('dbgLog');
+  if(log){
+    var el=document.createElement('div');
+    el.style.color=color;
+    el.style.borderBottom='1px solid #111';
+    el.style.paddingBottom='2px';
+    el.textContent=ts+' '+msg;
+    log.appendChild(el);
+    log.scrollTop=log.scrollHeight;
+  }
+}
+function toggleDebug(){
+  var p=document.getElementById('debugPanel');
+  if(p) p.style.display=p.style.display==='none'?'block':'none';
+}
+function dbgClear(){
+  _dbgLogs=[];
+  var log=document.getElementById('dbgLog');
+  if(log) log.innerHTML='';
+}
+function dbgCopyLog(){
+  var txt=_dbgLogs.map(function(l){return l.ts+' '+l.msg;}).join('\n');
+  navigator.clipboard&&navigator.clipboard.writeText(txt);
+}
+// Show debug btn on owner/SA pages only
+function showDebugBtn(){
+  var btn=document.getElementById('debugBtn');
+  if(btn) btn.style.display='block';
+}
+function hideDebugBtn(){
+  var btn=document.getElementById('debugBtn');
+  if(btn) btn.style.display='none';
+  var panel=document.getElementById('debugPanel');
+  if(panel) panel.style.display='none';
+}
+// Capture JS errors
+window.onerror=function(msg,src,line,col){
+  dbg('ERROR: '+msg+' (L'+line+')','err');
+  return false;
+};
+window.onunhandledrejection=function(e){
+  dbg('PROMISE: '+(e.reason?.message||e.reason||'rejected'),'err');
+};
+dbg('Page loaded');
+// Show debug dot on initial load (login/landing pages)
+setTimeout(function(){
+  var btn=document.getElementById('debugBtn');
+  var pg=document.querySelector('.page.on');
+  var adminIds=['pg-ow','pg-sa','pg-sa-login','pg-owner-login','pg-land'];
+  if(btn&&pg&&adminIds.indexOf(pg.id)>=0) btn.style.display='block';
+},500);
+</script>
+
 
 <!-- LOADING -->
 <div id="loadingScreen">
@@ -2121,9 +2195,10 @@ setTimeout(function(){
         <div class="c-hero-sub" id="cHeroSub">Browse our menu and order directly from your table</div>
         <div class="c-hero-meta">
           <div><div class="c-meta-val" id="cMenuCount">—</div><div class="c-meta-lbl" data-i18n="items">Items</div></div>
+          <div><div class="c-meta-val" id="cPeopleCount">—</div><div class="c-meta-lbl" data-i18n="guests">Guests</div></div>
           <div><div class="c-meta-val" id="cPrepTime">—</div><div class="c-meta-lbl" data-i18n="min_prep">Min</div></div>
-          <div><div class="c-meta-val" id="cSessLeft">—</div><div class="c-meta-lbl" data-i18n="session">Session</div></div>
-          <div><div class="c-meta-val" id="cGuestCount" style="color:var(--c-gold2)">—</div><div class="c-meta-lbl">At Table</div></div>
+          
+          <div><div class="c-meta-val" id="cGuestCount" style="color:var(--c-gold2)">—</div><div class="c-meta-lbl" data-i18n="ordered">Ordered</div></div>
         </div>
         <!-- Session status bar -->
         <div class="c-sess-bar" id="cSessBar" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(184,130,30,.1);border:1px solid rgba(184,130,30,.2);border-radius:6px;font-size:13px;">
@@ -2516,7 +2591,7 @@ let db = null; // set after SDK loads for admin
 // ═══════════════════════════════════════════════════════════════
 const T = {
   en:{
-    menu:'Menu',my_orders:'My Orders',items:'Items',min_prep:'Min',session:'Session',
+    menu:'Menu',my_orders:'My Orders',items:'Items',guests:'Guests',ordered:'Ordered',min_prep:'Min',session:'Session',
     view_cart:'View Cart',your_order:'Your Order',total:'Total',
     send_kitchen:'Send to Kitchen →',add_to_cart:'Add to Cart →',close:'Close',
     empty_cart:'Cart is empty',start_order:'Browse menu to start ordering',
@@ -2531,7 +2606,7 @@ const T = {
     add_more:'+ Order More Items',view_bill:'View My Bill'
   },
   lo:{
-    menu:'ເມນູ',my_orders:'ອໍເດີຂອງຂ້ອຍ',items:'ລາຍການ',min_prep:'ນາທີ',session:'ເຊດຊັນ',
+    menu:'ເມນູ',my_orders:'ອໍເດີຂອງຂ້ອຍ',items:'ລາຍການ',guests:'ແຂກ',ordered:'ສັ່ງແລ້ວ',min_prep:'ນາທີ',session:'ເຊດຊັນ',
     view_cart:'ເບິ່ງກະຕ່າ',your_order:'ອໍເດີຂອງທ່ານ',total:'ທັງໝົດ',
     send_kitchen:'ສົ່ງໄປຫ້ອງຄົວ →',add_to_cart:'ເພີ່ມໃສ່ກະຕ່າ →',close:'ປິດ',
     empty_cart:'ກະຕ່າຍັງຫວ່າງ',start_order:'ເບິ່ງເມນູເພື່ອເລີ່ມສັ່ງ',
@@ -2546,7 +2621,7 @@ const T = {
     add_more:'+ ສັ່ງເພີ່ມ',view_bill:'ເບິ່ງໃບເກັບເງິນ'
   },
   th:{
-    menu:'เมนู',my_orders:'ออร์เดอร์ของฉัน',items:'รายการ',min_prep:'นาที',session:'เซสชัน',
+    menu:'เมนู',my_orders:'ออร์เดอร์ของฉัน',items:'รายการ',guests:'แขก',ordered:'สั่งแล้ว',min_prep:'นาที',session:'เซสชัน',
     view_cart:'ดูตะกร้า',your_order:'ออร์เดอร์ของคุณ',total:'ทั้งหมด',
     send_kitchen:'ส่งไปครัว →',add_to_cart:'เพิ่มในตะกร้า →',close:'ปิด',
     empty_cart:'ตะกร้าว่างเปล่า',start_order:'เลือกเมนูเพื่อสั่งอาหาร',
@@ -2561,7 +2636,7 @@ const T = {
     add_more:'+ สั่งเพิ่ม',view_bill:'ดูบิลของฉัน'
   },
   zh:{
-    menu:'菜单',my_orders:'我的订单',items:'项目',min_prep:'分钟',session:'会话',
+    menu:'菜单',my_orders:'我的订单',items:'项目',guests:'宾客',ordered:'已点',min_prep:'分钟',session:'会话',
     view_cart:'查看购物车',your_order:'您的订单',total:'合计',
     send_kitchen:'发送到厨房 →',add_to_cart:'加入购物车 →',close:'关闭',
     empty_cart:'购物车是空的',start_order:'浏览菜单开始点餐',
@@ -2576,7 +2651,7 @@ const T = {
     add_more:'+ 继续点餐',view_bill:'查看账单'
   },
   ko:{
-    menu:'메뉴',my_orders:'내 주문',items:'항목',min_prep:'분',session:'세션',
+    menu:'메뉴',my_orders:'내 주문',items:'항목',guests:'손님',ordered:'주문수',min_prep:'분',session:'세션',
     view_cart:'장바구니 보기',your_order:'내 주문',total:'합계',
     send_kitchen:'주방으로 보내기 →',add_to_cart:'장바구니에 추가 →',close:'닫기',
     empty_cart:'장바구니가 비어 있습니다',start_order:'메뉴를 탐색하여 주문하세요',
@@ -3389,6 +3464,11 @@ async function init(){
   try {
     const p=new URLSearchParams(window.location.search);
     const isCustomer=p.get('qr')==='1';
+    // INSTANT: show login page immediately, no waiting
+    if(!isCustomer){
+      showPage('pg-land');
+      hideLoading();
+    }
     if(isCustomer){
       // CUSTOMER PATH: fast! Only load restaurant+session, skip CFG/seed
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
@@ -3428,8 +3508,11 @@ async function init(){
       }catch(e){localStorage.removeItem('el_session');}
     }
     // No session — load Firebase then show login
+    dbg('No session — loading Firebase');
     await loadFirebaseSDK();
+    dbg('Firebase SDK loaded');
     await loadCFG();
+    dbg('Config loaded');
     seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
     autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
@@ -3682,14 +3765,29 @@ async function seedFirebaseIfEmpty(){
 // AUTH
 // ═══════════════════════════════════════════════════════════════
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.remove('on');
+    p.style.display='none';
+  });
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('on');
+    // Use flex for pages that need it, block for others
+    const flexPages=['pg-land','pg-owner-login','pg-sa-login','pg-ow','pg-sa','pg-customer'];
+    el.style.display=flexPages.includes(id)?'flex':'block';
+  }
+  // Debug btn: visible on all admin pages, hidden on QR customer page
+  var btn=document.getElementById('debugBtn');
+  if(btn) btn.style.display=id==='pg-customer'?'none':'block';
+  var panel=document.getElementById('debugPanel');
+  if(panel&&id==='pg-customer') panel.style.display='none';
 }
 
 async function doOwnerLogin(){
   const u=document.getElementById('owU').value.trim();
   const p=document.getElementById('owP').value;
   document.getElementById('owErr').textContent='';
+  if(typeof dbg==='function') dbg('Owner login attempt: '+u);
   if(!u||!p){document.getElementById('owErr').textContent='Enter username and password';return;}
   document.getElementById('owErr').textContent='Signing in...';
   // Load Firebase SDK for real-time features
@@ -3697,12 +3795,15 @@ async function doOwnerLogin(){
   startConnectionMonitor();
   document.getElementById('owErr').textContent='';
   // Find restaurant in Firebase
+  if(typeof dbg==='function') dbg('Loading Firebase SDK...');
   const restos=await fbGet('restaurants');
+  if(typeof dbg==='function') dbg('Restos loaded: '+(restos?Object.keys(restos).length:0)+' found');
   if(!restos){document.getElementById('owErr').textContent='No restaurants found';return;}
   let found=null;
   Object.entries(restos).forEach(([k,v])=>{
     if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
   });
+  if(typeof dbg==='function') dbg(found?'✅ Match found: '+found.name:'❌ No match');
   if(!found){document.getElementById('owErr').textContent='Incorrect username or password';return;}
   // Check subscription expiry
   if(found.expiresAt && Date.now()>found.expiresAt){
@@ -3741,7 +3842,9 @@ async function doSALogin(){
   // Hardcoded credentials — not stored in Firebase
   const SA_USER='superadmin@SouB';
   const SA_PASS='6699@BillS';
+  if(typeof dbg==='function') dbg('SA checking: '+u);
   if(u===SA_USER&&p===SA_PASS){
+    if(typeof dbg==='function') dbg('✅ SA login success');
     me={name:'Super Admin',role:'superadmin'};
     localStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
     showPage('pg-sa');
@@ -3751,6 +3854,7 @@ async function doSALogin(){
     // Auto-migrate all restaurants on SA login
     migrateAllRestaurants().catch(e=>console.log('Migration:',e));
   } else {
+    if(typeof dbg==='function') dbg('❌ SA login failed - wrong credentials','err');
     document.getElementById('saErr').textContent='Access denied.';
     setTimeout(()=>document.getElementById('saErr').textContent='',3000);
   }
@@ -4651,8 +4755,8 @@ function renderLiveOrders(){
       <div class="loc-body">
         ${o.items?.map(i=>`<div class="loc-item-row">
               <div>
-                <span>${i.emoji||''} ${i.name}${i.size?` <b style="background:var(--s-gold);color:#000;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700">${i.size}</b>`:''} ×${i.qty}</span>
-                ${i.comment?`<div style="font-size:11px;color:var(--s-muted);font-style:italic;margin-top:2px">"${i.comment}"</div>`:''}
+                <span>${i.emoji||''} ${i.name}${i.size?` <b style="background:var(--s-gold);color:#000;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:800">${i.size}</b>`:''} ×${i.qty}</span>
+                ${i.comment?`<div style="margin-top:6px;padding:5px 10px;background:rgba(34,197,94,.15);border-left:3px solid #22c55e;border-radius:0 4px 4px 0;font-size:13px;color:#22c55e;font-weight:500;">💬 ${i.comment}</div>`:''}
               </div>
               <span style="color:var(--s-gold);font-weight:600">${fmtK(i.price*i.qty)}</span>
             </div>`).join('')||''}
@@ -4793,7 +4897,7 @@ async function renderBills(){
             ${(o.items||[]).map(i=>`
               <div style="display:flex;align-items:center;padding:7px 20px;gap:10px">
                 <span style="font-size:16px;width:22px">${i.emoji||'🍽️'}</span>
-                <span style="flex:1;font-size:13px">${i.name}</span>
+                <span style="flex:1;font-size:13px">${i.name}${i.size?` <span style="background:var(--s-gold);color:#000;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700">${i.size}</span>`:''}</span>
                 <input type="number" style="width:48px;padding:4px 6px;text-align:center;background:var(--s-surf2);border:1px solid var(--s-border);color:var(--s-text);border-radius:4px;font-size:12px;font-family:var(--ff);font-weight:700" value="${i.qty}" min="0"
                   onchange="editBillItem('${o.fbKey}','${i.id||i.name}',this.value,'${o.sessId}')">
                 <span style="min-width:80px;text-align:right;font-family:var(--ff);font-size:13px;font-weight:700">${fmtK(i.price*i.qty)}</span>
@@ -4951,7 +5055,8 @@ async function printBill(sessKey){
     <div class="item">
       <span class="item-em">${i.emoji||'🍽️'}</span>
       <div class="item-info">
-        <div class="item-name">${i.name}</div>
+        <div class="item-name">${i.name}${i.size?' <span style="background:#000;color:#fff;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700">'+i.size+'</span>':''}</div>
+        ${i.comment?'<div style="font-size:9px;color:#666;font-style:italic">"'+i.comment+'"</div>':''}
         <div class="item-unit">₭${Math.round(i.price).toLocaleString()} each</div>
       </div>
       <span class="item-qty">×${i.qty}</span>
@@ -4978,9 +5083,17 @@ async function printBill(sessKey){
     <div class="ft-line"></div>
     <div class="ft-site">eatlaos.com &nbsp;·&nbsp; Powered by Bill</div>
   </div>
-  <script>window.onload=()=>setTimeout(()=>window.print(),600);<\/script>
+  <script>window.onload=()=>setTimeout(()=>{window.print();},600);window.onafterprint=()=>setTimeout(()=>window.close(),300);<\/script>
   </body></html>`);
   w.document.close();
+  // Return focus to main window after print popup opens
+  // Small delay to let popup initialize then refocus main
+  setTimeout(()=>{
+    if(w && !w.closed) w.focus();
+    window.focus();
+    // Re-render bills to unfreeze UI
+    renderBills().catch(()=>{});
+  },800);
 }
 
 function renderHistory(){
@@ -5497,6 +5610,9 @@ function openOwItemModal(){
   document.getElementById('mISizeList').innerHTML='';
   document.getElementById('mIcomment').value='';
   document.getElementById('mIcommentHint').value='';
+  // Clear image on new item
+  const imgD=document.getElementById('mIimgData');if(imgD) imgD.value='';
+  const imgP=document.getElementById('mIimgPreview');if(imgP) imgP.innerHTML='';
   document.getElementById('mIstatus').value='active';
   const zhEl=document.getElementById('mIdescZh');if(zhEl) zhEl.value='';
   const koEl=document.getElementById('mIdescKo');if(koEl) koEl.value='';
@@ -5515,14 +5631,26 @@ async function editOwItem(idx){
   document.getElementById('mIdescLo').value=item.dLo||'';document.getElementById('mIdescTh').value=item.dTh||'';
   document.getElementById('mIprice').value=item.price;document.getElementById('mIemoji').value=item.emoji;
   document.getElementById('mIbadge').value=item.badge||'';document.getElementById('mIstatus').value=item.status;
+  // Load existing image — CRITICAL: preserve photo on edit
+  const imgData=document.getElementById('mIimgData');
+  if(imgData) imgData.value=item.img||'';
+  // Show image preview if exists
+  const imgPreview=document.getElementById('mIimgPreview');
+  if(imgPreview){
+    if(item.img){
+      imgPreview.innerHTML=`<img src="${item.img}" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-top:6px;">`;
+    } else {
+      imgPreview.innerHTML='';
+    }
+  }
   // Populate sizes
   document.getElementById('mISizeList').innerHTML='';
   (item.sizes||[]).forEach(s=>addSizeRow(s.label,s.price));
   // Populate comment
   document.getElementById('mIcomment').value=item.allowComment?'1':'';
   document.getElementById('mIcommentHint').value=item.commentHint||'';
-  popCatSel(item.cat);openModal('mOwItem')
-  setTimeout(()=>initEmojiPickers(),50);;
+  popCatSel(item.cat);openModal('mOwItem');
+  setTimeout(()=>initEmojiPickers(),50);
 }
 async function popCatSel(sel=''){
   const r=await fbGet('restaurants/'+restoId);
@@ -5542,7 +5670,10 @@ sizeRows.forEach(row=>{
   const prc=parseInt(row.querySelector('.size-prc')?.value)||0;
   if(lbl) sizes.push({label:lbl,price:prc});
 });
-const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),dZh:document.getElementById('mIdescZh')?.value.trim()||'',dKo:document.getElementById('mIdescKo')?.value.trim()||'',emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:document.getElementById('mIimgData').value||'',badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,sizes:sizes,allowComment:document.getElementById('mIcomment').value==='1',commentHint:document.getElementById('mIcommentHint').value.trim(),id:'m'+Date.now()};
+// Get existing item to preserve ID and image if not changed
+  const existingImg=editItemId!==null?(await fbGet('restaurants/'+restoId+''))?.menu?.[editItemId]?.img||'':'';
+  const imgValue=document.getElementById('mIimgData').value||existingImg||'';
+  const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),dZh:document.getElementById('mIdescZh')?.value.trim()||'',dKo:document.getElementById('mIdescKo')?.value.trim()||'',emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:imgValue,badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,sizes:sizes,allowComment:document.getElementById('mIcomment').value==='1',commentHint:document.getElementById('mIcommentHint').value.trim(),id:editItemId!==null?(await fbGet('restaurants/'+restoId))?.menu?.[editItemId]?.id||('m'+Date.now()):'m'+Date.now()};
   const menu=[...(r.menu||[])];
   if(editItemId!==null) menu[editItemId]={...menu[editItemId],...data};
   else menu.push(data);
@@ -6233,8 +6364,16 @@ async function startCustomerSession(rId,tId,sessId){
   // Set session state
   qrSess={id:sessId,rId,tId,tNum:sess?.tNum||tId,exp:sess?.exp||(Date.now()+7200000),rName:r.name};
   cart=[];
+  // Increment scan count — track how many people scanned this QR
+  if(sessId){
+    const currentCount=(sess?.scanCount||0)+1;
+    fbUpdate('sessions/'+sessId,{scanCount:currentCount}).catch(()=>{});
+    qrSess.scanCount=currentCount;
+  }
   // Show page IMMEDIATELY — don't wait for anything else
   showPage('pg-customer');
+  // Re-apply translations to customer page elements
+  if(lang&&lang!=='en') setLang(lang);
   // Setup UI synchronously — instant render
   setupCustomerUI(r,sess);
   // Update browser URL — keep QR params so URL still works when shared
@@ -6284,6 +6423,7 @@ async function startCustomerSession(rId,tId,sessId){
       if(el) el.dataset.stale='1';
       // If orders tab is currently open — update it instantly
       if(currentTab==='orders') renderCustOrders();
+      updateGuestCounter();
       // Update order count badge
       updateOrderBadge(orders.length);
     });
@@ -6319,8 +6459,12 @@ function setupCustomerUI(r,sess){
   document.getElementById('cHeroTitle').innerHTML=`<em>${r.name}</em>`;
   document.getElementById('cHeroSub').textContent=r.cuisine||'';
   document.getElementById('cMenuCount').textContent=(r.menu||[]).filter(m=>m.status==='active').length;
+  // Update people count (how many scanned this QR)
+  const peopleEl=document.getElementById('cPeopleCount');
+  if(peopleEl) peopleEl.textContent=sess?.scanCount||1;
+  updateGuestCounter();
   document.getElementById('cPrepTime').textContent=r.prep||15;
-  document.getElementById('cSessLeft').textContent=(sess?.duration||2)+'h';
+  
   custVatRate=r.vat||0;
   // Apply saved language preference
   const savedLang=localStorage.getItem('el_lang')||'en';
@@ -6353,6 +6497,7 @@ function startSessTimer(){
     const ordersView=document.getElementById('cOrdersView');
     if(ordersView&&ordersView.style.display!=='none'&&customerCachedOrders.length>0){
       renderCustOrders();
+      updateGuestCounter();
     }
     // Update order badge count in tab
     updateOrderBadge(customerCachedOrders.length);
@@ -6436,10 +6581,19 @@ function renderMenu(cat,r){
         <div class="c-item-cat">${item.cat||''}</div>
         <div class="c-item-name">${item.name}</div>
         <div class="c-item-desc">${itemDesc(item)}</div>
+        ${item.sizes&&item.sizes.length>0?`
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px">
+          ${item.sizes.map(s=>`
+            <span style="background:var(--c-surf3);border:1px solid var(--c-border);
+              color:var(--c-muted);border-radius:4px;padding:2px 7px;
+              font-size:10px;font-weight:600;letter-spacing:.3px;">
+              ${s.label} ${fmtK(s.price)}
+            </span>`).join('')}
+        </div>`:''}
         <div class="c-item-foot">
           <div style="display:flex;flex-direction:column;gap:2px">
             <div class="c-item-price" style="${isSold?'text-decoration:line-through;opacity:.5':''}">
-              ${fmtK(item.price)}
+              ${item.sizes&&item.sizes.length>0?'from '+fmtK(Math.min(...item.sizes.map(s=>s.price))):fmtK(item.price)}
             </div>
             ${isSold?`<div style="font-size:9px;letter-spacing:1px;color:var(--c-muted);text-transform:uppercase">${tr('sold_out')}</div>`:''}
           </div>
@@ -6610,11 +6764,12 @@ function toggleCart(){
 
 // PLACE ORDER → Firebase
 function updateGuestCounter(){
+  // Count total items ordered this session
   const myOrders=(typeof customerCachedOrders!=='undefined'?customerCachedOrders:[])
     .filter(o=>o.sessId===qrSess?.id);
-  const orderCount=myOrders.length;
+  const totalItems=myOrders.reduce((s,o)=>s+(o.items||[]).reduce((a,i)=>a+i.qty,0),0);
   const el=document.getElementById('cGuestCount');
-  if(el) el.textContent=orderCount>0?orderCount+'↑':'—';
+  if(el) el.textContent=totalItems>0?totalItems:'0';
 }
 function updateSessBar(){
   const myOrders=(typeof customerCachedOrders!=='undefined'?customerCachedOrders:[])
@@ -6644,7 +6799,7 @@ async function placeOrder(){
       id:ordId, sessId:qrSess.id,
       rId:qrSess.rId, rName:qrSess.rName||r?.name||'',
       tId:qrSess.tId, tNum:qrSess.tNum,
-      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,size:i.size||'',comment:i.comment||''}))),
+      items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,size:i.size||'',comment:i.comment||''})),
       total:tot, comm:Number(r?.comm??0), // stored as number, 0% stays 0
       status:'pending', ts:Date.now(),
       time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
@@ -6739,7 +6894,8 @@ function renderCustOrders(){
   // All items flattened for "my full bill"
   const allItems={};
   orders.forEach(o=>o.items?.forEach(i=>{
-    const key=i.name;
+    // Group by name+size so Pizza (S) and Pizza (L) stay separate
+    const key=i.name+(i.size?'|'+i.size:'');
     if(allItems[key]) allItems[key].qty+=i.qty;
     else allItems[key]={...i,qty:i.qty};
   }));
@@ -6759,7 +6915,7 @@ function renderCustOrders(){
     <div style="padding:12px 16px">
       ${billItems.map(i=>`
         <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed var(--c-border)">
-          <span style="font-size:13px;color:var(--c-text)">${i.emoji||''} ${i.name} <span style="color:var(--c-muted)">×${i.qty}</span></span>
+          <span style="font-size:13px;color:var(--c-text)">${i.emoji||''} ${i.name}${i.size?` <span style="background:var(--c-gold);color:#000;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700">${i.size}</span>`:''} <span style="color:var(--c-muted)">×${i.qty}</span></span>
           <span style="font-family:var(--ff);font-size:14px;font-weight:700;color:var(--c-text)">${fmtK(i.price*i.qty)}</span>
         </div>`).join('')}
       <div style="display:flex;justify-content:space-between;padding-top:10px;font-family:var(--ff);font-size:18px;font-weight:900;color:var(--c-text)">
@@ -6776,7 +6932,13 @@ function renderCustOrders(){
         <span class="spill sp-${o.status}">${tr('status_'+o.status)||o.status}</span>
       </div>
       <div class="c-oc-b">
-        ${o.items?.map(i=>`<div class="c-oc-row"><span>${i.emoji||''} ${i.name} ×${i.qty}</span><span style="font-weight:700">${fmtK(i.price*i.qty)}</span></div>`).join('')||''}
+        ${o.items?.map(i=>`<div class="c-oc-row">
+              <div>
+                <span>${i.emoji||''} ${i.name}${i.size?` <span style="background:var(--c-gold);color:#000;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700">${i.size}</span>`:''} ×${i.qty}</span>
+                ${i.comment?`<div style="font-size:11px;color:var(--c-muted);font-style:italic">"${i.comment}"</div>`:''}
+              </div>
+              <span style="font-weight:700">${fmtK(i.price*i.qty)}</span>
+            </div>`).join('')||''}
         <div class="c-oc-total"><span>${tr('total')}</span><span style="color:var(--c-gold)">${fmtK(o.total)}</span></div>
       </div>
     </div>
