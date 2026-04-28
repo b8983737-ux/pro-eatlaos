@@ -4980,7 +4980,14 @@ async function printBill(sessKey){
   const mergedItems=Object.values(allItems);
   const now=new Date();
   const orderId='BILL-'+now.getFullYear()+(now.getMonth()+1).toString().padStart(2,'0')+now.getDate()+''+now.getHours().toString().padStart(2,'0')+now.getMinutes().toString().padStart(2,'0');
-  const w=window.open('','_blank');
+  // Use iframe for printing to avoid freezing parent window
+  let existingFrame=document.getElementById('_printFrame');
+  if(existingFrame) existingFrame.remove();
+  const frame=document.createElement('iframe');
+  frame.id='_printFrame';
+  frame.style.cssText='position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
+  document.body.appendChild(frame);
+  const w=frame.contentWindow;
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bill · Table ${sess?.tNum}</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -5083,17 +5090,13 @@ async function printBill(sessKey){
     <div class="ft-line"></div>
     <div class="ft-site">eatlaos.com &nbsp;·&nbsp; Powered by Bill</div>
   </div>
-  <script>window.onload=()=>setTimeout(()=>{window.print();},600);window.onafterprint=()=>setTimeout(()=>window.close(),300);<\/script>
+  <script>window.onload=()=>setTimeout(()=>{window.print();setTimeout(()=>{var f=window.frameElement;if(f)f.remove();},500);},400);<\/script>
   </body></html>`);
   w.document.close();
   // Return focus to main window after print popup opens
   // Small delay to let popup initialize then refocus main
-  setTimeout(()=>{
-    if(w && !w.closed) w.focus();
-    window.focus();
-    // Re-render bills to unfreeze UI
-    renderBills().catch(()=>{});
-  },800);
+  // Return focus to main window - don't re-render (it resets filters)
+  setTimeout(()=>{ window.focus(); },300);
 }
 
 function renderHistory(){
