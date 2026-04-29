@@ -4811,7 +4811,7 @@ function owRecentOrders(){
   const recent=filtered.slice(0,6);
   document.getElementById('ow-recent').innerHTML=recent.map(o=>
     `<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td>${o.items?.length||0}</td><td>${fmtK(o.total)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td><td>${mkSel(o.fbKey,o.status)}</td></tr>`
-  ).join('')||nd(7);
+  ).join(''):nd(7);
   // Top items using current filter
   renderTopItems(filtered,'owTopItemsList','owTopItemsLabel');
   const labels={today:'Today',week:'This Week',month:'This Month','3months':'Last 3 Months',all:'All Time'};
