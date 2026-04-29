@@ -6830,6 +6830,12 @@ function setupCustomerUI(r,sess){
   // Apply restaurant theme
   applyTheme(r.theme||'classic');
   renderCats(r);renderMenu('All',r);updateCart();
+  // NOW hide loading screen — page is fully ready, no flash possible
+  const _ls=document.getElementById('loadingScreen');
+  if(_ls){
+    _ls.style.transition='none'; // instant, no fade
+    _ls.style.display='none';
+  }
 }
 
 function startSessTimer(){
