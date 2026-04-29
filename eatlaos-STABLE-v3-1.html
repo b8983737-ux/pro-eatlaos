@@ -1897,7 +1897,7 @@ setTimeout(function(){
             <div class="chart-card"><div class="chart-h"><div class="chart-title">Revenue (₭)</div><div class="ctabs"><button class="ctab on" onclick="saChartSwitch('week',this)">Week</button><button class="ctab" onclick="saChartSwitch('month',this)">Month</button></div></div><div class="chart-wrap"><canvas id="saRC"></canvas></div></div>
             <div class="chart-card"><div class="chart-h"><div class="chart-title">Orders by Restaurant</div></div><div class="chart-wrap"><canvas id="saPC"></canvas></div></div>
           </div>
-          <div class="card"><div class="card-h"><div class="card-title">Recent Orders (Live)</div><button class="btn btn-sm" onclick="saP('orders',null)">View All</button></div><div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Restaurant</th><th>Total (₭)</th><th>Commission</th><th>Time</th><th>Status</th></tr></thead><tbody id="sa-recent"></tbody></table></div></div>
+          <div class="card"><div class="card-h"><div class="card-title">Recent Orders (Live)</div><button class="btn btn-sm" onclick="saP('orders',null)">View All</button></div><div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Restaurant</th><th>Total (₭)</th><th>VAT</th><th>Commission</th><th>Time</th><th>Status</th></tr></thead><tbody id="sa-recent"></tbody></table></div></div>
           <!-- TOP SELLING ITEMS (platform-wide) -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
             <div class="card">
@@ -2207,7 +2207,7 @@ setTimeout(function(){
               <button class="btn btn-sm" onclick="ohResetFilter()">↺ Reset</button>
               <div id="ohSummary" style="margin-left:auto;font-size:12px;color:var(--s-muted);padding:4px 0;align-self:center"></div>
             </div>
-            <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>Earn (₭)</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody id="ow-histtbl"></tbody></table></div></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>VAT</th><th>Earn (₭)</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody id="ow-histtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="ow-profile"><div class="card"><div class="card-h"><div class="card-title">Restaurant Profile</div></div><div id="ow-profilebody" style="padding:20px"></div></div></div>
       </div>
@@ -2376,7 +2376,11 @@ setTimeout(function(){
         </div>
       </div>
       <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
-      <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px"></div>
+      <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px">
+        <div id="mRvatHistory" style="margin-top:10px;display:none">
+          <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--s-muted);margin-bottom:6px">📋 VAT Change History</div>
+          <div id="mRvatHistoryList" style="max-height:120px;overflow-y:auto;font-size:11px"></div>
+        </div></div>
       <div class="fg">
         <label>Customer Menu Theme <span style="color:var(--s-muted);font-size:9px;font-weight:400;letter-spacing:0">— how your menu looks when customers scan QR</span></label>
         <input type="hidden" id="mRtheme" value="classic">
@@ -4311,7 +4315,7 @@ async function saOrders(){
 
   const saOrdHtml=filtered.map(o=>{
     const comm=Math.round((o.total||0)*((o.comm===0?0:(o.comm||0))/100));
-    return`<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td>${o.items?.length||0}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
+    return`<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td>${o.items?.length||0}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-muted);font-size:11px">${o.vatRate!==undefined?o.vatRate+'%':'—'}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('');
   document.getElementById('sa-ordtbl').innerHTML=saOrdHtml||nd(8);
 }
@@ -4604,12 +4608,17 @@ async function saveResto(){
   const newExpiry=calcExpiry(document.getElementById('mRexpireDur').value);
   const logoData=document.getElementById('mRlogoData').value;
   const vatVal=parseFloat(document.getElementById('mRvat').value);
+  const newVat=isNaN(vatVal)?0:Math.max(0,Math.min(50,vatVal));
+  // Track VAT changes for audit log
+  const prevVat=id?((await fbGet('restaurants/'+id+'/vat'))||0):0;
+  const vatChanged=!!id && prevVat!==newVat;
+  const editId=id;
   const data={
     name:document.getElementById('mRname').value.trim(),
     cuisine:document.getElementById('mRcuisine').value.trim(),
     user:document.getElementById('mRuser').value.trim(),
     comm:(v=>isNaN(v)?0:Math.max(0,Math.min(100,v)))(parseFloat(document.getElementById('mRcomm').value)),
-    vat:isNaN(vatVal)?0:Math.max(0,Math.min(50,vatVal)),
+    vat:newVat,
     emoji:document.getElementById('mRemoji').value.trim()||'🍽️',
     logo:logoData||'',
     addr:document.getElementById('mRaddr').value.trim(),
@@ -4663,6 +4672,19 @@ async function saveResto(){
       await fbPush('restaurants',data);
       await migrateAllRestaurants().catch(()=>{});
       notifyD('✓ Restaurant "'+data.name+'" created! Owner can now login with: '+data.user);
+    }
+    // Log VAT history if VAT changed on existing restaurant
+    if(vatChanged && editId){
+      const now=new Date();
+      const histEntry={
+        from:prevVat, to:newVat,
+        ts:Date.now(),
+        date:now.toLocaleDateString('en-GB'),
+        time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+        by:'superadmin'
+      };
+      const existing=await fbGet('restaurants/'+editId+'/vatHistory')||[];
+      await fbUpdate('restaurants/'+editId,{vatHistory:[...existing,histEntry]});
     }
     closeModal('mAddResto');
     loadAndRenderRestos();
@@ -5092,7 +5114,7 @@ async function printBill(sessKey){
   // Merge all items across orders
   const allItems={};
   sessOrders.forEach(o=>o.items?.forEach(i=>{
-    const k=i.name;
+    const k=i.name+(i.size?'|'+i.size:'');
     if(allItems[k]) allItems[k].qty+=i.qty;
     else allItems[k]={...i,qty:i.qty};
   }));
@@ -5257,7 +5279,7 @@ function renderHistory(){
 
   const histHtml=filtered.map(o=>{
     const earn=Math.round((o.total||0)*(1-((o.comm===0?0:(o.comm||0))/100)));
-    return`<tr><td style="font-size:11px"><b>${o.id||''}</b>${o.edited?'<span style="color:var(--s-orange);font-size:9px;margin-left:4px">edited</span>':''}</td><td>T${o.tNum||'?'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.items?.map(i=>i.emoji+''+i.name).join(', ')||''}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(earn)}</td><td style="color:var(--s-muted);font-size:11px">${o.date||''}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
+    return`<tr><td style="font-size:11px"><b>${o.id||''}</b>${o.edited?'<span style="color:var(--s-orange);font-size:9px;margin-left:4px">edited</span>':''}</td><td>T${o.tNum||'?'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.items?.map(i=>i.emoji+''+i.name).join(', ')||''}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-muted);font-size:11px">${o.vatRate!==undefined?o.vatRate+'%':'—'}</td><td style="color:var(--s-green)">${fmtK(earn)}</td><td style="color:var(--s-muted);font-size:11px">${o.date||''}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('');
   document.getElementById('ow-histtbl').innerHTML=histHtml||nd(8);
 }
@@ -6237,7 +6259,7 @@ async function owProfile(){
       <div style="padding:14px;background:var(--s-surf3);border:1px solid var(--s-border)">
         <div style="font-size:9px;color:var(--s-muted);margin-bottom:4px;letter-spacing:2px;text-transform:uppercase">VAT Rate</div>
         <div style="font-family:var(--ff);font-size:28px;font-weight:900;color:var(--s-blue)">${r.vat||0}%</div>
-        <div class="fg" style="margin-top:8px;margin-bottom:0"><label style="color:var(--s-muted)">Adjust VAT %</label><input class="fi" type="number" value="${r.vat||0}" id="opVAT" min="0" max="50" step="0.5" style="margin-top:4px"></div>
+        <div class="fg" style="margin-top:8px;margin-bottom:0"><label style="color:var(--s-muted);font-size:11px">⚙️ VAT rate is managed by platform admin</label></div>
       </div>
     </div>
     <div style="padding:16px;background:var(--s-surf3);border:1px solid var(--s-border);border-left:3px solid ${statusColor};margin-bottom:14px;border-radius:4px">
@@ -6262,14 +6284,13 @@ async function owProfile(){
     <button class="btn btn-gold" onclick="saveOwProfile()">Save Profile</button>`;
 }
 async function saveOwProfile(){
-  const vatV=parseFloat(document.getElementById('opVAT')?.value||'0');
+  // VAT is read-only for owners — only SA can change it
   await fbUpdate('restaurants/'+restoId,{
     name:document.getElementById('opN').value.trim(),
     cuisine:document.getElementById('opC').value.trim(),
     emoji:document.getElementById('opE').value||'🍽️',
     prep:parseInt(document.getElementById('opP').value)||15,
-    addr:document.getElementById('opA').value.trim(),
-    vat:isNaN(vatV)?0:Math.max(0,Math.min(50,vatV))
+    addr:document.getElementById('opA').value.trim()
   });
   notifyD('✓ Profile saved');
   owProfile();
@@ -6788,14 +6809,22 @@ function openDetail(itemId){
     const sizeOpts=document.getElementById('detSizeOpts');
     if(item.sizes&&item.sizes.length>0){
       sizesWrap.style.display='block';
+      // Multi-size qty rows — customer picks qty for each size
       sizeOpts.innerHTML=item.sizes.map((s,i)=>`
-        <button class="c-size-btn${i===0?' on':''}" onclick="selectSize(this,${i})"
-          data-price="${s.price}" data-label="${s.label}">
-          <span class="c-size-btn-lbl">${s.label}</span>
-          <span class="c-size-btn-price">${s.price?fmtK(s.price):''}</span>
-        </button>`).join('');
-      // Set initial price to first size
-      if(item.sizes[0].price) detItem._sizePrice=item.sizes[0].price;
+        <div class="c-size-row" id="szrow-${i}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+          <div>
+            <span style="font-size:15px;font-weight:700;color:var(--c-text)">${s.label}</span>
+            <span style="font-size:13px;color:var(--c-gold);margin-left:8px;font-weight:600">${s.price?fmtK(s.price):''}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <button onclick="szQty(${i},-1)" style="width:32px;height:32px;border-radius:50%;border:1.5px solid var(--c-border);background:var(--c-surf2);color:var(--c-text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+            <span id="sz-qty-${i}" style="font-size:16px;font-weight:700;min-width:20px;text-align:center">0</span>
+            <button onclick="szQty(${i},1)" style="width:32px;height:32px;border-radius:50%;background:var(--c-gold);border:none;color:#000;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+          </div>
+        </div>`).join('');
+      detItem._szQtys=item.sizes.map(()=>0);
+      detItem._szPrices=item.sizes.map(s=>s.price||item.price);
+      detItem._szLabels=item.sizes.map(s=>s.label);
       detItem._sizeLabel=item.sizes[0].label;
     } else {
       sizesWrap.style.display='none';
@@ -6820,17 +6849,21 @@ function openDetail(itemId){
   });
 }
 function selectSize(btn,idx){
-  document.querySelectorAll('.c-size-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  const price=parseInt(btn.dataset.price)||0;
-  const label=btn.dataset.label||'';
-  detItem._sizePrice=price;
-  detItem._sizeLabel=label;
-  // Update price display
-  const basePrice=detItem.price;
-  const finalPrice=price||basePrice;
-  document.getElementById('detPrice').textContent=fmtK(finalPrice);
-  updateDetRun();
+  // Legacy - kept for compatibility
+}
+
+function szQty(idx, delta){
+  if(!detItem._szQtys) return;
+  detItem._szQtys[idx]=Math.max(0,(detItem._szQtys[idx]||0)+delta);
+  const el=document.getElementById('sz-qty-'+idx);
+  if(el) el.textContent=detItem._szQtys[idx];
+  // Update price display to show total
+  const total=detItem._szQtys.reduce((s,q,i)=>s+q*(detItem._szPrices[i]||detItem.price),0);
+  const priceEl=document.getElementById('detPrice');
+  if(priceEl) priceEl.textContent=total>0?fmtK(total):'';
+  const runEl=document.getElementById('detRun');
+  const totalQty=detItem._szQtys.reduce((s,q)=>s+q,0);
+  if(runEl) runEl.textContent=totalQty>0?totalQty+' × selected':'';
 }
 function dq(d){detQty=Math.max(1,detQty+d);document.getElementById('detQty').textContent=detQty;updateDetRun();}
 function updateDetRun(){
@@ -6841,15 +6874,31 @@ function updateDetRun(){
 function addDetailToCart(){
   if(!detItem) return;
   if(detItem.badge==='sold'){notifyC('⊘ '+detItem.name+' — '+tr('sold_out'));return;}
-  const sizeLabel=detItem._sizeLabel||'';
-  const sizePrice=detItem._sizePrice||0;
   const comment=document.getElementById('detComment')?.value.trim()||'';
-  // Build cart item with size + comment
+  // Multi-size: add each size that has qty > 0
+  if(detItem._szQtys&&detItem._szQtys.some(q=>q>0)){
+    let added=0;
+    detItem._szQtys.forEach((qty,i)=>{
+      if(qty<=0) return;
+      const cartItem={...detItem,
+        price:detItem._szPrices[i]||detItem.price,
+        size:detItem._szLabels[i]||'',
+        comment:comment,
+        displayName:detItem.name+(detItem._szLabels[i]?' ('+detItem._szLabels[i]+')':'')
+      };
+      addToCart(cartItem,qty);
+      added+=qty;
+    });
+    notifyC(detItem.emoji+' '+detItem.name+' ×'+added+' added');
+    closeModal('mDetail');
+    return;
+  }
+  // No size item OR no sizes selected — add with single qty
   const cartItem={...detItem,
-    price:sizePrice||detItem.price,
-    size:sizeLabel,
+    price:detItem.price,
+    size:'',
     comment:comment,
-    displayName:detItem.name+(sizeLabel?' ('+sizeLabel+')':'')
+    displayName:detItem.name
   };
   addToCart(cartItem,detQty);
   closeModal('mDetail');
@@ -6964,7 +7013,8 @@ async function placeOrder(){
       rId:qrSess.rId, rName:qrSess.rName||r?.name||'',
       tId:qrSess.tId, tNum:qrSess.tNum,
       items:cart.map(i=>({id:i.id||'',name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,size:i.size||'',comment:i.comment||''})),
-      total:tot, comm:Number(r?.comm??0), // stored as number, 0% stays 0
+      total:tot,
+      vatRate:r?.vat||0, comm:Number(r?.comm??0), // stored as number, 0% stays 0
       status:'pending', ts:Date.now(),
       time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
       date:new Date().toLocaleDateString()
