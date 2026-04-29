@@ -6928,10 +6928,14 @@ function quickAdd(itemId){
   });
 }
 function addToCart(item,qty){
-  const ex=cart.find(c=>c.id===item.id||c.name===item.name);
+  // Group by name+size — XL and L are separate cart items
+  const ex=cart.find(c=>
+    (c.id===item.id||c.name===item.name) &&
+    (c.size||'')===(item.size||'')
+  );
   if(ex) ex.qty+=qty; else cart.push({...item,qty});
   updateCart();
-  notifyC(`${item.emoji||''} ${item.name} ×${qty} added`);
+  notifyC(`${item.emoji||''} ${item.name}${item.size?' ('+item.size+')':''} ×${qty} added`);
 }
 
 // Cart
