@@ -1682,6 +1682,15 @@ html,body{
   overscroll-behavior-y:contain;
   background:var(--c-bg);
 }
+/* Dark skeleton while theme loads */
+#pg-customer:not([data-theme]) #cMenuView,
+#pg-customer[data-theme=""] #cMenuView{
+  background:#1a1209;
+}
+#pg-customer:not([data-theme]) .c-menu,
+#pg-customer[data-theme=""] .c-menu{
+  background:#1a1209;
+}
 #cOrdersView{
   flex:1;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
@@ -1867,6 +1876,7 @@ setTimeout(function(){
         <button class="sb-item" onclick="saP('orders',this)"><span class="sb-ico">🧾</span>All Orders</button>
         <button class="sb-item" onclick="saP('sessions',this)"><span class="sb-ico">📱</span>Active Sessions</button>
         <div class="sb-sec">System</div>
+        <button class="sb-item" onclick="saP('requests',this)" id="sa-req-btn"><span class="sb-ico">🗑️</span>Delete Requests <span id="sa-req-badge" style="display:none;background:#e5484d;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px">0</span></button>
         <button class="sb-item" onclick="saP('settings',this)"><span class="sb-ico">⚙️</span>Platform Settings</button>
       </nav>
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">👑</div><div><div class="sb-un">Super Admin</div><div class="sb-ur">Platform Owner</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
@@ -1979,6 +1989,18 @@ setTimeout(function(){
         <div class="panel" id="sa-sessions">
           <div class="card"><div class="card-h"><div class="card-title">Active QR Sessions</div><button class="btn btn-sm" onclick="loadSessions()">↻ Refresh</button></div><div class="tbl-wrap"><table><thead><tr><th>Session</th><th>Restaurant</th><th>Table</th><th>Started</th><th>Duration</th><th>Expires</th><th>Orders</th><th>Action</th></tr></thead><tbody id="sa-sesstbl"></tbody></table></div></div>
         </div>
+        <div class="panel" id="sa-requests">
+          <div class="card">
+            <div class="card-h">
+              <div class="card-title">🗑️ Delete Requests</div>
+              <button class="btn btn-sm" onclick="loadDeleteRequests()">↻ Refresh</button>
+            </div>
+            <div id="sa-req-list" style="padding:8px 0">
+              <div style="text-align:center;padding:40px;color:var(--s-muted)">Loading...</div>
+            </div>
+          </div>
+        </div>
+
         <div class="panel" id="sa-settings">
           <div class="card"><div class="card-h"><div class="card-title">Platform Settings</div></div><div style="padding:20px">
             <div class="form-row" style="margin-bottom:14px"><div class="fg"><label>Platform Name</label><input class="fi" value="EATLAOS" id="setPName"></div><div class="fg"><label>Default Commission (%)</label><input class="fi" type="number" value="15" id="setComm" min="0" max="100" step="0.5" placeholder="0 = no commission" onchange="if(this.value==='')this.value=0"></div></div>
@@ -2217,7 +2239,7 @@ setTimeout(function(){
 </div>
 
 <!-- CUSTOMER -->
-<div id="pg-customer" class="page">
+<div id="pg-customer" class="page" data-theme="classic">
   <!-- Instant loading state shown before Firebase loads -->
   <div id="custLoadingBar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999">
     <div style="height:3px;background:linear-gradient(90deg,var(--c-gold),var(--c-gold2),var(--c-gold));background-size:200% 100%;animation:shimmer 1.5s infinite">
@@ -3536,6 +3558,10 @@ async function init(){
       if(r&&t){
         // Show QR page instantly with loading state
         showPage('pg-customer');
+        // Apply last known theme from localStorage for instant theming
+        const _lastTheme=localStorage.getItem('el_last_theme_'+r)||'classic';
+        const _pgCust=document.getElementById('pg-customer');
+        if(_pgCust) _pgCust.setAttribute('data-theme',_lastTheme);
         // Hide loading screen immediately (no fade for QR)
         const ls=document.getElementById('loadingScreen');
         if(ls){ls.style.display='none';}
@@ -3980,6 +4006,8 @@ function startOwnerListeners(){
 }
 
 function startSAListeners(){
+  // Check pending delete requests on load
+  setTimeout(()=>loadDeleteRequests(),1000);
   // Listen to ALL orders
   db.ref('orders').on('value', snap=>{
     const orders=[];
@@ -4327,6 +4355,64 @@ async function saOrders(){
     return`<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td>${o.items?.length||0}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-muted);font-size:11px">${o.vatRate!==undefined?o.vatRate+'%':'—'}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
   }).join('');
   document.getElementById('sa-ordtbl').innerHTML=saOrdHtml||nd(8);
+}
+
+async function loadDeleteRequests(){
+  const reqs=await fbGet('admin/deleteRequests')||{};
+  const list=document.getElementById('sa-req-list');
+  if(!list) return;
+  const pending=Object.entries(reqs).filter(([k,r])=>r.status==='pending');
+  // Update badge
+  const badge=document.getElementById('sa-req-badge');
+  if(badge){
+    badge.textContent=pending.length;
+    badge.style.display=pending.length>0?'inline':'none';
+  }
+  if(!Object.keys(reqs).length){
+    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--s-muted)">No delete requests</div>';
+    return;
+  }
+  list.innerHTML=Object.entries(reqs).map(([reqId,req])=>{
+    const ts=req.requestedAt?new Date(req.requestedAt).toLocaleString('en-GB'):'';
+    const isPending=req.status==='pending';
+    const statusColor=isPending?'var(--s-orange)':req.status==='approved'?'var(--s-green)':'var(--s-red)';
+    return`<div style="padding:16px;border-bottom:1px solid var(--s-border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:700;font-size:14px">🗑️ Delete Table ${req.tableNum||'?'} ${req.tableLabel?'('+req.tableLabel+')':''}</div>
+        <div style="font-size:12px;color:var(--s-muted);margin-top:3px">${req.restoName||req.restoId} · Requested by ${req.requestedBy||'Owner'} · ${ts}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:11px;font-weight:700;color:${statusColor};text-transform:uppercase">${req.status}</span>
+        ${isPending?`
+          <button class="btn btn-sm btn-green" onclick="approveDeleteReq('${reqId}')">✓ Approve</button>
+          <button class="btn btn-sm btn-red" onclick="rejectDeleteReq('${reqId}')">✗ Reject</button>
+        `:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function approveDeleteReq(reqId){
+  const req=await fbGet('admin/deleteRequests/'+reqId);
+  if(!req){notifyD('Request not found');return;}
+  // Actually delete the table
+  const r=await fbGet('restaurants/'+req.restoId);
+  const tables=[...(r?.tables||[])];
+  const idx=tables.findIndex(t=>String(t.num)===String(req.tableNum));
+  if(idx>=0){
+    tables.splice(idx,1);
+    await fbUpdate('restaurants/'+req.restoId,{tables});
+  }
+  await fbUpdate('admin/deleteRequests/'+reqId,{status:'approved',approvedAt:Date.now()});
+  notifyD('✅ Table '+req.tableNum+' deleted from '+req.restoName);
+  loadDeleteRequests();
+}
+
+async function rejectDeleteReq(reqId){
+  const req=await fbGet('admin/deleteRequests/'+reqId);
+  await fbUpdate('admin/deleteRequests/'+reqId,{status:'rejected',rejectedAt:Date.now()});
+  notifyD('✗ Delete request rejected');
+  loadDeleteRequests();
 }
 
 async function loadSessions(){
@@ -6210,8 +6296,27 @@ async function saveEditTable(){
 }
 async function delOwTable(idx){
   const r=await fbGet('restaurants/'+restoId);
-  const tables=[...(r?.tables||[])];tables.splice(idx,1);
-  await fbUpdate('restaurants/'+restoId,{tables});owTables();
+  const tables=[...(r?.tables||[])];
+  const tbl=tables[idx];
+  if(!tbl){notifyD('Table not found');return;}
+  // Send delete request to SA — owner cannot delete directly
+  if(!confirm('Request deletion of Table '+tbl.num+'? This requires SuperAdmin approval.')) return;
+  const req={
+    type:'deleteTable',
+    restoId:restoId,
+    restoName:r?.name||restoId,
+    tableIdx:idx,
+    tableNum:tbl.num,
+    tableLabel:tbl.label||'',
+    requestedAt:Date.now(),
+    requestedBy:me?.name||'Owner',
+    status:'pending'
+  };
+  const existing=await fbGet('admin/deleteRequests')||{};
+  const reqId='dr'+Date.now();
+  await fbUpdate('admin/deleteRequests/'+reqId, req);
+  notifyD('✅ Delete request sent — awaiting SuperAdmin approval');
+  owTables();
 }
 
 async function owProfile(){
@@ -6640,6 +6745,10 @@ function updateOrderBadge(count){
 let customerCachedOrders=[];
 
 function setupCustomerUI(r,sess){
+  // Save theme to localStorage for instant next load
+  if(r.theme&&qrSess?.rId){
+    try{localStorage.setItem('el_last_theme_'+qrSess.rId, r.theme||'classic');}catch(e){}
+  }
   const heroEmoji=document.getElementById('cHeroEmoji');
   const topIcon=document.getElementById('cRestoIcon');
   if(r.logo){
