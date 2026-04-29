@@ -4312,7 +4312,7 @@ async function saOrders(){
   document.getElementById('sa-ordtbl').innerHTML=filtered.length?filtered.map(o=>{
     const comm=Math.round((o.total||0)*((o.comm===0?0:(o.comm||0))/100));
     return`<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td>${o.items?.length||0}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
-  }).join('')||nd(8);
+  }).join(''):nd(8);
 }
 
 async function loadSessions(){
