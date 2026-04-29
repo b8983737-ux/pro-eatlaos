@@ -3584,15 +3584,21 @@ async function init(){
       // CUSTOMER PATH: INSTANT — show page immediately, load data in background
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
       if(r&&t){
-        // Show QR page instantly with loading state
-        showPage('pg-customer');
-        // Apply last known theme from localStorage for instant theming
+        // Apply last known theme from localStorage BEFORE showing page
         const _lastTheme=localStorage.getItem('el_last_theme_'+r)||'classic';
         const _pgCust=document.getElementById('pg-customer');
-        if(_pgCust) _pgCust.setAttribute('data-theme',_lastTheme);
-        // Hide loading screen immediately (no fade for QR)
+        if(_pgCust){
+          _pgCust.setAttribute('data-theme',_lastTheme);
+          _pgCust.classList.add('on');
+        }
+        // Hide loading screen only after theme is set (no cream flash)
         const ls=document.getElementById('loadingScreen');
-        if(ls){ls.style.display='none';}
+        if(ls){
+          // Use requestAnimationFrame to ensure theme CSS is applied first
+          requestAnimationFrame(()=>{
+            requestAnimationFrame(()=>{ ls.style.display='none'; });
+          });
+        }
         // Load data in background
         startCustomerSession(r,t,s);
       } else {
@@ -4386,7 +4392,16 @@ async function saOrders(){
 }
 
 async function loadDeleteRequests(){
-  const reqs=await fbGet('admin/deleteRequests')||{};
+  // Read delete requests from all restaurants
+  const restos=await fbGet('restaurants')||{};
+  const reqs={};
+  Object.entries(restos).forEach(([rId,r])=>{
+    if(r.deleteRequests){
+      Object.entries(r.deleteRequests).forEach(([reqId,req])=>{
+        reqs[reqId]={...req,_rId:rId,_restoName:r.name||rId};
+      });
+    }
+  });
   const list=document.getElementById('sa-req-list');
   if(!list) return;
   const pending=Object.entries(reqs).filter(([k,r])=>r.status==='pending');
@@ -4412,33 +4427,32 @@ async function loadDeleteRequests(){
       <div style="display:flex;gap:8px;align-items:center">
         <span style="font-size:11px;font-weight:700;color:${statusColor};text-transform:uppercase">${req.status}</span>
         ${isPending?`
-          <button class="btn btn-sm btn-green" onclick="approveDeleteReq('${reqId}')">✓ Approve</button>
-          <button class="btn btn-sm btn-red" onclick="rejectDeleteReq('${reqId}')">✗ Reject</button>
+          <button class="btn btn-sm btn-green" onclick="approveDeleteReq('${reqId}','${req._rId||req.restoId}')">✓ Approve</button>
+          <button class="btn btn-sm btn-red" onclick="rejectDeleteReq('${reqId}','${req._rId||req.restoId}')">✗ Reject</button>
         `:''}
       </div>
     </div>`;
   }).join('');
 }
 
-async function approveDeleteReq(reqId){
-  const req=await fbGet('admin/deleteRequests/'+reqId);
+async function approveDeleteReq(reqId,rId){
+  const req=await fbGet('restaurants/'+rId+'/deleteRequests/'+reqId);
   if(!req){notifyD('Request not found');return;}
-  // Actually delete the table
-  const r=await fbGet('restaurants/'+req.restoId);
+  // Delete the table
+  const r=await fbGet('restaurants/'+rId);
   const tables=[...(r?.tables||[])];
   const idx=tables.findIndex(t=>String(t.num)===String(req.tableNum));
   if(idx>=0){
     tables.splice(idx,1);
-    await fbUpdate('restaurants/'+req.restoId,{tables});
+    await fbUpdate('restaurants/'+rId,{tables});
   }
-  await fbUpdate('admin/deleteRequests/'+reqId,{status:'approved',approvedAt:Date.now()});
+  await fbUpdate('restaurants/'+rId+'/deleteRequests/'+reqId,{status:'approved',approvedAt:Date.now()});
   notifyD('✅ Table '+req.tableNum+' deleted from '+req.restoName);
   loadDeleteRequests();
 }
 
-async function rejectDeleteReq(reqId){
-  const req=await fbGet('admin/deleteRequests/'+reqId);
-  await fbUpdate('admin/deleteRequests/'+reqId,{status:'rejected',rejectedAt:Date.now()});
+async function rejectDeleteReq(reqId,rId){
+  await fbUpdate('restaurants/'+rId+'/deleteRequests/'+reqId,{status:'rejected',rejectedAt:Date.now()});
   notifyD('✗ Delete request rejected');
   loadDeleteRequests();
 }
@@ -6341,11 +6355,10 @@ async function delOwTable(idx){
     status:'pending'
   };
   const reqId='dr'+Date.now();
-  // Use restPush to create new record (POST = auto-generate key)
-  // OR use restUpdate/fbSet to set with our own key
   try{
-    await fbUpdate('admin/deleteRequests/'+reqId, req);
-    dbg('Delete request saved: admin/deleteRequests/'+reqId);
+    // Save under restaurant path — owner has write access to their own restaurant
+    await fbUpdate('restaurants/'+restoId+'/deleteRequests/'+reqId, req);
+    dbg('Delete request saved to restaurants/'+restoId+'/deleteRequests/'+reqId);
     notifyD('✅ Delete request sent — awaiting SuperAdmin approval');
   }catch(e){
     dbg('Delete request failed: '+e.message,'err');
