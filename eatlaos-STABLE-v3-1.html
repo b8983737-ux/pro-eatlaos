@@ -4078,7 +4078,7 @@ function saRecentOrders(){
   document.getElementById('sa-recent').innerHTML=recent.map(o=>{
     const comm=Math.round((o.total||0)*(o.comm??0)/100);
     return`<tr><td><b style="font-size:11px">${o.id||o.fbKey}</b></td><td>T${o.tNum||'?'}</td><td style="color:var(--s-gold)">${o.rName||'—'}</td><td style="font-weight:600">${fmtK(o.total)}</td><td style="color:var(--s-green)">${fmtK(comm)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td></tr>`;
-  }).join('')||nd(7);
+  }).join(''):nd(7);
   // Render top items
   renderTopItems(filtered,'saTopItemsList','saTopItemsLabel');
   // Revenue summary
@@ -4258,7 +4258,7 @@ async function loadAndRenderRestos(){
         <button class="btn btn-sm" onclick="renewResto('${k}')">🔄 Renew</button>
       </div></td>
     </tr>`;
-  }).join('')||nd(7);
+  }).join(''):nd(7);
 }
 
 function saOhReset(){
@@ -4324,7 +4324,7 @@ async function loadSessions(){
     const cnt=cachedOrders.filter(o=>o.sessId===k).length;
     const dur=s.duration||2;
     return`<tr><td style="font-size:10px"><b>${k}</b></td><td style="color:var(--s-gold)">${s.rName||'?'}</td><td>T${s.tNum||'?'}</td><td style="font-size:10px;color:var(--s-muted)">${s.startTime||''}</td><td>${dur}h</td><td><span class="tag ${alive?'tg':'tm'}">${tl}</span></td><td>${cnt}</td><td><button class="btn btn-sm btn-red" onclick="endSession('${k}')">End</button></td></tr>`;
-  }).join('')||nd(8);
+  }).join(''):nd(8);
 }
 
 async function endSession(key){
@@ -4811,7 +4811,7 @@ function owRecentOrders(){
   const recent=filtered.slice(0,6);
   document.getElementById('ow-recent').innerHTML=recent.map(o=>
     `<tr><td><b style="font-size:11px">${o.id||''}</b></td><td>T${o.tNum||'?'}</td><td>${o.items?.length||0}</td><td>${fmtK(o.total)}</td><td style="color:var(--s-muted);font-size:11px">${o.time||''}</td><td><span class="tag ${stag(o.status)}">${o.status}</span></td><td>${mkSel(o.fbKey,o.status)}</td></tr>`
-  ).join('')||nd(7);
+  ).join(''):nd(7);
   // Top items using current filter
   renderTopItems(filtered,'owTopItemsList','owTopItemsLabel');
   const labels={today:'Today',week:'This Week',month:'This Month','3months':'Last 3 Months',all:'All Time'};
@@ -5307,7 +5307,7 @@ async function owMenu(){
         <button class="btn btn-sm btn-red" onclick="delOwItem(${i})">Del</button>
       </div></td>
     </tr>`;
-  }).join('')||nd(5);
+  }).join(''):nd(5);
 }
 
 async function toggleSoldOut(idx){
