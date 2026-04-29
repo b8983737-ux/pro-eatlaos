@@ -4136,7 +4136,7 @@ function startOwnerListeners(){
   });
 }
 
-async // Load public restaurant list for landing page
+// Load public restaurant list for landing page
 async function loadLandingRestos(){
   try{
     const restos=await fbGet('restaurants')||{};
