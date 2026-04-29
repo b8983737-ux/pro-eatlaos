@@ -1143,7 +1143,7 @@ button,input,select,textarea{font-family:var(--fb);}
 .load-txt{font-size:13px;color:#444;letter-spacing:3px;text-transform:uppercase;}
 
 /* ═══ LANDING ═══ */
-#pg-land{background:#060606;min-height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+#pg-land{background:#040404;min-height:100vh;overflow-y:auto;display:flex;flex-direction:column;position:relative;}
 .lp-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:72px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;transition:all .4s ease;}
 .lp-nav.scrolled{background:rgba(4,4,4,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(200,151,58,.1);box-shadow:0 4px 40px rgba(0,0,0,.4);}
 .lp-nav-logo{font-family:var(--ff);font-size:30px;font-weight:900;letter-spacing:-1px;color:#fff;cursor:pointer;}
@@ -1355,6 +1355,8 @@ html,body{
 .size-row{display:flex;gap:8px;align-items:center;margin-bottom:4px;}
 .size-row input{flex:1;}
 .size-row .del-size{background:none;border:none;color:var(--s-red);font-size:18px;cursor:pointer;padding:0 4px;}
+.modal-ov{display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0;}
+.modal-ov.open{display:flex;}
 </style>
 </head>
 <body>
@@ -1469,7 +1471,7 @@ setTimeout(function(){
     <div class="lp-hero-orb2"></div>
     <div class="lp-hero-orb3"></div>
     <div class="lp-hero-line"></div>
-    <div class="lp-badge"><span class="lp-badge-dot"></span><span class="lp-badge-txt">Laos · No.1 Restaurant Platform</span></div>
+    <div class="lp-badge"><span class="lp-badge-dot"></span><span class="lp-badge-txt">Laos · Restaurant Platform</span></div>
     <h1 class="lp-h1">The future<br>of dining<br>is <em>digital</em></h1>
     <p class="lp-hero-sub">Customers scan a QR code, browse your menu and order directly from the table. No app. No cash. No waiting.</p>
     <div class="lp-hero-ctas">
@@ -3648,10 +3650,14 @@ async function seedFirebaseIfEmpty(){
 // AUTH
 // ═══════════════════════════════════════════════════════════════
 function showPage(id){
+  // Hide all pages
   document.querySelectorAll('.page').forEach(p=>{
     p.classList.remove('on');
     p.style.display='none';
   });
+  // Close ALL open modals when navigating between pages
+  document.querySelectorAll('.modal-ov').forEach(m=>m.classList.remove('open'));
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.style.display='none');
   const el=document.getElementById(id);
   if(el){
     el.classList.add('on');
@@ -7301,7 +7307,12 @@ function nd(c){return`<tr><td colspan="${c}" style="text-align:center;color:var(
 function mkSel(fbKey,cur){return`<select onchange="updStatus('${fbKey}',this.value)" style="background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-text);padding:4px 8px;font-size:11px;outline:none;">${['pending','preparing','ready','delivered'].map(s=>`<option value="${s}" ${s===cur?'selected':''}>${s}</option>`).join('')}</select>`;}
 
 function openModal(id){const el=document.getElementById(id);if(!el)return;el.classList.add('open');if(lang!=='en')applyTranslation(el);}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModal(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('open');
+  if(el.classList.contains('modal-overlay')) el.style.display='none';
+}
 
 let ntD,ntC;
 function notifyD(txt){const el=document.getElementById('notifD');document.getElementById('notifDTxt').textContent=txt;el.classList.add('show');clearTimeout(ntD);ntD=setTimeout(()=>el.classList.remove('show'),3000);}
@@ -7422,7 +7433,7 @@ try{init();}catch(e){
   </div>
 </div>
 <!-- ── CONTACT MODAL ── -->
-<div id="mContact" class="modal-overlay" onclick="if(event.target===this)closeModal('mContact')" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
+<div id="mContact" class="modal-ov" onclick="if(event.target===this)closeModal('mContact')">
   <div style="background:#111;border:1px solid rgba(200,151,58,.2);border-radius:16px;padding:40px;max-width:480px;width:100%;position:relative;animation:fadeUp .3s ease;">
     <button onclick="closeModal('mContact')" style="position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;line-height:1;">×</button>
     <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c8973a;font-weight:700;margin-bottom:12px">Contact Us</div>
