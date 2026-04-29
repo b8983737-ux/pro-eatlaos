@@ -6810,18 +6810,24 @@ function openDetail(itemId){
     if(item.sizes&&item.sizes.length>0){
       sizesWrap.style.display='block';
       // Multi-size qty rows — customer picks qty for each size
-      sizeOpts.innerHTML=item.sizes.map((s,i)=>`
-        <div class="c-size-row" id="szrow-${i}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
-          <div>
-            <span style="font-size:15px;font-weight:700;color:var(--c-text)">${s.label}</span>
-            <span style="font-size:13px;color:var(--c-gold);margin-left:8px;font-weight:600">${s.price?fmtK(s.price):''}</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px">
-            <button onclick="szQty(${i},-1)" style="width:32px;height:32px;border-radius:50%;border:1.5px solid var(--c-border);background:var(--c-surf2);color:var(--c-text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
-            <span id="sz-qty-${i}" style="font-size:16px;font-weight:700;min-width:20px;text-align:center">0</span>
-            <button onclick="szQty(${i},1)" style="width:32px;height:32px;border-radius:50%;background:var(--c-gold);border:none;color:#000;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
-          </div>
-        </div>`).join('');
+      // Auto-select first size
+        detItem._sizeLabel=item.sizes[0].label;
+        detItem._sizePrice=item.sizes[0].price||item.price;
+        document.getElementById('detPrice').textContent=fmtK(detItem._sizePrice);
+        document.getElementById('detRun').textContent='';
+        sizeOpts.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${item.sizes.map((s,i)=>`
+          <button onclick="selectSizeBtn(this,${i})" data-idx="${i}" class="c-size-pill"
+            style="padding:10px 16px;border-radius:8px;
+            border:2px solid ${i===0?'var(--c-text)':'var(--c-border)'};
+            background:${i===0?'var(--c-text)':'var(--c-surf2)'};
+            color:${i===0?'var(--c-bg)':'var(--c-text)'};
+            font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;
+            display:flex;flex-direction:column;align-items:center;gap:2px;min-width:60px">
+            <span>${s.label}</span>
+            <span style="font-size:11px;opacity:.8">${fmtK(s.price||item.price)}</span>
+          </button>`).join('')}
+        </div>`;
       detItem._szQtys=item.sizes.map(()=>0);
       detItem._szPrices=item.sizes.map(s=>s.price||item.price);
       detItem._szLabels=item.sizes.map(s=>s.label);
@@ -6851,6 +6857,22 @@ function openDetail(itemId){
 function selectSize(btn,idx){
   // Legacy - kept for compatibility
 }
+function selectSizeBtn(btn,idx){
+  if(!detItem||!detItem.sizes) return;
+  const s=detItem.sizes[idx];
+  detItem._sizeLabel=s.label;
+  detItem._sizePrice=s.price||detItem.price;
+  // Update price display
+  document.getElementById('detPrice').textContent=fmtK(detItem._sizePrice);
+  document.getElementById('detRun').textContent='';
+  // Update pill styles
+  document.querySelectorAll('.c-size-pill').forEach((p,i)=>{
+    const active=i===idx;
+    p.style.border='2px solid '+(active?'var(--c-text)':'var(--c-border)');
+    p.style.background=active?'var(--c-text)':'var(--c-surf2)';
+    p.style.color=active?'var(--c-bg)':'var(--c-text)';
+  });
+}
 
 function szQty(idx, delta){
   if(!detItem._szQtys) return;
@@ -6875,32 +6897,21 @@ function addDetailToCart(){
   if(!detItem) return;
   if(detItem.badge==='sold'){notifyC('⊘ '+detItem.name+' — '+tr('sold_out'));return;}
   const comment=document.getElementById('detComment')?.value.trim()||'';
-  // Multi-size: add each size that has qty > 0
-  if(detItem._szQtys&&detItem._szQtys.some(q=>q>0)){
-    let added=0;
-    detItem._szQtys.forEach((qty,i)=>{
-      if(qty<=0) return;
-      const cartItem={...detItem,
-        price:detItem._szPrices[i]||detItem.price,
-        size:detItem._szLabels[i]||'',
-        comment:comment,
-        displayName:detItem.name+(detItem._szLabels[i]?' ('+detItem._szLabels[i]+')':'')
-      };
-      addToCart(cartItem,qty);
-      added+=qty;
-    });
-    notifyC(detItem.emoji+' '+detItem.name+' ×'+added+' added');
-    closeModal('mDetail');
-    return;
+  // Single size selection (professional standard)
+  const selSize=detItem._sizeLabel||'';
+  const selPrice=detItem._sizePrice||detItem.price;
+  // Require size selection if item has sizes
+  if(detItem.sizes&&detItem.sizes.length>0&&!selSize){
+    notifyC('Please choose a size first');return;
   }
-  // No size item OR no sizes selected — add with single qty
   const cartItem={...detItem,
-    price:detItem.price,
-    size:'',
+    price:selPrice,
+    size:selSize,
     comment:comment,
-    displayName:detItem.name
+    displayName:detItem.name+(selSize?' ('+selSize+')':'')
   };
   addToCart(cartItem,detQty);
+  notifyC(detItem.emoji+' '+detItem.name+(selSize?' ('+selSize+')':'')+' ×'+detQty+' added');
   closeModal('mDetail');
 }
 function quickAdd(itemId){
