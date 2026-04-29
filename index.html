@@ -3531,11 +3531,20 @@ async function init(){
       hideLoading();
     }
     if(isCustomer){
-      // CUSTOMER PATH: fast! Only load restaurant+session, skip CFG/seed
+      // CUSTOMER PATH: INSTANT — show page immediately, load data in background
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
-      if(r&&t) await startCustomerSession(r,t,s);
-      else showPage('pg-land');
-      hideLoading();
+      if(r&&t){
+        // Show QR page instantly with loading state
+        showPage('pg-customer');
+        // Hide loading screen immediately (no fade for QR)
+        const ls=document.getElementById('loadingScreen');
+        if(ls){ls.style.display='none';}
+        // Load data in background
+        startCustomerSession(r,t,s);
+      } else {
+        showPage('pg-land');
+        hideLoading();
+      }
       return;
     }
     // ADMIN PATH: check session FIRST (instant, no Firebase needed)
@@ -6475,7 +6484,14 @@ async function printQR(){
   const logoSection=r?.logo
     ?`<img src="${r.logo}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #d4a03c;display:block;margin:0 auto 6px">`
     :`<div style="font-size:44px;text-align:center;margin-bottom:6px">${r?.emoji||'🍽️'}</div>`;
-  const w=window.open('','_blank');
+  // Use iframe to avoid freezing parent window
+  let pf=document.getElementById('_qrPrintFrame');
+  if(pf) pf.remove();
+  const pframe=document.createElement('iframe');
+  pframe.id='_qrPrintFrame';
+  pframe.style.cssText='position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
+  document.body.appendChild(pframe);
+  const w=pframe.contentWindow;
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR Table ${tNum}</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -6520,7 +6536,7 @@ async function printQR(){
     </div>
     <div class="footer">${r?.name||'Restaurant'} · eatlaos.la</div>
   </div>
-  <script>window.onload=()=>setTimeout(()=>window.print(),400);<\/script>
+  <script>window.onload=()=>setTimeout(()=>{window.print();setTimeout(()=>{var f=window.frameElement;if(f)f.remove();},500);},400);<\/script>
   </body></html>`);
   w.document.close();
 }
