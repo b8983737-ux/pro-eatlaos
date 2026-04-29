@@ -1718,42 +1718,9 @@ html,body{
 .size-row input{flex:1;}
 .size-row .del-size{background:none;border:none;color:var(--s-red);font-size:18px;cursor:pointer;padding:0 4px;}
 </style>
-<script>
-// INSTANT QR DETECTION — runs before page renders
-(function(){
-  var p=new URLSearchParams(window.location.search);
-  if(p.get('qr')!=='1') return;
-  // It's a QR page — hide loading screen immediately
-  // Use a style tag to override before CSS loads
-  var s=document.createElement('style');
-  var rId=p.get('r')||'';
-  var lastTheme=rId?localStorage.getItem('el_last_theme_'+rId)||'classic':'classic';
-  s.textContent=
-    '#loadingScreen{display:none!important;}'+
-    '#pg-customer{display:flex!important;flex-direction:column;}'+
-    '.page{display:none!important;}'+
-    '#pg-customer.page{display:flex!important;}';
-  document.head.appendChild(s);
-  // Apply theme immediately via attribute
-  document.addEventListener('DOMContentLoaded',function(){
-    var pg=document.getElementById('pg-customer');
-    if(pg){
-      pg.classList.add('on');
-      pg.setAttribute('data-theme',lastTheme);
-    }
-    var ls=document.getElementById('loadingScreen');
-    if(ls) ls.style.display='none';
-  });
-})();
-</script>
 </head>
 <body>
-<script>
-// Hide loading screen instantly for QR pages (before it even renders)
-if(location.search.indexOf('qr=1')>-1){
-  document.write('<style>#loadingScreen{display:none!important}<\/style>');
-}
-</script>
+
 <!-- DEBUG PANEL - owner/SA only, hidden from customers -->
 <div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:12px;height:12px;border-radius:50%;background:rgba(200,151,58,.7);cursor:pointer;display:block;" title="Debug"></div>
 <div id="debugPanel" style="display:none;position:fixed;bottom:20px;left:10px;z-index:99999;background:rgba(0,0,0,.95);color:#0f0;font-family:monospace;font-size:11px;padding:12px;border:1px solid #333;max-width:340px;border-radius:6px;max-height:60vh;overflow-y:auto;">
