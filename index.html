@@ -1144,20 +1144,74 @@ button,input,select,textarea{font-family:var(--fb);}
 
 /* ═══ LANDING ═══ */
 #pg-land{background:var(--s-bg);min-height:100vh;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-.land-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(200,151,58,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,151,58,.04) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;}
-.land-glow{position:absolute;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(200,151,58,.06) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
-.land-inner{position:relative;text-align:center;padding:40px 24px;animation:fadeUp .9s cubic-bezier(.16,1,.3,1);}
-.land-logo{font-family:var(--ff);font-size:clamp(72px,12vw,110px);font-weight:900;letter-spacing:-4px;line-height:.95;}
-.land-logo em{color:var(--s-gold);font-style:italic;}
-.land-sub{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--s-muted);margin:10px 0 60px;}
-.land-card{background:var(--s-surf);border:1px solid var(--s-border);padding:40px 36px;cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);text-align:left;position:relative;overflow:hidden;display:block;width:100%;color:var(--s-text);max-width:380px;margin:0 auto;}
-.land-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--s-gold);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.16,1,.3,1);}
-.land-card:hover{background:var(--s-surf2);transform:translateY(-3px);box-shadow:var(--shadow-lg);}
-.land-card:hover::after{transform:scaleX(1);}
-.land-card-icon{font-size:44px;margin-bottom:20px;display:block;animation:float 3s ease infinite;}
-.land-card-title{font-family:var(--ff);font-size:26px;font-weight:700;margin-bottom:8px;}
-.land-card-desc{font-size:13px;color:var(--s-muted);line-height:1.75;margin-bottom:28px;}
-.land-card-cta{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--s-gold);}
+
+/* ═══ LANDING PAGE v4 — Professional Marketing ═══ */
+#pg-land{background:#080808;min-height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+
+/* Nav */
+.lp-nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(200,151,58,.1);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.lp-nav-logo{font-family:var(--ff);font-size:26px;font-weight:900;letter-spacing:-1px;color:#fff;}
+.lp-nav-logo em{color:var(--s-gold);font-style:italic;}
+.lp-nav-right{display:flex;align-items:center;gap:12px;}
+.lp-nav-btn{padding:9px 20px;font-size:13px;font-weight:600;border-radius:4px;cursor:pointer;transition:all .2s;border:none;font-family:var(--fb);}
+.lp-nav-login{background:transparent;color:var(--s-text);border:1px solid var(--s-border);}
+.lp-nav-login:hover{border-color:var(--s-gold);color:var(--s-gold);}
+.lp-nav-cta{background:var(--s-gold);color:#000;font-weight:700;}
+.lp-nav-cta:hover{background:var(--s-gold2);transform:translateY(-1px);}
+
+/* Hero */
+.lp-hero{padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden;}
+.lp-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(200,151,58,.08) 0%,transparent 70%);pointer-events:none;}
+.lp-hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(200,151,58,.3);border-radius:100px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--s-gold);margin-bottom:28px;animation:fadeIn .6s ease;}
+.lp-hero-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--s-gold);animation:blink 2s ease infinite;}
+.lp-hero-title{font-family:var(--ff);font-size:clamp(42px,9vw,80px);font-weight:900;color:#fff;line-height:1;letter-spacing:-2px;margin-bottom:20px;animation:fadeUp .7s ease;}
+.lp-hero-title em{color:var(--s-gold);font-style:italic;}
+.lp-hero-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;max-width:480px;margin:0 auto 36px;animation:fadeUp .8s ease;}
+.lp-hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .9s ease;}
+.lp-btn-primary{padding:14px 32px;background:var(--s-gold);color:#000;font-size:14px;font-weight:700;border-radius:4px;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;letter-spacing:.5px;}
+.lp-btn-primary:hover{background:var(--s-gold2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,151,58,.3);}
+.lp-btn-secondary{padding:14px 32px;background:transparent;color:#fff;font-size:14px;font-weight:600;border-radius:4px;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-family:var(--fb);transition:all .2s;}
+.lp-btn-secondary:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.05);}
+
+/* Stats bar */
+.lp-stats{display:flex;justify-content:center;gap:0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);margin:48px 0 0;background:rgba(255,255,255,.02);}
+.lp-stat{flex:1;max-width:160px;padding:24px 16px;text-align:center;border-right:1px solid rgba(255,255,255,.06);}
+.lp-stat:last-child{border-right:none;}
+.lp-stat-num{font-family:var(--ff);font-size:32px;font-weight:900;color:var(--s-gold);}
+.lp-stat-lbl{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+
+/* Restaurants grid */
+.lp-section{padding:60px 24px;}
+.lp-section-title{font-family:var(--ff);font-size:clamp(28px,5vw,40px);font-weight:900;color:#fff;text-align:center;margin-bottom:8px;}
+.lp-section-sub{font-size:14px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:36px;}
+.lp-restos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;max-width:800px;margin:0 auto;}
+.lp-resto-card{background:var(--s-surf);border:1px solid var(--s-border);border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;}
+.lp-resto-card:hover{border-color:var(--s-gold);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.lp-resto-logo{width:56px;height:56px;border-radius:50%;background:var(--s-surf2);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;border:2px solid var(--s-border);overflow:hidden;}
+.lp-resto-logo img{width:100%;height:100%;object-fit:cover;}
+.lp-resto-name{font-family:var(--ff);font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
+.lp-resto-cuisine{font-size:11px;color:var(--s-muted);letter-spacing:1px;text-transform:uppercase;}
+.lp-resto-badge{position:absolute;top:8px;right:8px;background:rgba(29,185,84,.15);color:#1db954;font-size:9px;padding:2px 7px;border-radius:100px;font-weight:700;letter-spacing:1px;}
+
+/* Features */
+.lp-features{padding:60px 24px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.05);}
+.lp-features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;max-width:860px;margin:0 auto;}
+.lp-feature{padding:28px;background:var(--s-surf);border:1px solid var(--s-border);border-radius:12px;transition:border-color .2s;}
+.lp-feature:hover{border-color:rgba(200,151,58,.3);}
+.lp-feature-icon{font-size:32px;margin-bottom:14px;display:block;}
+.lp-feature-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;}
+.lp-feature-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.7;}
+
+/* Footer */
+.lp-footer{padding:32px 24px;border-top:1px solid rgba(255,255,255,.06);text-align:center;}
+.lp-footer-logo{font-family:var(--ff);font-size:22px;font-weight:900;color:var(--s-muted);margin-bottom:8px;}
+.lp-footer-logo em{color:var(--s-gold);font-style:italic;}
+.lp-footer-txt{font-size:12px;color:rgba(255,255,255,.2);}
+
+/* Loading restos */
+.lp-resto-skeleton{background:var(--s-surf);border:1px solid var(--s-border);border-radius:12px;padding:20px 16px;text-align:center;}
+.lp-skeleton-circle{width:56px;height:56px;border-radius:50%;background:var(--s-surf2);margin:0 auto 12px;animation:pulse 1.5s ease infinite;}
+.lp-skeleton-line{height:12px;background:var(--s-surf2);border-radius:4px;margin:4px auto;animation:pulse 1.5s ease infinite;}
 .land-footer{margin-top:32px;font-size:10px;color:var(--s-muted2);letter-spacing:2px;text-transform:uppercase;}
 
 /* ═══ LOGIN PAGES ═══ */
@@ -1814,18 +1868,69 @@ setTimeout(function(){
 
 <!-- LANDING -->
 <div id="pg-land" class="page">
-  <div class="land-lines"></div><div class="land-glow"></div>
-  <div class="land-inner">
-    <div class="land-logo">EAT<em>LAOS</em></div>
-    <div class="land-sub">Restaurant Platform · Vientiane · Laos</div>
-    <button class="land-card" onclick="showPage('pg-owner-login')">
-      <span class="land-card-icon">🏪</span>
-      <div class="land-card-title">Restaurant Owner Login</div>
-      <p class="land-card-desc">Manage your menu, view live orders, generate QR codes for your tables</p>
-      <div class="land-card-cta">Enter Owner Portal →</div>
-    </button>
-    <div class="land-footer">© 2026 EATLAOS · Powered by Bill</div>
+
+  <!-- NAV -->
+  <nav class="lp-nav">
+    <div class="lp-nav-logo">EAT<em>LAOS</em></div>
+    <div class="lp-nav-right">
+      <button class="lp-nav-btn lp-nav-login" onclick="showPage('pg-owner-login')">Owner Login</button>
+      <button class="lp-nav-btn lp-nav-cta" onclick="showPage('pg-owner-login')">Get Started →</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="lp-hero">
+    <div class="lp-hero-tag"><span class="lp-hero-tag-dot"></span>QR Ordering Platform · Laos</div>
+    <h1 class="lp-hero-title">The smarter way<br>to run your<br><em>restaurant</em></h1>
+    <p class="lp-hero-sub">Let customers scan, order and pay from their table. No app needed. Works on any phone.</p>
+    <div class="lp-hero-btns">
+      <button class="lp-btn-primary" onclick="showPage('pg-owner-login')">Start Free Trial →</button>
+      <button class="lp-btn-secondary" onclick="document.getElementById('lp-restos-section').scrollIntoView({behavior:'smooth'})">View Restaurants ↓</button>
+    </div>
+    <!-- Stats -->
+    <div class="lp-stats">
+      <div class="lp-stat"><div class="lp-stat-num" id="lpStatRestos">—</div><div class="lp-stat-lbl">Restaurants</div></div>
+      <div class="lp-stat"><div class="lp-stat-num" id="lpStatOrders">—</div><div class="lp-stat-lbl">Orders Today</div></div>
+      <div class="lp-stat"><div class="lp-stat-num" id="lpStatTables">—</div><div class="lp-stat-lbl">Tables Active</div></div>
+      <div class="lp-stat"><div class="lp-stat-num">14</div><div class="lp-stat-lbl">Themes</div></div>
+    </div>
   </div>
+
+  <!-- RESTAURANTS SECTION -->
+  <div class="lp-section" id="lp-restos-section">
+    <div class="lp-section-title">Our Restaurants</div>
+    <div class="lp-section-sub">Scan any QR code to order directly from your table</div>
+    <div class="lp-restos-grid" id="lpRestosGrid">
+      <!-- Skeleton loaders -->
+      ${[1,2,3,4,5,6].map(()=>`
+      <div class="lp-resto-skeleton">
+        <div class="lp-skeleton-circle"></div>
+        <div class="lp-skeleton-line" style="width:70%"></div>
+        <div class="lp-skeleton-line" style="width:50%"></div>
+      </div>`).join('')}
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="lp-features">
+    <div class="lp-section-title" style="margin-bottom:8px">Everything you need</div>
+    <div class="lp-section-sub">Built for Lao restaurants. Works everywhere.</div>
+    <div class="lp-features-grid">
+      <div class="lp-feature"><span class="lp-feature-icon">📱</span><div class="lp-feature-title">QR Table Ordering</div><div class="lp-feature-desc">Customers scan, browse and order in seconds. No app download required.</div></div>
+      <div class="lp-feature"><span class="lp-feature-icon">🔴</span><div class="lp-feature-title">Live Kitchen Orders</div><div class="lp-feature-desc">Orders appear instantly in your kitchen. Update status from pending to ready.</div></div>
+      <div class="lp-feature"><span class="lp-feature-icon">🎨</span><div class="lp-feature-title">14 Premium Themes</div><div class="lp-feature-desc">Match your restaurant's vibe. From classic elegance to neon modern.</div></div>
+      <div class="lp-feature"><span class="lp-feature-icon">📊</span><div class="lp-feature-title">Revenue Dashboard</div><div class="lp-feature-desc">Track orders, revenue and top items. Filter by day, week or month.</div></div>
+      <div class="lp-feature"><span class="lp-feature-icon">🌏</span><div class="lp-feature-title">4 Languages</div><div class="lp-feature-desc">Lao, Thai, Chinese and Korean. Customers order in their language.</div></div>
+      <div class="lp-feature"><span class="lp-feature-icon">🖨️</span><div class="lp-feature-title">Print Bills & QR</div><div class="lp-feature-desc">Print table bills and QR codes directly from your browser. No printer app needed.</div></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="lp-footer">
+    <div class="lp-footer-logo">EAT<em>LAOS</em></div>
+    <div class="lp-footer-txt">© 2026 EATLAOS · Restaurant Platform · Vientiane, Laos · <span style="color:var(--s-gold);cursor:pointer" onclick="showPage('pg-owner-login')">Owner Login</span></div>
+  </div>
+
 </div>
 
 <!-- OWNER LOGIN -->
@@ -4031,7 +4136,50 @@ function startOwnerListeners(){
   });
 }
 
-function startSAListeners(){
+async // Load public restaurant list for landing page
+async function loadLandingRestos(){
+  try{
+    const restos=await fbGet('restaurants')||{};
+    const grid=document.getElementById('lpRestosGrid');
+    if(!grid) return;
+
+    // Update stats
+    const restoList=Object.entries(restos).filter(([k,r])=>r.status==='active');
+    const el_r=document.getElementById('lpStatRestos');
+    if(el_r) el_r.textContent=restoList.length||'0';
+
+    // Count today's orders
+    const todayStart=new Date();todayStart.setHours(0,0,0,0);
+    const orders=await fbGet('orders')||{};
+    const todayOrders=Object.values(orders).filter(o=>(o.ts||0)>=todayStart.getTime());
+    const el_o=document.getElementById('lpStatOrders');
+    if(el_o) el_o.textContent=todayOrders.length||'0';
+
+    // Count tables
+    const totalTables=restoList.reduce((s,[k,r])=>s+(r._tableCount||(r.tables||[]).length||0),0);
+    const el_t=document.getElementById('lpStatTables');
+    if(el_t) el_t.textContent=totalTables||'0';
+
+    // Render restaurant cards
+    if(!restoList.length){
+      grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--s-muted)">No restaurants yet</div>';
+      return;
+    }
+    grid.innerHTML=restoList.map(([k,r])=>`
+      <div class="lp-resto-card" onclick="window.open('?qr=1&r=${k}&t=','_blank')" title="View ${r.name||'Restaurant'}">
+        <span class="lp-resto-badge">OPEN</span>
+        <div class="lp-resto-logo">
+          ${r.logo?`<img src="${r.logo}" alt="${r.name||''}">`:r.emoji||'🍽️'}
+        </div>
+        <div class="lp-resto-name">${r.name||'Restaurant'}</div>
+        <div class="lp-resto-cuisine">${r.cuisine||r.addr||'Laos'}</div>
+      </div>`).join('');
+  }catch(e){
+    console.log('Landing restos:',e.message);
+  }
+}
+
+async function startSAListeners(){
   // Check pending delete requests on load
   setTimeout(()=>loadDeleteRequests(),1000);
   // Poll orders every 30s instead of live stream (saves massive bandwidth)
