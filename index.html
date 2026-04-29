@@ -1742,6 +1742,12 @@ html,body{
 </script>
 </head>
 <body>
+<script>
+// Hide loading screen instantly for QR pages (before it even renders)
+if(location.search.indexOf('qr=1')>-1){
+  document.write('<style>#loadingScreen{display:none!important}<\/style>');
+}
+</script>
 <!-- DEBUG PANEL - owner/SA only, hidden from customers -->
 <div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:12px;height:12px;border-radius:50%;background:rgba(200,151,58,.7);cursor:pointer;display:block;" title="Debug"></div>
 <div id="debugPanel" style="display:none;position:fixed;bottom:20px;left:10px;z-index:99999;background:rgba(0,0,0,.95);color:#0f0;font-family:monospace;font-size:11px;padding:12px;border:1px solid #333;max-width:340px;border-radius:6px;max-height:60vh;overflow-y:auto;">
@@ -1983,7 +1989,20 @@ setTimeout(function(){
           <div class="card"><div class="card-h"><div class="card-title">Revenue by Restaurant</div></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th data-ts="orders">Orders</th><th>Gross (₭)</th><th>Commission %</th><th>Your Earn</th><th>Restaurant Earn</th><th>VAT Collected</th></tr></thead><tbody id="sa-revtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-restaurants">
-          <div class="card"><div class="card-h"><div class="card-title">All Restaurants</div><button class="btn btn-gold" onclick="openModal('mAddResto');resetRestoModal()">+ Add Restaurant</button></div><div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Theme</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <div class="card-title">All Restaurants</div>
+                <div id="saRestoCount" style="font-size:11px;color:var(--s-muted);margin-top:2px"></div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <input id="saRestoSearch" class="btools-sel" placeholder="🔍 Search restaurant..." oninput="renderRestoTable()" style="min-width:200px">
+                <input type="hidden" id="saRestoPg" value="1">
+                <button class="btn btn-gold" onclick="openModal('mAddResto');resetRestoModal()">+ Add Restaurant</button>
+              </div>
+            </div>
+            <div id="saRestoPgCtrl" style="padding:8px 16px;border-bottom:1px solid var(--s-border);display:flex;align-items:center;gap:8px"></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Theme</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="sa-orders">
           <div class="card">
@@ -3549,11 +3568,12 @@ function startConnectionMonitor(){
 // ═══════════════════════════════════════════════════════════════
 let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
 
+let _cfgLoaded=false;
 async function loadCFG(){
+  if(_cfgLoaded) return; // only load once per session
   const v=await fbGet('cfg');
   if(v) CFG={...CFG,...v};
-  // Ensure SA password exists
-  if(!v?.saPass) await fbSet('cfg/saPass','6699@BillS');
+  _cfgLoaded=true;
 }
 
 async function saveCFG(){
@@ -3584,22 +3604,15 @@ async function init(){
       // CUSTOMER PATH: INSTANT — show page immediately, load data in background
       const r=p.get('r'),t=p.get('t'),s=p.get('s');
       if(r&&t){
-        // Apply last known theme from localStorage BEFORE showing page
+        // Pre-apply last known theme — loading screen stays until data ready
         const _lastTheme=localStorage.getItem('el_last_theme_'+r)||'classic';
         const _pgCust=document.getElementById('pg-customer');
-        if(_pgCust){
-          _pgCust.setAttribute('data-theme',_lastTheme);
-          _pgCust.classList.add('on');
-        }
-        // Hide loading screen only after theme is set (no cream flash)
-        const ls=document.getElementById('loadingScreen');
-        if(ls){
-          // Use requestAnimationFrame to ensure theme CSS is applied first
-          requestAnimationFrame(()=>{
-            requestAnimationFrame(()=>{ ls.style.display='none'; });
-          });
-        }
-        // Load data in background
+        if(_pgCust) _pgCust.setAttribute('data-theme',_lastTheme);
+        // Match loading screen to theme color (seamless transition)
+        const _ls=document.getElementById('loadingScreen');
+        const _themeColors={'classic':'#1a1209','cny':'#1a0000','halloween':'#0d0d0d','christmas':'#0a1a0a','ice':'#0a1520','tropical':'#0a1a10','sakura':'#1a0a10','galaxy':'#050510','neon':'#050505','luxury':'#0d0a05','lao':'#1a1205','zen':'#0a1205','ember':'#1a0800','brasserie':'#1c2330','terroir':'#1a1005'};
+        if(_ls) _ls.style.background=_themeColors[_lastTheme]||'#080808';
+        // Start loading — setupCustomerUI will hide loading screen when fully ready
         startCustomerSession(r,t,s);
       } else {
         showPage('pg-land');
@@ -3644,7 +3657,13 @@ async function init(){
     await loadCFG();
     dbg('Config loaded');
     seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
-    autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
+    // Only run cleanup once per day to save bandwidth
+    const _lastClean=localStorage.getItem('el_last_clean');
+    const _oneWeekAgo=Date.now()-(7*86400000); // once per week is enough
+    if(!_lastClean||parseInt(_lastClean)<_oneWeekAgo){
+      localStorage.setItem('el_last_clean',Date.now());
+      autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
+    }
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
       showPage('pg-sa-login');
     } else {
@@ -4042,18 +4061,21 @@ function startOwnerListeners(){
 function startSAListeners(){
   // Check pending delete requests on load
   setTimeout(()=>loadDeleteRequests(),1000);
-  // Listen to ALL orders
-  db.ref('orders').on('value', snap=>{
-    const orders=[];
-    snap.forEach(child=>{orders.push({...child.val(),fbKey:child.key});});
-    orders.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    cachedOrders=orders;
+  // Poll orders every 30s instead of live stream (saves massive bandwidth)
+  async function pollSAOrders(){
+    const snap=await fbGet('orders');
+    if(!snap) return;
+    cachedOrders=Object.entries(snap).map(([k,v])=>({...v,fbKey:k}));
+    cachedOrders.sort((a,b)=>(b.ts||0)-(a.ts||0));
     const activePanel=document.querySelector('#pg-sa .panel.on');
     if(activePanel?.id==='sa-dashboard'){saStats();saRecentOrders();}
     if(activePanel?.id==='sa-orders') saOrders();
     if(activePanel?.id==='sa-revenue') saRevenue();
     saStats();
-  });
+  }
+  pollSAOrders(); // load immediately
+  if(window._saOrdersPoll) clearInterval(window._saOrdersPoll);
+  window._saOrdersPoll=setInterval(pollSAOrders,30000); // refresh every 30s
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4308,9 +4330,61 @@ function saRevenueFilter(restos){
   }).filter(Boolean).join('')||`<tr><td colspan="7" style="text-align:center;color:var(--s-muted);padding:24px">No orders for this period</td></tr>`;
 }
 
-async function loadAndRenderRestos(){
-  const restos=await fbGet('restaurants')||{};
-  document.getElementById('sa-restotbl').innerHTML=Object.entries(restos).map(([k,r])=>{
+let _allRestos={}; // cache to avoid re-fetching
+let _restosCachedAt=0;
+const _RESTOS_CACHE_TTL=5*60*1000; // 5 min cache
+
+async function loadAndRenderRestos(forceRefresh=false){
+  const now=Date.now();
+  if(forceRefresh||!Object.keys(_allRestos).length||now-_restosCachedAt>_RESTOS_CACHE_TTL){
+    // Load SHALLOW first (keys + basic fields only, no menus/images)
+    const full=await fbGet('restaurants')||{};
+    // Strip heavy fields (menu images) from list view to save bandwidth
+    _allRestos={};
+    Object.entries(full).forEach(([k,r])=>{
+      _allRestos[k]={
+        name:r.name,user:r.user,ownerUser:r.ownerUser,
+        status:r.status,expiresAt:r.expiresAt,theme:r.theme,
+        cuisine:r.cuisine,emoji:r.emoji,comm:r.comm,vat:r.vat,
+        createdAt:r.createdAt,slug:r.slug,
+        _menuCount:(r.menu||[]).length,
+        _tableCount:(r.tables||[]).length
+      };
+    });
+    _restosCachedAt=now;
+  }
+  renderRestoTable();
+}
+function renderRestoTable(){
+  const restos=_allRestos;
+  const search=(document.getElementById('saRestoSearch')?.value||'').toLowerCase();
+  const entries=Object.entries(restos).filter(([k,r])=>{
+    if(!search) return true;
+    return (r.name||'').toLowerCase().includes(search)||
+           (r.user||'').toLowerCase().includes(search)||
+           (r.cuisine||'').toLowerCase().includes(search);
+  });
+  const total=entries.length;
+  const page=parseInt(document.getElementById('saRestoPg')?.value||'1');
+  const perPage=50;
+  const start=(page-1)*perPage;
+  const pageEntries=entries.slice(start,start+perPage);
+  const totalPages=Math.ceil(total/perPage);
+
+  // Update count
+  const countEl=document.getElementById('saRestoCount');
+  if(countEl) countEl.textContent=search?`${total} of ${Object.keys(restos).length} restaurants`:`${total} restaurants`;
+
+  // Pagination controls
+  const pgCtrl=document.getElementById('saRestoPgCtrl');
+  if(pgCtrl&&totalPages>1){
+    pgCtrl.innerHTML=`
+      <button class="btn btn-sm" onclick="saRestoPage(-1)" ${page<=1?'disabled':''}>◀</button>
+      <span style="padding:0 10px;font-size:12px;color:var(--s-muted)">Page ${page}/${totalPages}</span>
+      <button class="btn btn-sm" onclick="saRestoPage(1)" ${page>=totalPages?'disabled':''}>▶</button>`;
+  } else if(pgCtrl) pgCtrl.innerHTML='';
+
+  document.getElementById('sa-restotbl').innerHTML=pageEntries.map(([k,r])=>{
     const cnt=cachedOrders.filter(o=>o.rId===k).length;
     const now=Date.now();
     const exp=r.expiresAt;
@@ -4393,15 +4467,16 @@ async function saOrders(){
 
 async function loadDeleteRequests(){
   // Read delete requests from all restaurants
-  const restos=await fbGet('restaurants')||{};
+  // Efficient: only read deleteRequests field, not full restaurant data
+  const restoList=await fbGet('restaurants')||{};
   const reqs={};
-  Object.entries(restos).forEach(([rId,r])=>{
-    if(r.deleteRequests){
-      Object.entries(r.deleteRequests).forEach(([reqId,req])=>{
-        reqs[reqId]={...req,_rId:rId,_restoName:r.name||rId};
-      });
-    }
-  });
+  // Parallel fetch of only deleteRequests paths
+  await Promise.all(Object.entries(restoList).map(async([rId,r])=>{
+    if(!r.deleteRequests) return;
+    Object.entries(r.deleteRequests).forEach(([reqId,req])=>{
+      reqs[reqId]={...req,_rId:rId,_restoName:r.name||rId};
+    });
+  }));
   const list=document.getElementById('sa-req-list');
   if(!list) return;
   const pending=Object.entries(reqs).filter(([k,r])=>r.status==='pending');
@@ -6830,6 +6905,12 @@ function setupCustomerUI(r,sess){
   // Apply restaurant theme
   applyTheme(r.theme||'classic');
   renderCats(r);renderMenu('All',r);updateCart();
+  // NOW hide loading screen — page is fully ready, no flash possible
+  const _ls=document.getElementById('loadingScreen');
+  if(_ls){
+    _ls.style.transition='none'; // instant, no fade
+    _ls.style.display='none';
+  }
 }
 
 function startSessTimer(){
@@ -6869,7 +6950,7 @@ let curResto=null;
 
 async function loadRestoForCustomer(){
   if(!qrSess?.rId) return null;
-  if(curResto) return curResto;
+  if(curResto) return Promise.resolve(curResto); // cached ✅
   curResto=await fbGet('restaurants/'+qrSess.rId);
   return curResto;
 }
