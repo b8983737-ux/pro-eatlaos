@@ -1712,6 +1712,34 @@ html,body{
 .size-row input{flex:1;}
 .size-row .del-size{background:none;border:none;color:var(--s-red);font-size:18px;cursor:pointer;padding:0 4px;}
 </style>
+<script>
+// INSTANT QR DETECTION — runs before page renders
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('qr')!=='1') return;
+  // It's a QR page — hide loading screen immediately
+  // Use a style tag to override before CSS loads
+  var s=document.createElement('style');
+  var rId=p.get('r')||'';
+  var lastTheme=rId?localStorage.getItem('el_last_theme_'+rId)||'classic':'classic';
+  s.textContent=
+    '#loadingScreen{display:none!important;}'+
+    '#pg-customer{display:flex!important;flex-direction:column;}'+
+    '.page{display:none!important;}'+
+    '#pg-customer.page{display:flex!important;}';
+  document.head.appendChild(s);
+  // Apply theme immediately via attribute
+  document.addEventListener('DOMContentLoaded',function(){
+    var pg=document.getElementById('pg-customer');
+    if(pg){
+      pg.classList.add('on');
+      pg.setAttribute('data-theme',lastTheme);
+    }
+    var ls=document.getElementById('loadingScreen');
+    if(ls) ls.style.display='none';
+  });
+})();
+</script>
 </head>
 <body>
 <!-- DEBUG PANEL - owner/SA only, hidden from customers -->
@@ -2609,7 +2637,7 @@ async function restGet(path){
 }
 async function restPush(path,data){
   try{
-    const r=await fetch(DB_URL+'/'+path+'.json',{
+    const r=await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify(data)
     });
@@ -2622,7 +2650,7 @@ async function restPush(path,data){
   }
 }
 async function restUpdate(path,data){
-  await fetch(DB_URL+'/'+path+'.json',{
+  await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY,{
     method:'PATCH',headers:{'Content-Type':'application/json'},
     body:JSON.stringify(data)
   });
@@ -6312,10 +6340,17 @@ async function delOwTable(idx){
     requestedBy:me?.name||'Owner',
     status:'pending'
   };
-  const existing=await fbGet('admin/deleteRequests')||{};
   const reqId='dr'+Date.now();
-  await fbUpdate('admin/deleteRequests/'+reqId, req);
-  notifyD('✅ Delete request sent — awaiting SuperAdmin approval');
+  // Use restPush to create new record (POST = auto-generate key)
+  // OR use restUpdate/fbSet to set with our own key
+  try{
+    await fbUpdate('admin/deleteRequests/'+reqId, req);
+    dbg('Delete request saved: admin/deleteRequests/'+reqId);
+    notifyD('✅ Delete request sent — awaiting SuperAdmin approval');
+  }catch(e){
+    dbg('Delete request failed: '+e.message,'err');
+    notifyD('❌ Failed to send request: '+e.message);
+  }
   owTables();
 }
 
