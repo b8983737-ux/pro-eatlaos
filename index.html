@@ -4068,10 +4068,26 @@ async function init(){
   try {
     const p=new URLSearchParams(window.location.search);
     const isCustomer=p.get('qr')==='1';
-    // INSTANT: show login page immediately, no waiting
+    // Check saved session FIRST — avoid pg-land flash for logged-in users
     if(!isCustomer){
-      showPage('pg-land');
-      hideLoading();
+      const _saved=localStorage.getItem('el_session');
+      if(!_saved){
+        // No session — show landing instantly
+        showPage('pg-land');
+        hideLoading();
+        // Apply saved language IMMEDIATELY before page shows
+        const _sl=localStorage.getItem('el_lp_lang')||'en';
+        const _pg=document.getElementById('pg-land');
+        if(_sl!=='en'&&_pg){
+          _pg.classList.add('lp-lang-'+_sl);
+          applyLpTranslation(_sl);
+        }
+        loadLandingRestos().catch(()=>{});
+        initLandingNav();
+        initLpLang();
+        return;
+      }
+      // Has session — keep loading screen while we restore
     }
     if(isCustomer){
       // CUSTOMER PATH: INSTANT — show page immediately, load data in background
