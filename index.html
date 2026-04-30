@@ -22,9 +22,9 @@
 <!-- Fonts: only load weights we actually use -->
 <!-- Fonts load in background — system fonts show instantly as fallback -->
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,400&family=Geist:wght@400;500;600;700&family=Noto+Serif+Lao:wght@400;700;900&family=Noto+Sans+Lao:wght@400;600;700&display=swap">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&family=Noto+Serif+Lao:wght@400;700;900&family=Noto+Sans+Lao:wght@400;600;700&display=swap">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,400&family=Geist:wght@400;500;600;700&family=Noto+Serif+Lao:wght@400;700;900&family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&family=Noto+Serif+Lao:wght@400;700;900&family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet">
 <!-- Firebase scripts — loaded synchronously just before our JS -->
 <!-- Chart.js: only needed for admin dashboards, load lazily -->
 <script>
@@ -57,7 +57,7 @@ html{overflow-y:auto;-webkit-overflow-scrolling:touch;}
   --c-bg:#faf6f1;--c-surf:#fff;--c-surf2:#f3ede4;--c-surf3:#ede5d8;
   --c-border:#e8e0d4;--c-border2:#d4c8b8;--c-text:#1a1209;--c-muted:#8a7a68;
   --c-gold:#b8821e;--c-gold2:#d4a03c;--c-green:#1a6b3a;--c-red:#b83232;
-  --ff:'Fraunces',Georgia,serif;--fb:'Geist',system-ui,sans-serif;
+  --ff:'Plus Jakarta Sans',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif;
   --shadow:0 4px 20px rgba(0,0,0,.15);--shadow-lg:0 12px 48px rgba(0,0,0,.22);--shadow-xl:0 24px 80px rgba(0,0,0,.3);
 }
 /* Classic (light) theme overrides */
@@ -1151,7 +1151,7 @@ button,input,select,textarea{font-family:var(--fb);}
 #pg-land{background:#040404;min-height:100vh;display:flex;flex-direction:column;position:relative;}
 .lp-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:72px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;transition:all .4s ease;}
 .lp-nav.scrolled{background:rgba(4,4,4,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(200,151,58,.1);box-shadow:0 4px 40px rgba(0,0,0,.4);}
-.lp-nav-logo{font-family:var(--ff);font-size:30px;font-weight:900;letter-spacing:-1px;color:#fff;cursor:pointer;font-synthesis:none;}
+.lp-nav-logo{font-family:var(--ff);font-size:28px;font-weight:800;letter-spacing:-1.5px;color:#fff;cursor:pointer;}
 .lp-nav-logo em{color:#c8973a;font-style:italic;}
 .lp-nav-links{display:flex;align-items:center;gap:10px;}
 .lp-nav-btn{height:42px;padding:0 22px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s;border:none;font-family:var(--fb);letter-spacing:.3px;}
@@ -1171,8 +1171,8 @@ button,input,select,textarea{font-family:var(--fb);}
 .lp-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border:1px solid rgba(200,151,58,.3);border-radius:100px;margin-bottom:36px;background:rgba(200,151,58,.07);animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;}
 .lp-badge-dot{width:7px;height:7px;border-radius:50%;background:#c8973a;box-shadow:0 0 10px rgba(200,151,58,.7);animation:blink 2s ease infinite;}
 .lp-badge-txt{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#c8973a;font-weight:700;}
-.lp-h1{font-family:var(--ff);font-size:clamp(56px,10vw,108px);font-weight:900;color:#fff;line-height:.92;letter-spacing:-3px;margin-bottom:32px;animation:fadeUp .6s cubic-bezier(.16,1,.3,1) both;animation-delay:.1s;}
-.lp-h1 em{background:linear-gradient(135deg,#c8973a 0%,#f0d080 50%,#c8973a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:#c8973a;font-style:italic;background-size:200%;animation:shimmer 3s linear infinite;}
+.lp-h1{font-family:var(--ff);font-size:clamp(52px,9vw,100px);font-weight:800;color:#fff;line-height:.95;letter-spacing:-3px;margin-bottom:32px;animation:fadeUp .6s cubic-bezier(.16,1,.3,1) both;animation-delay:.1s;}
+.lp-h1 em{background:linear-gradient(135deg,#c8973a 0%,#f0d080 50%,#c8973a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:#c8973a;font-style:normal;font-weight:800;background-size:200%;animation:shimmer 3s linear infinite;}
 @keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
 .lp-hero-sub{font-size:18px;color:rgba(255,255,255,.45);line-height:1.75;max-width:520px;margin:0 auto 48px;animation:fadeUp .6s cubic-bezier(.16,1,.3,1) both;animation-delay:.2s;font-weight:400;}
 .lp-hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s cubic-bezier(.16,1,.3,1) both;animation-delay:.3s;margin-bottom:80px;}
@@ -1201,7 +1201,7 @@ button,input,select,textarea{font-family:var(--fb);}
 .lp-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:960px;margin:0 auto;background:rgba(255,255,255,.06);border-radius:16px;overflow:hidden;}
 .lp-step{background:#080808;padding:48px 36px;text-align:left;position:relative;transition:background .3s;}
 .lp-step:hover{background:#0d0d0d;}
-.lp-step-num{font-family:var(--ff);font-size:80px;font-weight:900;line-height:1;margin-bottom:12px;color:rgba(200,151,58,.15);background:linear-gradient(180deg,rgba(200,151,58,.2) 0%,rgba(200,151,58,.04) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lp-step-num{font-family:var(--ff);font-size:72px;font-weight:800;line-height:1;margin-bottom:12px;color:rgba(200,151,58,.15);background:linear-gradient(180deg,rgba(200,151,58,.2) 0%,rgba(200,151,58,.04) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .lp-step-icon{font-size:36px;margin-bottom:16px;display:block;}
 .lp-step-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-.3px;}
 .lp-step-desc{font-size:14px;color:rgba(255,255,255,.38);line-height:1.75;}
@@ -1211,8 +1211,8 @@ button,input,select,textarea{font-family:var(--fb);}
 /* Restaurants */
 .lp-restos-section{padding:100px 6%;background:#060606;}
 .lp-restos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:1040px;margin:0 auto;}
-.lp-resto-card{background:#0d0d0d;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px 18px;text-align:center;cursor:pointer;transition:all .35s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;}
-.lp-resto-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,151,58,.06),transparent 60%);opacity:0;transition:opacity .3s;}
+.lp-resto-card{background:#0d0d0d;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px 18px;text-align:center;cursor:default;transition:all .35s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;}
+.lp-resto-card::after{content:none;}
 .lp-resto-card:hover{border-color:rgba(200,151,58,.4);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 0 1px rgba(200,151,58,.15);}
 .lp-resto-card:hover::after{opacity:1;}
 .lp-resto-logo{width:72px;height:72px;border-radius:50%;background:#1a1a1a;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:36px;border:2px solid rgba(255,255,255,.08);overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s;position:relative;z-index:1;}
@@ -1262,7 +1262,7 @@ button,input,select,textarea{font-family:var(--fb);}
 .sl-back{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--fb);margin-bottom:60px;width:fit-content;border-radius:6px;transition:all .2s;}
 .sl-back:hover{border-color:rgba(255,255,255,.3);color:#fff;}
 .sl-brand{margin-bottom:auto;}
-.sl-logo{font-family:var(--ff);font-size:52px;font-weight:900;letter-spacing:-2px;color:#fff;line-height:1;}
+.sl-logo{font-family:var(--ff);font-size:48px;font-weight:800;letter-spacing:-2px;color:#fff;line-height:1;}
 .sl-logo em{color:var(--s-gold);font-style:italic;}
 .sl-sub{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--s-muted);margin-top:8px;display:block;}
 .sl-info{padding-top:40px;border-top:1px solid rgba(255,255,255,.06);}
@@ -1957,14 +1957,6 @@ body{min-height:100%;min-height:-webkit-fill-available;overscroll-behavior-x:non
 .lp-lang-opt span{font-size:18px;}
 @media(max-width:480px){.lp-lang-code{display:none;}}
 
-/* ── Font Flash Prevention ── */
-@font-face{
-  font-family:'Fraunces';
-  font-style:normal;
-  font-weight:900;
-  font-display:swap;
-  size-adjust:100%;
-}
 
 /* ── Lao Language Fonts ── */
 .lp-lang-lo .lp-h1,
@@ -4064,8 +4056,18 @@ async function init(){
         // No session — show landing page immediately
         showPage('pg-land');
         hideLoading();
+        // Apply saved language IMMEDIATELY - no flash
+        const _sl=localStorage.getItem('el_lp_lang')||'en';
+        if(_sl!=='en'){
+          // Apply font class instantly
+          const _pg=document.getElementById('pg-land');
+          if(_pg) _pg.classList.add('lp-lang-'+_sl);
+          // Apply text translation instantly
+          applyLpTranslation(_sl);
+        }
         loadLandingRestos().catch(()=>{});
         initLandingNav();
+        initLpLang();
         return;
       }
       // Has session — keep loading screen up while we restore
@@ -4611,7 +4613,7 @@ async function loadLandingRestos(){
     const grid=document.getElementById('lpRestosGrid');if(!grid) return;
     if(!active.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px">No restaurants yet — be the first!</div>';return;}
     grid.innerHTML=active.map(([k,r])=>`
-      <div class="lp-resto-card" onclick="window.location='?qr=1&r=${k}&t='" title="Open ${r.name||'Restaurant'}">
+      <div class="lp-resto-card" style="cursor:default">
         <div class="lp-resto-live"><div class="lp-resto-live-dot"></div><span class="lp-resto-live-txt">LIVE</span></div>
         <div class="lp-resto-logo">${r.logo?`<img src="${r.logo}" alt="${r.name||''}">`:r.emoji||'🍽️'}</div>
         <div class="lp-resto-name">${r.name||'Restaurant'}</div>
@@ -4857,15 +4859,27 @@ function initLpLang(){
   const saved = localStorage.getItem('el_lp_lang')||'en';
   const flags = {en:'🇬🇧',lo:'🇱🇦',th:'🇹🇭',zh:'🇨🇳',ko:'🇰🇷'};
   const codes = {en:'EN',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'};
-  document.getElementById('lpLangFlag').textContent = flags[saved]||'🇬🇧';
-  document.getElementById('lpLangCode').textContent = codes[saved]||'EN';
-  if(saved !== 'en'){
+  const flagEl=document.getElementById('lpLangFlag');
+  const codeEl=document.getElementById('lpLangCode');
+  if(flagEl) flagEl.textContent=flags[saved]||'🇬🇧';
+  if(codeEl) codeEl.textContent=codes[saved]||'EN';
+  // Apply translation immediately (sync) — no flash
+  if(saved!=='en'){
     applyLpTranslation(saved);
     const pg=document.getElementById('pg-land');
-    if(pg) pg.classList.add('lp-lang-'+saved);
+    if(pg&&!pg.classList.contains('lp-lang-'+saved)){
+      pg.className=pg.className.replace(/lp-lang-\w+/g,'').trim();
+      pg.classList.add('lp-lang-'+saved);
+    }
   }
+  // Mark opted-in language options
+  document.querySelectorAll('.lp-lang-opt').forEach(btn=>{
+    const lang=btn.getAttribute('onclick').match(/'([a-z]+)'/)?.[1];
+    btn.style.background=lang===saved?'rgba(200,151,58,.1)':'';
+    btn.style.color=lang===saved?'#c8973a':'';
+  });
   // Close dropdown when clicking outside
-  document.addEventListener('click', e=>{
+  document.addEventListener('click',e=>{
     if(!e.target.closest('#lpLangWrap')){
       document.getElementById('lpLangDrop')?.classList.remove('open');
     }
