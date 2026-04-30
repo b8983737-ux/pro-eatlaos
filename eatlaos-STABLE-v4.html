@@ -2064,7 +2064,7 @@ setTimeout(function(){
     </div>
     <div class="lp-stats-belt">
       <div class="lp-stat"><div class="lp-stat-num" id="lpStatR">—</div><div class="lp-stat-label">Restaurants</div></div>
-      <div class="lp-stat"><div class="lp-stat-num" id="lpStatO">—</div><div class="lp-stat-label">Orders Today</div></div>
+      <div class="lp-stat"><div class="lp-stat-num" id="lpStatO">—</div><div class="lp-stat-label">Orders Served</div></div>
       <div class="lp-stat"><div class="lp-stat-num" id="lpStatT">—</div><div class="lp-stat-label">Tables Active</div></div>
       <div class="lp-stat"><div class="lp-stat-num">14</div><div class="lp-stat-label">Themes</div></div>
     </div>
@@ -3961,10 +3961,18 @@ async function init(){
   try {
     const p=new URLSearchParams(window.location.search);
     const isCustomer=p.get('qr')==='1';
-    // INSTANT: show login page immediately, no waiting
+    // Check saved session FIRST — avoid pg-land flash for logged-in users
     if(!isCustomer){
-      showPage('pg-land');
-      hideLoading();
+      const _saved=localStorage.getItem('el_session');
+      if(!_saved){
+        // No session — show landing page immediately
+        showPage('pg-land');
+        hideLoading();
+        loadLandingRestos().catch(()=>{});
+        initLandingNav();
+        return;
+      }
+      // Has session — keep loading screen up while we restore
     }
     if(isCustomer){
       // CUSTOMER PATH: INSTANT — show page immediately, load data in background
@@ -4429,6 +4437,22 @@ function startOwnerListeners(){
 }
 
 // ── LANDING PAGE DATA ──
+function animateCount(el, target){
+  if(!el) return;
+  const duration=1200;
+  const start=performance.now();
+  const startVal=0;
+  const fmt=n=>n>=1000?(n/1000).toFixed(n>=10000?0:1)+'k':String(n);
+  function step(now){
+    const progress=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-progress,3); // ease-out cubic
+    const val=Math.round(startVal+(target-startVal)*ease);
+    el.textContent=fmt(val);
+    if(progress<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
 function initLandingNav(){
   const nav=document.getElementById('lpNav');
   if(!nav) return;
@@ -4445,14 +4469,48 @@ async function loadLandingRestos(){
   try{
     const restos=await fbGet('restaurants')||{};
     const active=Object.entries(restos).filter(([k,r])=>r.name);
-    // Stats
-    const el_r=document.getElementById('lpStatR');if(el_r) el_r.textContent=active.length||'0';
-    const orders=await fbGet('orders')||{};
-    const tod=new Date();tod.setHours(0,0,0,0);
-    const todayOrders=Object.values(orders).filter(o=>(o.ts||0)>=tod.getTime());
-    const el_o=document.getElementById('lpStatO');if(el_o) el_o.textContent=todayOrders.length||'0';
+    // Stats — restaurants cached daily
+    const el_r=document.getElementById('lpStatR');
+    const RCACHE_KEY='el_lp_restos_cache';
+    const RCACHE_DATE='el_lp_restos_date';
+    const rToday=new Date().toDateString();
+    const rCachedDate=localStorage.getItem(RCACHE_DATE);
+    const rCachedCount=parseInt(localStorage.getItem(RCACHE_KEY)||'0');
+    if(rCachedDate===rToday && rCachedCount>0){
+      if(el_r) animateCount(el_r, rCachedCount);
+    } else {
+      localStorage.setItem(RCACHE_KEY, active.length);
+      localStorage.setItem(RCACHE_DATE, rToday);
+      if(el_r) animateCount(el_r, active.length||0);
+    }
+
+    // Total orders — cached daily (avoids heavy Firebase read every visit)
+    const CACHE_KEY='el_lp_orders_cache';
+    const CACHE_DATE='el_lp_orders_date';
+    const today=new Date().toDateString();
+    const cachedDate=localStorage.getItem(CACHE_DATE);
+    const cachedCount=parseInt(localStorage.getItem(CACHE_KEY)||'0');
+    const el_o=document.getElementById('lpStatO');
+
+    if(cachedDate===today && cachedCount>0){
+      // Use cached value (same day) — no Firebase read needed
+      if(el_o) animateCount(el_o, cachedCount);
+    } else {
+      // Refresh once per day
+      try{
+        const orders=await fbGet('orders')||{};
+        const totalOrders=Object.keys(orders).length;
+        localStorage.setItem(CACHE_KEY, totalOrders);
+        localStorage.setItem(CACHE_DATE, today);
+        if(el_o) animateCount(el_o, totalOrders);
+      }catch(e){
+        if(el_o&&cachedCount>0) animateCount(el_o, cachedCount);
+      }
+    }
+
     const totalTables=active.reduce((s,[k,r])=>s+(r._tableCount||(r.tables||[]).length||0),0);
-    const el_t=document.getElementById('lpStatT');if(el_t) el_t.textContent=totalTables||'0';
+    const el_t=document.getElementById('lpStatT');
+    if(el_t) animateCount(el_t, totalTables||0);
     // Restaurant cards
     const grid=document.getElementById('lpRestosGrid');if(!grid) return;
     if(!active.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px">No restaurants yet — be the first!</div>';return;}
