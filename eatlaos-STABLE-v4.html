@@ -1277,6 +1277,37 @@ button,input,select,textarea{font-family:var(--fb);}
 .sl-btn:hover{background:var(--s-gold2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,151,58,.3);}
 .sl-err{color:var(--s-red);font-size:13px;text-align:center;min-height:20px;}
 .sl-footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--s-border);font-size:12px;color:var(--s-muted);text-align:center;}
+/* ── Login page extras ── */
+.sl-features{margin:auto 0;display:flex;flex-direction:column;gap:20px;}
+.sl-feat{display:flex;align-items:flex-start;gap:14px;}
+.sl-feat>span{font-size:24px;flex-shrink:0;width:44px;height:44px;background:rgba(200,151,58,.1);border:1px solid rgba(200,151,58,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.sl-feat b{display:block;font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.sl-feat p{font-size:13px;color:rgba(255,255,255,.35);line-height:1.5;margin:0;}
+.sl-form-wrap{width:100%;max-width:400px;margin:0 auto;}
+.sl-form-header{margin-bottom:36px;}
+.sl-form-logo{font-family:var(--ff);font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:16px;}
+.sl-form-logo em{color:var(--s-gold);font-style:italic;}
+/* SA specific */
+.sl-wrap-sa .sl-left-sa{background:linear-gradient(160deg,#08060a 0%,#100810 100%);border-right-color:rgba(200,151,58,.15);}
+.sl-sa-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(200,151,58,.08);border:1px solid rgba(200,151,58,.2);border-radius:100px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--s-gold);font-weight:700;margin-bottom:48px;}
+.sl-sa-warning{background:rgba(229,72,77,.05);border:1px solid rgba(229,72,77,.15);border-radius:12px;padding:24px;margin-top:auto;}
+.sl-sa-warn-icon{font-size:32px;margin-bottom:12px;}
+.sl-sa-warn-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;}
+.sl-sa-warn-txt{font-size:13px;color:rgba(255,255,255,.35);line-height:1.65;}
+.sl-btn-sa{background:linear-gradient(135deg,#1a0a0a,#2a1010);border:1px solid rgba(229,72,77,.3);color:#e5484d;}
+.sl-btn-sa:hover{background:linear-gradient(135deg,#2a1010,#3a1515);border-color:rgba(229,72,77,.6);box-shadow:0 8px 24px rgba(229,72,77,.2);}
+/* Responsive login */
+@media(max-width:768px){
+  .sl-wrap{grid-template-columns:1fr;}
+  .sl-left{display:none;}
+  .sl-right{padding:40px 28px;min-height:100vh;justify-content:center;}
+  .sl-form-wrap{max-width:100%;}
+  .sl-form-header{margin-bottom:28px;}
+}
+@media(max-width:480px){
+  .sl-right{padding:32px 20px;}
+  .sl-title{font-size:28px;}
+}
 /* ═══ END LOGIN PAGES ═══ */
 @media(max-width:1024px){
   .lp-feat-grid{grid-template-columns:repeat(2,1fr);}
@@ -2132,41 +2163,87 @@ setTimeout(function(){
 
 </div>
 <!-- OWNER LOGIN -->
-<div id="pg-owner-login" class="page" style="background:var(--s-bg);min-height:100vh;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+<div id="pg-owner-login" class="page">
   <div class="sl-lines"></div>
   <div class="sl-wrap">
     <div class="sl-left">
-      <button class="sl-back" onclick="showPage('pg-land')">← Back</button>
-      <div class="sl-brand"><div class="sl-logo">EAT<em>LAOS</em></div><span class="sl-sub">Owner Portal</span></div>
-      <div class="sl-info" style="margin-top:auto"><div class="sl-info-lbl">Restaurant Portal</div><div class="sl-info-txt">Sign in with credentials provided by your platform administrator.</div></div>
+      <button class="sl-back" onclick="showPage('pg-land')">← Back to home</button>
+      <div class="sl-brand">
+        <div class="sl-logo">EAT<em>LAOS</em></div>
+        <span class="sl-sub">Owner Portal</span>
+      </div>
+      <div class="sl-features">
+        <div class="sl-feat"><span>📊</span><div><b>Live Dashboard</b><p>Monitor orders and revenue in real time</p></div></div>
+        <div class="sl-feat"><span>🍽️</span><div><b>Menu Management</b><p>Update items, prices and categories</p></div></div>
+        <div class="sl-feat"><span>📱</span><div><b>QR Code Generator</b><p>Create and print QR codes for your tables</p></div></div>
+      </div>
+      <div class="sl-info">
+        <div class="sl-info-lbl">Need access?</div>
+        <div class="sl-info-txt">Contact your EATLAOS administrator to get your login credentials.</div>
+      </div>
     </div>
     <div class="sl-right">
-      <div class="sl-title">Restaurant Login</div>
-      <div class="sl-subtitle">Enter your owner credentials to access your dashboard</div>
-      <div class="fi-g"><label class="fi-l">Username</label><input class="fi" id="owU" placeholder="Enter username" onkeydown="if(event.key==='Enter')doOwnerLogin()"></div>
-      <div class="fi-g"><label class="fi-l">Password</label><input class="fi" type="password" id="owP" placeholder="••••••••" onkeydown="if(event.key==='Enter')doOwnerLogin()"></div>
-      <button class="btn-sign" onclick="doOwnerLogin()">Sign In</button>
-      <div class="sl-err" id="owErr"></div>
+      <div class="sl-form-wrap">
+        <div class="sl-form-header">
+          <div class="sl-form-logo">EAT<em>LAOS</em></div>
+          <div class="sl-title">Welcome back</div>
+          <div class="sl-subtitle">Sign in to your restaurant dashboard</div>
+        </div>
+        <div class="sl-form">
+          <div class="sl-field">
+            <label class="sl-label">Username</label>
+            <input class="sl-input" id="owU" placeholder="Enter your username" autocomplete="username" onkeydown="if(event.key==='Enter')doOwnerLogin()">
+          </div>
+          <div class="sl-field">
+            <label class="sl-label">Password</label>
+            <input class="sl-input" type="password" id="owP" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doOwnerLogin()">
+          </div>
+          <button class="sl-btn" onclick="doOwnerLogin()">Sign In →</button>
+          <div class="sl-err" id="owErr"></div>
+        </div>
+        <div class="sl-footer">EATLAOS Restaurant Platform · Vientiane, Laos</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- SA LOGIN (secret) -->
-<div id="pg-sa-login" class="page" style="background:var(--s-bg);min-height:100vh;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+<div id="pg-sa-login" class="page">
   <div class="sl-lines"></div>
-  <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);background:rgba(200,151,58,.1);border:1px solid rgba(200,151,58,.2);padding:6px 18px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-gold)">🔒 Restricted Access</div>
-  <div class="sl-wrap">
-    <div class="sl-left">
-      <div class="sl-brand" style="margin-top:auto"><div class="sl-logo">EAT<em>LAOS</em></div><span class="sl-sub">Super Admin</span></div>
-      <div class="sl-info" style="margin-top:20px;border-color:rgba(200,151,58,.2)"><div class="sl-info-lbl" style="color:var(--s-gold)">⚠ Admin Only</div><div class="sl-info-txt" style="color:var(--s-muted)">Authorized personnel only. Unauthorized access is prohibited.</div></div>
+  <div class="sl-wrap sl-wrap-sa">
+    <div class="sl-left sl-left-sa">
+      <div class="sl-sa-badge">🔒 Restricted Access</div>
+      <div class="sl-brand">
+        <div class="sl-logo">EAT<em>LAOS</em></div>
+        <span class="sl-sub">Super Admin</span>
+      </div>
+      <div class="sl-sa-warning">
+        <div class="sl-sa-warn-icon">⚠️</div>
+        <div class="sl-sa-warn-title">Authorized Personnel Only</div>
+        <div class="sl-sa-warn-txt">This area is restricted to platform administrators. All access attempts are logged.</div>
+      </div>
     </div>
     <div class="sl-right">
-      <div class="sl-title">Super Admin</div>
-      <div class="sl-subtitle">Platform control — authorized access only</div>
-      <div class="fi-g"><label class="fi-l">Admin Username</label><input class="fi" id="saU" placeholder="Enter username" onkeydown="if(event.key==='Enter')doSALogin()"></div>
-      <div class="fi-g"><label class="fi-l">Admin Password</label><input class="fi" type="password" id="saP" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSALogin()"></div>
-      <button class="btn-sign" onclick="doSALogin()">Access Admin Panel</button>
-      <div class="sl-err" id="saErr"></div>
+      <div class="sl-form-wrap">
+        <div class="sl-form-header">
+          <div class="sl-form-logo">EAT<em>LAOS</em></div>
+          <div class="sl-title">Admin Access</div>
+          <div class="sl-subtitle">Platform control panel — authorized access only</div>
+        </div>
+        <div class="sl-form">
+          <div class="sl-field">
+            <label class="sl-label">Admin Username</label>
+            <input class="sl-input" id="saU" placeholder="Enter admin username" autocomplete="username" onkeydown="if(event.key==='Enter')doSALogin()">
+          </div>
+          <div class="sl-field">
+            <label class="sl-label">Admin Password</label>
+            <input class="sl-input" type="password" id="saP" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSALogin()">
+          </div>
+          <button class="sl-btn sl-btn-sa" onclick="doSALogin()">Access Admin Panel →</button>
+          <div class="sl-err" id="saErr"></div>
+        </div>
+        <div class="sl-footer">EATLAOS · Platform Administration</div>
+      </div>
     </div>
   </div>
 </div>
