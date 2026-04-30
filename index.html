@@ -4184,6 +4184,12 @@ async function init(){
     if(!isCustomer){
       const _saved=localStorage.getItem('el_session');
       if(!_saved){
+        // Check if SA admin URL — show SA login instead of landing
+        if(p.get('admin')==='EatLaos2026SecretAdmin'){
+          showPage('pg-sa-login');
+          hideLoading();
+          return;
+        }
         // No session — show landing instantly
         showPage('pg-land');
         hideLoading();
