@@ -2034,7 +2034,51 @@ body{min-height:100%;overscroll-behavior-x:none;}
   font-weight:900;letter-spacing:-1px;line-height:1.2;
 }
 /* ══ END V4 ADDITIONS ══ */
+
+/* ── Lao Font for Owner/SA Dashboard ── */
+body.lang-lo,
+body.lang-lo input,
+body.lang-lo select,
+body.lang-lo textarea,
+body.lang-lo button{
+  font-family:'Noto Sans Lao',system-ui,sans-serif;
+}
+body.lang-lo .sb-logo,
+body.lang-lo .topbar-title,
+body.lang-lo .card-title,
+body.lang-lo .stat-lbl,
+body.lang-lo .stat-val,
+body.lang-lo .modal-title,
+body.lang-lo .land-logo,
+body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
+  font-family:'Noto Serif Lao',Georgia,serif;
+}
 </style>
+
+<script>
+// Apply Lao font class to body based on saved language (non-invasive)
+(function(){
+  function applyLangClass(){
+    var l=localStorage.getItem('el_lang')||'en';
+    document.body.className=document.body.className
+      .replace(/lang-\w+/g,'').trim();
+    if(l!=='en') document.body.classList.add('lang-'+l);
+  }
+  // Apply on load
+  if(document.body) applyLangClass();
+  else document.addEventListener('DOMContentLoaded',applyLangClass);
+  // Apply when language changes
+  window.addEventListener('storage',function(e){
+    if(e.key==='el_lang') applyLangClass();
+  });
+  // Patch to detect in-page setLang calls
+  var _origSetItem=localStorage.setItem.bind(localStorage);
+  localStorage.setItem=function(k,v){
+    _origSetItem(k,v);
+    if(k==='el_lang') applyLangClass();
+  };
+})();
+</script>
 </head>
 <body>
 
