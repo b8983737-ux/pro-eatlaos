@@ -2162,8 +2162,8 @@ setTimeout(function(){
 // Force hide loading screen after 5 seconds NO MATTER WHAT
 setTimeout(function(){
   var e=document.getElementById('loadingScreen');
-  if(e){e.style.opacity='0';e.style.transition='opacity 0.5s';setTimeout(function(){e.style.display='none';},500);}
-},5000);
+  if(e){e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(function(){e.style.display='none';},300);}
+},1500);
 </script>
   <div id="loadSplash">
     <!-- Default EATLAOS splash (shown for admin) -->
@@ -2489,7 +2489,7 @@ setTimeout(function(){
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">👑</div><div><div class="sb-un">Super Admin</div><div class="sb-ur">Platform Owner</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
     </aside>
     <main class="staff-main">
-      <div class="topbar"><div class="topbar-title" id="saTbar" data-ts="dashboard">Dashboard</div><div class="topbar-r"><button class="btn btn-gold" onclick="resetRestoModal();openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
+      <div class="topbar"><div class="topbar-title" id="saTbar" data-ts="dashboard">Dashboard</div><div class="topbar-r"><select id="saLangSel" onchange="setSALang(this.value)" style="background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-muted);padding:5px 8px;font-size:11px;border-radius:4px;cursor:pointer"><option value="en">🇬🇧 EN</option><option value="lo">🇱🇦 ລາວ</option><option value="th">🇹🇭 ไทย</option><option value="zh">🇨🇳 中文</option><option value="ko">🇰🇷 한국어</option></select><button class="btn btn-gold" onclick="resetRestoModal();openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="sa-dashboard">
           <div style="display:flex;justify-content:flex-end;gap:5px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
@@ -4288,6 +4288,14 @@ async function init(){
 
 function restoreSA(){
   showPage('pg-sa');
+  // Restore saved language
+  const _saLang=localStorage.getItem('el_lang')||'en';
+  const _saLangSel=document.getElementById('saLangSel');
+  if(_saLangSel) _saLangSel.value=_saLang;
+  if(_saLang!=='en'){
+    document.body.classList.add('lang-'+_saLang);
+    setTimeout(()=>{applyTranslation(document.getElementById('pg-sa'));startTranslationObserver();},200);
+  }
   saP('dashboard',document.querySelector('#pg-sa .sb-item'));
   startSAListeners();
   setTimeout(()=>initSACharts(),300);
@@ -5052,6 +5060,20 @@ async function markContactDone(reqId){
   await fbUpdate('contactRequests/'+reqId,{status:'done'});
   loadContactRequests();
   notifyD('✅ Marked as done');
+}
+
+function setSALang(l){
+  localStorage.setItem('el_lang', l);
+  const sel=document.getElementById('saLangSel');
+  if(sel) sel.value=l;
+  // Apply Lao font class to body
+  document.body.className=document.body.className.replace(/\blang-\w+/g,'').trim();
+  if(l!=='en') document.body.classList.add('lang-'+l);
+  // Apply translation to SA page
+  if(l!=='en'){
+    applyTranslation(document.getElementById('pg-sa'));
+    startTranslationObserver();
+  }
 }
 
 async function startSAListeners(){
@@ -7777,6 +7799,7 @@ async function startCustomerSession(rId,tId,sessId){
   if(sess&&Date.now()>sess.exp){
     showPage('pg-customer');
     document.getElementById('sessExp').classList.add('show');
+    hideLoading();
     return;
   }
   if(!r){showPage('pg-land');return;}
