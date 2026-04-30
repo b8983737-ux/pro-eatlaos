@@ -4516,8 +4516,28 @@ function startOwnerListeners(){
     if(badge) badge.style.display=pend>0?'inline':'none';
   });
 }
+let _lpLang = localStorage.getItem('el_lp_lang')||'en';
 
-LP_TRANSLATIONS = {
+function setLpLang(lang, flag, code){
+  _lpLang = lang;
+  localStorage.setItem('el_lp_lang', lang);
+  document.getElementById('lpLangFlag').textContent = flag;
+  document.getElementById('lpLangCode').textContent = code;
+  document.getElementById('lpLangDrop').classList.remove('open');
+  applyLpTranslation(lang);
+  // Apply language font class to page
+  const pg=document.getElementById('pg-land');
+  if(pg){
+    pg.className=pg.className.replace(/lp-lang-\w+/g,'').trim();
+    pg.classList.add('lp-lang-'+lang);
+  }
+}
+
+function toggleLpLang(){
+  document.getElementById('lpLangDrop').classList.toggle('open');
+}
+
+const LP_TRANSLATIONS = {
   en: {
     badge:'Laos · Restaurant Platform',
     h1_line1:'The future<br>of dining<br>is <em>digital</em>',
@@ -4681,27 +4701,6 @@ LP_TRANSLATIONS = {
     footer_tagline:'QR 레스토랑 플랫폼 · 비엔티안, 라오스',
   }
 };
-
-let _lpLang = localStorage.getItem('el_lp_lang')||'en';
-
-function setLpLang(lang, flag, code){
-  _lpLang = lang;
-  localStorage.setItem('el_lp_lang', lang);
-  document.getElementById('lpLangFlag').textContent = flag;
-  document.getElementById('lpLangCode').textContent = code;
-  document.getElementById('lpLangDrop').classList.remove('open');
-  applyLpTranslation(lang);
-  // Apply language font class to page
-  const pg=document.getElementById('pg-land');
-  if(pg){
-    pg.className=pg.className.replace(/lp-lang-\w+/g,'').trim();
-    pg.classList.add('lp-lang-'+lang);
-  }
-}
-
-function toggleLpLang(){
-  document.getElementById('lpLangDrop').classList.toggle('open');
-}
 
 function applyLpTranslation(lang){
   const t = LP_TRANSLATIONS[lang] || LP_TRANSLATIONS.en;
@@ -4869,171 +4868,6 @@ async function submitContact(){
 }
 
 // ══ LANDING PAGE TRANSLATIONS ══
-const LP_TRANSLATIONS = {
-  en: {
-    badge:'Laos · Restaurant Platform',
-    h1_line1:'The future<br>of dining<br>is <em>digital</em>',
-    hero_sub:'Customers scan a QR code, browse your menu and order directly from the table. No app. No cash. No waiting.',
-    cta_start:'Get Started Free →',
-    cta_view:'View Restaurants ↓',
-    nav_login:'Owner Login',
-    nav_contact:'Contact Us →',
-    how_eyebrow:'How it works',
-    how_title:'Up and running<br>in 3 steps',
-    how_sub:'Set up your restaurant in minutes. Start receiving orders today.',
-    step1_title:'Build your menu',
-    step1_desc:'Add items with photos, prices and sizes. Set categories, mark popular items and write descriptions in 4 languages.',
-    step2_title:'Print QR codes',
-    step2_desc:'Generate a unique QR code for every table. Customers scan it and your menu appears instantly — no app needed.',
-    step3_title:'Receive live orders',
-    step3_desc:'Orders appear on your kitchen screen in real time. Manage status, print bills and track daily revenue.',
-    restos_eyebrow:'Live on EATLAOS',
-    restos_title:'Our Restaurants',
-    restos_sub:'Click any restaurant to browse their menu and order from your table.',
-    feat_eyebrow:'Platform Features',
-    feat_title:'Everything<br>you need',
-    feat_sub:'Built for Lao restaurants. Powerful enough for any size.',
-    cta_band_title:'Ready to modernise<br>your restaurant?',
-    cta_band_sub:'Join the restaurants already on EATLAOS. Contact us to get started.',
-    cta_band_btn:'Contact Us Now →',
-    stat_restos:'Restaurants',
-    stat_orders:'Orders Served',
-    stat_tables:'Tables Active',
-    stat_themes:'Themes',
-    footer_tagline:'QR Restaurant Platform · Vientiane, Laos',
-    contact_title:"Let's get started",
-    contact_sub:"Tell us about your restaurant and we'll get back to you within 24 hours.",
-  },
-  lo: {
-    badge:'ລາວ · ແພລດຟອມຮ້ານອາຫານ',
-    h1_line1:'ອະນາຄົດຂອງ<br>ການທານອາຫານ<br>ແມ່ນ <em>ດິຈິຕອລ</em>',
-    hero_sub:'ລູກຄ້າສະແກນ QR Code, ເບິ່ງເມນູ ແລະ ສັ່ງອາຫານໄດ້ໂດຍກົງຈາກໂຕະ. ບໍ່ຕ້ອງໂຫລດແອັບ. ບໍ່ຕ້ອງໃຊ້ເງິນສົດ.',
-    cta_start:'ເລີ່ມໃຊ້ຟຣີ →',
-    cta_view:'ເບິ່ງຮ້ານອາຫານ ↓',
-    nav_login:'ເຂົ້າສູ່ລະບົບເຈົ້າຂອງຮ້ານ',
-    nav_contact:'ຕິດຕໍ່ພວກເຮົາ →',
-    how_eyebrow:'ວິທີໃຊ້ງານ',
-    how_title:'ພ້ອມໃຊ້ງານ<br>ພາຍໃນ 3 ຂັ້ນຕອນ',
-    how_sub:'ຕັ້ງຄ່າຮ້ານຂອງທ່ານໃນໄລຍະສອງສາມນາທີ. ເລີ່ມຮັບອໍເດີໄດ້ໃນມື້ນີ້.',
-    step1_title:'ສ້າງເມນູຂອງທ່ານ',
-    step1_desc:'ເພີ່ມລາຍການດ້ວຍຮູບພາບ, ລາຄາ ແລະ ຂະໜາດ. ຕັ້ງໝວດໝູ່ ແລະ ຂຽນລາຍລະອຽດ.',
-    step2_title:'ພິມ QR Code',
-    step2_desc:'ສ້າງ QR Code ສຳລັບທຸກໂຕະ. ລູກຄ້າສະແກນ ແລ້ວເມນູຂື້ນທັນທີ — ບໍ່ຕ້ອງໂຫລດແອັບ.',
-    step3_title:'ຮັບອໍເດີສົດ',
-    step3_desc:'ອໍເດີຂື້ນໜ້າຈໍຫ້ອງຄົວທັນທີ. ຈັດການສະຖານະ, ພິມໃບບິນ ແລະ ຕິດຕາມລາຍຮັບ.',
-    restos_eyebrow:'ຮ້ານທີ່ໃຊ້ EATLAOS',
-    restos_title:'ຮ້ານອາຫານຂອງພວກເຮົາ',
-    restos_sub:'ກົດທີ່ຮ້ານໃດໆ ເພື່ອເບິ່ງເມນູ ແລະ ສັ່ງອາຫານ.',
-    feat_eyebrow:'ຟີເຈີຂອງແພລດຟອມ',
-    feat_title:'ທຸກຢ່າງ<br>ທີ່ທ່ານຕ້ອງການ',
-    feat_sub:'ສ້າງສຳລັບຮ້ານອາຫານລາວ. ໃຊ້ໄດ້ທຸກຂະໜາດ.',
-    cta_band_title:'ພ້ອມທີ່ຈະ<br>ອັບເກຣດຮ້ານຂອງທ່ານແລ້ວບໍ?',
-    cta_band_sub:'ຮ່ວມກັບຮ້ານທີ່ໃຊ້ EATLAOS ຢູ່ແລ້ວ. ຕິດຕໍ່ພວກເຮົາ.',
-    cta_band_btn:'ຕິດຕໍ່ພວກເຮົາ →',
-    stat_restos:'ຮ້ານອາຫານ',
-    stat_orders:'ອໍເດີທັງໝົດ',
-    stat_tables:'ໂຕະທີ່ໃຊ້ງານ',
-    stat_themes:'ຮູບແບບ',
-    footer_tagline:'ແພລດຟອມ QR ຮ້ານອາຫານ · ວຽງຈັນ, ລາວ',
-  },
-  th: {
-    badge:'ลาว · แพลตฟอร์มร้านอาหาร',
-    h1_line1:'อนาคต<br>ของการรับประทานอาหาร<br>คือ <em>ดิจิทัล</em>',
-    hero_sub:'ลูกค้าสแกน QR Code ดูเมนู และสั่งอาหารได้โดยตรงจากโต๊ะ ไม่ต้องโหลดแอป ไม่ต้องใช้เงินสด',
-    cta_start:'เริ่มใช้ฟรี →',
-    cta_view:'ดูร้านอาหาร ↓',
-    nav_login:'เข้าสู่ระบบเจ้าของร้าน',
-    nav_contact:'ติดต่อเรา →',
-    how_eyebrow:'วิธีใช้งาน',
-    how_title:'พร้อมใช้งาน<br>ใน 3 ขั้นตอน',
-    how_sub:'ตั้งค่าร้านของคุณในไม่กี่นาที เริ่มรับออเดอร์ได้วันนี้เลย',
-    step1_title:'สร้างเมนูของคุณ',
-    step1_desc:'เพิ่มรายการพร้อมรูปภาพ ราคา และขนาด ตั้งหมวดหมู่และเขียนคำอธิบายใน 4 ภาษา',
-    step2_title:'พิมพ์ QR Code',
-    step2_desc:'สร้าง QR Code สำหรับทุกโต๊ะ ลูกค้าสแกนแล้วเมนูปรากฏทันที ไม่ต้องโหลดแอป',
-    step3_title:'รับออเดอร์สด',
-    step3_desc:'ออเดอร์ปรากฏบนหน้าจอครัวทันที จัดการสถานะ พิมพ์บิล และติดตามรายได้',
-    restos_eyebrow:'ร้านที่ใช้ EATLAOS',
-    restos_title:'ร้านอาหารของเรา',
-    restos_sub:'คลิกที่ร้านใดๆ เพื่อดูเมนูและสั่งอาหารจากโต๊ะของคุณ',
-    feat_eyebrow:'ฟีเจอร์แพลตฟอร์ม',
-    feat_title:'ทุกอย่าง<br>ที่คุณต้องการ',
-    feat_sub:'สร้างมาสำหรับร้านอาหารลาว ใช้ได้ทุกขนาด',
-    cta_band_title:'พร้อมที่จะ<br>อัปเกรดร้านของคุณแล้วหรือยัง?',
-    cta_band_sub:'ร่วมกับร้านที่ใช้ EATLAOS อยู่แล้ว ติดต่อเราเพื่อเริ่มต้น',
-    cta_band_btn:'ติดต่อเราเลย →',
-    stat_restos:'ร้านอาหาร',
-    stat_orders:'ออเดอร์ทั้งหมด',
-    stat_tables:'โต๊ะที่ใช้งาน',
-    stat_themes:'ธีม',
-    footer_tagline:'แพลตฟอร์ม QR ร้านอาหาร · เวียงจันทน์ ลาว',
-  },
-  zh: {
-    badge:'老挝 · 餐厅平台',
-    h1_line1:'餐饮的<br>未来<br>是 <em>数字化</em>',
-    hero_sub:'顾客扫描二维码，浏览菜单并直接从餐桌点餐。无需下载应用，无需现金，无需等待。',
-    cta_start:'免费开始 →',
-    cta_view:'查看餐厅 ↓',
-    nav_login:'餐厅业主登录',
-    nav_contact:'联系我们 →',
-    how_eyebrow:'使用方法',
-    how_title:'3个步骤<br>即可开始运营',
-    how_sub:'几分钟内完成设置，今天就开始接收订单。',
-    step1_title:'创建您的菜单',
-    step1_desc:'添加带有照片、价格和尺寸的菜品。设置分类，用4种语言编写描述。',
-    step2_title:'打印二维码',
-    step2_desc:'为每张桌子生成唯一的二维码。顾客扫描后菜单立即显示，无需下载应用。',
-    step3_title:'实时接收订单',
-    step3_desc:'订单实时显示在厨房屏幕上。管理状态，打印账单，追踪每日收入。',
-    restos_eyebrow:'使用EATLAOS的餐厅',
-    restos_title:'我们的餐厅',
-    restos_sub:'点击任意餐厅浏览菜单并从您的餐桌点餐。',
-    feat_eyebrow:'平台功能',
-    feat_title:'一切<br>您所需要的',
-    feat_sub:'专为老挝餐厅打造，适合任何规模。',
-    cta_band_title:'准备好升级<br>您的餐厅了吗？',
-    cta_band_sub:'加入已在使用EATLAOS的餐厅。联系我们开始使用。',
-    cta_band_btn:'立即联系我们 →',
-    stat_restos:'餐厅',
-    stat_orders:'累计订单',
-    stat_tables:'活跃餐桌',
-    stat_themes:'主题',
-    footer_tagline:'二维码餐厅平台 · 万象，老挝',
-  },
-  ko: {
-    badge:'라오스 · 레스토랑 플랫폼',
-    h1_line1:'식사의<br>미래는<br><em>디지털</em>입니다',
-    hero_sub:'고객이 QR 코드를 스캔하고 메뉴를 보고 테이블에서 직접 주문합니다. 앱 다운로드 불필요. 현금 불필요.',
-    cta_start:'무료로 시작하기 →',
-    cta_view:'레스토랑 보기 ↓',
-    nav_login:'사업자 로그인',
-    nav_contact:'문의하기 →',
-    how_eyebrow:'사용 방법',
-    how_title:'3단계로<br>바로 시작',
-    how_sub:'몇 분 안에 레스토랑을 설정하고 오늘부터 주문을 받으세요.',
-    step1_title:'메뉴 만들기',
-    step1_desc:'사진, 가격, 크기와 함께 메뉴를 추가하세요. 카테고리를 설정하고 4개 언어로 설명을 작성하세요.',
-    step2_title:'QR 코드 인쇄',
-    step2_desc:'각 테이블에 대한 고유한 QR 코드를 생성하세요. 고객이 스캔하면 메뉴가 즉시 표시됩니다.',
-    step3_title:'실시간 주문 수신',
-    step3_desc:'주문이 주방 화면에 실시간으로 표시됩니다. 상태를 관리하고 영수증을 인쇄하세요.',
-    restos_eyebrow:'EATLAOS 파트너 레스토랑',
-    restos_title:'우리 레스토랑',
-    restos_sub:'레스토랑을 클릭하여 메뉴를 보고 테이블에서 주문하세요.',
-    feat_eyebrow:'플랫폼 기능',
-    feat_title:'필요한<br>모든 것',
-    feat_sub:'라오스 레스토랑을 위해 제작되었습니다. 모든 규모에 적합합니다.',
-    cta_band_title:'레스토랑을 업그레이드할<br>준비가 되셨나요?',
-    cta_band_sub:'이미 EATLAOS를 사용 중인 레스토랑에 합류하세요. 시작하려면 문의하세요.',
-    cta_band_btn:'지금 문의하기 →',
-    stat_restos:'레스토랑',
-    stat_orders:'총 주문 수',
-    stat_tables:'활성 테이블',
-    stat_themes:'테마',
-    footer_tagline:'QR 레스토랑 플랫폼 · 비엔티안, 라오스',
-  }
-};
-
 _lpLang = localStorage.getItem('el_lp_lang')||'en';
 
 
