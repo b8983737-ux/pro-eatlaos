@@ -2,6 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>EATLAOS · Restaurant Platform · Laos</title>
+<meta name="description" content="Let customers scan a QR code and order from their table. No app needed.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#c8973a">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://eatlaos.com/">
+<meta property="og:title" content="EATLAOS · Restaurant Platform">
+<meta property="og:description" content="Let customers scan a QR code and order directly from the table. No app. No cash.">
+<meta property="og:image" content="https://eatlaos.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="EATLAOS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EATLAOS · Restaurant Platform">
+<meta name="twitter:description" content="Let customers scan a QR code and order directly from the table.">
+<meta name="twitter:image" content="https://eatlaos.com/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"EATLAOS","url":"https://eatlaos.com","logo":"https://eatlaos.com/og-image.png","description":"QR restaurant ordering platform for Laos."}</script>
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
   <meta property="og:title" id="ogTitle" content="EATLAOS">
   <meta property="og:description" content="Scan & Order from your table">
   <meta property="og:type" content="website">
@@ -1672,11 +1690,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--s-border);}
 
 /* ══ QR FULLSCREEN IMMERSIVE ══ */
-html,body{
-  height:100%;height:-webkit-fill-available;
-  overflow:hidden;margin:0;padding:0;
-  overscroll-behavior:none;
-}
+html{height:100%;height:-webkit-fill-available;}
+body{min-height:100%;overscroll-behavior-x:none;}
 #pg-customer{
   position:fixed;top:0;left:0;right:0;bottom:0;
   display:none;flex-direction:column;
@@ -1708,7 +1723,7 @@ html,body{
 }
 .c-topbar,.c-tabs-bar{flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);}
 .c-cats{flex-shrink:0;z-index:90;}
-#pg-ow,#pg-sa,#pg-land{overflow-y:auto;height:100%;}
+#pg-ow,#pg-sa{overflow-y:auto;height:100%;}
 
 /* SIZE SELECTOR */
 .c-size-opts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
@@ -1950,7 +1965,6 @@ html,body{
   font-family:'Apple SD Gothic Neo','Malgun Gothic','Fraunces',sans-serif;
   font-weight:900;letter-spacing:-1px;line-height:1.2;
 }
-</style>
 /* ══ END V4 ADDITIONS ══ */
 </style>
 </head>
