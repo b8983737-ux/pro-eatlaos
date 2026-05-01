@@ -2634,6 +2634,11 @@ setTimeout(function(){
         </div>
 
         <div class="panel" id="sa-settings">
+          <!-- Firebase Usage Monitor -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-h"><div class="card-title">⚡ Firebase Usage</div><button class="btn btn-sm" onclick="loadFirebaseUsage()">↻ Refresh</button></div>
+            <div id="fbUsageBox" style="padding:12px"><div style="color:var(--s-muted);font-size:12px">Click Refresh to load</div></div>
+          </div>
           <div class="card"><div class="card-h"><div class="card-title">Platform Settings</div></div><div style="padding:20px">
             <div class="form-row" style="margin-bottom:14px"><div class="fg"><label>Platform Name</label><input class="fi" value="EATLAOS" id="setPName"></div><div class="fg"><label>Default Commission (%)</label><input class="fi" type="number" value="15" id="setComm" min="0" max="100" step="0.5" placeholder="0 = no commission" onchange="if(this.value==='')this.value=0"></div></div>
             <div class="fg"><label>Default Session Duration</label><select class="fi" id="setSessH" style="max-width:240px"><option value="1">1 hour</option><option value="2" selected>2 hours</option><option value="4">4 hours</option><option value="8">8 hours</option><option value="24">1 day</option></select></div>
@@ -4357,8 +4362,29 @@ async function autoCleanOldData(){
       }
     }
 
-    if(deletedOrders>0||deletedSessions>0){
-      console.log('✅ Auto-cleanup done: '+deletedOrders+' orders + '+deletedSessions+' sessions removed');
+    // Clean old CONTACT REQUESTS (v4 addition — older than 90 days)
+    const contacts=await restGet('contactRequests');
+    let deletedContacts=0;
+    if(contacts){
+      const cutoff90d=Date.now()-(90*24*60*60*1000);
+      const cDels={};
+      Object.entries(contacts).forEach(([k,c])=>{
+        if((c.ts||0)<cutoff90d && c.status==='done'){
+          cDels['contactRequests/'+k]=null;
+          deletedContacts++;
+        }
+      });
+      if(Object.keys(cDels).length>0){
+        await fetch(DB_URL+'/.json',{
+          method:'PATCH',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(cDels)
+        });
+      }
+    }
+
+    if(deletedOrders>0||deletedSessions>0||deletedContacts>0){
+      console.log('✅ Auto-cleanup: '+deletedOrders+' orders + '+deletedSessions+' sessions + '+deletedContacts+' contacts removed');
     }
   }catch(e){
     console.log('Auto-cleanup error (non-critical):', e);
@@ -4928,20 +4954,54 @@ function initLandingNav(){
 
 async function loadLandingRestos(){
   try{
-    const restos=await fbGet('restaurants')||{};
-    const active=Object.entries(restos).filter(([k,r])=>r.name);
-    // Stats — restaurants cached daily
-    const el_r=document.getElementById('lpStatR');
+    // Check daily cache FIRST — avoid downloading restaurants every visit
     const RCACHE_KEY='el_lp_restos_cache';
     const RCACHE_DATE='el_lp_restos_date';
+    const RCACHE_DATA='el_lp_restos_data'; // lightweight card data cache
     const rToday=new Date().toDateString();
     const rCachedDate=localStorage.getItem(RCACHE_DATE);
     const rCachedCount=parseInt(localStorage.getItem(RCACHE_KEY)||'0');
-    if(rCachedDate===rToday && rCachedCount>0){
+    const el_r=document.getElementById('lpStatR');
+    let active=[];
+
+    const sessRestos=sessionStorage.getItem('el_sess_restos');
+    if(sessRestos){
+      // Same tab session — use sessionStorage (fastest, zero reads)
+      try{
+        active=JSON.parse(sessRestos);
+        if(el_r) animateCount(el_r, active.length||0);
+      }catch(e){}
+    } else if(rCachedDate===rToday && rCachedCount>0){
+      // Same day — use localStorage cache
       if(el_r) animateCount(el_r, rCachedCount);
+      try{
+        const cached=localStorage.getItem(RCACHE_DATA);
+        if(cached){
+          active=JSON.parse(cached);
+          sessionStorage.setItem('el_sess_restos', cached); // warm session cache
+        }
+      }catch(e){}
     } else {
+      // Daily refresh — download only lightweight fields (no menus, no images)
+      const restos=await fbGet('restaurants')||{};
+      // Strip heavy data — only keep what cards need
+      active=Object.entries(restos)
+        .filter(([k,r])=>r.name)
+        .map(([k,r])=>([k,{
+          name:r.name, emoji:r.emoji||'🍽️',
+          // NO logo — base64 logos are huge (50-200KB each!)
+          // Landing page shows emoji only to save bandwidth
+          cuisine:r.cuisine||r.addr||'Laos',
+          _tableCount:(r.tables||[]).length
+        }]));
       localStorage.setItem(RCACHE_KEY, active.length);
       localStorage.setItem(RCACHE_DATE, rToday);
+      // Cache lightweight card data (no menus, descriptions, logos)
+      const cacheStr=JSON.stringify(active);
+      try{
+        localStorage.setItem(RCACHE_DATA, cacheStr);
+        sessionStorage.setItem('el_sess_restos', cacheStr); // warm session cache
+      }catch(e){}
       if(el_r) animateCount(el_r, active.length||0);
     }
 
@@ -4953,35 +5013,41 @@ async function loadLandingRestos(){
     const cachedCount=parseInt(localStorage.getItem(CACHE_KEY)||'0');
     const el_o=document.getElementById('lpStatO');
 
-    if(cachedDate===today && cachedCount>0){
-      // Use cached value (same day) — no Firebase read needed
+    // Also check sessionStorage (same tab = definitely no re-fetch needed)
+    const sessCached=sessionStorage.getItem('el_sess_orders');
+    if(sessCached){
+      if(el_o) animateCount(el_o, parseInt(sessCached)||0);
+    } else if(cachedDate===today && cachedCount>0){
+      // Use daily cache — no Firebase read needed
+      sessionStorage.setItem('el_sess_orders', cachedCount);
       if(el_o) animateCount(el_o, cachedCount);
     } else {
-      // Refresh once per day
+      // Refresh once per day (first visitor of the day)
       try{
         const orders=await fbGet('orders')||{};
         const totalOrders=Object.keys(orders).length;
         localStorage.setItem(CACHE_KEY, totalOrders);
         localStorage.setItem(CACHE_DATE, today);
+        sessionStorage.setItem('el_sess_orders', totalOrders);
         if(el_o) animateCount(el_o, totalOrders);
       }catch(e){
         if(el_o&&cachedCount>0) animateCount(el_o, cachedCount);
       }
     }
 
-    const totalTables=active.reduce((s,[k,r])=>s+(r._tableCount||(r.tables||[]).length||0),0);
+    const totalTables=active.reduce((s,item)=>{const r=Array.isArray(item)?item[1]:item;return s+(r._tableCount||(r.tables||[]).length||0);},0);
     const el_t=document.getElementById('lpStatT');
     if(el_t) animateCount(el_t, totalTables||0);
     // Restaurant cards
     const grid=document.getElementById('lpRestosGrid');if(!grid) return;
     if(!active.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px">No restaurants yet — be the first!</div>';return;}
-    grid.innerHTML=active.map(([k,r])=>`
+    grid.innerHTML=active.map(item=>{const[k,r]=Array.isArray(item)?item:[item.id,item];return`
       <div class="lp-resto-card" style="cursor:default">
         <div class="lp-resto-live"><div class="lp-resto-live-dot"></div><span class="lp-resto-live-txt">LIVE</span></div>
-        <div class="lp-resto-logo">${r.logo?`<img src="${r.logo}" alt="${r.name||''}">`:r.emoji||'🍽️'}</div>
+        <div class="lp-resto-logo">${r.emoji||'🍽️'}</div>
         <div class="lp-resto-name">${r.name||'Restaurant'}</div>
-        <div class="lp-resto-cuisine">${r.cuisine||r.addr||'Laos'}</div>
-      </div>`).join('');
+        <div class="lp-resto-cuisine">${r.cuisine||'Laos'}</div>
+      </div>`;}).join('');
   }catch(e){dbg('Landing error: '+e.message,'warn');}
 }
 
@@ -5570,6 +5636,93 @@ async function loadSettingsUI(){
   await loadCFG();
   document.getElementById('setComm').value=CFG.commission;
   document.getElementById('setSessH').value=CFG.sessHours||2;
+  loadFirebaseUsage();
+}
+
+async function loadFirebaseUsage(){
+  const box=document.getElementById('fbUsageBox');
+  if(!box) return;
+  box.innerHTML='<div style="color:var(--s-muted);font-size:12px">Calculating usage...</div>';
+  try{
+    const [orders,sessions,restos,contacts]=await Promise.all([
+      restGet('orders'),
+      restGet('sessions'),
+      restGet('restaurants'),
+      restGet('contactRequests')
+    ]);
+    const orderCount=orders?Object.keys(orders).length:0;
+    const sessCount=sessions?Object.keys(sessions).length:0;
+    const restoCount=restos?Object.keys(restos).length:0;
+    const contactCount=contacts?Object.keys(contacts).length:0;
+
+    // Estimate storage
+    const orderSize=orderCount*3; // ~3KB per order
+    const restoSize=restoCount*500; // ~500KB per restaurant (with images)
+    const sessSize=sessCount*1; // ~1KB per session
+    const totalKB=orderSize+restoSize+sessSize;
+    const totalMB=(totalKB/1024).toFixed(2);
+    const storagePct=Math.min(Math.round(totalKB/1024/1024*100),100); // % of 1GB free limit
+    const storageColor=storagePct>80?'var(--s-red)':storagePct>50?'#f59e0b':'var(--s-green)';
+
+    // Bandwidth estimate (rough: based on order count activity)
+    const bwEstGB=(orderCount*0.005).toFixed(2); // rough estimate
+
+    // Old orders (1yr+)
+    const oneYear=Date.now()-(365*24*60*60*1000);
+    const oldOrders=orders?Object.values(orders).filter(o=>(o.ts||0)<oneYear).length:0;
+
+    box.innerHTML=`
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:14px">⚡ Firebase Usage Monitor</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="padding:12px;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:4px">
+          <div style="font-size:9px;color:var(--s-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Storage (est.)</div>
+          <div style="font-family:var(--ff);font-size:22px;font-weight:900;color:${storageColor}">${totalMB} MB</div>
+          <div style="font-size:10px;color:var(--s-muted);margin-top:3px">of 1,024 MB free</div>
+          <div style="height:4px;background:var(--s-border);border-radius:2px;margin-top:8px">
+            <div style="height:100%;width:${storagePct}%;background:${storageColor};border-radius:2px;transition:width .5s"></div>
+          </div>
+        </div>
+        <div style="padding:12px;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:4px">
+          <div style="font-size:9px;color:var(--s-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Database Records</div>
+          <div style="display:grid;gap:4px;font-size:12px">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--s-muted)">Restaurants</span><b>${restoCount}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--s-muted)">Total Orders</span><b>${orderCount}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--s-muted)">Sessions</span><b>${sessCount}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--s-muted)">Contacts</span><b>${contactCount}</b></div>
+          </div>
+        </div>
+      </div>
+
+      ${oldOrders>0?`
+      <div style="padding:10px 12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:4px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#f59e0b">⚠ ${oldOrders} orders older than 1 year</div>
+          <div style="font-size:10px;color:var(--s-muted);margin-top:2px">Run cleanup to free storage</div>
+        </div>
+        <button class="btn btn-sm" onclick="manualCleanup()" style="border-color:#f59e0b;color:#f59e0b">🗑 Clean</button>
+      </div>`:
+      '<div style="padding:8px 12px;background:rgba(29,185,84,.06);border:1px solid rgba(29,185,84,.15);border-radius:4px;margin-bottom:12px;font-size:12px;color:var(--s-green)">✅ Database is clean — no old data to remove</div>'}
+
+      <div style="padding:10px 12px;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:4px;margin-bottom:12px">
+        <div style="font-size:10px;font-weight:700;color:var(--s-text);margin-bottom:6px">💡 Firebase Budget Alert</div>
+        <div style="font-size:11px;color:var(--s-muted);line-height:1.7">
+          Set a <b style="color:var(--s-gold)">$10/month alert</b> in Firebase Console to avoid surprise bills:<br>
+          Firebase Console → Billing → Budgets & Alerts → Create Budget
+        </div>
+        <a href="https://console.firebase.google.com/project/eatlaos-fe224/usage" target="_blank"
+          style="display:inline-block;margin-top:8px;padding:6px 14px;background:var(--s-gold);color:#000;font-size:11px;font-weight:700;border-radius:3px;text-decoration:none">
+          Open Firebase Console →
+        </a>
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="loadFirebaseUsage()">↻ Refresh</button>
+        <button class="btn btn-sm" onclick="manualCleanup()">🗑️ Run Cleanup Now</button>
+      </div>`;
+  }catch(e){
+    box.innerHTML='<div style="font-size:12px;color:var(--s-muted)">Usage data unavailable</div>';
+  }
 }
 
 async function saveSettings(){
