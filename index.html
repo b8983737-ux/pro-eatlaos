@@ -2392,6 +2392,32 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-legend span{display:inline-flex;align-items:center;gap:5px;}
 .fp-vw-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;}
 
+/* ═══ v5.9: TABLE INFO POPUP (centered modal over map) ═══ */
+.ti-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ti-modal.open{display:flex;animation:tiFade .25s ease;}
+@keyframes tiFade{from{opacity:0;}to{opacity:1;}}
+.ti-shell{background:linear-gradient(180deg,#1a1a1a 0%,#0e0e0e 100%);border:1px solid rgba(200,151,58,.3);border-radius:18px;padding:32px 28px 24px;max-width:380px;width:100%;position:relative;animation:tiUp .35s cubic-bezier(.16,1,.3,1);box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 0 1px rgba(200,151,58,.1);}
+@keyframes tiUp{from{transform:translateY(20px) scale(.95);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+.ti-x{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.05);border:none;color:rgba(255,255,255,.5);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.ti-x:hover{background:rgba(255,255,255,.1);color:#fff;}
+.ti-shape-wrap{display:flex;justify-content:center;margin-bottom:14px;}
+.ti-shape{width:64px;height:64px;background:#c8973a;border:2px solid #e0b455;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#1a1a1a;font-family:var(--ff,'Plus Jakarta Sans');font-weight:900;font-size:24px;letter-spacing:-.5px;box-shadow:0 0 24px rgba(200,151,58,.4);}
+.ti-shape.round{border-radius:50%;}
+.ti-shape.rect{width:88px;height:48px;}
+.ti-num{font-family:var(--ff,sans-serif);font-size:24px;font-weight:800;color:#fff;text-align:center;margin-bottom:18px;letter-spacing:-.4px;}
+.ti-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;padding:14px 16px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:10px;}
+.ti-row{display:flex;align-items:center;gap:12px;}
+.ti-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0;}
+.ti-label{font-size:13px;color:rgba(255,255,255,.85);font-weight:500;line-height:1.4;}
+#tiFitIcon{color:#4ade80;font-weight:700;}
+.ti-actions{display:flex;flex-direction:column;gap:8px;}
+.ti-btn{padding:14px 18px;border-radius:10px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.2px;}
+.ti-btn-confirm{background:linear-gradient(135deg,#c8973a,#e0b455);color:#000;box-shadow:0 6px 20px rgba(200,151,58,.35);}
+.ti-btn-confirm:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(200,151,58,.5);}
+.ti-btn-confirm:disabled{opacity:.6;cursor:wait;transform:none;}
+.ti-btn-cancel{background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.08);}
+.ti-btn-cancel:hover{background:rgba(255,255,255,.08);color:#fff;}
+
 /* OWNER bookings panel */
 .ob-card{background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,rgba(255,255,255,.08));border-radius:12px;padding:16px;margin-bottom:10px;transition:all .2s;}
 .ob-card:hover{border-color:rgba(200,151,58,.25);}
@@ -3498,7 +3524,9 @@ setTimeout(function(){
 <div class="modal-ov" id="mOwAddTable">
   <div class="modal-box w380">
     <div class="modal-h"><div class="modal-title">Add Table</div><button class="modal-x" onclick="closeModal('mOwAddTable')">✕</button></div>
-    <div class="modal-b"><div class="form-row"><div class="fg"><label>Table Number / Name</label><input class="fi" id="mTnum" placeholder="e.g. 1 or VIP-A"></div><div class="fg"><label>Seats</label><input class="fi" type="number" id="mTseats" value="4" min="1" max="30"></div></div>
+    <div class="modal-b">
+      <div class="form-row"><div class="fg"><label>Table Number / Name</label><input class="fi" id="mTnum" placeholder="e.g. 1 or VIP-A"></div></div>
+      <div class="form-row" style="margin-top:10px"><div class="fg"><label>Min Seats</label><input class="fi" type="number" id="mTminSeats" value="2" min="1" max="30"></div><div class="fg"><label>Max Seats</label><input class="fi" type="number" id="mTseats" value="4" min="1" max="30"></div></div>
       <div class="fg" style="margin-top:10px"><label>Zone</label>
         <select class="fi" id="mTzone" onchange="onTzoneChange()">
           <option value="Indoor">Indoor</option>
@@ -5508,6 +5536,14 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'Could not reserve this table. Try another.',
     bk_lock_expired:'Your table reservation expired. Please pick another table.',
     bk_legend_available:'Available',
+    // v5.9: Customer table info popup
+    ti_table_label:'Table',
+    ti_reserve:'Reserve this table →',
+    ti_reserving:'Reserving…',
+    ti_cancel:'Cancel',
+    ti_seats_range:'Seats {min}–{max} people',
+    ti_seats_upto:'Seats up to {n} people',
+    ti_fits:'Fits your party of {n}',
     bk_contact:'Your details',
     bk_contact_sub:'You can check your booking status using your phone or code.',
     bk_name:'Full name',
@@ -5639,6 +5675,14 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ບໍ່ສາມາດຈອງໂຕະນີ້ໄດ້. ກະລຸນາລອງໂຕະອື່ນ.',
     bk_lock_expired:'ການຈອງໂຕະຂອງທ່ານໝົດເວລາ. ກະລຸນາເລືອກໂຕະອື່ນ.',
     bk_legend_available:'ວ່າງ',
+    // v5.9: Customer table info popup
+    ti_table_label:'ໂຕະ',
+    ti_reserve:'ຈອງໂຕະນີ້ →',
+    ti_reserving:'ກຳລັງຈອງ…',
+    ti_cancel:'ຍົກເລີກ',
+    ti_seats_range:'ນັ່ງໄດ້ {min}–{max} ຄົນ',
+    ti_seats_upto:'ນັ່ງໄດ້ສູງສຸດ {n} ຄົນ',
+    ti_fits:'ເໝາະກັບກຸ່ມ {n} ຄົນຂອງທ່ານ',
     bk_contact:'ຂໍ້ມູນຂອງທ່ານ',
     bk_contact_sub:'ທ່ານສາມາດກວດສະຖານະການຈອງໄດ້ໂດຍໃຊ້ເບີໂທ ຫຼື ລະຫັດ.',
     bk_name:'ຊື່ເຕັມ',
@@ -5770,6 +5814,14 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ไม่สามารถจองโต๊ะนี้ได้ กรุณาเลือกโต๊ะอื่น',
     bk_lock_expired:'การจองโต๊ะของคุณหมดเวลาแล้ว กรุณาเลือกโต๊ะใหม่',
     bk_legend_available:'ว่าง',
+    // v5.9: Customer table info popup
+    ti_table_label:'โต๊ะ',
+    ti_reserve:'จองโต๊ะนี้ →',
+    ti_reserving:'กำลังจอง…',
+    ti_cancel:'ยกเลิก',
+    ti_seats_range:'นั่งได้ {min}–{max} คน',
+    ti_seats_upto:'นั่งได้สูงสุด {n} คน',
+    ti_fits:'เหมาะกับกลุ่ม {n} คนของคุณ',
     bk_contact:'ข้อมูลของคุณ',
     bk_contact_sub:'คุณสามารถตรวจสอบสถานะการจองได้โดยใช้เบอร์โทรหรือรหัส',
     bk_name:'ชื่อ-นามสกุล',
@@ -5901,6 +5953,14 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'无法保留此桌位，请尝试其他。',
     bk_lock_expired:'您的桌位保留已过期。请选择其他桌位。',
     bk_legend_available:'空闲',
+    // v5.9: Customer table info popup
+    ti_table_label:'桌位',
+    ti_reserve:'预订此桌 →',
+    ti_reserving:'预订中…',
+    ti_cancel:'取消',
+    ti_seats_range:'可坐 {min}–{max} 人',
+    ti_seats_upto:'最多可坐 {n} 人',
+    ti_fits:'适合您 {n} 人的聚会',
     bk_contact:'您的资料',
     bk_contact_sub:'您可以使用电话号码或预订码查询状态。',
     bk_name:'姓名',
@@ -6032,6 +6092,14 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'이 테이블을 예약할 수 없습니다. 다른 테이블을 선택하세요.',
     bk_lock_expired:'테이블 예약이 만료되었습니다. 다른 테이블을 선택해주세요.',
     bk_legend_available:'이용 가능',
+    // v5.9: Customer table info popup
+    ti_table_label:'테이블',
+    ti_reserve:'이 테이블 예약 →',
+    ti_reserving:'예약 중…',
+    ti_cancel:'취소',
+    ti_seats_range:'{min}–{max}명 좌석',
+    ti_seats_upto:'최대 {n}명 좌석',
+    ti_fits:'{n}명 일행에 적합',
     bk_contact:'연락처 정보',
     bk_contact_sub:'전화번호 또는 예약 코드로 상태를 확인할 수 있습니다.',
     bk_name:'성함',
@@ -8063,7 +8131,7 @@ async function owTables(){
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div class="tcard-num" style="font-size:26px;margin-bottom:2px">${t.num}</div>
-            <div class="tcard-lbl">${t.seats} seats${t.zone?` · <span style="color:var(--s-gold)">${escapeHtml(t.zone)}</span>`:''}</div>
+            <div class="tcard-lbl">${(t.minSeats && t.maxSeats && t.minSeats !== t.maxSeats) ? `${t.minSeats}-${t.maxSeats}` : (t.maxSeats||t.seats||0)} seats${t.zone?` · <span style="color:var(--s-gold)">${escapeHtml(t.zone)}</span>`:''}</div>
           </div>
           <div style="text-align:right">
             <div style="font-size:10px;font-weight:700;color:${isOcc?'var(--s-green)':'var(--s-muted)'};letter-spacing:.5px">
@@ -8533,7 +8601,13 @@ function sortTablesArray(tables){
 }
 async function saveOwTable(){
   const r=await fbGet('restaurants/'+restoId);
-  const num=document.getElementById('mTnum').value.trim(),seats=parseInt(document.getElementById('mTseats').value)||4;
+  const num=document.getElementById('mTnum').value.trim();
+  // v5.9: Min/max seats fields
+  let maxSeats = parseInt(document.getElementById('mTseats').value)||4;
+  let minSeats = parseInt(document.getElementById('mTminSeats')?.value)||1;
+  if(maxSeats < 1) maxSeats = 1;
+  if(minSeats < 1) minSeats = 1;
+  if(minSeats > maxSeats) minSeats = maxSeats; // auto-correct
   if(!num){notifyD('⚠ Enter table number');return;}
   // Prevent duplicate table numbers
   if((r?.tables||[]).find(t=>String(t.num).toLowerCase()===num.toLowerCase())){
@@ -8545,7 +8619,8 @@ async function saveOwTable(){
     const custom = (document.getElementById('mTzoneCustom')?.value || '').trim();
     zone = custom || 'Indoor';
   }
-  const sorted=sortTablesArray([...(r?.tables||[]),{id:'t'+Date.now(),num,seats,zone}]);
+  // Keep `seats` (= maxSeats) for backward compatibility
+  const sorted=sortTablesArray([...(r?.tables||[]),{id:'t'+Date.now(),num,seats:maxSeats,minSeats,maxSeats,zone}]);
   await fbUpdate('restaurants/'+restoId,{tables:sorted});
   closeModal('mOwAddTable');owTables();notifyD('✓ Table added');
 }
@@ -8794,8 +8869,11 @@ function openEditTableModal(idx){
     if(!t) return;
     document.getElementById('mEtIdx').value=idx;
     document.getElementById('mEtNum').value=t.num||'';
-    document.getElementById('mEtSeats').value=t.seats||4;
+    document.getElementById('mEtSeats').value=t.maxSeats||t.seats||4;
     document.getElementById('mEtDesc').value=t.desc||'';
+    // v5.9: Populate min seats (or empty if not set — owner can leave blank for "up to N" mode)
+    const minInp = document.getElementById('mEtMinSeats');
+    if(minInp) minInp.value = t.minSeats || '';
     // v5.4: Populate zone field
     const zoneSel = document.getElementById('mEtZone');
     const zoneCustom = document.getElementById('mEtZoneCustom');
@@ -8849,7 +8927,12 @@ function updateTablePreview(){
 async function saveEditTable(){
   const idx=parseInt(document.getElementById('mEtIdx').value);
   const num=document.getElementById('mEtNum').value.trim();
-  const seats=parseInt(document.getElementById('mEtSeats').value)||4;
+  const maxSeats=parseInt(document.getElementById('mEtSeats').value)||4;
+  // v5.9: Min seats — empty means "up to N" mode (legacy behaviour)
+  const minRaw = document.getElementById('mEtMinSeats')?.value;
+  let minSeats = parseInt(minRaw);
+  if(isNaN(minSeats) || minSeats < 1) minSeats = null;
+  if(minSeats !== null && minSeats > maxSeats) minSeats = maxSeats;
   const desc=document.getElementById('mEtDesc').value.trim();
   if(!num){notifyD('⚠ Table name required');return;}
   // v5.4: Capture zone (default "Indoor" if missing)
@@ -8863,7 +8946,15 @@ async function saveEditTable(){
   if(tables.some((t,i)=>i!==idx&&String(t.num).toLowerCase()===num.toLowerCase())){
     notifyD('⚠ Table "'+num+'" already exists');return;
   }
-  tables[idx]={...tables[idx],num,seats,desc,zone};
+  // Build the updated table — keep `seats` field for backward compat (= maxSeats)
+  const updated = {...tables[idx],num,seats:maxSeats,maxSeats,desc,zone};
+  if(minSeats !== null){
+    updated.minSeats = minSeats;
+  } else {
+    // Owner cleared the min field — remove minSeats so it falls back to "up to N"
+    delete updated.minSeats;
+  }
+  tables[idx] = updated;
   const sorted=sortTablesArray(tables);
   await fbUpdate('restaurants/'+restoId,{tables:sorted});
   closeModal('mEditTable');notifyD('✅ Table updated');owTables();
@@ -10990,7 +11081,12 @@ async function bkLoadTables(){
     const r = await fbGet('restaurants/'+bkState.restoId);
     const tables = (r && r.tables) ? r.tables : [];
     // Filter tables that have enough seats for the party size
-    const partyOK = tables.filter(t => (t.seats||0) >= bkState.party);
+    // v5.9: Filter by both min and max seats. If table has no minSeats, only check max.
+    const partyOK = tables.filter(t => {
+      const max = t.maxSeats || t.seats || 0;
+      const min = t.minSeats || 1;
+      return bkState.party >= min && bkState.party <= max;
+    });
     if(!partyOK.length){
       grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_no_tables_party','No tables fit your party size. Try fewer guests.'))}</div>`;
       return;
@@ -11034,10 +11130,15 @@ async function bkLoadTables(){
       const tooSmall = new Set();
       placedTableIds.forEach(tid => {
         const t = allTablesById[tid];
-        if(t && (t.seats||0) < bkState.party) tooSmall.add(tid);
+        if(!t) return;
+        const max = t.maxSeats || t.seats || 0;
+        const min = t.minSeats || 1;
+        if(bkState.party > max || bkState.party < min) tooSmall.add(tid);
       });
       // Combined "unavailable" set for viewer
       const viewerBooked = new Set([...bookedTableIds, ...tooSmall]);
+      // v5.9: Cache plan so tiOpen can read shape info
+      bkState._cachedPlan = plan;
       const svg = fpRenderCustomerView(plan, tables, viewerBooked, lockedTableIds, bkState.tableId);
       // Hide zone tabs (not used in floor-plan mode)
       tabs.innerHTML = '';
@@ -11053,7 +11154,7 @@ async function bkLoadTables(){
           <span><i style="background:rgba(255,193,7,.35)"></i>${escapeHtml(lblLocked)}</span>
         </div>
       `;
-      // Wire up clicks on table elements
+      // Wire up clicks on table elements — v5.9: open info popup instead of locking immediately
       const svgEl = grid.querySelector('svg');
       if(svgEl){
         svgEl.onclick = function(ev){
@@ -11061,7 +11162,7 @@ async function bkLoadTables(){
           if(!tEl) return;
           if(tEl.classList.contains('booked') || tEl.classList.contains('locked')) return;
           const tid = tEl.dataset.tid;
-          if(tid) bkPickTable(tid);
+          if(tid) tiOpen(tid);
         };
       }
       return; // Done — don't render zone tabs
@@ -11125,6 +11226,82 @@ async function bkLoadTables(){
     console.error('bkLoadTables:', e);
     grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_err_load_tables','Could not load tables. Please try again.'))}</div>`;
   }
+}
+
+/* ─── v5.9: Customer table info popup (centered modal over the floor plan map) ─── */
+let _tiPendingTableId = null;
+
+function tiOpen(tableId){
+  const t = (bkState.tables || []).find(x => x.id === tableId);
+  if(!t) return;
+  _tiPendingTableId = tableId;
+  // Determine the shape from the floor plan element (so popup icon matches the map)
+  let shapeKind = 'square';
+  try {
+    const plan = bkState._cachedPlan;
+    if(plan && plan.elements){
+      const elFp = plan.elements.find(e => e.tableId === tableId);
+      if(elFp && elFp.kind === 'table-round') shapeKind = 'round';
+      else if(elFp && elFp.kind === 'table-rect') shapeKind = 'rect';
+    }
+  } catch(e){}
+  // Set shape icon
+  const shapeEl = document.getElementById('tiShape');
+  if(shapeEl){
+    shapeEl.className = 'ti-shape' + (shapeKind === 'round' ? ' round' : shapeKind === 'rect' ? ' rect' : '');
+    shapeEl.textContent = t.num || '';
+  }
+  // Table number
+  const numEl = document.getElementById('tiNum');
+  if(numEl) numEl.textContent = (_lp('ti_table_label','Table') + ' ' + (t.num || ''));
+  // Zone
+  const zoneEl = document.getElementById('tiZone');
+  if(zoneEl) zoneEl.textContent = t.zone || _lp('bk_zone_indoor','Indoor');
+  // Capacity — "Seats X-Y people" or "Seats up to N people" (legacy)
+  const capEl = document.getElementById('tiCapacity');
+  if(capEl){
+    const max = t.maxSeats || t.seats || 0;
+    const min = t.minSeats;
+    if(min && max && min !== max){
+      const tpl = _lp('ti_seats_range','Seats {min}–{max} people');
+      capEl.textContent = tpl.replace('{min}', min).replace('{max}', max);
+    } else {
+      const tpl = _lp('ti_seats_upto','Seats up to {n} people');
+      capEl.textContent = tpl.replace('{n}', max);
+    }
+  }
+  // Fits-your-party row
+  const fitEl = document.getElementById('tiFit');
+  if(fitEl){
+    const tpl = _lp('ti_fits','Fits your party of {n}');
+    fitEl.textContent = tpl.replace('{n}', bkState.party);
+  }
+  // Show modal
+  const m = document.getElementById('mTableInfo');
+  if(m){
+    m.classList.add('open');
+    // Apply LP translation
+    const curLang = (typeof localStorage !== 'undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+    if(typeof applyLpTranslation === 'function' && curLang !== 'en') applyLpTranslation(curLang);
+  }
+}
+
+function tiClose(){
+  _tiPendingTableId = null;
+  const m = document.getElementById('mTableInfo');
+  if(m) m.classList.remove('open');
+}
+
+async function tiConfirm(){
+  const tid = _tiPendingTableId;
+  if(!tid) return;
+  const btn = document.getElementById('tiConfirmBtn');
+  if(btn){ btn.disabled = true; btn.textContent = _lp('ti_reserving','Reserving…'); }
+  // Hand off to existing pick/lock flow
+  await bkPickTable(tid);
+  // Restore button text (in case lock failed and modal is reopened later)
+  if(btn){ btn.disabled = false; btn.textContent = _lp('ti_reserve','Reserve this table →'); }
+  tiClose();
 }
 
 async function bkPickTable(tableId){
@@ -11816,7 +11993,10 @@ async function cleanupOldBookings(opts){
         <div class="fg"><label>Table Number / Name *</label>
           <input class="fi" id="mEtNum" placeholder="e.g. 1, VIP, Terrace" maxlength="20" oninput="updateTablePreview()">
         </div>
-        <div class="fg"><label>Seats *</label>
+        <div class="fg"><label>Min Seats</label>
+          <input class="fi" type="number" id="mEtMinSeats" min="1" max="50" placeholder="2">
+        </div>
+        <div class="fg"><label>Max Seats *</label>
           <input class="fi" type="number" id="mEtSeats" min="1" max="50" oninput="updateTablePreview()">
         </div>
       </div>
@@ -11979,6 +12159,37 @@ async function cleanupOldBookings(opts){
     <div class="fp-status">
       <span id="fpStatusMsg" data-ts="fp_ready">Ready</span>
       <span class="fp-status-r"><span id="fpElCount">0</span> <span data-ts="fp_elements">elements</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- v5.9 CUSTOMER TABLE INFO POPUP — appears when table is clicked   -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="mTableInfo" class="modal-ov ti-modal" onclick="if(event.target===this)tiClose()">
+  <div class="ti-shell">
+    <button class="ti-x" onclick="tiClose()" aria-label="Close">×</button>
+    <div class="ti-shape-wrap">
+      <div class="ti-shape" id="tiShape"></div>
+    </div>
+    <div class="ti-num" id="tiNum">—</div>
+    <div class="ti-rows">
+      <div class="ti-row">
+        <div class="ti-icon">📍</div>
+        <div class="ti-label" id="tiZone">—</div>
+      </div>
+      <div class="ti-row">
+        <div class="ti-icon">👥</div>
+        <div class="ti-label" id="tiCapacity">—</div>
+      </div>
+      <div class="ti-row" id="tiFitRow">
+        <div class="ti-icon" id="tiFitIcon">✓</div>
+        <div class="ti-label" id="tiFit">—</div>
+      </div>
+    </div>
+    <div class="ti-actions">
+      <button class="ti-btn ti-btn-confirm" id="tiConfirmBtn" onclick="tiConfirm()" data-lp="ti_reserve">Reserve this table →</button>
+      <button class="ti-btn ti-btn-cancel" onclick="tiClose()" data-lp="ti_cancel">Cancel</button>
     </div>
   </div>
 </div>
