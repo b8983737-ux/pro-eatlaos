@@ -2090,6 +2090,39 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
   flex-direction:column;
   overflow:hidden;
   box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 0 1px rgba(200,151,58,.08);
+  transition:max-width .35s cubic-bezier(.16,1,.3,1),max-height .35s cubic-bezier(.16,1,.3,1),width .35s cubic-bezier(.16,1,.3,1),height .35s cubic-bezier(.16,1,.3,1);
+}
+/* v5.7: Full-screen mode for the table picker step (mCustBooking step 5 with floor plan) */
+.bkm-shell.fp-fullscreen{
+  max-width:96vw;
+  width:96vw;
+  max-height:96vh;
+  height:96vh;
+}
+.bkm-shell.fp-fullscreen .bk-modal-body{
+  max-height:none;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.bkm-shell.fp-fullscreen #bkStep5{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.bkm-shell.fp-fullscreen .fp-viewer-wrap{
+  flex:1;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:0;
+}
+.bkm-shell.fp-fullscreen .fp-viewer-svg{
+  max-height:none;
+  height:100%;
+  width:100%;
 }
 .bkm-progress{
   height:3px;
@@ -2285,8 +2318,9 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-el{cursor:move;}
 .fp-el.selected .fp-el-shape{filter:drop-shadow(0 0 6px rgba(200,151,58,.7));}
 .fp-el-shape{transition:filter .15s;}
-.fp-el-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;fill:rgba(255,255,255,.85);pointer-events:none;text-anchor:middle;dominant-baseline:central;}
-.fp-el-tnum{font-family:var(--ff,'Plus Jakarta Sans',sans-serif);font-size:18px;font-weight:900;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+.fp-el-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central;text-shadow:0 1px 2px rgba(0,0,0,.5);paint-order:stroke;stroke:rgba(0,0,0,.4);stroke-width:2px;stroke-linejoin:round;}
+.fp-el-tnum{font-family:var(--ff,'Plus Jakarta Sans',sans-serif);font-size:18px;font-weight:900;fill:#1a1a1a;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+#fpCanvas.light-floor .fp-el-label{fill:#1a1a1a;stroke:rgba(255,255,255,.4);}
 .fp-handle{fill:#c8973a;stroke:#fff;stroke-width:1;cursor:nwse-resize;}
 .fp-handle.h-n,.fp-handle.h-s{cursor:ns-resize;}
 .fp-handle.h-e,.fp-handle.h-w{cursor:ew-resize;}
@@ -2303,6 +2337,14 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-props-grid input{width:100%;padding:6px 8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:#fff;font-size:12px;outline:none;}
 .fp-status{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.55);}
 .fp-status-r{color:rgba(255,255,255,.4);}
+.fp-floor-pick{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:6px;margin-right:8px;}
+.fp-floor-lbl{font-size:10px;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-right:4px;}
+.fp-floor-sw{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);cursor:pointer;padding:0;transition:all .15s;}
+.fp-floor-sw:hover{transform:scale(1.15);border-color:#c8973a;}
+.fp-floor-sw.active{border-color:#c8973a;box-shadow:0 0 0 2px rgba(200,151,58,.3);}
+.fp-floor-pick-input{width:24px;height:24px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:none;cursor:pointer;padding:0;overflow:hidden;}
+.fp-floor-pick-input::-webkit-color-swatch{border:none;border-radius:50%;}
+.fp-floor-pick-input::-moz-color-swatch{border:none;border-radius:50%;}
 @media(max-width:900px){
   .fp-body{grid-template-columns:170px 1fr 200px;}
 }
@@ -2320,17 +2362,20 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-viewer-svg{width:100%;height:auto;display:block;max-height:60vh;}
 .fp-vw-el-shape{transition:filter .25s,opacity .25s;}
 .fp-vw-table{cursor:pointer;}
-.fp-vw-table.available .fp-vw-el-shape{fill:rgba(200,151,58,.85);stroke:#c8973a;stroke-width:2;animation:fpPulse 2s ease-in-out infinite;}
-@keyframes fpPulse{0%,100%{filter:drop-shadow(0 0 4px rgba(200,151,58,.4));}50%{filter:drop-shadow(0 0 10px rgba(200,151,58,.8));}}
-.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(220,53,69,.4);stroke:rgba(220,53,69,.7);stroke-width:1.5;}
-.fp-vw-table.locked .fp-vw-el-shape{fill:rgba(255,193,7,.35);stroke:rgba(255,193,7,.7);stroke-width:1.5;}
-.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3;filter:drop-shadow(0 0 12px rgba(200,151,58,.9));animation:none;}
+.fp-vw-table.available .fp-vw-el-shape{fill:#c8973a;stroke:#f5c976;stroke-width:2.5;animation:fpPulse 1.6s ease-in-out infinite;}
+@keyframes fpPulse{0%,100%{filter:drop-shadow(0 0 6px rgba(200,151,58,.55));opacity:1;}50%{filter:drop-shadow(0 0 14px rgba(245,201,118,.95));opacity:.95;}}
+.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(220,53,69,.22);stroke:rgba(220,53,69,.5);stroke-width:1;}
+.fp-vw-table.locked .fp-vw-el-shape{fill:rgba(255,193,7,.2);stroke:rgba(255,193,7,.55);stroke-width:1;}
+.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:4;filter:drop-shadow(0 0 16px rgba(200,151,58,1));animation:none;}
 .fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
-.fp-vw-fixed .fp-vw-el-shape{opacity:.5;}
-.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:14px;font-weight:900;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central;}
-.fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.55);}
+.fp-vw-table.booked,.fp-vw-table.locked{opacity:.5;}
+.fp-vw-fixed .fp-vw-el-shape{opacity:.45;}
+.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:18px;font-weight:900;fill:#1a1a1a;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+.fp-vw-table.selected .fp-vw-tnum{fill:#000;}
+.fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.4);}
 .fp-vw-label{font-family:sans-serif;font-size:10px;font-weight:600;fill:rgba(255,255,255,.55);pointer-events:none;text-anchor:middle;dominant-baseline:central;}
-.fp-vw-legend{display:flex;justify-content:center;gap:14px;font-size:10px;color:rgba(255,255,255,.5);margin-top:10px;flex-wrap:wrap;}
+.fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.04);}
+.bkm-shell.fp-fullscreen .fp-vw-legend{margin-top:6px;}
 .fp-vw-legend span{display:inline-flex;align-items:center;gap:5px;}
 .fp-vw-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;}
 
@@ -3945,6 +3990,9 @@ const STAFF_T={
     fp_stage:'Stage',
     fp_door:'Door',
     fp_kitchen:'Kitchen',
+    fp_wall_block:'Wall',
+    fp_wall_line:'Line',
+    fp_floor:'Floor:',
     fp_help1:'💡 Drag from here onto canvas',
     fp_help2:'💡 Click element to select',
     fp_help3:'💡 Drag handles to resize',
@@ -4026,6 +4074,9 @@ const STAFF_T={
     fp_stage:'ເວທີ',
     fp_door:'ປະຕູ',
     fp_kitchen:'ເຮືອນຄົວ',
+    fp_wall_block:'ກຳແພງ',
+    fp_wall_line:'ເສັ້ນ',
+    fp_floor:'ພື້ນ:',
     fp_help1:'💡 ລາກຈາກນີ້ໄປໃສ່ກະດານ',
     fp_help2:'💡 ຄລິກອົງປະກອບເພື່ອເລືອກ',
     fp_help3:'💡 ລາກປຸ່ມຈັບເພື່ອປັບຂະໜາດ',
@@ -4107,6 +4158,9 @@ const STAFF_T={
     fp_stage:'เวที',
     fp_door:'ประตู',
     fp_kitchen:'ห้องครัว',
+    fp_wall_block:'กำแพง',
+    fp_wall_line:'เส้น',
+    fp_floor:'พื้น:',
     fp_help1:'💡 ลากจากที่นี่มาวางบนผืนผ้า',
     fp_help2:'💡 คลิกองค์ประกอบเพื่อเลือก',
     fp_help3:'💡 ลากที่จับเพื่อปรับขนาด',
@@ -4188,6 +4242,9 @@ const STAFF_T={
     fp_stage:'舞台',
     fp_door:'门',
     fp_kitchen:'厨房',
+    fp_wall_block:'墙壁',
+    fp_wall_line:'线条',
+    fp_floor:'地板:',
     fp_help1:'💡 从此处拖到画布',
     fp_help2:'💡 点击元素进行选择',
     fp_help3:'💡 拖动手柄调整大小',
@@ -4285,6 +4342,9 @@ const STAFF_T={
     fp_stage:'무대',
     fp_door:'문',
     fp_kitchen:'주방',
+    fp_wall_block:'벽',
+    fp_wall_line:'선',
+    fp_floor:'바닥:',
     fp_help1:'💡 여기서 캔버스로 끌어다 놓기',
     fp_help2:'💡 요소를 클릭하여 선택',
     fp_help3:'💡 핸들을 끌어 크기 조정',
@@ -9956,6 +10016,9 @@ function openCustBookingModal(){
   // v5.4: Release any stale lock from a previous abandoned session
   if(typeof bkReleaseLock === 'function') bkReleaseLock();
   bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[], tables:[], tableId:null, tableNum:null, tableZone:null, lockSessionId:null, lockExpiresAt:0 };
+  // v5.7: Always start with non-fullscreen modal (step 1 — restaurant picker)
+  const _bkShellInit = document.querySelector('#mCustBooking .bkm-shell');
+  if(_bkShellInit) _bkShellInit.classList.remove('fp-fullscreen');
   bkGoStep(1);
   document.getElementById('bkPartyNum').textContent='2';
   document.getElementById('bkName').value='';
@@ -10115,6 +10178,9 @@ function bkGoStep(s){
   document.querySelectorAll('#mCustBooking .bk-step').forEach((el)=>{
     el.classList.toggle('on', el.id==='bkStep'+s);
   });
+  // v5.7: Always remove fullscreen class when leaving step 5; bkLoadTables will re-add it if a floor plan is detected.
+  const _bkShell = document.querySelector('#mCustBooking .bkm-shell');
+  if(_bkShell && s !== 5) _bkShell.classList.remove('fp-fullscreen');
   // Progress bar fill (steps 1-6 = 16.6-100%, step 7 = success)
   const pct = s>=7 ? 100 : (s/6)*100;
   const bar = document.getElementById('bkProgressBar');
@@ -10184,7 +10250,9 @@ const FP_DEFAULT_SIZES = {
   'toilet':       { w: 80,  h: 80  },
   'stage':        { w: 200, h: 80  },
   'door':         { w: 60,  h: 20  },
-  'kitchen':      { w: 200, h: 100 }
+  'kitchen':      { w: 200, h: 100 },
+  'wall-block':   { w: 200, h: 12  },
+  'wall-line':    { w: 100, h: 0   }  // line uses x1,y1,x2,y2 not w/h
 };
 
 const FP_DEFAULT_LABELS = {
@@ -10192,7 +10260,9 @@ const FP_DEFAULT_LABELS = {
   'toilet':  'WC',
   'stage':   'Stage',
   'door':    'Door',
-  'kitchen': 'Kitchen'
+  'kitchen': 'Kitchen',
+  'wall-block': '',
+  'wall-line':  ''
 };
 
 const FP_GRID = 20; // snap grid in canvas units
@@ -10215,9 +10285,12 @@ async function fpOpen(restoId){
   fpState.plan = r.floorPlan && r.floorPlan.elements ? {
     width:  r.floorPlan.width  || 1000,
     height: r.floorPlan.height || 700,
+    bgColor: r.floorPlan.bgColor || '#0f0f0f',
     elements: r.floorPlan.elements.slice()
-  } : { width:1000, height:700, elements:[] };
+  } : { width:1000, height:700, bgColor:'#0f0f0f', elements:[] };
   document.getElementById('fpRestoName').textContent = fpState.restoName;
+  // v5.6: Apply floor color to canvas + sync swatches
+  _fpApplyFloorColor(fpState.plan.bgColor);
   fpRenderAll();
   fpRenderProps();
   openModal('mFloorPlan');
@@ -10229,6 +10302,7 @@ async function fpOpen(restoId){
   // Wire up drag-from-toolbox + canvas events (idempotent — uses on*)
   _fpWireToolbox();
   _fpWireCanvas();
+  _fpWireFloorPicker();
 }
 
 function fpClose(){
@@ -10255,6 +10329,47 @@ function fpMarkDirty(){
   if(btn){ btn.style.background = 'rgba(200,151,58,.95)'; btn.textContent = '💾 Save *'; }
 }
 
+/* ─── v5.6: Floor color ─── */
+function _fpApplyFloorColor(color){
+  const bg = document.getElementById('fpCanvasBg');
+  if(bg) bg.setAttribute('fill', color || '#0f0f0f');
+  // Sync color picker input
+  const inp = document.getElementById('fpFloorColor');
+  if(inp) inp.value = color || '#0f0f0f';
+  // Sync swatch active state
+  document.querySelectorAll('.fp-floor-sw').forEach(sw => {
+    sw.classList.toggle('active', sw.dataset.floor && sw.dataset.floor.toLowerCase() === (color||'').toLowerCase());
+  });
+  // Auto-adjust label colors for light floors (e.g. marble)
+  const isLightFloor = _fpIsLightColor(color);
+  const canvas = document.getElementById('fpCanvas');
+  if(canvas) canvas.classList.toggle('light-floor', isLightFloor);
+}
+
+function _fpIsLightColor(hex){
+  if(!hex) return false;
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if(!m) return false;
+  const v = parseInt(m[1], 16);
+  const r = (v>>16)&255, g = (v>>8)&255, b = v&255;
+  // Perceived brightness (ITU-R BT.601)
+  const brightness = (r*299 + g*587 + b*114) / 1000;
+  return brightness > 140;
+}
+
+function fpSetFloor(color){
+  if(!fpState.plan) return;
+  fpState.plan.bgColor = color;
+  _fpApplyFloorColor(color);
+  fpMarkDirty();
+}
+
+function _fpWireFloorPicker(){
+  document.querySelectorAll('#mFloorPlan .fp-floor-sw').forEach(sw => {
+    sw.onclick = () => fpSetFloor(sw.dataset.floor);
+  });
+}
+
 /* ─── Render all elements ─── */
 function fpRenderAll(){
   const layer = document.getElementById('fpElementsLayer');
@@ -10268,6 +10383,10 @@ function fpElToSvg(el){
   const isTable = el.kind && el.kind.indexOf('table') === 0;
   const sel = (el.id === fpState.selectedId) ? ' selected' : '';
   const cls = `fp-el${sel}`;
+  // Wall-line is special: x1,y1,x2,y2 only (no w/h)
+  if(el.kind === 'wall-line'){
+    return `<g class="${cls}" data-elid="${el.id}"><line class="fp-el-shape fp-el-wallline" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#888" stroke-width="${el.thickness||4}" stroke-linecap="round"/></g>`;
+  }
   const cx = el.x + el.w/2;
   const cy = el.y + el.h/2;
   // Determine table number for tables
@@ -10278,8 +10397,18 @@ function fpElToSvg(el){
   }
   // Build shape
   let shape = '';
-  const fill = isTable ? '#c8973a' : _fpFixedFill(el.kind);
-  const stroke = isTable ? '#e0b455' : 'rgba(255,255,255,.15)';
+  let fill;
+  let stroke;
+  if(el.kind === 'wall-block'){
+    fill = 'url(#fpBrick)';
+    stroke = '#3a3a3a';
+  } else if(isTable){
+    fill = '#c8973a';
+    stroke = '#e0b455';
+  } else {
+    fill = _fpFixedFill(el.kind);
+    stroke = 'rgba(255,255,255,.18)';
+  }
   if(el.kind === 'table-round'){
     const rx = el.w/2, ry = el.h/2;
     shape = `<ellipse class="fp-el-shape" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
@@ -10291,7 +10420,7 @@ function fpElToSvg(el){
   let textEl = '';
   if(isTable){
     if(tableNum) textEl = `<text class="fp-el-tnum" x="${cx}" y="${cy}">${_fpEsc(tableNum)}</text>`;
-  } else {
+  } else if(el.kind !== 'wall-block' && el.kind !== 'wall-line') {
     const lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
     if(lbl) textEl = `<text class="fp-el-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>`;
   }
@@ -10300,12 +10429,13 @@ function fpElToSvg(el){
 
 function _fpFixedFill(kind){
   switch(kind){
-    case 'counter': return '#8a6f4f';
-    case 'toilet':  return '#555';
-    case 'stage':   return '#3a3a3a';
-    case 'door':    return '#5d3f1f';
-    case 'kitchen': return '#444';
-    default:        return '#666';
+    case 'counter':    return '#a08560'; // lighter brown — visible on dark
+    case 'toilet':     return '#4a6a8a'; // blue-grey — bathroom feel
+    case 'stage':      return '#5a3a8a'; // purple — theatrical, visible
+    case 'door':       return '#8b5a2b'; // lighter brown — visible
+    case 'kitchen':    return '#7a4a3a'; // warm cooking brown
+    case 'wall-block': return '#5e5e5e'; // medium grey — clearly a wall
+    default:           return '#666';
   }
 }
 
@@ -10319,9 +10449,20 @@ function fpRenderHandles(){
   if(!fpState.selectedId) return;
   const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
   if(!el) return;
-  // 8 handles: corners + edges
-  const HS = 8; // handle size
+  const HS = 10; // handle size (slightly larger for visibility)
   const hh = HS / 2;
+  // Wall-line: 2 endpoint handles
+  if(el.kind === 'wall-line'){
+    const positions = [
+      { dir:'p1', x: el.x1, y: el.y1 },
+      { dir:'p2', x: el.x2, y: el.y2 }
+    ];
+    layer.innerHTML = positions.map(p =>
+      `<rect class="fp-handle" x="${p.x-hh}" y="${p.y-hh}" width="${HS}" height="${HS}" data-handle="${p.dir}" rx="2"/>`
+    ).join('');
+    return;
+  }
+  // Standard 8 handles for rectangles
   const positions = [
     { dir:'nw', x: el.x,       y: el.y       },
     { dir:'n',  x: el.x+el.w/2,y: el.y       },
@@ -10352,13 +10493,20 @@ function fpRenderProps(){
   empty.style.display = 'none';
   form.style.display = '';
   // Kind label
-  document.getElementById('fpPropKindLabel').textContent = el.kind.replace('table-','Table — ').replace(/-/g,' ');
-  // Label field — disabled for tables (auto from tables[])
-  const lblInput = document.getElementById('fpPropLabel');
+  document.getElementById('fpPropKindLabel').textContent =
+    el.kind.replace('table-','Table — ').replace('wall-','Wall — ').replace(/-/g,' ');
   const isTable = el.kind && el.kind.indexOf('table') === 0;
+  const isLine = el.kind === 'wall-line';
+  const isWallBlock = el.kind === 'wall-block';
+  // Label field — disabled for tables and walls
+  const lblInput = document.getElementById('fpPropLabel');
   if(isTable){
     lblInput.disabled = true;
     lblInput.value = '(auto from linked table)';
+    lblInput.style.opacity = '.5';
+  } else if(isLine || isWallBlock){
+    lblInput.disabled = true;
+    lblInput.value = '(walls have no label)';
     lblInput.style.opacity = '.5';
   } else {
     lblInput.disabled = false;
@@ -10383,17 +10531,52 @@ function fpRenderProps(){
   } else {
     tableRow.style.display = 'none';
   }
-  // Position + size
-  document.getElementById('fpPropX').value = el.x;
-  document.getElementById('fpPropY').value = el.y;
-  document.getElementById('fpPropW').value = el.w;
-  document.getElementById('fpPropH').value = el.h;
+  // Position + size — different for wall-line
+  const xInp = document.getElementById('fpPropX');
+  const yInp = document.getElementById('fpPropY');
+  const wInp = document.getElementById('fpPropW');
+  const hInp = document.getElementById('fpPropH');
+  const xLbl = xInp.previousElementSibling;
+  const yLbl = yInp.previousElementSibling;
+  const wLbl = wInp.previousElementSibling;
+  const hLbl = hInp.previousElementSibling;
+  if(isLine){
+    xLbl.textContent = 'X1'; yLbl.textContent = 'Y1';
+    wLbl.textContent = 'X2'; hLbl.textContent = 'Y2';
+    xInp.value = el.x1;
+    yInp.value = el.y1;
+    wInp.value = el.x2;
+    hInp.value = el.y2;
+    wInp.min = 0; hInp.min = 0;
+  } else {
+    xLbl.textContent = 'X'; yLbl.textContent = 'Y';
+    wLbl.textContent = _ts('fp_width','W');
+    hLbl.textContent = _ts('fp_height','H');
+    xInp.value = el.x;
+    yInp.value = el.y;
+    wInp.value = el.w;
+    hInp.value = el.h;
+    wInp.min = 20; hInp.min = 20;
+  }
 }
 
 function fpPropChange(field, value){
   if(!fpState.selectedId) return;
   const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
   if(!el) return;
+  if(el.kind === 'wall-line'){
+    // For lines, the form uses X/Y/W/H inputs but they map to x1/y1/x2/y2
+    const map = { x:'x1', y:'y1', w:'x2', h:'y2' };
+    const key = map[field];
+    if(!key) return;
+    let v = value;
+    if(key === 'x1' || key === 'x2') v = Math.max(0, Math.min(1000, v));
+    if(key === 'y1' || key === 'y2') v = Math.max(0, Math.min(700,  v));
+    el[key] = v;
+    fpMarkDirty();
+    fpRenderAll();
+    return;
+  }
   if(field === 'x') value = _fpClampX(value, el.w);
   if(field === 'y') value = _fpClampY(value, el.h);
   if(field === 'w'){ value = Math.max(20, Math.min(1000 - el.x, value)); }
@@ -10401,7 +10584,6 @@ function fpPropChange(field, value){
   el[field] = value;
   fpMarkDirty();
   fpRenderAll();
-  // Don't re-render whole props (keeps focus on the input being edited)
 }
 
 function fpDeleteSelected(){
@@ -10435,6 +10617,7 @@ async function fpSave(){
     const data = {
       width: fpState.plan.width,
       height: fpState.plan.height,
+      bgColor: fpState.plan.bgColor || '#0f0f0f',
       updatedAt: Date.now(),
       elements: fpState.plan.elements
     };
@@ -10501,26 +10684,40 @@ function _fpClientToSvg(clientX, clientY){
 function fpAddElement(tool, cx, cy){
   if(!fpState.plan) return;
   const sz = FP_DEFAULT_SIZES[tool] || { w:60, h:60 };
-  const x = _fpSnap(cx - sz.w/2);
-  const y = _fpSnap(cy - sz.h/2);
-  const el = {
-    id: _fpId(),
-    kind: tool,
-    x: _fpClampX(x, sz.w),
-    y: _fpClampY(y, sz.h),
-    w: sz.w,
-    h: sz.h
-  };
-  // Tables: shape derives from kind, no extra field needed
-  // Auto-link to first available table for tables
-  if(tool.indexOf('table') === 0){
-    const usedIds = new Set(fpState.plan.elements
-      .filter(x => x.kind && x.kind.indexOf('table')===0 && x.tableId)
-      .map(x => x.tableId));
-    const free = fpState.tables.find(t => !usedIds.has(t.id));
-    if(free) el.tableId = free.id;
+  const el = { id: _fpId(), kind: tool };
+  // Wall-line: special — uses x1,y1,x2,y2 (default 100px horizontal)
+  if(tool === 'wall-line'){
+    const halfLen = (sz.w || 100) / 2;
+    let x1 = _fpSnap(cx - halfLen);
+    let x2 = _fpSnap(cx + halfLen);
+    let y1 = _fpSnap(cy);
+    let y2 = _fpSnap(cy);
+    // Clamp to canvas
+    if(x1 < 0){ x2 -= x1; x1 = 0; }
+    if(x2 > 1000){ x1 -= (x2 - 1000); x2 = 1000; }
+    if(y1 < 0) y1 = 0;
+    if(y1 > 700) y1 = 700;
+    if(y2 < 0) y2 = 0;
+    if(y2 > 700) y2 = 700;
+    el.x1 = x1; el.y1 = y1; el.x2 = x2; el.y2 = y2;
+    el.thickness = 4;
   } else {
-    el.label = FP_DEFAULT_LABELS[tool] || '';
+    const x = _fpSnap(cx - sz.w/2);
+    const y = _fpSnap(cy - sz.h/2);
+    el.x = _fpClampX(x, sz.w);
+    el.y = _fpClampY(y, sz.h);
+    el.w = sz.w;
+    el.h = sz.h;
+    // Auto-link to first available table for tables
+    if(tool.indexOf('table') === 0){
+      const usedIds = new Set(fpState.plan.elements
+        .filter(x => x.kind && x.kind.indexOf('table')===0 && x.tableId)
+        .map(x => x.tableId));
+      const free = fpState.tables.find(t => !usedIds.has(t.id));
+      if(free) el.tableId = free.id;
+    } else if(tool !== 'wall-block') {
+      el.label = FP_DEFAULT_LABELS[tool] || '';
+    }
   }
   fpState.plan.elements.push(el);
   fpState.selectedId = el.id;
@@ -10564,23 +10761,48 @@ function _fpStartMove(e, elid){
   if(!el) return;
   e.preventDefault();
   const start = _fpClientToSvg(e.clientX, e.clientY);
-  const orig = { x: el.x, y: el.y };
-  fpState.drag = { id: elid, kind:'move', startX: start.x, startY: start.y, origX: orig.x, origY: orig.y };
+  const isLine = (el.kind === 'wall-line');
+  const orig = isLine ?
+    { x1: el.x1, y1: el.y1, x2: el.x2, y2: el.y2 } :
+    { x: el.x, y: el.y };
+  fpState.drag = { id: elid, kind:'move', startX: start.x, startY: start.y, orig };
   const onMove = (ev) => {
     const cur = _fpClientToSvg(ev.clientX, ev.clientY);
     const dx = cur.x - fpState.drag.startX;
     const dy = cur.y - fpState.drag.startY;
-    el.x = _fpClampX(_fpSnap(fpState.drag.origX + dx), el.w);
-    el.y = _fpClampY(_fpSnap(fpState.drag.origY + dy), el.h);
+    if(isLine){
+      const newX1 = _fpSnap(orig.x1 + dx);
+      const newY1 = _fpSnap(orig.y1 + dy);
+      const newX2 = _fpSnap(orig.x2 + dx);
+      const newY2 = _fpSnap(orig.y2 + dy);
+      // Clamp so neither endpoint leaves canvas
+      let cx1 = newX1, cy1 = newY1, cx2 = newX2, cy2 = newY2;
+      const minX = Math.min(cx1, cx2);
+      const maxX = Math.max(cx1, cx2);
+      const minY = Math.min(cy1, cy2);
+      const maxY = Math.max(cy1, cy2);
+      if(minX < 0){ cx1 -= minX; cx2 -= minX; }
+      if(maxX > 1000){ cx1 -= (maxX - 1000); cx2 -= (maxX - 1000); }
+      if(minY < 0){ cy1 -= minY; cy2 -= minY; }
+      if(maxY > 700){ cy1 -= (maxY - 700); cy2 -= (maxY - 700); }
+      el.x1 = cx1; el.y1 = cy1; el.x2 = cx2; el.y2 = cy2;
+    } else {
+      el.x = _fpClampX(_fpSnap(orig.x + dx), el.w);
+      el.y = _fpClampY(_fpSnap(orig.y + dy), el.h);
+    }
     fpRenderAll();
   };
   const onUp = () => {
     document.removeEventListener('pointermove', onMove);
     document.removeEventListener('pointerup', onUp);
     document.removeEventListener('pointercancel', onUp);
-    if(fpState.drag && (el.x !== fpState.drag.origX || el.y !== fpState.drag.origY)){
-      fpMarkDirty();
+    let changed = false;
+    if(isLine){
+      if(el.x1!==orig.x1||el.y1!==orig.y1||el.x2!==orig.x2||el.y2!==orig.y2) changed = true;
+    } else {
+      if(el.x !== orig.x || el.y !== orig.y) changed = true;
     }
+    if(changed) fpMarkDirty();
     fpState.drag = null;
     fpRenderProps();
   };
@@ -10596,6 +10818,33 @@ function _fpStartResize(e, dir){
   e.preventDefault();
   e.stopPropagation();
   const start = _fpClientToSvg(e.clientX, e.clientY);
+  const isLine = (el.kind === 'wall-line');
+  // Wall-line: p1 or p2 endpoint drag
+  if(isLine){
+    const orig = { x1: el.x1, y1: el.y1, x2: el.x2, y2: el.y2 };
+    const onMove = (ev) => {
+      const cur = _fpClientToSvg(ev.clientX, ev.clientY);
+      const nx = Math.max(0, Math.min(1000, _fpSnap(cur.x)));
+      const ny = Math.max(0, Math.min(700,  _fpSnap(cur.y)));
+      if(dir === 'p1'){ el.x1 = nx; el.y1 = ny; }
+      else if(dir === 'p2'){ el.x2 = nx; el.y2 = ny; }
+      fpRenderAll();
+    };
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+      if(el.x1!==orig.x1||el.y1!==orig.y1||el.x2!==orig.x2||el.y2!==orig.y2){
+        fpMarkDirty();
+      }
+      fpRenderProps();
+    };
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+    return;
+  }
+  // Standard rect resize
   const orig = { x: el.x, y: el.y, w: el.w, h: el.h };
   const MIN = 20;
   const onMove = (ev) => {
@@ -10615,7 +10864,6 @@ function _fpStartResize(e, dir){
       const newH = Math.max(MIN, orig.h - (newY - orig.y));
       ny = newY; nh = newH;
     }
-    // Clamp
     nx = Math.max(0, nx);
     ny = Math.max(0, ny);
     if(nx + nw > 1000) nw = 1000 - nx;
@@ -10642,13 +10890,25 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   if(!plan || !plan.elements || !plan.elements.length) return null;
   const W = plan.width  || 1000;
   const H = plan.height || 700;
+  const bg = plan.bgColor || '#0f0f0f';
   const tableMap = {};
   tables.forEach(t => { tableMap[t.id] = t; });
-  let svgInner = `<rect width="${W}" height="${H}" fill="#0f0f0f"/>`;
-  const fixed = []; const tableEls = [];
+  let svgInner = `<defs>
+    <pattern id="fpVwBrick" width="24" height="12" patternUnits="userSpaceOnUse">
+      <rect width="24" height="12" fill="#5e5e5e"/>
+      <line x1="0" y1="6" x2="24" y2="6" stroke="#3a3a3a" stroke-width="1"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
+      <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
+    </pattern>
+  </defs>`;
+  svgInner += `<rect width="${W}" height="${H}" fill="${_fpEsc(bg)}"/>`;
+  const fixed = []; const tableEls = []; const walls = [];
   plan.elements.forEach(el => {
     const isTable = el.kind && el.kind.indexOf('table') === 0;
-    (isTable ? tableEls : fixed).push(el);
+    const isWall = el.kind === 'wall-line' || el.kind === 'wall-block';
+    if(isTable) tableEls.push(el);
+    else if(isWall) walls.push(el);
+    else fixed.push(el);
   });
   // Render fixed first (under)
   fixed.forEach(el => {
@@ -10663,6 +10923,15 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     const lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
     const txt = lbl ? `<text class="fp-vw-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>` : '';
     svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}">${shape}${txt}</g>`;
+  });
+  // Render walls (above fixed, below tables)
+  walls.forEach(el => {
+    if(el.kind === 'wall-line'){
+      const t = el.thickness || 4;
+      svgInner += `<line class="fp-vw-wall fp-vw-wall-line" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#888" stroke-width="${t}" stroke-linecap="round"/>`;
+    } else if(el.kind === 'wall-block'){
+      svgInner += `<rect class="fp-vw-wall fp-vw-wall-block" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="url(#fpVwBrick)"/>`;
+    }
   });
   // Render tables on top
   tableEls.forEach(el => {
@@ -10738,10 +11007,12 @@ async function bkLoadTables(){
       plan.elements.filter(e => e.kind && e.kind.indexOf('table')===0 && e.tableId).map(e => e.tableId) : [];
     const hasUsablePlan = plan && placedTableIds.length > 0;
     if(hasUsablePlan){
+      // v5.7: Expand the booking modal to full-screen so the floor plan is usable on phones.
+      const _fpShell = document.querySelector('#mCustBooking .bkm-shell');
+      if(_fpShell) _fpShell.classList.add('fp-fullscreen');
       // Render visual floor plan. Restrict booked/locked sets to tables that exist in partyOK.
       const partyIdSet = new Set(partyOK.map(t => t.id));
-      // Filter the plan to only include tables that fit party size — others shown as "too small"
-      // Actually let's show ALL tables in the plan, but mark ones too small as unavailable visually
+      // Show ALL tables in the plan; mark booked/locked/too-small as unavailable (industry standard).
       const allTablesById = {};
       tables.forEach(t => { allTablesById[t.id] = t; });
       const tooSmall = new Set();
@@ -10779,6 +11050,9 @@ async function bkLoadTables(){
       }
       return; // Done — don't render zone tabs
     }
+    // No floor plan — make sure fullscreen is OFF (zone tabs UI doesn't need it)
+    const _fpShell2 = document.querySelector('#mCustBooking .bkm-shell');
+    if(_fpShell2) _fpShell2.classList.remove('fp-fullscreen');
     // Show zone tabs again (in case previously hidden by floor plan mode)
     tabs.style.display = '';
     // Group by zone (fallback path)
@@ -11567,6 +11841,15 @@ async function cleanupOldBookings(opts){
         <div class="fp-sub" id="fpRestoName">—</div>
       </div>
       <div class="fp-head-acts">
+        <div class="fp-floor-pick" title="Floor color">
+          <span class="fp-floor-lbl" data-ts="fp_floor">Floor:</span>
+          <button class="fp-floor-sw" data-floor="#0f0f0f" title="Dark"  style="background:#0f0f0f"></button>
+          <button class="fp-floor-sw" data-floor="#3a2515" title="Wood"  style="background:#3a2515"></button>
+          <button class="fp-floor-sw" data-floor="#4a4a4a" title="Concrete" style="background:#4a4a4a"></button>
+          <button class="fp-floor-sw" data-floor="#e8e3d8" title="Marble" style="background:#e8e3d8"></button>
+          <button class="fp-floor-sw" data-floor="#5d4530" title="Tile"  style="background:#5d4530"></button>
+          <input type="color" id="fpFloorColor" class="fp-floor-pick-input" value="#0f0f0f" oninput="fpSetFloor(this.value)" title="Custom color">
+        </div>
         <button class="btn btn-sm" id="fpClearBtn" onclick="fpClearAll()" data-ts="fp_clear">Clear All</button>
         <button class="btn btn-sm btn-gold" id="fpSaveBtn" onclick="fpSave()" data-ts="fp_save">💾 Save</button>
         <button class="btn btn-sm" onclick="fpClose()" data-ts="fp_close">Close</button>
@@ -11613,6 +11896,14 @@ async function cleanupOldBookings(opts){
             <div class="fp-tool-ic" style="background:#444;font-size:13px;display:flex;align-items:center;justify-content:center">🍳</div>
             <div class="fp-tool-lbl" data-ts="fp_kitchen">Kitchen</div>
           </div>
+          <div class="fp-tool" data-tool="wall-block" title="Wall block (thick wall)">
+            <div class="fp-tool-ic" style="background:repeating-linear-gradient(45deg,#5e5e5e,#5e5e5e 4px,#4a4a4a 4px,#4a4a4a 8px);"></div>
+            <div class="fp-tool-lbl" data-ts="fp_wall_block">Wall</div>
+          </div>
+          <div class="fp-tool" data-tool="wall-line" title="Wall line (thin wall / divider)">
+            <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><div style="width:24px;height:3px;background:#888;border-radius:1px"></div></div>
+            <div class="fp-tool-lbl" data-ts="fp_wall_line">Line</div>
+          </div>
         </div>
         <div class="fp-toolbox-help">
           <div data-ts="fp_help1">💡 Drag from here onto canvas</div>
@@ -11628,8 +11919,14 @@ async function cleanupOldBookings(opts){
             <pattern id="fpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
               <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
             </pattern>
+            <pattern id="fpBrick" width="24" height="12" patternUnits="userSpaceOnUse">
+              <rect width="24" height="12" fill="#5e5e5e"/>
+              <line x1="0" y1="6" x2="24" y2="6" stroke="#3a3a3a" stroke-width="1"/>
+              <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
+              <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
+            </pattern>
           </defs>
-          <rect width="1000" height="700" fill="#0f0f0f"/>
+          <rect id="fpCanvasBg" width="1000" height="700" fill="#0f0f0f"/>
           <rect width="1000" height="700" fill="url(#fpGrid)"/>
           <g id="fpElementsLayer"></g>
           <g id="fpHandlesLayer"></g>
