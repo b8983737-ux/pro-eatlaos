@@ -9564,7 +9564,7 @@ async function loadBkRestaurants(){
   const list = document.getElementById('bkRestoList');
   list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_restos','Loading restaurants…'))}</div>`;
   try {
-    // FIX: fbGet uses REST, no SDK load needed (avoids hang on slow networks)
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
     const data = await fbGet('restaurants');
     const arr = [];
     if(data) Object.keys(data).forEach(id=>{
@@ -9791,13 +9791,8 @@ async function submitCustBooking(){
       status: 'pending',
       createdAt: Date.now()
     };
-    // FIX: Use REST API directly via fbPush (which falls back when db is null).
-    // Do NOT await loadFirebaseSDK — it can hang forever on slow networks/ad-blockers,
-    // leaving the button stuck on "Sending…". REST works without SDK.
-    const result = await fbPush('bookings/'+bkState.restoId, booking);
-    if(!result){
-      throw new Error('Booking write returned null');
-    }
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    await fbPush('bookings/'+bkState.restoId, booking);
     document.getElementById('bkSuccessCode').textContent = code;
     bkGoStep(6);
   } catch(e){
@@ -9836,7 +9831,7 @@ async function bsLookup(by){
         return;
       }
     }
-    // FIX: fbGet uses REST, no SDK load needed
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
     const all = await fbGet('bookings');
     const found = [];
     if(all){
@@ -10160,6 +10155,71 @@ if(typeof escapeHtml!=='function'){
     if(s==null) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   };
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* v5 SA CLEANUP — delete bookings older than 7 days               */
+/* ════════════════════════════════════════════════════════════════ */
+/* USAGE (from browser console as SA):                              */
+/*   cleanupOldBookings()              — actually delete            */
+/*   cleanupOldBookings({dryRun:true}) — preview only               */
+/*   cleanupOldBookings({days:14})     — custom retention           */
+/* ════════════════════════════════════════════════════════════════ */
+async function cleanupOldBookings(opts){
+  opts = opts || {};
+  const days = (typeof opts.days === 'number' && opts.days > 0) ? opts.days : 7;
+  const dryRun = !!opts.dryRun;
+  const cutoff = Date.now() - (days * 86400000);
+  console.log(`%c[Booking Cleanup] Threshold: ${days} days. Cutoff timestamp: ${cutoff} (${new Date(cutoff).toISOString()})`, 'color:#c8973a;font-weight:bold');
+  if(dryRun) console.log('%c[Booking Cleanup] DRY RUN — nothing will be deleted', 'color:#ffc107');
+  if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+  if(typeof db==='undefined' || !db){
+    console.error('[Booking Cleanup] Firebase SDK not loaded.');
+    return { error:'no_db' };
+  }
+  let snap;
+  try {
+    snap = await db.ref('bookings').once('value');
+  } catch(e){
+    console.error('[Booking Cleanup] Could not read bookings/:', e.message);
+    return { error:'read_failed', message:e.message };
+  }
+  const data = snap.val() || {};
+  const restoIds = Object.keys(data);
+  let totalScanned = 0, totalDeleted = 0, totalKept = 0;
+  const deletedSamples = [];
+  for(const restoId of restoIds){
+    const restoBookings = data[restoId] || {};
+    for(const bookingId of Object.keys(restoBookings)){
+      const b = restoBookings[bookingId];
+      totalScanned++;
+      if(!b || typeof b.createdAt !== 'number'){
+        console.warn(`[Booking Cleanup] Skip malformed: ${restoId}/${bookingId}`);
+        continue;
+      }
+      if(b.createdAt < cutoff){
+        if(deletedSamples.length < 5) deletedSamples.push({restoId, bookingId, createdAt:new Date(b.createdAt).toISOString(), name:b.name, status:b.status});
+        if(!dryRun){
+          try {
+            await db.ref('bookings/'+restoId+'/'+bookingId).remove();
+            totalDeleted++;
+          } catch(e){
+            console.error(`[Booking Cleanup] Failed to delete ${restoId}/${bookingId}:`, e.message);
+          }
+        } else {
+          totalDeleted++;
+        }
+      } else {
+        totalKept++;
+      }
+    }
+  }
+  console.log(`%c[Booking Cleanup] Scanned: ${totalScanned}, ${dryRun?'Would delete':'Deleted'}: ${totalDeleted}, Kept: ${totalKept}`, 'color:#66bb6a;font-weight:bold');
+  if(deletedSamples.length){
+    console.log('[Booking Cleanup] Sample of '+(dryRun?'would-be-deleted':'deleted')+' bookings:');
+    console.table(deletedSamples);
+  }
+  return { scanned:totalScanned, deleted:totalDeleted, kept:totalKept, dryRun };
 }
 </script>
 <!-- BOOKING MODAL -->
