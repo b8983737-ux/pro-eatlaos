@@ -2235,7 +2235,11 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-date-mo{font-size:10px;color:rgba(255,255,255,.5);font-weight:500;}
 .bk-date-card.sel .bk-date-mo{color:rgba(0,0,0,.65);}
 .bk-slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:7px;max-height:300px;overflow-y:auto;padding:4px;}
-.bk-slot{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:11px 4px;text-align:center;cursor:pointer;transition:all .15s;font-size:13px;font-weight:600;color:#fff;font-family:var(--ff,'Plus Jakarta Sans');letter-spacing:.3px;}
+.bk-slot{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:11px 4px;text-align:center;cursor:pointer;transition:all .15s;font-size:13px;font-weight:600;color:#fff;font-family:var(--ff,'Plus Jakarta Sans');letter-spacing:.3px;position:relative;}
+/* v6.3: Capacity badges on slots */
+.bk-slot-time{font-size:13px;font-weight:600;color:#fff;}
+.bk-slot-badge{margin-top:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.55);font-family:var(--fb,'Inter');}
+.bk-slot-badge-warn{color:#ffc107;}
 .bk-slot:hover{background:rgba(200,151,58,.06);border-color:rgba(200,151,58,.25);transform:translateY(-1px);}
 .bk-slot.sel{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);border-color:#c8973a;color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.3);}
 .bk-slot.taken{opacity:.25;cursor:not-allowed;text-decoration:line-through;}
@@ -2283,6 +2287,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-pill-pending{background:rgba(255,193,7,.12);color:#ffc107;border:1px solid rgba(255,193,7,.3);}
 .bk-pill-accepted{background:rgba(76,175,80,.12);color:#66bb6a;border:1px solid rgba(76,175,80,.3);}
 .bk-pill-rejected{background:rgba(244,67,54,.12);color:#ef5350;border:1px solid rgba(244,67,54,.3);}
+.bk-pill-expired{background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);}
 .bk-status-info{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;font-size:12px;color:rgba(255,255,255,.7);}
 .bk-status-info b{color:rgba(255,255,255,.5);font-weight:600;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:2px;}
 .bk-empty{text-align:center;padding:48px 20px;color:rgba(255,255,255,.45);font-size:13px;}
@@ -2441,6 +2446,20 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .oh-day input[type="time"]:focus{outline:none;border-color:#c8973a;}
 .oh-day-sep{color:var(--s-muted,rgba(255,255,255,.4));font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
 .oh-closed{color:var(--s-muted,rgba(255,255,255,.4));font-size:11px;font-style:italic;}
+/* v6.3: Booking mode + custom slots */
+.oh-bkmode-row{flex-basis:100%;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:10px;margin-top:10px;border-top:1px dashed rgba(255,255,255,.06);}
+.oh-bkmode-lbl{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.oh-bkmode-tabs{display:inline-flex;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px;}
+.oh-bkmode-tab{background:none;border:none;color:rgba(255,255,255,.6);font-size:11px;font-weight:600;padding:6px 11px;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.oh-bkmode-tab:hover{color:#fff;}
+.oh-bkmode-tab.on{background:rgba(200,151,58,.18);color:#c8973a;}
+.oh-slots-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:1;min-width:200px;}
+.oh-slot-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(200,151,58,.12);border:1px solid rgba(200,151,58,.28);color:#e0b455;padding:5px 8px 5px 11px;border-radius:14px;font-size:12px;font-weight:700;font-family:'Plus Jakarta Sans',inherit;letter-spacing:.3px;}
+.oh-slot-x{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.7);width:18px;height:18px;border-radius:50%;font-size:13px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;transition:all .15s;}
+.oh-slot-x:hover{background:rgba(220,53,69,.4);color:#fff;}
+.oh-slot-empty{font-size:11px;color:rgba(255,255,255,.45);font-style:italic;}
+.oh-slot-add{background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.18);color:rgba(255,255,255,.7);font-size:11px;font-weight:600;padding:5px 11px;border-radius:14px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.oh-slot-add:hover{background:rgba(200,151,58,.1);border-color:rgba(200,151,58,.4);color:#c8973a;}
 @media(max-width:600px){
   .oh-day{padding:12px;gap:10px;}
   .oh-day-name{width:70px;font-size:12px;}
@@ -4013,6 +4032,20 @@ const STAFF_T={
     bookings:'Bookings',open_hours:'Opening Hours',
     table_bookings:'Table Bookings',opening_hours:'Opening Hours',
     bk_pending:'Pending',bk_accepted:'Accepted',bk_rejected:'Rejected',bk_all:'All',
+    // v6.3: Custom booking times + check-in + auto-expiry
+    bk_expired:'Expired',
+    bk_checkin:'✓ Customer arrived',
+    bk_arrived:'✓ Customer arrived',
+    bk_err_checkin:'Could not check in customer.',
+    bk_mode_label:'Booking slots:',
+    bk_mode_auto:'Auto every 30 min',
+    bk_mode_custom:'Custom times',
+    bk_add_slot:'+ Add time',
+    bk_no_custom_slots:'No custom times yet — add at least one',
+    bk_prompt_new_slot:'Enter time (24-hour, e.g. 20:00):',
+    bk_err_bad_time:'Invalid time format. Use HH:MM (24-hour).',
+    bk_err_dup_slot:'That time is already in the list.',
+    bk_err_custom_empty:'Day {d}: Custom Times mode requires at least one time. Add a time or switch to Auto.',
     bk_accept:'✅ Accept',bk_reject:'❌ Reject',
     bk_no_bookings:'No bookings in this category.',
     bk_loading:'Loading bookings…',
@@ -4097,6 +4130,20 @@ const STAFF_T={
     bookings:'ການຈອງ',open_hours:'ຊົ່ວໂມງເປີດ',
     table_bookings:'ການຈອງໂຕະ',opening_hours:'ຊົ່ວໂມງເປີດ',
     bk_pending:'ລໍຖ້າ',bk_accepted:'ອະນຸມັດ',bk_rejected:'ປະຕິເສດ',bk_all:'ທັງໝົດ',
+    // v6.3: Custom booking times + check-in + auto-expiry
+    bk_expired:'ໝົດເວລາ',
+    bk_checkin:'✓ ລູກຄ້າມາແລ້ວ',
+    bk_arrived:'✓ ລູກຄ້າມາແລ້ວ',
+    bk_err_checkin:'ບໍ່ສາມາດເຊັກອິນໄດ້.',
+    bk_mode_label:'ຊ່ວງເວລາຈອງ:',
+    bk_mode_auto:'ອັດຕະໂນມັດທຸກ 30 ນາທີ',
+    bk_mode_custom:'ກຳນົດເວລາເອງ',
+    bk_add_slot:'+ ເພີ່ມເວລາ',
+    bk_no_custom_slots:'ຍັງບໍ່ມີເວລາ — ກະລຸນາເພີ່ມຢ່າງໜ້ອຍ 1 ເວລາ',
+    bk_prompt_new_slot:'ໃສ່ເວລາ (ຮູບແບບ 24 ຊມ. ເຊັ່ນ 20:00):',
+    bk_err_bad_time:'ຮູບແບບເວລາບໍ່ຖືກຕ້ອງ. ໃຊ້ HH:MM (24 ຊມ.)',
+    bk_err_dup_slot:'ເວລານີ້ມີຢູ່ໃນລາຍການແລ້ວ.',
+    bk_err_custom_empty:'ມື້ທີ {d}: ໂໝດກຳນົດເວລາເອງຕ້ອງມີຢ່າງໜ້ອຍ 1 ເວລາ.',
     bk_accept:'✅ ອະນຸມັດ',bk_reject:'❌ ປະຕິເສດ',
     bk_no_bookings:'ບໍ່ມີການຈອງໃນໝວດນີ້.',
     bk_loading:'ກຳລັງໂຫຼດການຈອງ…',
@@ -4181,6 +4228,20 @@ const STAFF_T={
     bookings:'การจอง',open_hours:'เวลาเปิด',
     table_bookings:'การจองโต๊ะ',opening_hours:'เวลาเปิด',
     bk_pending:'รอดำเนินการ',bk_accepted:'อนุมัติ',bk_rejected:'ปฏิเสธ',bk_all:'ทั้งหมด',
+    // v6.3: Custom booking times + check-in + auto-expiry
+    bk_expired:'หมดเวลา',
+    bk_checkin:'✓ ลูกค้ามาแล้ว',
+    bk_arrived:'✓ ลูกค้ามาแล้ว',
+    bk_err_checkin:'ไม่สามารถเช็คอินได้',
+    bk_mode_label:'ช่วงเวลาจอง:',
+    bk_mode_auto:'อัตโนมัติทุก 30 นาที',
+    bk_mode_custom:'กำหนดเวลาเอง',
+    bk_add_slot:'+ เพิ่มเวลา',
+    bk_no_custom_slots:'ยังไม่มีเวลา — โปรดเพิ่มอย่างน้อย 1 เวลา',
+    bk_prompt_new_slot:'ป้อนเวลา (รูปแบบ 24 ชม. เช่น 20:00):',
+    bk_err_bad_time:'รูปแบบเวลาไม่ถูกต้อง ใช้ HH:MM (24 ชม.)',
+    bk_err_dup_slot:'เวลานี้มีอยู่ในรายการแล้ว',
+    bk_err_custom_empty:'วันที่ {d}: โหมดกำหนดเวลาเองต้องมีอย่างน้อย 1 เวลา',
     bk_accept:'✅ อนุมัติ',bk_reject:'❌ ปฏิเสธ',
     bk_no_bookings:'ไม่มีการจองในหมวดนี้',
     bk_loading:'กำลังโหลดการจอง…',
@@ -4265,6 +4326,20 @@ const STAFF_T={
     bookings:'预订',open_hours:'营业时间',
     table_bookings:'餐桌预订',opening_hours:'营业时间',
     bk_pending:'待确认',bk_accepted:'已确认',bk_rejected:'已拒绝',bk_all:'全部',
+    // v6.3: Custom booking times + check-in + auto-expiry
+    bk_expired:'已过期',
+    bk_checkin:'✓ 客人已到达',
+    bk_arrived:'✓ 客人已到达',
+    bk_err_checkin:'无法标记为已到达。',
+    bk_mode_label:'预订时段:',
+    bk_mode_auto:'每30分钟自动生成',
+    bk_mode_custom:'自定义时间',
+    bk_add_slot:'+ 添加时间',
+    bk_no_custom_slots:'尚无自定义时间 — 请至少添加一个',
+    bk_prompt_new_slot:'输入时间 (24小时制, 例如 20:00):',
+    bk_err_bad_time:'时间格式无效。请使用 HH:MM (24小时制)。',
+    bk_err_dup_slot:'此时间已在列表中。',
+    bk_err_custom_empty:'第 {d} 天: 自定义时间模式需要至少一个时间。',
     bk_accept:'✅ 确认',bk_reject:'❌ 拒绝',
     bk_no_bookings:'此分类下暂无预订。',
     bk_loading:'正在加载预订…',
@@ -4365,6 +4440,20 @@ const STAFF_T={
     bookings:'예약',open_hours:'영업 시간',
     table_bookings:'테이블 예약',opening_hours:'영업 시간',
     bk_pending:'대기 중',bk_accepted:'수락됨',bk_rejected:'거절됨',bk_all:'전체',
+    // v6.3: Custom booking times + check-in + auto-expiry
+    bk_expired:'만료됨',
+    bk_checkin:'✓ 고객 도착',
+    bk_arrived:'✓ 고객 도착',
+    bk_err_checkin:'고객 도착 처리에 실패했습니다.',
+    bk_mode_label:'예약 시간대:',
+    bk_mode_auto:'30분마다 자동',
+    bk_mode_custom:'사용자 지정 시간',
+    bk_add_slot:'+ 시간 추가',
+    bk_no_custom_slots:'사용자 지정 시간이 없습니다 — 최소 1개를 추가하세요',
+    bk_prompt_new_slot:'시간 입력 (24시간제, 예: 20:00):',
+    bk_err_bad_time:'잘못된 시간 형식. HH:MM (24시간제)을 사용하세요.',
+    bk_err_dup_slot:'이미 목록에 있는 시간입니다.',
+    bk_err_custom_empty:'{d}일차: 사용자 지정 시간 모드는 최소 1개의 시간이 필요합니다.',
     bk_accept:'✅ 수락',bk_reject:'❌ 거절',
     bk_no_bookings:'이 카테고리에 예약이 없습니다.',
     bk_loading:'예약을 불러오는 중…',
@@ -5545,6 +5634,9 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'Could not reserve this table. Try another.',
     bk_lock_expired:'Your table reservation expired. Please pick another table.',
     bk_legend_available:'Available',
+    // v6.3: Custom booking time slots — capacity badges
+    bk_only_n_left:'Only {n} left',
+    bk_few_left:'Few left',
     // v6.1: Floor plan map labels (translated for customer view)
     fp_counter:'Bar',
     fp_toilet:'WC',
@@ -5690,6 +5782,9 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ບໍ່ສາມາດຈອງໂຕະນີ້ໄດ້. ກະລຸນາລອງໂຕະອື່ນ.',
     bk_lock_expired:'ການຈອງໂຕະຂອງທ່ານໝົດເວລາ. ກະລຸນາເລືອກໂຕະອື່ນ.',
     bk_legend_available:'ວ່າງ',
+    // v6.3: Custom booking time slots — capacity badges
+    bk_only_n_left:'ເຫຼືອພຽງ {n}',
+    bk_few_left:'ເຫຼືອໜ້ອຍ',
     // v6.1: Floor plan map labels
     fp_counter:'ບາ',
     fp_toilet:'ຫ້ອງນ້ຳ',
@@ -5835,6 +5930,9 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ไม่สามารถจองโต๊ะนี้ได้ กรุณาเลือกโต๊ะอื่น',
     bk_lock_expired:'การจองโต๊ะของคุณหมดเวลาแล้ว กรุณาเลือกโต๊ะใหม่',
     bk_legend_available:'ว่าง',
+    // v6.3: Custom booking time slots — capacity badges
+    bk_only_n_left:'เหลือเพียง {n}',
+    bk_few_left:'เหลือน้อย',
     // v6.1: Floor plan map labels
     fp_counter:'บาร์',
     fp_toilet:'ห้องน้ำ',
@@ -5980,6 +6078,9 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'无法保留此桌位，请尝试其他。',
     bk_lock_expired:'您的桌位保留已过期。请选择其他桌位。',
     bk_legend_available:'空闲',
+    // v6.3: Custom booking time slots — capacity badges
+    bk_only_n_left:'仅剩 {n} 个',
+    bk_few_left:'仅剩少量',
     // v6.1: Floor plan map labels
     fp_counter:'吧台',
     fp_toilet:'洗手间',
@@ -6125,6 +6226,9 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'이 테이블을 예약할 수 없습니다. 다른 테이블을 선택하세요.',
     bk_lock_expired:'테이블 예약이 만료되었습니다. 다른 테이블을 선택해주세요.',
     bk_legend_available:'이용 가능',
+    // v6.3: Custom booking time slots — capacity badges
+    bk_only_n_left:'{n}개 남음',
+    bk_few_left:'잔여 적음',
     // v6.1: Floor plan map labels
     fp_counter:'바',
     fp_toilet:'화장실',
@@ -10259,17 +10363,26 @@ function bkPickDate(iso){
 }
 
 async function bkLoadSlotsAndBuild(){
-  let booked = [];
+  // v6.3: Count bookings PER slot (not just which slots are touched) so we can show capacity
+  const bookedCount = {};  // { '20:00': 3, '21:00': 1 }
+  let totalTables = 0;
   try {
+    // Fetch restaurant's table count for capacity math
+    const r = await fbGet('restaurants/'+bkState.restoId);
+    if(r && Array.isArray(r.tables)) totalTables = r.tables.length;
     const all = await fbGet('bookings/'+bkState.restoId);
     if(all) Object.keys(all).forEach(k=>{
       const b = all[k];
-      if(b && b.date===bkState.date && (b.status==='pending'||b.status==='accepted')){
-        booked.push(b.slot);
+      // Only count bookings that hold a table — exclude rejected and expired
+      if(b && b.date===bkState.date && (b.status==='pending' || b.status==='accepted')){
+        bookedCount[b.slot] = (bookedCount[b.slot]||0) + 1;
       }
     });
   } catch(e){}
-  bkState.taken = booked;
+  bkState.bookedCount = bookedCount;
+  bkState.totalTables = totalTables || 1; // avoid div-by-zero
+  // Backwards-compat: keep `bkState.taken` as the list of slots fully booked
+  bkState.taken = Object.keys(bookedCount).filter(s => bookedCount[s] >= bkState.totalTables);
   buildBkSlotGrid();
 }
 
@@ -10282,24 +10395,56 @@ function buildBkSlotGrid(){
     grid.innerHTML = `<div class="bk-empty" style="grid-column:1/-1">${escapeHtml(_lp('bk_closed_day','Closed on this day.'))}</div>`;
     return;
   }
-  const [fH,fM] = dayHours.from.split(':').map(Number);
-  const [tH,tM] = dayHours.to.split(':').map(Number);
-  const startMin = fH*60+fM;
-  const endMin = tH*60+tM;
-  const now = new Date();
-  const isToday = bkState.date === _bkLocalISO(now); // ← FIX: timezone-safe comparison
-  const nowMin = now.getHours()*60 + now.getMinutes();
-  let html = '';
-  for(let m=startMin; m<endMin; m+=30){
-    const hh = String(Math.floor(m/60)).padStart(2,'0');
-    const mm = String(m%60).padStart(2,'0');
-    const slot = hh+':'+mm;
-    const isPast = isToday && m<=nowMin+30;
-    const isTaken = bkState.taken.includes(slot) || isPast;
-    const cls = isTaken ? 'taken' : '';
-    const onclick = isTaken ? '' : `onclick="bkPickSlot('${slot}')"`;
-    html += `<div class="bk-slot ${cls}" data-s="${slot}" ${onclick}>${slot}</div>`;
+  // v6.3: Build slot list — either from owner's custom times, or auto every 30 min
+  let slotList = [];
+  const mode = dayHours.bookingMode || 'auto';
+  if(mode === 'custom' && Array.isArray(dayHours.customSlots) && dayHours.customSlots.length){
+    // Owner-set custom times: validate format and sort
+    slotList = dayHours.customSlots.filter(s => /^([01]\d|2[0-3]):[0-5]\d$/.test(s)).slice().sort();
+  } else {
+    // Auto-generate every 30 min (existing behavior — backward compat)
+    const [fH,fM] = dayHours.from.split(':').map(Number);
+    const [tH,tM] = dayHours.to.split(':').map(Number);
+    const startMin = fH*60+fM;
+    const endMin = tH*60+tM;
+    for(let m=startMin; m<endMin; m+=30){
+      const hh = String(Math.floor(m/60)).padStart(2,'0');
+      const mm = String(m%60).padStart(2,'0');
+      slotList.push(hh+':'+mm);
+    }
   }
+  if(!slotList.length){
+    grid.innerHTML = `<div class="bk-empty" style="grid-column:1/-1">${escapeHtml(_lp('bk_no_slots','No slots available.'))}</div>`;
+    return;
+  }
+  const now = new Date();
+  const isToday = bkState.date === _bkLocalISO(now);
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  const total = bkState.totalTables || 1;
+  const bookedCount = bkState.bookedCount || {};
+  const lblOnly = _lp('bk_only_n_left','Only {n} left');
+  const lblFew  = _lp('bk_few_left','Few left');
+  let html = '';
+  slotList.forEach(slot => {
+    const [sh, sm] = slot.split(':').map(Number);
+    const slotMin = sh*60 + sm;
+    const isPast = isToday && slotMin <= nowMin + 30;
+    const used = bookedCount[slot] || 0;
+    const remaining = total - used;
+    const isFull = remaining <= 0 || isPast;
+    const cls = isFull ? 'taken' : '';
+    const onclick = isFull ? '' : `onclick="bkPickSlot('${slot}')"`;
+    // Capacity badge — only shown for non-full, low-availability slots
+    let badge = '';
+    if(!isFull && total > 1){
+      if(remaining === 1){
+        badge = `<div class="bk-slot-badge bk-slot-badge-warn">${escapeHtml(lblOnly.replace('{n}', 1))}</div>`;
+      } else if(remaining <= Math.max(2, Math.floor(total * 0.3))){
+        badge = `<div class="bk-slot-badge">${escapeHtml(lblFew)}</div>`;
+      }
+    }
+    html += `<div class="bk-slot ${cls}" data-s="${slot}" ${onclick}><div class="bk-slot-time">${slot}</div>${badge}</div>`;
+  });
   grid.innerHTML = html || `<div class="bk-empty" style="grid-column:1/-1">${escapeHtml(_lp('bk_no_slots','No slots available.'))}</div>`;
 }
 
@@ -11696,6 +11841,8 @@ async function loadOwnerBookings(){
     _bkOwnerCache = arr;
     renderOwnerBookings();
     setupOwnerBookingListener();
+    // v6.3: Run auto-expiry sweep — frees slots from no-show accepted bookings
+    startBkExpirySweep();
   } catch(e){
     console.error('loadOwnerBookings:',e);
     body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_no_bookings','Could not load bookings.'))}</div>`;
@@ -11752,6 +11899,16 @@ function renderOwnerBookings(){
         <button class="btn btn-sm" data-bk-action="accept" data-bk-id="${escapeHtml(b.id)}" style="background:#2e7d32;color:#fff;border-color:#2e7d32">${escapeHtml(lblAccept)}</button>
         <button class="btn btn-sm" data-bk-action="reject" data-bk-id="${escapeHtml(b.id)}" style="background:#c62828;color:#fff;border-color:#c62828">${escapeHtml(lblReject)}</button>
       </div>`;
+    } else if(b.status==='accepted' && !b.checkedIn){
+      // v6.3: Check-in button for accepted bookings (avoids auto-expiry)
+      const lblCheckIn = _ts('bk_checkin','✓ Customer arrived');
+      actions = `<div class="ob-card-actions">
+        <button class="btn btn-sm" data-bk-action="checkin" data-bk-id="${escapeHtml(b.id)}" style="background:#1976d2;color:#fff;border-color:#1976d2">${escapeHtml(lblCheckIn)}</button>
+      </div>`;
+    } else if(b.status==='accepted' && b.checkedIn){
+      // Already checked in — show subtle confirmation
+      const lblArrivedSub = _ts('bk_arrived','✓ Customer arrived');
+      actions = `<div class="ob-card-actions" style="opacity:.65"><span style="font-size:11px;color:#4ade80;font-weight:600">${escapeHtml(lblArrivedSub)}</span></div>`;
     }
     return `<div class="ob-card">
       <div class="ob-card-h">
@@ -11780,6 +11937,7 @@ function renderOwnerBookings(){
     if(!id) return;
     if(action==='accept') acceptOwnerBooking(id);
     else if(action==='reject') rejectOwnerBooking(id);
+    else if(action==='checkin') checkInOwnerBooking(id);
   };
   const pendingCount = _bkOwnerCache.filter(b=>b.status==='pending').length;
   const badge = document.getElementById('owBookBadge');
@@ -11805,6 +11963,57 @@ async function rejectOwnerBooking(id){
     await fbSet('bookings/'+restoId+'/'+id+'/respondedAt',Date.now());
     loadOwnerBookings();
   } catch(e){ console.error(e); alert(_ts('bk_err_reject','Could not reject booking.')); }
+}
+
+/* v6.3: Owner clicks "Customer arrived" — protects this booking from auto-expiry */
+async function checkInOwnerBooking(id){
+  try {
+    await fbSet('bookings/'+restoId+'/'+id+'/checkedIn', true);
+    await fbSet('bookings/'+restoId+'/'+id+'/checkedInAt', Date.now());
+    loadOwnerBookings();
+    if(typeof notifyD === 'function') notifyD('✓ Marked as arrived');
+  } catch(e){ console.error('checkInOwnerBooking:', e); alert(_ts('bk_err_checkin','Could not check in customer.')); }
+}
+
+/* v6.3: Auto-expiry sweep
+   Runs every 60s while owner panel is open. Marks ACCEPTED bookings as 'expired' if:
+     - their slot time was more than 30 minutes ago, AND
+     - they were NOT checked in.
+   This frees the table slot so the next customer can book it. */
+let _bkExpirySweepTimer = null;
+function startBkExpirySweep(){
+  if(_bkExpirySweepTimer) return;
+  _bkExpirySweepTimer = setInterval(_bkExpirySweep, 60000); // every 60s
+  _bkExpirySweep(); // run once immediately
+}
+function stopBkExpirySweep(){
+  if(_bkExpirySweepTimer){ clearInterval(_bkExpirySweepTimer); _bkExpirySweepTimer = null; }
+}
+async function _bkExpirySweep(){
+  if(typeof restoId==='undefined' || !restoId) return;
+  if(!Array.isArray(_bkOwnerCache)) return;
+  const now = Date.now();
+  const grace = 30 * 60 * 1000; // 30 min after slot
+  let changed = false;
+  for(const b of _bkOwnerCache){
+    if(b.status !== 'accepted') continue;
+    if(b.checkedIn) continue;
+    // Compute the booking's slot timestamp (in local time)
+    if(!b.date || !b.slot) continue;
+    const slotTs = new Date(b.date+'T'+b.slot+':00').getTime();
+    if(isNaN(slotTs)) continue;
+    if(now - slotTs > grace){
+      try {
+        await fbSet('bookings/'+restoId+'/'+b.id+'/status', 'expired');
+        await fbSet('bookings/'+restoId+'/'+b.id+'/expiredAt', now);
+        changed = true;
+      } catch(e){
+        console.error('expirySweep failed for', b.id, e);
+        break; // don't keep hammering on permission errors
+      }
+    }
+  }
+  if(changed) loadOwnerBookings();
 }
 
 /* Owner live listener: sound + badge when new pending bookings arrive */
@@ -11898,9 +12107,20 @@ async function loadOwnerHours(){
       <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.5">${escapeHtml(bannerSub)}</div>
     </div>`;
   }
+  // v6.3: Reset slot state on every render so it picks up Firebase values fresh
+  _ohSlotState = {};
   for(let i=0; i<7; i++){
     const day = h[i] || h[String(i)] || {open:false, from:'11:00', to:'22:00'};
+    _ohEnsureState(i, day);
     const dayName = _ts(dayKeys[i], dayDefaults[i]);
+    // v6.3: Booking mode per day (auto = every 30min from open hours, custom = owner-set times)
+    const bkMode = day.bookingMode || 'auto';
+    const customSlots = Array.isArray(day.customSlots) ? day.customSlots : [];
+    const lblBkMode    = _ts('bk_mode_label','Booking slots:');
+    const lblBkAuto    = _ts('bk_mode_auto','Auto every 30 min');
+    const lblBkCustom  = _ts('bk_mode_custom','Custom times');
+    const lblBkAddSlot = _ts('bk_add_slot','+ Add time');
+    const lblBkNoSlots = _ts('bk_no_custom_slots','No custom times yet — add at least one');
     html += `<div class="oh-day" data-dow="${i}">
       <div class="oh-day-name">${escapeHtml(dayName)}</div>
       <label class="oh-day-toggle">
@@ -11913,6 +12133,18 @@ async function loadOwnerHours(){
         <input type="time" id="ohTo-${i}" value="${day.to||'22:00'}" step="1800">
       </div>
       <div id="ohClosed-${i}" class="oh-closed" style="display:${day.open?'none':'block'};margin-left:auto">${escapeHtml(lblClosed)}</div>
+      <!-- v6.3: BOOKING MODE row (only shown when day is open) -->
+      <div id="ohBkMode-${i}" class="oh-bkmode-row" style="display:${day.open?'flex':'none'}">
+        <span class="oh-bkmode-lbl">${escapeHtml(lblBkMode)}</span>
+        <div class="oh-bkmode-tabs">
+          <button type="button" class="oh-bkmode-tab ${bkMode==='auto'?'on':''}" onclick="ohSetBkMode(${i},'auto')">${escapeHtml(lblBkAuto)}</button>
+          <button type="button" class="oh-bkmode-tab ${bkMode==='custom'?'on':''}" onclick="ohSetBkMode(${i},'custom')">${escapeHtml(lblBkCustom)}</button>
+        </div>
+        <div id="ohSlots-${i}" class="oh-slots-wrap" style="display:${bkMode==='custom'?'flex':'none'}">
+          ${customSlots.length ? customSlots.map((s,idx)=>`<span class="oh-slot-chip">${escapeHtml(s)}<button type="button" class="oh-slot-x" onclick="ohRemoveSlot(${i},${idx})" title="Remove">×</button></span>`).join('') : `<span class="oh-slot-empty">${escapeHtml(lblBkNoSlots)}</span>`}
+          <button type="button" class="oh-slot-add" onclick="ohAddSlot(${i})">${escapeHtml(lblBkAddSlot)}</button>
+        </div>
+      </div>
     </div>`;
   }
   body.innerHTML = html;
@@ -11921,6 +12153,74 @@ async function loadOwnerHours(){
 function ohToggle(i, checked){
   document.getElementById('ohRow-'+i).style.display = checked ? 'flex' : 'none';
   document.getElementById('ohClosed-'+i).style.display = checked ? 'none' : 'block';
+  const bkRow = document.getElementById('ohBkMode-'+i);
+  if(bkRow) bkRow.style.display = checked ? 'flex' : 'none';
+}
+
+/* v6.3: Per-day editable state for custom booking slots
+   Source of truth while owner is editing; written to Firebase on Save. */
+let _ohSlotState = {}; // { 0: { mode:'auto'|'custom', slots:['20:00','21:30'] }, 1: ... }
+
+function _ohEnsureState(i, defaults){
+  if(!_ohSlotState[i]){
+    _ohSlotState[i] = {
+      mode: (defaults && defaults.bookingMode) || 'auto',
+      slots: (defaults && Array.isArray(defaults.customSlots)) ? defaults.customSlots.slice() : []
+    };
+  }
+  return _ohSlotState[i];
+}
+
+function ohSetBkMode(i, mode){
+  const st = _ohEnsureState(i);
+  st.mode = mode;
+  // Update tab buttons
+  const row = document.getElementById('ohBkMode-'+i);
+  if(row){
+    row.querySelectorAll('.oh-bkmode-tab').forEach(b => {
+      b.classList.toggle('on', b.textContent.trim() === (mode==='auto' ? _ts('bk_mode_auto','Auto every 30 min') : _ts('bk_mode_custom','Custom times')));
+    });
+  }
+  // Show/hide slots editor
+  const slotsBox = document.getElementById('ohSlots-'+i);
+  if(slotsBox) slotsBox.style.display = mode==='custom' ? 'flex' : 'none';
+}
+
+function ohAddSlot(i){
+  const st = _ohEnsureState(i);
+  const tpl = _ts('bk_prompt_new_slot','Enter time (24-hour, e.g. 20:00):');
+  const v = (window.prompt(tpl, '20:00') || '').trim();
+  if(!v) return;
+  if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(v)){
+    alert(_ts('bk_err_bad_time','Invalid time format. Use HH:MM (24-hour).'));
+    return;
+  }
+  if(st.slots.indexOf(v) !== -1){
+    alert(_ts('bk_err_dup_slot','That time is already in the list.'));
+    return;
+  }
+  st.slots.push(v);
+  st.slots.sort();
+  _ohRerenderSlots(i);
+}
+
+function ohRemoveSlot(i, idx){
+  const st = _ohEnsureState(i);
+  if(idx < 0 || idx >= st.slots.length) return;
+  st.slots.splice(idx, 1);
+  _ohRerenderSlots(i);
+}
+
+function _ohRerenderSlots(i){
+  const st = _ohEnsureState(i);
+  const wrap = document.getElementById('ohSlots-'+i);
+  if(!wrap) return;
+  const lblBkAddSlot = _ts('bk_add_slot','+ Add time');
+  const lblBkNoSlots = _ts('bk_no_custom_slots','No custom times yet — add at least one');
+  const chips = st.slots.length
+    ? st.slots.map((s,idx)=>`<span class="oh-slot-chip">${escapeHtml(s)}<button type="button" class="oh-slot-x" onclick="ohRemoveSlot(${i},${idx})" title="Remove">×</button></span>`).join('')
+    : `<span class="oh-slot-empty">${escapeHtml(lblBkNoSlots)}</span>`;
+  wrap.innerHTML = chips + `<button type="button" class="oh-slot-add" onclick="ohAddSlot(${i})">${escapeHtml(lblBkAddSlot)}</button>`;
 }
 
 async function saveOwnerHours(){
@@ -11930,13 +12230,22 @@ async function saveOwnerHours(){
   }
   const out = {};
   const errTpl = _ts('bk_err_time_order','Day {d}: opening time must be before closing time.');
+  const errCustomEmptyTpl = _ts('bk_err_custom_empty','Day {d}: Custom Times mode requires at least one time. Add a time or switch to Auto.');
   for(let i=0; i<7; i++){
     const cb = document.querySelector(`.oh-day[data-dow="${i}"] input[type="checkbox"]`);
     const open = !!(cb && cb.checked);
     const from = document.getElementById('ohFrom-'+i)?.value || '11:00';
     const to = document.getElementById('ohTo-'+i)?.value || '22:00';
     if(open && from>=to){ alert(errTpl.replace('{d}', i+1)); return; }
-    out[i] = { open, from, to };
+    // v6.3: Capture booking mode + custom slots from in-memory edit state
+    const st = _ohSlotState[i] || { mode: 'auto', slots: [] };
+    if(open && st.mode === 'custom' && st.slots.length === 0){
+      alert(errCustomEmptyTpl.replace('{d}', i+1));
+      return;
+    }
+    const dayObj = { open, from, to, bookingMode: st.mode };
+    if(st.mode === 'custom') dayObj.customSlots = st.slots.slice();
+    out[i] = dayObj;
   }
   try {
     await fbSet('restoHours/'+restoId, out);
