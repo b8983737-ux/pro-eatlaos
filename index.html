@@ -3832,6 +3832,8 @@ const STAFF_T={
     bk_open:'Open',bk_closed_all_day:'Closed all day',
     bk_to:'to',
     bk_hours_saved:'✅ Opening hours saved.',
+    bk_hours_review_title:'⚠ Please review your opening hours',
+    bk_hours_review_sub:'We set defaults so customers can book right away. Update to match your real schedule, then click Save.',
     bk_confirm_accept:'Accept this booking?',
     bk_confirm_reject:'Reject this booking?',
     bk_err_save_hours:'Could not save hours.',
@@ -3883,6 +3885,8 @@ const STAFF_T={
     bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',
     bk_to:'ຫາ',
     bk_hours_saved:'✅ ບັນທຶກຊົ່ວໂມງເປີດແລ້ວ.',
+    bk_hours_review_title:'⚠ ກະລຸນາກວດສອບຊົ່ວໂມງເປີດຂອງທ່ານ',
+    bk_hours_review_sub:'ພວກເຮົາໄດ້ຕັ້ງຄ່າເລີ່ມຕົ້ນເພື່ອໃຫ້ລູກຄ້າຈອງໄດ້ທັນທີ. ກະລຸນາແກ້ໄຂໃຫ້ກົງກັບຕາຕະລາງຂອງທ່ານ ແລ້ວກົດບັນທຶກ.',
     bk_confirm_accept:'ອະນຸມັດການຈອງນີ້?',
     bk_confirm_reject:'ປະຕິເສດການຈອງນີ້?',
     bk_err_save_hours:'ບໍ່ສາມາດບັນທຶກຊົ່ວໂມງ.',
@@ -3934,6 +3938,8 @@ const STAFF_T={
     bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',
     bk_to:'ถึง',
     bk_hours_saved:'✅ บันทึกเวลาเปิดเรียบร้อย',
+    bk_hours_review_title:'⚠ กรุณาตรวจสอบเวลาเปิดของคุณ',
+    bk_hours_review_sub:'เราตั้งค่าเริ่มต้นไว้เพื่อให้ลูกค้าจองได้ทันที กรุณาแก้ไขให้ตรงกับเวลาจริงของคุณ แล้วกดบันทึก',
     bk_confirm_accept:'อนุมัติการจองนี้?',
     bk_confirm_reject:'ปฏิเสธการจองนี้?',
     bk_err_save_hours:'ไม่สามารถบันทึกเวลาได้',
@@ -3985,6 +3991,8 @@ const STAFF_T={
     bk_open:'营业',bk_closed_all_day:'全天休息',
     bk_to:'至',
     bk_hours_saved:'✅ 营业时间已保存。',
+    bk_hours_review_title:'⚠ 请检查您的营业时间',
+    bk_hours_review_sub:'我们设置了默认时间以便顾客立即预订。请修改为您的实际时间，然后点击保存。',
     bk_confirm_accept:'确认接受此预订？',
     bk_confirm_reject:'确认拒绝此预订？',
     bk_err_save_hours:'无法保存营业时间。',
@@ -4052,6 +4060,8 @@ const STAFF_T={
     bk_open:'영업',bk_closed_all_day:'종일 휴무',
     bk_to:'~',
     bk_hours_saved:'✅ 영업 시간이 저장되었습니다.',
+    bk_hours_review_title:'⚠ 영업 시간을 확인해 주세요',
+    bk_hours_review_sub:'고객이 바로 예약할 수 있도록 기본값을 설정했습니다. 실제 일정에 맞게 수정한 후 저장을 누르세요.',
     bk_confirm_accept:'이 예약을 수락하시겠습니까?',
     bk_confirm_reject:'이 예약을 거절하시겠습니까?',
     bk_err_save_hours:'영업 시간을 저장할 수 없습니다.',
@@ -6857,7 +6867,24 @@ async function saveResto(){
         .toLowerCase()
         .replace(/[^a-z0-9]+/g,'-')
         .replace(/^-|-$/g,'');
-      await fbPush('restaurants',data);
+      const pushResult=await fbPush('restaurants',data);
+      // v5.1: Auto-seed default opening hours for NEW restaurants only.
+      // Owner sees a "needs review" banner until they save their real hours.
+      const newRestoId = pushResult && pushResult.key;
+      if(newRestoId){
+        try {
+          await fbSet('restoHours/'+newRestoId, {
+            needsReview: true,
+            0: { open:true, from:'11:00', to:'22:00' },
+            1: { open:true, from:'11:00', to:'22:00' },
+            2: { open:true, from:'11:00', to:'22:00' },
+            3: { open:true, from:'11:00', to:'22:00' },
+            4: { open:true, from:'11:00', to:'22:00' },
+            5: { open:true, from:'11:00', to:'22:00' },
+            6: { open:true, from:'11:00', to:'22:00' }
+          });
+        } catch(e){ console.warn('Default hours seed failed (non-fatal):', e.message); }
+      }
       await migrateAllRestaurants().catch(()=>{});
       notifyD('✓ Restaurant "'+data.name+'" created! Owner can now login with: '+data.user);
     }
@@ -9819,7 +9846,8 @@ async function bsLookup(by){
   try {
     // Validate input first
     if(by==='phone'){
-      const q = document.getElementById('bsPhone').value.trim().replace(/\s+/g,'');
+      // FIX (v5.2): Validate by digits-only so "020 9999 9999" passes (10 digits)
+      const q = document.getElementById('bsPhone').value.replace(/\D/g, '');
       if(!q || q.length<6){
         results.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_invalid_phone','Please enter a valid phone number.'))}</div>`;
         return;
@@ -9832,24 +9860,43 @@ async function bsLookup(by){
       }
     }
     if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
-    const all = await fbGet('bookings');
+    // FIX (v5.1): Loop through each restaurant's bookings instead of one top-level read.
+    // The new Firebase rules block .read at top "bookings/" level for security
+    // (prevents mass-dump of all bookings). Read is allowed at "bookings/{restoId}/" level.
+    const restos = await fbGet('restaurants') || {};
+    const restoIds = Object.keys(restos);
     const found = [];
-    if(all){
-      Object.keys(all).forEach(rId=>{
-        const restoBookings = all[rId];
-        if(!restoBookings) return;
-        Object.keys(restoBookings).forEach(bId=>{
-          const b = restoBookings[bId];
-          if(!b) return;
-          if(by==='phone'){
-            const q = document.getElementById('bsPhone').value.trim().replace(/\s+/g,'');
-            const bp = (b.phone||'').replace(/\s+/g,'');
-            if(bp.includes(q) || q.includes(bp)) found.push(b);
-          } else {
-            const q = document.getElementById('bsCode').value.trim().toUpperCase();
-            if(b.code===q) found.push(b);
-          }
-        });
+    // FIX (v5.3): Robust phone matching across formats. Two-step check:
+    //   1) Substring match (handles spaces, dashes, parens — same digits, different spacing)
+    //   2) Last 7 digits match (handles country code differences like "+856 20 ...")
+    // Examples that all match the same booking:
+    //   "020 5555 1234", "0205551234", "+856 20 5555 1234", "(020) 5555-1234", "020-5555-1234"
+    function _bsNormPhone(p){ return (p||'').replace(/\D/g, ''); }
+    function _bsPhoneMatch(stored, query){
+      const bp = _bsNormPhone(stored);
+      const phoneQ = _bsNormPhone(query);
+      if(phoneQ.length < 6 || bp.length < 6) return false;
+      // 1) Substring match either direction
+      if(bp.indexOf(phoneQ) >= 0 || phoneQ.indexOf(bp) >= 0) return true;
+      // 2) Last 7 digits match (covers country code differences)
+      if(bp.length >= 7 && phoneQ.length >= 7){
+        if(bp.slice(-7) === phoneQ.slice(-7)) return true;
+      }
+      return false;
+    }
+    const phoneQ = (by==='phone') ? document.getElementById('bsPhone').value : '';
+    const codeQ  = (by==='code')  ? document.getElementById('bsCode').value.trim().toUpperCase() : '';
+    for(const rId of restoIds){
+      const restoBookings = await fbGet('bookings/'+rId);
+      if(!restoBookings) continue;
+      Object.keys(restoBookings).forEach(bId=>{
+        const b = restoBookings[bId];
+        if(!b) return;
+        if(by==='phone'){
+          if(_bsPhoneMatch(b.phone, phoneQ)) found.push(b);
+        } else {
+          if(b.code === codeQ) found.push(b);
+        }
       });
     }
     if(!found.length){
@@ -10100,6 +10147,15 @@ async function loadOwnerHours(){
   const lblTo = _ts('bk_to','to');
   const lblClosed = _ts('bk_closed_all_day','Closed all day');
   let html = '';
+  // v5.1: Show review banner if hours haven't been confirmed by owner yet
+  if(h && h.needsReview === true){
+    const bannerTitle = _ts('bk_hours_review_title','⚠ Please review your opening hours');
+    const bannerSub   = _ts('bk_hours_review_sub','We set defaults so customers can book right away. Update to match your real schedule, then click Save.');
+    html += `<div style="background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.3);border-radius:8px;padding:14px 16px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:#ffc107;margin-bottom:4px">${escapeHtml(bannerTitle)}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.5">${escapeHtml(bannerSub)}</div>
+    </div>`;
+  }
   for(let i=0; i<7; i++){
     const day = h[i] || h[String(i)] || {open:false, from:'11:00', to:'22:00'};
     const dayName = _ts(dayKeys[i], dayDefaults[i]);
