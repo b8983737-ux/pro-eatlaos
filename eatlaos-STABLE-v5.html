@@ -2331,7 +2331,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-el{cursor:move;}
 .fp-el.selected .fp-el-shape{filter:drop-shadow(0 0 6px rgba(200,151,58,.7));}
 .fp-el-shape{transition:filter .15s;}
-.fp-el-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central;text-shadow:0 1px 2px rgba(0,0,0,.5);paint-order:stroke;stroke:rgba(0,0,0,.4);stroke-width:2px;stroke-linejoin:round;}
+.fp-el-label{font-family:var(--fb,'Inter','Plus Jakarta Sans',sans-serif);font-size:11px;font-weight:700;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central;text-shadow:0 1px 2px rgba(0,0,0,.5);paint-order:stroke;stroke:rgba(0,0,0,.4);stroke-width:2px;stroke-linejoin:round;}
 .fp-el-tnum{font-family:var(--ff,'Plus Jakarta Sans',sans-serif);font-size:18px;font-weight:900;fill:#1a1a1a;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
 #fpCanvas.light-floor .fp-el-label{fill:#1a1a1a;stroke:rgba(255,255,255,.4);}
 .fp-handle{fill:#c8973a;stroke:#fff;stroke-width:1;cursor:nwse-resize;}
@@ -2388,11 +2388,11 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
 .fp-vw-table.selected .fp-vw-tnum{fill:#000;}
 .fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.4);}
-.fp-vw-label{font-family:sans-serif;font-size:10px;font-weight:600;fill:rgba(255,255,255,.55);pointer-events:none;text-anchor:middle;dominant-baseline:central;}
-.fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.04);}
+.fp-vw-label{font-family:var(--fb,'Inter','Plus Jakarta Sans',sans-serif);font-size:18px;font-weight:700;fill:rgba(255,255,255,.85);pointer-events:none;text-anchor:middle;dominant-baseline:central;text-shadow:0 1px 3px rgba(0,0,0,.6);paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:2.5px;stroke-linejoin:round;}
+.fp-vw-legend{display:flex;justify-content:center;gap:22px;font-size:14px;font-weight:700;color:rgba(255,255,255,.85);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:14px 18px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);}
 .bkm-shell.fp-fullscreen .fp-vw-legend{margin-top:6px;}
-.fp-vw-legend span{display:inline-flex;align-items:center;gap:5px;}
-.fp-vw-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.fp-vw-legend span{display:inline-flex;align-items:center;gap:8px;}
+.fp-vw-legend i{width:14px;height:14px;border-radius:50%;display:inline-block;}
 
 /* ═══ v5.9: TABLE INFO POPUP (centered modal over map) ═══ */
 .ti-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
@@ -5456,6 +5456,13 @@ function setLpLang(lang, flag, code){
     pg.className=pg.className.replace(/lp-lang-\w+/g,'').trim();
     pg.classList.add('lp-lang-'+lang);
   }
+  // v6.1: If customer booking modal is open at step 5 (map showing), re-render so SVG text translates
+  try {
+    if(typeof bkState !== 'undefined' && bkState && bkState.step === 5 && typeof bkLoadTables === 'function'){
+      const m = document.getElementById('mCustBooking');
+      if(m && m.classList.contains('open')) bkLoadTables();
+    }
+  } catch(e){}
 }
 
 function toggleLpLang(){
@@ -5538,6 +5545,12 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'Could not reserve this table. Try another.',
     bk_lock_expired:'Your table reservation expired. Please pick another table.',
     bk_legend_available:'Available',
+    // v6.1: Floor plan map labels (translated for customer view)
+    fp_counter:'Bar',
+    fp_toilet:'WC',
+    fp_stage:'Stage',
+    fp_door:'Door',
+    fp_kitchen:'Kitchen',
     // v5.9: Customer table info popup
     ti_table_label:'Table',
     ti_reserve:'Reserve this table →',
@@ -5677,6 +5690,12 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ບໍ່ສາມາດຈອງໂຕະນີ້ໄດ້. ກະລຸນາລອງໂຕະອື່ນ.',
     bk_lock_expired:'ການຈອງໂຕະຂອງທ່ານໝົດເວລາ. ກະລຸນາເລືອກໂຕະອື່ນ.',
     bk_legend_available:'ວ່າງ',
+    // v6.1: Floor plan map labels
+    fp_counter:'ບາ',
+    fp_toilet:'ຫ້ອງນ້ຳ',
+    fp_stage:'ເວທີ',
+    fp_door:'ປະຕູ',
+    fp_kitchen:'ເຮືອນຄົວ',
     // v5.9: Customer table info popup
     ti_table_label:'ໂຕະ',
     ti_reserve:'ຈອງໂຕະນີ້ →',
@@ -5816,6 +5835,12 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ไม่สามารถจองโต๊ะนี้ได้ กรุณาเลือกโต๊ะอื่น',
     bk_lock_expired:'การจองโต๊ะของคุณหมดเวลาแล้ว กรุณาเลือกโต๊ะใหม่',
     bk_legend_available:'ว่าง',
+    // v6.1: Floor plan map labels
+    fp_counter:'บาร์',
+    fp_toilet:'ห้องน้ำ',
+    fp_stage:'เวที',
+    fp_door:'ประตู',
+    fp_kitchen:'ห้องครัว',
     // v5.9: Customer table info popup
     ti_table_label:'โต๊ะ',
     ti_reserve:'จองโต๊ะนี้ →',
@@ -5955,6 +5980,12 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'无法保留此桌位，请尝试其他。',
     bk_lock_expired:'您的桌位保留已过期。请选择其他桌位。',
     bk_legend_available:'空闲',
+    // v6.1: Floor plan map labels
+    fp_counter:'吧台',
+    fp_toilet:'洗手间',
+    fp_stage:'舞台',
+    fp_door:'门',
+    fp_kitchen:'厨房',
     // v5.9: Customer table info popup
     ti_table_label:'桌位',
     ti_reserve:'预订此桌 →',
@@ -6094,6 +6125,12 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'이 테이블을 예약할 수 없습니다. 다른 테이블을 선택하세요.',
     bk_lock_expired:'테이블 예약이 만료되었습니다. 다른 테이블을 선택해주세요.',
     bk_legend_available:'이용 가능',
+    // v6.1: Floor plan map labels
+    fp_counter:'바',
+    fp_toilet:'화장실',
+    fp_stage:'무대',
+    fp_door:'문',
+    fp_kitchen:'주방',
     // v5.9: Customer table info popup
     ti_table_label:'테이블',
     ti_reserve:'이 테이블 예약 →',
@@ -11056,7 +11093,15 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     } else {
       shape = `<rect class="fp-vw-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="3" fill="${fill}"/>`;
     }
-    const lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
+    // v6.1: Translate label if it matches a default — owner/SA custom labels stay as typed
+    let lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
+    const dflt = FP_DEFAULT_LABELS[el.kind];
+    if(lbl && (!el.label || el.label === dflt)){
+      // Use translation key matching the kind (fp_counter, fp_toilet, fp_stage, fp_door, fp_kitchen)
+      const tKey = 'fp_' + el.kind;
+      const translated = (typeof _lp === 'function') ? _lp(tKey, lbl) : lbl;
+      if(translated && translated !== tKey) lbl = translated;
+    }
     const txt = lbl ? `<text class="fp-vw-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>` : '';
     svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}">${shape}${txt}</g>`;
   });
@@ -11186,9 +11231,9 @@ async function bkLoadTables(){
       grid.innerHTML = `
         <div class="fp-viewer-wrap">${svg}</div>
         <div class="fp-vw-legend">
-          <span><i style="background:#c8973a"></i>${escapeHtml(lblAvail)}</span>
-          <span><i style="background:rgba(220,53,69,.4)"></i>${escapeHtml(lblBooked)}</span>
-          <span><i style="background:rgba(255,193,7,.35)"></i>${escapeHtml(lblLocked)}</span>
+          <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
+          <span><i style="background:rgba(220,53,69,.4)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
+          <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
       `;
       // Wire up clicks on table elements — v5.9: open info popup instead of locking immediately
