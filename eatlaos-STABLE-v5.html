@@ -2243,6 +2243,23 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-link{background:none;border:none;color:#c8973a;font-size:12px;cursor:pointer;padding:0;text-decoration:none;font-family:inherit;font-weight:600;letter-spacing:.2px;transition:color .2s;}
 .bk-link:hover{color:#e0b455;text-decoration:underline;}
 
+/* v5.4: Zone tabs + table picker grid */
+.bk-zone-tab{padding:8px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.bk-zone-tab:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(200,151,58,.3);}
+.bk-zone-tab.on{background:rgba(200,151,58,.12);border-color:#c8973a;color:#c8973a;}
+.bk-table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+.bk-table-card{background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 10px;cursor:pointer;transition:all .2s;text-align:center;position:relative;min-height:84px;display:flex;flex-direction:column;justify-content:center;}
+.bk-table-card:not(.booked):not(.locked):hover{background:rgba(200,151,58,.08);border-color:rgba(200,151,58,.45);transform:translateY(-2px);}
+.bk-table-card.selected{background:rgba(200,151,58,.15);border-color:#c8973a;box-shadow:0 0 0 3px rgba(200,151,58,.12);}
+.bk-table-card.booked{background:rgba(220,53,69,.06);border-color:rgba(220,53,69,.25);cursor:not-allowed;opacity:.7;}
+.bk-table-card.locked{background:rgba(255,193,7,.06);border-color:rgba(255,193,7,.3);cursor:not-allowed;opacity:.7;}
+.bk-table-num{font-family:var(--ff,inherit);font-size:20px;font-weight:900;color:#fff;letter-spacing:-.5px;}
+.bk-table-card.booked .bk-table-num,.bk-table-card.locked .bk-table-num{color:rgba(255,255,255,.55);}
+.bk-table-cap{font-size:10px;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.5px;}
+.bk-table-status{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:6px;}
+.bk-table-card.booked .bk-table-status{color:rgba(220,53,69,.85);}
+.bk-table-card.locked .bk-table-status{color:rgba(255,193,7,.9);}
+
 /* OWNER bookings panel */
 .ob-card{background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,rgba(255,255,255,.08));border-radius:12px;padding:16px;margin-bottom:10px;transition:all .2s;}
 .ob-card:hover{border-color:rgba(200,151,58,.25);}
@@ -3349,7 +3366,19 @@ setTimeout(function(){
 <div class="modal-ov" id="mOwAddTable">
   <div class="modal-box w380">
     <div class="modal-h"><div class="modal-title">Add Table</div><button class="modal-x" onclick="closeModal('mOwAddTable')">✕</button></div>
-    <div class="modal-b"><div class="form-row"><div class="fg"><label>Table Number / Name</label><input class="fi" id="mTnum" placeholder="e.g. 1 or VIP-A"></div><div class="fg"><label>Seats</label><input class="fi" type="number" id="mTseats" value="4" min="1" max="30"></div></div></div>
+    <div class="modal-b"><div class="form-row"><div class="fg"><label>Table Number / Name</label><input class="fi" id="mTnum" placeholder="e.g. 1 or VIP-A"></div><div class="fg"><label>Seats</label><input class="fi" type="number" id="mTseats" value="4" min="1" max="30"></div></div>
+      <div class="fg" style="margin-top:10px"><label>Zone</label>
+        <select class="fi" id="mTzone" onchange="onTzoneChange()">
+          <option value="Indoor">Indoor</option>
+          <option value="Outdoor">Outdoor</option>
+          <option value="Garden">Garden</option>
+          <option value="Bar">Bar</option>
+          <option value="Private Room">Private Room</option>
+          <option value="__custom__">+ Custom zone…</option>
+        </select>
+        <input class="fi" id="mTzoneCustom" placeholder="Type your custom zone" style="display:none;margin-top:6px">
+      </div>
+    </div>
     <div class="modal-f"><button class="btn" onclick="closeModal('mOwAddTable')">Cancel</button><button class="btn btn-gold" onclick="saveOwTable()">Add Table</button></div>
   </div>
 </div>
@@ -3826,6 +3855,7 @@ const STAFF_T={
     bk_no_bookings:'No bookings in this category.',
     bk_loading:'Loading bookings…',
     bk_party_label:'Party',bk_phone_label:'Phone',bk_code_label:'Code',
+    bk_table_label:'Table',
     bk_date_label:'Date',bk_time_label:'Time',
     bk_save_hours:'💾 Save Hours',
     bk_hours_intro:'Set your weekly opening hours. Customers can only book during these hours, in 30-minute slots.',
@@ -3879,6 +3909,7 @@ const STAFF_T={
     bk_no_bookings:'ບໍ່ມີການຈອງໃນໝວດນີ້.',
     bk_loading:'ກຳລັງໂຫຼດການຈອງ…',
     bk_party_label:'ຈຳນວນຄົນ',bk_phone_label:'ເບີໂທ',bk_code_label:'ລະຫັດ',
+    bk_table_label:'ໂຕະ',
     bk_date_label:'ວັນທີ',bk_time_label:'ເວລາ',
     bk_save_hours:'💾 ບັນທຶກຊົ່ວໂມງ',
     bk_hours_intro:'ຕັ້ງຊົ່ວໂມງເປີດປະຈຳອາທິດ. ລູກຄ້າຈະຈອງໄດ້ສະເພາະໃນຊົ່ວໂມງເປີດ ໃນຊ່ອງເວລາ 30 ນາທີ.',
@@ -3932,6 +3963,7 @@ const STAFF_T={
     bk_no_bookings:'ไม่มีการจองในหมวดนี้',
     bk_loading:'กำลังโหลดการจอง…',
     bk_party_label:'จำนวนคน',bk_phone_label:'เบอร์โทร',bk_code_label:'รหัส',
+    bk_table_label:'โต๊ะ',
     bk_date_label:'วันที่',bk_time_label:'เวลา',
     bk_save_hours:'💾 บันทึกเวลา',
     bk_hours_intro:'ตั้งเวลาเปิดประจำสัปดาห์ ลูกค้าจะจองได้เฉพาะในเวลาเปิด ในช่วง 30 นาที',
@@ -3985,6 +4017,7 @@ const STAFF_T={
     bk_no_bookings:'此分类下暂无预订。',
     bk_loading:'正在加载预订…',
     bk_party_label:'人数',bk_phone_label:'电话',bk_code_label:'编号',
+    bk_table_label:'桌位',
     bk_date_label:'日期',bk_time_label:'时间',
     bk_save_hours:'💾 保存营业时间',
     bk_hours_intro:'设置每周营业时间。客户只能在营业时间内预订，每 30 分钟一个时段。',
@@ -4054,6 +4087,7 @@ const STAFF_T={
     bk_no_bookings:'이 카테고리에 예약이 없습니다.',
     bk_loading:'예약을 불러오는 중…',
     bk_party_label:'인원',bk_phone_label:'전화',bk_code_label:'코드',
+    bk_table_label:'테이블',
     bk_date_label:'날짜',bk_time_label:'시간',
     bk_save_hours:'💾 영업 시간 저장',
     bk_hours_intro:'주간 영업 시간을 설정하세요. 고객은 영업 시간 내 30분 단위로만 예약할 수 있습니다.',
@@ -5165,7 +5199,7 @@ const LP_TRANSLATIONS = {
     // ── v4 BOOKING SYSTEM ──
     cta_book:'📅 Book a Table',
     bk_eyebrow:'Book a Table',
-    bk_step_of:'Step {n} of 5',
+    bk_step_of:'Step {n} of 6',
     bk_pick_resto:'Choose a restaurant',
     bk_pick_resto_sub:'Select where you would like to dine.',
     bk_pick_date:'Choose a date',
@@ -5175,6 +5209,22 @@ const LP_TRANSLATIONS = {
     bk_party:'How many people?',
     bk_party_sub:'Including yourself.',
     bk_min_max:'Minimum 1 · Maximum 20',
+    // v5.4: Zone+Table picker
+    bk_pick_table:'Choose a table',
+    bk_pick_table_sub:'Pick a zone, then select an available table.',
+    bk_loading_tables:'Loading tables…',
+    bk_no_tables_party:'No tables fit your party size. Try fewer guests.',
+    bk_table_seats:'seats',
+    bk_table_booked:'Booked',
+    bk_table_locked_by_other:'Reserved',
+    bk_table_locked:'TABLE RESERVED FOR YOU',
+    bk_lock_msg:'Complete booking in',
+    bk_summary_table:'Table',
+    bk_err_pick_table:'Please select a table.',
+    bk_err_load_tables:'Could not load tables. Please try again.',
+    bk_lock_taken:'This table was just reserved by another customer.',
+    bk_lock_failed:'Could not reserve this table. Try another.',
+    bk_lock_expired:'Your table reservation expired. Please pick another table.',
     bk_contact:'Your details',
     bk_contact_sub:'You can check your booking status using your phone or code.',
     bk_name:'Full name',
@@ -5279,7 +5329,7 @@ const LP_TRANSLATIONS = {
     // ── v4 BOOKING SYSTEM ──
     cta_book:'📅 ຈອງໂຕະ',
     bk_eyebrow:'ຈອງໂຕະ',
-    bk_step_of:'ຂັ້ນຕອນ {n} ຈາກ 5',
+    bk_step_of:'ຂັ້ນຕອນ {n} ຈາກ 6',
     bk_pick_resto:'ເລືອກຮ້ານອາຫານ',
     bk_pick_resto_sub:'ເລືອກຮ້ານທີ່ທ່ານຕ້ອງການໄປຮັບປະທານອາຫານ.',
     bk_pick_date:'ເລືອກວັນທີ',
@@ -5289,6 +5339,22 @@ const LP_TRANSLATIONS = {
     bk_party:'ມີຈັກຄົນ?',
     bk_party_sub:'ລວມຕົວທ່ານເອງ.',
     bk_min_max:'ຕໍ່າສຸດ 1 · ສູງສຸດ 20',
+    // v5.4: Zone+Table picker
+    bk_pick_table:'ເລືອກໂຕະ',
+    bk_pick_table_sub:'ເລືອກພື້ນທີ່ ແລ້ວເລືອກໂຕະທີ່ວ່າງ.',
+    bk_loading_tables:'ກຳລັງໂຫຼດໂຕະ…',
+    bk_no_tables_party:'ບໍ່ມີໂຕະທີ່ພໍສຳລັບກຸ່ມຂອງທ່ານ. ກະລຸນາລົດຈຳນວນຄົນ.',
+    bk_table_seats:'ບ່ອນນັ່ງ',
+    bk_table_booked:'ຖືກຈອງ',
+    bk_table_locked_by_other:'ຈອງໄວ້',
+    bk_table_locked:'ໂຕະຈອງໄວ້ສຳລັບທ່ານ',
+    bk_lock_msg:'ສຳເລັດການຈອງພາຍໃນ',
+    bk_summary_table:'ໂຕະ',
+    bk_err_pick_table:'ກະລຸນາເລືອກໂຕະ.',
+    bk_err_load_tables:'ບໍ່ສາມາດໂຫຼດໂຕະ. ກະລຸນາລອງໃໝ່.',
+    bk_lock_taken:'ໂຕະນີ້ຫາກໍ່ຖືກຈອງໂດຍລູກຄ້າອື່ນ.',
+    bk_lock_failed:'ບໍ່ສາມາດຈອງໂຕະນີ້ໄດ້. ກະລຸນາລອງໂຕະອື່ນ.',
+    bk_lock_expired:'ການຈອງໂຕະຂອງທ່ານໝົດເວລາ. ກະລຸນາເລືອກໂຕະອື່ນ.',
     bk_contact:'ຂໍ້ມູນຂອງທ່ານ',
     bk_contact_sub:'ທ່ານສາມາດກວດສະຖານະການຈອງໄດ້ໂດຍໃຊ້ເບີໂທ ຫຼື ລະຫັດ.',
     bk_name:'ຊື່ເຕັມ',
@@ -5393,7 +5459,7 @@ const LP_TRANSLATIONS = {
     // ── v4 BOOKING SYSTEM ──
     cta_book:'📅 จองโต๊ะ',
     bk_eyebrow:'จองโต๊ะ',
-    bk_step_of:'ขั้นตอนที่ {n} จาก 5',
+    bk_step_of:'ขั้นตอนที่ {n} จาก 6',
     bk_pick_resto:'เลือกร้านอาหาร',
     bk_pick_resto_sub:'เลือกร้านที่คุณต้องการรับประทานอาหาร',
     bk_pick_date:'เลือกวันที่',
@@ -5403,6 +5469,22 @@ const LP_TRANSLATIONS = {
     bk_party:'มากี่คน?',
     bk_party_sub:'รวมตัวคุณเอง',
     bk_min_max:'ขั้นต่ำ 1 · สูงสุด 20',
+    // v5.4: Zone+Table picker
+    bk_pick_table:'เลือกโต๊ะ',
+    bk_pick_table_sub:'เลือกโซน แล้วเลือกโต๊ะที่ว่าง',
+    bk_loading_tables:'กำลังโหลดโต๊ะ…',
+    bk_no_tables_party:'ไม่มีโต๊ะที่เหมาะกับจำนวนคนของคุณ ลองลดจำนวน',
+    bk_table_seats:'ที่นั่ง',
+    bk_table_booked:'ถูกจอง',
+    bk_table_locked_by_other:'จองไว้',
+    bk_table_locked:'โต๊ะถูกจองไว้สำหรับคุณ',
+    bk_lock_msg:'ทำการจองให้เสร็จภายใน',
+    bk_summary_table:'โต๊ะ',
+    bk_err_pick_table:'กรุณาเลือกโต๊ะ',
+    bk_err_load_tables:'ไม่สามารถโหลดโต๊ะได้ กรุณาลองอีกครั้ง',
+    bk_lock_taken:'โต๊ะนี้ถูกจองโดยลูกค้าอื่นแล้ว',
+    bk_lock_failed:'ไม่สามารถจองโต๊ะนี้ได้ กรุณาเลือกโต๊ะอื่น',
+    bk_lock_expired:'การจองโต๊ะของคุณหมดเวลาแล้ว กรุณาเลือกโต๊ะใหม่',
     bk_contact:'ข้อมูลของคุณ',
     bk_contact_sub:'คุณสามารถตรวจสอบสถานะการจองได้โดยใช้เบอร์โทรหรือรหัส',
     bk_name:'ชื่อ-นามสกุล',
@@ -5507,7 +5589,7 @@ const LP_TRANSLATIONS = {
     // ── v4 BOOKING SYSTEM ──
     cta_book:'📅 预订餐桌',
     bk_eyebrow:'预订餐桌',
-    bk_step_of:'第 {n} 步，共 5 步',
+    bk_step_of:'第 {n} 步，共 6 步',
     bk_pick_resto:'选择餐厅',
     bk_pick_resto_sub:'选择您想用餐的餐厅。',
     bk_pick_date:'选择日期',
@@ -5517,6 +5599,22 @@ const LP_TRANSLATIONS = {
     bk_party:'几位用餐?',
     bk_party_sub:'包括您本人。',
     bk_min_max:'最少 1 人 · 最多 20 人',
+    // v5.4: Zone+Table picker
+    bk_pick_table:'选择桌位',
+    bk_pick_table_sub:'选择区域，然后选择空闲的桌位。',
+    bk_loading_tables:'正在加载桌位…',
+    bk_no_tables_party:'没有适合您人数的桌位。请减少人数。',
+    bk_table_seats:'座位',
+    bk_table_booked:'已预订',
+    bk_table_locked_by_other:'已保留',
+    bk_table_locked:'桌位已为您保留',
+    bk_lock_msg:'请在以下时间内完成预订',
+    bk_summary_table:'桌位',
+    bk_err_pick_table:'请选择一张桌位。',
+    bk_err_load_tables:'无法加载桌位，请重试。',
+    bk_lock_taken:'此桌位刚被其他客户预订。',
+    bk_lock_failed:'无法保留此桌位，请尝试其他。',
+    bk_lock_expired:'您的桌位保留已过期。请选择其他桌位。',
     bk_contact:'您的资料',
     bk_contact_sub:'您可以使用电话号码或预订码查询状态。',
     bk_name:'姓名',
@@ -5621,7 +5719,7 @@ const LP_TRANSLATIONS = {
     // ── v4 BOOKING SYSTEM ──
     cta_book:'📅 테이블 예약',
     bk_eyebrow:'테이블 예약',
-    bk_step_of:'단계 {n} / 5',
+    bk_step_of:'단계 {n} / 6',
     bk_pick_resto:'레스토랑 선택',
     bk_pick_resto_sub:'식사하실 레스토랑을 선택하세요.',
     bk_pick_date:'날짜 선택',
@@ -5631,6 +5729,22 @@ const LP_TRANSLATIONS = {
     bk_party:'몇 분이신가요?',
     bk_party_sub:'본인 포함.',
     bk_min_max:'최소 1명 · 최대 20명',
+    // v5.4: Zone+Table picker
+    bk_pick_table:'테이블 선택',
+    bk_pick_table_sub:'구역을 선택한 후 이용 가능한 테이블을 고르세요.',
+    bk_loading_tables:'테이블 로딩 중…',
+    bk_no_tables_party:'인원에 맞는 테이블이 없습니다. 인원을 줄여보세요.',
+    bk_table_seats:'좌석',
+    bk_table_booked:'예약됨',
+    bk_table_locked_by_other:'예약 중',
+    bk_table_locked:'테이블이 예약되었습니다',
+    bk_lock_msg:'다음 시간 내에 예약 완료',
+    bk_summary_table:'테이블',
+    bk_err_pick_table:'테이블을 선택해 주세요.',
+    bk_err_load_tables:'테이블을 불러올 수 없습니다. 다시 시도해주세요.',
+    bk_lock_taken:'이 테이블은 방금 다른 고객이 예약했습니다.',
+    bk_lock_failed:'이 테이블을 예약할 수 없습니다. 다른 테이블을 선택하세요.',
+    bk_lock_expired:'테이블 예약이 만료되었습니다. 다른 테이블을 선택해주세요.',
     bk_contact:'연락처 정보',
     bk_contact_sub:'전화번호 또는 예약 코드로 상태를 확인할 수 있습니다.',
     bk_name:'성함',
@@ -7661,7 +7775,7 @@ async function owTables(){
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div class="tcard-num" style="font-size:26px;margin-bottom:2px">${t.num}</div>
-            <div class="tcard-lbl">${t.seats} seats</div>
+            <div class="tcard-lbl">${t.seats} seats${t.zone?` · <span style="color:var(--s-gold)">${escapeHtml(t.zone)}</span>`:''}</div>
           </div>
           <div style="text-align:right">
             <div style="font-size:10px;font-weight:700;color:${isOcc?'var(--s-green)':'var(--s-muted)'};letter-spacing:.5px">
@@ -8137,7 +8251,13 @@ async function saveOwTable(){
   if((r?.tables||[]).find(t=>String(t.num).toLowerCase()===num.toLowerCase())){
     notifyD('⚠ Table "'+num+'" already exists');return;
   }
-  const sorted=sortTablesArray([...(r?.tables||[]),{id:'t'+Date.now(),num,seats}]);
+  // v5.4: Capture zone (default "Indoor" if empty)
+  let zone = document.getElementById('mTzone')?.value || 'Indoor';
+  if(zone === '__custom__'){
+    const custom = (document.getElementById('mTzoneCustom')?.value || '').trim();
+    zone = custom || 'Indoor';
+  }
+  const sorted=sortTablesArray([...(r?.tables||[]),{id:'t'+Date.now(),num,seats,zone}]);
   await fbUpdate('restaurants/'+restoId,{tables:sorted});
   closeModal('mOwAddTable');owTables();notifyD('✓ Table added');
 }
@@ -8388,9 +8508,47 @@ function openEditTableModal(idx){
     document.getElementById('mEtNum').value=t.num||'';
     document.getElementById('mEtSeats').value=t.seats||4;
     document.getElementById('mEtDesc').value=t.desc||'';
+    // v5.4: Populate zone field
+    const zoneSel = document.getElementById('mEtZone');
+    const zoneCustom = document.getElementById('mEtZoneCustom');
+    const z = t.zone || 'Indoor';
+    const standard = ['Indoor','Outdoor','Garden','Bar','Private Room'];
+    if(zoneSel){
+      if(standard.indexOf(z) >= 0){
+        zoneSel.value = z;
+        if(zoneCustom){ zoneCustom.style.display='none'; zoneCustom.value=''; }
+      } else {
+        zoneSel.value = '__custom__';
+        if(zoneCustom){ zoneCustom.style.display=''; zoneCustom.value=z; }
+      }
+    }
     updateTablePreview();
     openModal('mEditTable');
   });
+}
+function onEtZoneChange(){
+  const sel = document.getElementById('mEtZone');
+  const cust = document.getElementById('mEtZoneCustom');
+  if(!sel || !cust) return;
+  if(sel.value === '__custom__'){
+    cust.style.display = '';
+    cust.focus();
+  } else {
+    cust.style.display = 'none';
+    cust.value = '';
+  }
+}
+function onTzoneChange(){
+  const sel = document.getElementById('mTzone');
+  const cust = document.getElementById('mTzoneCustom');
+  if(!sel || !cust) return;
+  if(sel.value === '__custom__'){
+    cust.style.display = '';
+    cust.focus();
+  } else {
+    cust.style.display = 'none';
+    cust.value = '';
+  }
 }
 function updateTablePreview(){
   const num=document.getElementById('mEtNum')?.value||'—';
@@ -8406,12 +8564,18 @@ async function saveEditTable(){
   const seats=parseInt(document.getElementById('mEtSeats').value)||4;
   const desc=document.getElementById('mEtDesc').value.trim();
   if(!num){notifyD('⚠ Table name required');return;}
+  // v5.4: Capture zone (default "Indoor" if missing)
+  let zone = document.getElementById('mEtZone')?.value || 'Indoor';
+  if(zone === '__custom__'){
+    const custom = (document.getElementById('mEtZoneCustom')?.value || '').trim();
+    zone = custom || 'Indoor';
+  }
   const r=await fbGet('restaurants/'+restoId);
   const tables=[...(r?.tables||[])];
   if(tables.some((t,i)=>i!==idx&&String(t.num).toLowerCase()===num.toLowerCase())){
     notifyD('⚠ Table "'+num+'" already exists');return;
   }
-  tables[idx]={...tables[idx],num,seats,desc};
+  tables[idx]={...tables[idx],num,seats,desc,zone};
   const sorted=sortTablesArray(tables);
   await fbUpdate('restaurants/'+restoId,{tables:sorted});
   closeModal('mEditTable');notifyD('✅ Table updated');owTables();
@@ -9567,14 +9731,16 @@ function _lpMonth(monthIdx, short){
 }
 
 /* --- Booking flow state --- */
-let bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[] };
+let bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[], tables:[], tableId:null, tableNum:null, tableZone:null, lockSessionId:null, lockExpiresAt:0 };
 let _bkOwnerCache = []; // owner-side cached bookings
 let _bkOwnerFilter = 'pending';
 let _bkLiveListener = null; // for sound notification
 let _bkLastBookingCount = 0;
 
 function openCustBookingModal(){
-  bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[] };
+  // v5.4: Release any stale lock from a previous abandoned session
+  if(typeof bkReleaseLock === 'function') bkReleaseLock();
+  bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[], tables:[], tableId:null, tableNum:null, tableZone:null, lockSessionId:null, lockExpiresAt:0 };
   bkGoStep(1);
   document.getElementById('bkPartyNum').textContent='2';
   document.getElementById('bkName').value='';
@@ -9734,30 +9900,35 @@ function bkGoStep(s){
   document.querySelectorAll('#mCustBooking .bk-step').forEach((el)=>{
     el.classList.toggle('on', el.id==='bkStep'+s);
   });
-  // Progress bar fill (steps 1-5 = 20-100%)
-  const pct = s>=6 ? 100 : (s/5)*100;
+  // Progress bar fill (steps 1-6 = 16.6-100%, step 7 = success)
+  const pct = s>=7 ? 100 : (s/6)*100;
   const bar = document.getElementById('bkProgressBar');
   if(bar) bar.style.width = pct + '%';
   // Step label
-  const stepTpl = _lp('bk_step_of','Step {n} of 5');
-  document.getElementById('bkProgressLbl').textContent = s<=5 ? stepTpl.replace('{n}', s) : '';
+  const stepTpl = _lp('bk_step_of','Step {n} of 6');
+  document.getElementById('bkProgressLbl').textContent = s<=6 ? stepTpl.replace('{n}', s) : '';
   // Hide footer on success step
-  document.getElementById('bkActions').style.display = (s===6) ? 'none' : 'block';
-  // Submit button text on step 5
+  document.getElementById('bkActions').style.display = (s===7) ? 'none' : 'block';
+  // Submit button text on final input step (step 6 = contact form)
   const nextBtn = document.getElementById('bkNextBtn');
   if(nextBtn){
-    nextBtn.textContent = (s===5) ? _lp('bk_submit','Submit Booking') : _lp('bk_next','Next →');
+    nextBtn.textContent = (s===6) ? _lp('bk_submit','Submit Booking') : _lp('bk_next','Next →');
   }
   // Step-specific loaders
   if(s===2){ if(!bkState.hours) bkLoadHoursAndBuildDates(); else buildBkDateGrid(); }
   if(s===3){ bkLoadSlotsAndBuild(); }
-  if(s===5){ renderBkSummary(); }
+  if(s===5){ bkLoadTables(); }
+  if(s===6){ renderBkSummary(); }
   // Back button visibility
-  document.getElementById('bkBackBtn').style.visibility = (s>1 && s<6) ? 'visible' : 'hidden';
+  document.getElementById('bkBackBtn').style.visibility = (s>1 && s<7) ? 'visible' : 'hidden';
 }
 
 function bkBack(){
-  if(bkState.step>1) bkGoStep(bkState.step-1);
+  if(bkState.step>1){
+    // v5.4: Release table lock when leaving table-pick or contact step
+    if(bkState.step === 5 || bkState.step === 6) bkReleaseLock();
+    bkGoStep(bkState.step-1);
+  }
 }
 
 function bkNext(){
@@ -9765,9 +9936,219 @@ function bkNext(){
   if(s===1 && !bkState.restoId){ alert(_lp('bk_err_pick_resto','Please select a restaurant.')); return; }
   if(s===2 && !bkState.date){ alert(_lp('bk_err_pick_date','Please select a date.')); return; }
   if(s===3 && !bkState.slot){ alert(_lp('bk_err_pick_slot','Please select a time slot.')); return; }
-  if(s===5){ submitCustBooking(); return; }
+  if(s===5 && !bkState.tableId){ alert(_lp('bk_err_pick_table','Please select a table.')); return; }
+  if(s===6){ submitCustBooking(); return; }
   bkGoStep(s+1);
 }
+
+/* ─── v5.4: TABLE PICKER + LOCK SYSTEM ─── */
+let _bkLockTimer = null;       // setInterval handle for countdown
+let _bkLockTimeout = null;     // setTimeout handle for auto-release
+const BK_LOCK_DURATION_MS = 3 * 60 * 1000; // 3 minutes
+let _bkSelectedZone = null;    // currently shown zone in picker
+
+function _bkRandomSessionId(){
+  return 'bk_' + Math.random().toString(36).substr(2,12) + '_' + Date.now();
+}
+
+async function bkLoadTables(){
+  const grid = document.getElementById('bkTableGrid');
+  const tabs = document.getElementById('bkZoneTabs');
+  if(!grid || !tabs) return;
+  grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_tables','Loading tables…'))}</div>`;
+  tabs.innerHTML = '';
+  try {
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    const r = await fbGet('restaurants/'+bkState.restoId);
+    const tables = (r && r.tables) ? r.tables : [];
+    // Filter tables that have enough seats for the party size
+    const partyOK = tables.filter(t => (t.seats||0) >= bkState.party);
+    if(!partyOK.length){
+      grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_no_tables_party','No tables fit your party size. Try fewer guests.'))}</div>`;
+      return;
+    }
+    bkState.tables = partyOK;
+    // Read existing bookings for this date+slot to mark booked tables
+    const allBookings = await fbGet('bookings/'+bkState.restoId) || {};
+    const bookedTableIds = new Set();
+    Object.values(allBookings).forEach(b => {
+      if(b && b.date===bkState.date && b.slot===bkState.slot && b.status!=='rejected' && b.tableId){
+        bookedTableIds.add(b.tableId);
+      }
+    });
+    // Read active locks
+    const locks = await fbGet('tableLocks/'+bkState.restoId) || {};
+    const lockedTableIds = new Set();
+    const now = Date.now();
+    Object.entries(locks).forEach(([tId, lk])=>{
+      if(lk && lk.lockedUntil > now && lk.sessionId !== bkState.lockSessionId){
+        lockedTableIds.add(tId);
+      }
+    });
+    // Group by zone
+    const zonesMap = {};
+    partyOK.forEach(t => {
+      const z = t.zone || 'Indoor';
+      if(!zonesMap[z]) zonesMap[z] = [];
+      zonesMap[z].push(t);
+    });
+    const zoneNames = Object.keys(zonesMap).sort();
+    if(!_bkSelectedZone || !zonesMap[_bkSelectedZone]) _bkSelectedZone = zoneNames[0];
+    // Build zone tabs
+    tabs.innerHTML = zoneNames.map(z => {
+      const cls = (z === _bkSelectedZone) ? 'bk-zone-tab on' : 'bk-zone-tab';
+      const count = zonesMap[z].length;
+      return `<button class="${cls}" data-zone="${escapeHtml(z)}">${escapeHtml(z)} <span style="opacity:.6">(${count})</span></button>`;
+    }).join('');
+    tabs.onclick = function(ev){
+      const btn = ev.target.closest('button[data-zone]');
+      if(!btn) return;
+      _bkSelectedZone = btn.dataset.zone;
+      bkLoadTables(); // re-render with new zone selected
+    };
+    // Build table grid for selected zone
+    const tablesInZone = zonesMap[_bkSelectedZone] || [];
+    const lblBooked = _lp('bk_table_booked','Booked');
+    const lblLocked = _lp('bk_table_locked_by_other','Reserved');
+    const lblSeats = _lp('bk_table_seats','seats');
+    grid.innerHTML = tablesInZone.map(t => {
+      const isBooked = bookedTableIds.has(t.id);
+      const isLocked = lockedTableIds.has(t.id);
+      const isSelected = bkState.tableId === t.id;
+      let cls = 'bk-table-card';
+      let status = '';
+      if(isBooked){ cls += ' booked'; status = `<div class="bk-table-status">${escapeHtml(lblBooked)}</div>`; }
+      else if(isLocked){ cls += ' locked'; status = `<div class="bk-table-status">${escapeHtml(lblLocked)}</div>`; }
+      else if(isSelected){ cls += ' selected'; }
+      const clickAttr = (isBooked || isLocked) ? '' : `data-tid="${escapeHtml(t.id)}"`;
+      return `<div class="${cls}" ${clickAttr}>
+        <div class="bk-table-num">${escapeHtml(t.num||'')}</div>
+        <div class="bk-table-cap">${t.seats||0} ${escapeHtml(lblSeats)}</div>
+        ${status}
+      </div>`;
+    }).join('');
+    grid.onclick = function(ev){
+      const card = ev.target.closest('.bk-table-card[data-tid]');
+      if(!card) return;
+      const tableId = card.dataset.tid;
+      bkPickTable(tableId);
+    };
+  } catch(e){
+    console.error('bkLoadTables:', e);
+    grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_err_load_tables','Could not load tables. Please try again.'))}</div>`;
+  }
+}
+
+async function bkPickTable(tableId){
+  const t = (bkState.tables||[]).find(x => x.id === tableId);
+  if(!t) return;
+  // Release any existing lock first (if customer picks a different table)
+  if(bkState.tableId && bkState.tableId !== tableId){
+    await bkReleaseLock();
+  }
+  // Try to acquire lock
+  const lockResult = await bkLockTable(tableId);
+  if(!lockResult.ok){
+    alert(lockResult.message || _lp('bk_lock_failed','Could not reserve this table. Try another.'));
+    bkLoadTables(); // re-render to show updated state
+    return;
+  }
+  bkState.tableId = tableId;
+  bkState.tableNum = t.num;
+  bkState.tableZone = t.zone || 'Indoor';
+  // Show lock countdown UI
+  _bkStartLockCountdown();
+  bkLoadTables(); // re-render to show selection
+}
+
+async function bkLockTable(tableId){
+  if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+  const sessionId = _bkRandomSessionId();
+  const lockedUntil = Date.now() + BK_LOCK_DURATION_MS;
+  // Check current lock first
+  const existing = await fbGet('tableLocks/'+bkState.restoId+'/'+tableId);
+  const now = Date.now();
+  if(existing && existing.lockedUntil > now && existing.sessionId !== bkState.lockSessionId){
+    return { ok:false, message:_lp('bk_lock_taken','This table was just reserved by another customer.') };
+  }
+  // Write our lock
+  try {
+    await fbSet('tableLocks/'+bkState.restoId+'/'+tableId, { sessionId, lockedUntil });
+    bkState.lockSessionId = sessionId;
+    bkState.lockExpiresAt = lockedUntil;
+    return { ok:true };
+  } catch(e){
+    console.error('lock failed:', e);
+    return { ok:false, message:_lp('bk_lock_failed','Could not reserve this table. Try another.') };
+  }
+}
+
+async function bkReleaseLock(){
+  // Clear UI timer
+  if(_bkLockTimer){ clearInterval(_bkLockTimer); _bkLockTimer = null; }
+  if(_bkLockTimeout){ clearTimeout(_bkLockTimeout); _bkLockTimeout = null; }
+  const lockEl = document.getElementById('bkLockTimer');
+  if(lockEl) lockEl.style.display = 'none';
+  // Release in Firebase if we own a lock
+  if(bkState.tableId && bkState.lockSessionId && bkState.restoId){
+    try {
+      // Only delete if we still own it
+      const existing = await fbGet('tableLocks/'+bkState.restoId+'/'+bkState.tableId);
+      if(existing && existing.sessionId === bkState.lockSessionId){
+        if(typeof db !== 'undefined' && db){
+          await db.ref('tableLocks/'+bkState.restoId+'/'+bkState.tableId).remove();
+        } else {
+          // REST fallback: DELETE
+          await fetch(DB_URL+'/tableLocks/'+bkState.restoId+'/'+bkState.tableId+'.json?auth='+API_KEY, { method:'DELETE' });
+        }
+      }
+    } catch(e){ console.warn('lock release failed (non-fatal):', e); }
+  }
+  bkState.tableId = null;
+  bkState.tableNum = null;
+  bkState.tableZone = null;
+  bkState.lockSessionId = null;
+  bkState.lockExpiresAt = 0;
+}
+
+function _bkStartLockCountdown(){
+  if(_bkLockTimer){ clearInterval(_bkLockTimer); _bkLockTimer = null; }
+  if(_bkLockTimeout){ clearTimeout(_bkLockTimeout); _bkLockTimeout = null; }
+  const lockEl = document.getElementById('bkLockTimer');
+  const cd = document.getElementById('bkLockCountdown');
+  if(!lockEl || !cd) return;
+  lockEl.style.display = '';
+  function tick(){
+    const remaining = bkState.lockExpiresAt - Date.now();
+    if(remaining <= 0){
+      cd.textContent = '0:00';
+      bkReleaseLock();
+      alert(_lp('bk_lock_expired','Your table reservation expired. Please pick another table.'));
+      bkGoStep(5);
+      bkLoadTables();
+      return;
+    }
+    const min = Math.floor(remaining / 60000);
+    const sec = Math.floor((remaining % 60000) / 1000);
+    cd.textContent = min + ':' + String(sec).padStart(2,'0');
+  }
+  tick();
+  _bkLockTimer = setInterval(tick, 1000);
+  // Hard timeout safety
+  _bkLockTimeout = setTimeout(()=>{ /* tick handles expiry */ }, BK_LOCK_DURATION_MS + 500);
+}
+
+// Release lock on tab close / navigation
+window.addEventListener('beforeunload', () => {
+  if(bkState && bkState.tableId && bkState.lockSessionId && bkState.restoId){
+    const url = DB_URL + '/tableLocks/' + bkState.restoId + '/' + bkState.tableId + '.json?auth=' + API_KEY;
+    try {
+      // Best effort: delete via fetch with keepalive (most browsers)
+      fetch(url, { method:'DELETE', keepalive:true }).catch(()=>{});
+    } catch(e){}
+  }
+});
+
 
 function renderBkSummary(){
   const d = new Date(bkState.date+'T00:00:00');
@@ -9783,11 +10164,15 @@ function renderBkSummary(){
   const lblDate = _lp('bk_summary_date','Date');
   const lblTime = _lp('bk_summary_time','Time');
   const lblPpl = _lp('bk_summary_people','Guests');
+  const lblTable = _lp('bk_summary_table','Table');
+  // v5.4: Show table info if customer picked one
+  const tableRow = bkState.tableId ? `<div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTable)}</span><span class="bk-sum-val">${escapeHtml(bkState.tableNum||'')} · ${escapeHtml(bkState.tableZone||'')}</span></div>` : '';
   document.getElementById('bkSummary').innerHTML = `
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblResto)}</span><span class="bk-sum-val">${escapeHtml(bkState.restoName||'')}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblDate)}</span><span class="bk-sum-val">${escapeHtml(dateStr)}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTime)}</span><span class="bk-sum-val">${escapeHtml(bkState.slot||'')}</span></div>
-    <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblPpl)}</span><span class="bk-sum-val">${bkState.party}</span></div>`;
+    <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblPpl)}</span><span class="bk-sum-val">${bkState.party}</span></div>
+    ${tableRow}`;
 }
 
 function genBookingCode(){
@@ -9818,10 +10203,18 @@ async function submitCustBooking(){
       status: 'pending',
       createdAt: Date.now()
     };
+    // v5.4: Include table info if customer picked one
+    if(bkState.tableId){
+      booking.tableId = bkState.tableId;
+      booking.tableNum = bkState.tableNum || '';
+      booking.tableZone = bkState.tableZone || '';
+    }
     if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
     await fbPush('bookings/'+bkState.restoId, booking);
+    // v5.4: Release table lock now that booking is saved
+    bkReleaseLock();
     document.getElementById('bkSuccessCode').textContent = code;
-    bkGoStep(6);
+    bkGoStep(7);
   } catch(e){
     console.error('submitCustBooking:',e);
     alert(_lp('bk_err_submit','Could not submit booking. Please try again.'));
@@ -9988,6 +10381,7 @@ function renderOwnerBookings(){
   const lblDate = _ts('bk_date_label','Date');
   const lblTime = _ts('bk_time_label','Time');
   const lblParty = _ts('bk_party_label','Party');
+  const lblTable = _ts('bk_table_label','Table');
   const lblAccept = _ts('bk_accept','✅ Accept');
   const lblReject = _ts('bk_reject','❌ Reject');
   body.innerHTML = filtered.map(b=>{
@@ -10024,6 +10418,7 @@ function renderOwnerBookings(){
         <div><b>${escapeHtml(lblDate)}</b>${escapeHtml(dStr)}</div>
         <div><b>${escapeHtml(lblTime)}</b>${escapeHtml(b.slot||'-')}</div>
         <div><b>${escapeHtml(lblParty)}</b>${b.party||1}</div>
+        ${b.tableNum?`<div><b>${escapeHtml(lblTable)}</b>${escapeHtml(b.tableNum)}${b.tableZone?` · <span style="color:var(--s-gold,#c8973a);font-size:11px">${escapeHtml(b.tableZone)}</span>`:''}</div>`:''}
       </div>
       ${b.note?`<div style="margin-top:10px;font-size:12px;color:var(--s-muted);font-style:italic">📝 "${escapeHtml(b.note)}"</div>`:''}
       ${actions}
@@ -10340,6 +10735,17 @@ async function cleanupOldBookings(opts){
       <div class="fg" style="margin-top:4px"><label>Description</label>
         <input class="fi" id="mEtDesc" placeholder="Window seat, Outdoor..." oninput="updateTablePreview()">
       </div>
+      <div class="fg" style="margin-top:10px"><label>Zone (for online bookings)</label>
+        <select class="fi" id="mEtZone" onchange="onEtZoneChange()">
+          <option value="Indoor">Indoor</option>
+          <option value="Outdoor">Outdoor</option>
+          <option value="Garden">Garden</option>
+          <option value="Bar">Bar</option>
+          <option value="Private Room">Private Room</option>
+          <option value="__custom__">+ Custom zone…</option>
+        </select>
+        <input class="fi" id="mEtZoneCustom" placeholder="Type your custom zone" style="display:none;margin-top:6px">
+      </div>
       <div style="margin-top:14px;padding:14px;background:var(--s-surf2);border:1px solid var(--s-border);border-radius:6px;text-align:center">
         <div style="font-size:11px;color:var(--s-muted);margin-bottom:8px;letter-spacing:1px">PREVIEW</div>
         <div style="font-family:var(--ff);font-size:32px;font-weight:900;color:var(--s-text)" id="mEtPreviewNum">—</div>
@@ -10385,16 +10791,16 @@ async function cleanupOldBookings(opts){
 <!-- ════════════════════════════════════════════ -->
 <!-- v4 BOOKING SYSTEM — Customer Booking Modal -->
 <!-- ════════════════════════════════════════════ -->
-<div id="mCustBooking" class="modal-ov" onclick="if(event.target===this)closeModal('mCustBooking')">
+<div id="mCustBooking" class="modal-ov" onclick="if(event.target===this){bkReleaseLock();closeModal('mCustBooking')}">
   <div class="bkm-shell">
     <!-- Progress bar at top -->
     <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
     <div class="bkm-head">
       <div>
         <div class="bkm-eyebrow" data-lp="bk_eyebrow">Book a Table</div>
-        <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 5</div>
+        <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 6</div>
       </div>
-      <button class="bkm-x" onclick="closeModal('mCustBooking')" aria-label="Close">×</button>
+      <button class="bkm-x" onclick="bkReleaseLock();closeModal('mCustBooking')" aria-label="Close">×</button>
     </div>
     <div class="bk-modal-body">
       <!-- STEP 1: PICK RESTAURANT -->
@@ -10426,8 +10832,19 @@ async function cleanupOldBookings(opts){
         </div>
         <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px" data-lp="bk_min_max">Minimum 1 · Maximum 20</div>
       </div>
-      <!-- STEP 5: CONTACT INFO + CONFIRM -->
+      <!-- STEP 5: PICK ZONE + TABLE (v5.4) -->
       <div class="bk-step" id="bkStep5">
+        <div class="bk-step-h" data-lp="bk_pick_table">Choose a table</div>
+        <div class="bk-step-sub" data-lp="bk_pick_table_sub">Pick a zone, then select an available table.</div>
+        <div id="bkZoneTabs" class="bk-zone-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
+        <div id="bkTableGrid" class="bk-table-grid"><div class="bk-empty" data-lp="bk_loading_tables">Loading tables…</div></div>
+        <div id="bkLockTimer" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(200,151,58,.08);border:1px solid rgba(200,151,58,.3);border-radius:8px;text-align:center">
+          <div style="font-size:11px;color:#c8973a;font-weight:700;letter-spacing:1px" data-lp="bk_table_locked">TABLE RESERVED FOR YOU</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.85);margin-top:3px"><span data-lp="bk_lock_msg">Complete booking in</span> <span id="bkLockCountdown" style="font-weight:700;color:#fff">3:00</span></div>
+        </div>
+      </div>
+      <!-- STEP 6: CONTACT INFO + CONFIRM -->
+      <div class="bk-step" id="bkStep6">
         <div class="bk-step-h" data-lp="bk_contact">Your details</div>
         <div class="bk-step-sub" data-lp="bk_contact_sub">You can check your booking status using your phone or code.</div>
         <div class="bk-summary" id="bkSummary"></div>
@@ -10439,7 +10856,7 @@ async function cleanupOldBookings(opts){
         <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences…" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:60px"></textarea>
       </div>
       <!-- SUCCESS -->
-      <div class="bk-step" id="bkStep6">
+      <div class="bk-step" id="bkStep7">
         <div class="bk-success">
           <div class="bk-success-ic">✅</div>
           <div class="bk-step-h" style="margin-bottom:4px" data-lp="bk_sent">Booking submitted</div>
