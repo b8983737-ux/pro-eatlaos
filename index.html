@@ -1833,6 +1833,20 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-cta-band-title{font-family:var(--ff);font-size:clamp(36px,6vw,60px);font-weight:900;color:#fff;letter-spacing:-2px;margin-bottom:16px;position:relative;}
 .lp-cta-band-sub{font-size:17px;color:rgba(255,255,255,.38);margin-bottom:40px;position:relative;}
 
+/* v5.1: B2B section — for restaurant owners (replaces old cta-band usage) */
+.lp-b2b{margin:80px 6% 60px;padding:72px 6%;background:linear-gradient(135deg,#0d0a05 0%,#1a1205 50%,#0d0a05 100%);border:1px solid rgba(200,151,58,.2);border-radius:24px;text-align:center;position:relative;overflow:hidden;}
+.lp-b2b::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(200,151,58,.08) 0%,transparent 65%);pointer-events:none;}
+.lp-b2b::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(200,151,58,.4) 50%,transparent 100%);}
+.lp-b2b-inner{position:relative;max-width:680px;margin:0 auto;}
+.lp-b2b-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c8973a;font-weight:700;margin-bottom:14px;}
+.lp-b2b-title{font-family:var(--ff);font-size:clamp(32px,5vw,48px);font-weight:900;color:#fff;letter-spacing:-1.5px;margin:0 0 16px;line-height:1.1;}
+.lp-b2b-sub{font-size:16px;color:rgba(255,255,255,.55);margin:0 0 32px;line-height:1.6;}
+.lp-b2b-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.lp-b2b-primary{height:54px;padding:0 32px;background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);color:#0a0a0a;font-size:14px;font-weight:700;border-radius:8px;border:none;cursor:pointer;font-family:var(--fb);transition:all .25s;letter-spacing:.3px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(200,151,58,.2);}
+.lp-b2b-primary:hover{transform:translateY(-2px);filter:brightness(1.05);box-shadow:0 8px 28px rgba(200,151,58,.35);}
+.lp-b2b-ghost{height:54px;padding:0 30px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.85);font-size:14px;font-weight:600;border-radius:8px;border:1px solid rgba(255,255,255,.14);cursor:pointer;font-family:var(--fb);transition:all .25s;letter-spacing:.3px;}
+.lp-b2b-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(200,151,58,.4);color:#fff;transform:translateY(-2px);}
+
 /* Footer */
 .lp-footer{padding:48px 6%;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;background:#040404;}
 .lp-footer-logo{font-family:var(--ff);font-size:22px;font-weight:900;color:rgba(255,255,255,.2);}
@@ -1867,10 +1881,13 @@ body{min-height:100%;overscroll-behavior-x:none;}
   .lp-feat-grid{grid-template-columns:1fr 1fr;gap:12px;}
   .lp-feat{padding:24px 20px;}
   .lp-cta-band{margin:60px 4%;padding:56px 5%;}
+  .lp-b2b{margin:60px 4% 40px;padding:56px 5%;}
   .lp-footer{padding:36px 4%;flex-direction:column;align-items:flex-start;gap:12px;}
   .lp-divider{margin:0 4%;}
   .lp-hero-ctas{flex-direction:column;align-items:stretch;}
   .lp-cta-primary,.lp-cta-secondary{width:100%;justify-content:center;}
+  .lp-b2b-actions{flex-direction:column;align-items:stretch;}
+  .lp-b2b-primary,.lp-b2b-ghost{width:100%;justify-content:center;}
 }
 @media(max-width:480px){
   .lp-nav{height:60px;padding:0 4%;}
@@ -1893,6 +1910,8 @@ body{min-height:100%;overscroll-behavior-x:none;}
   .lp-feat{padding:22px 18px;}
   .lp-cta-band{margin:40px 4%;padding:44px 5%;border-radius:16px;}
   .lp-cta-band-title{font-size:clamp(26px,7vw,38px);}
+  .lp-b2b{margin:40px 4% 30px;padding:44px 5%;border-radius:16px;}
+  .lp-b2b-title{font-size:clamp(26px,7vw,38px);}
   .lp-footer{padding:28px 4%;}
 }
 
@@ -2052,6 +2071,207 @@ body.lang-lo .modal-title,
 body.lang-lo .land-logo,
 body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
   font-family:'Noto Serif Lao',Georgia,serif;
+}
+
+/* ============================================ */
+/* v4 BOOKING SYSTEM (Phase 1) — additive only  */
+/* ============================================ */
+/* Modal shell — matches v4 design language */
+.bkm-shell{
+  background:linear-gradient(180deg,#131313 0%,#0e0e0e 100%);
+  border:1px solid rgba(200,151,58,.22);
+  border-radius:18px;
+  max-width:520px;
+  width:100%;
+  position:relative;
+  animation:fadeUp .35s cubic-bezier(.16,1,.3,1);
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 0 1px rgba(200,151,58,.08);
+}
+.bkm-progress{
+  height:3px;
+  background:rgba(255,255,255,.04);
+  position:relative;
+  overflow:hidden;
+}
+.bkm-progress-fill{
+  position:absolute;
+  top:0;left:0;bottom:0;
+  width:0%;
+  background:linear-gradient(90deg,#c8973a 0%,#e0b455 50%,#c8973a 100%);
+  background-size:200% 100%;
+  transition:width .4s cubic-bezier(.16,1,.3,1);
+  animation:bkmShine 2s linear infinite;
+}
+@keyframes bkmShine{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.bkm-head{
+  padding:22px 24px 4px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+.bkm-eyebrow{
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:#c8973a;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.bkm-title{
+  font-family:var(--ff,'Plus Jakarta Sans');
+  font-size:20px;
+  font-weight:800;
+  color:#fff;
+  letter-spacing:-.3px;
+}
+.bkm-step-of{
+  font-size:11px;
+  color:rgba(255,255,255,.45);
+  font-weight:500;
+  letter-spacing:.5px;
+}
+.bkm-x{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.55);
+  font-size:18px;
+  cursor:pointer;
+  line-height:1;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  transition:all .2s;
+}
+.bkm-x:hover{background:rgba(244,67,54,.1);border-color:rgba(244,67,54,.3);color:#ef5350;}
+.bkm-foot{
+  padding:14px 24px 18px;
+  border-top:1px solid rgba(255,255,255,.06);
+  background:rgba(0,0,0,.2);
+}
+/* Customer booking modal body */
+.bk-modal-body{padding:22px 24px;max-height:calc(85vh - 110px);overflow-y:auto;}
+.bk-step{display:none;animation:bkFadeIn .3s cubic-bezier(.16,1,.3,1);}
+.bk-step.on{display:block;}
+@keyframes bkFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.bk-step-h{font-family:var(--ff,'Plus Jakarta Sans');font-size:22px;font-weight:800;margin-bottom:6px;color:#fff;letter-spacing:-.4px;}
+.bk-step-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;line-height:1.5;}
+.bk-resto-list{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;padding-right:4px;}
+.bk-resto-list::-webkit-scrollbar,.bk-modal-body::-webkit-scrollbar,.bk-date-grid::-webkit-scrollbar,.bk-slot-grid::-webkit-scrollbar,.bk-status-list::-webkit-scrollbar{width:6px;}
+.bk-resto-list::-webkit-scrollbar-thumb,.bk-modal-body::-webkit-scrollbar-thumb,.bk-date-grid::-webkit-scrollbar-thumb,.bk-slot-grid::-webkit-scrollbar-thumb,.bk-status-list::-webkit-scrollbar-thumb{background:rgba(200,151,58,.2);border-radius:3px;}
+.bk-resto-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;gap:14px;}
+.bk-resto-card:hover{background:rgba(200,151,58,.06);border-color:rgba(200,151,58,.25);transform:translateX(2px);}
+.bk-resto-card.sel{background:rgba(200,151,58,.1);border-color:#c8973a;box-shadow:0 0 0 3px rgba(200,151,58,.1);}
+.bk-resto-ic{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,rgba(200,151,58,.18) 0%,rgba(200,151,58,.08) 100%);border:1px solid rgba(200,151,58,.15);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.bk-resto-info{flex:1;min-width:0;}
+.bk-resto-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px;}
+.bk-resto-tag{font-size:11px;color:rgba(255,255,255,.5);}
+.bk-resto-arrow{color:rgba(200,151,58,.6);font-size:16px;transition:all .2s;}
+.bk-resto-card:hover .bk-resto-arrow{color:#c8973a;transform:translateX(3px);}
+.bk-date-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px;max-height:300px;overflow-y:auto;padding:4px;}
+.bk-date-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;}
+.bk-date-card:hover{background:rgba(200,151,58,.06);border-color:rgba(200,151,58,.25);transform:translateY(-1px);}
+.bk-date-card.sel{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);border-color:#c8973a;color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.3);}
+.bk-date-card.closed{opacity:.3;cursor:not-allowed;}
+.bk-date-card.closed:hover{transform:none;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
+.bk-date-dow{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:700;}
+.bk-date-card.sel .bk-date-dow{color:rgba(0,0,0,.65);}
+.bk-date-day{font-size:20px;font-weight:800;color:#fff;line-height:1;margin:5px 0 3px;font-family:var(--ff,'Plus Jakarta Sans');letter-spacing:-.5px;}
+.bk-date-card.sel .bk-date-day{color:#0a0a0a;}
+.bk-date-mo{font-size:10px;color:rgba(255,255,255,.5);font-weight:500;}
+.bk-date-card.sel .bk-date-mo{color:rgba(0,0,0,.65);}
+.bk-slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:7px;max-height:300px;overflow-y:auto;padding:4px;}
+.bk-slot{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:11px 4px;text-align:center;cursor:pointer;transition:all .15s;font-size:13px;font-weight:600;color:#fff;font-family:var(--ff,'Plus Jakarta Sans');letter-spacing:.3px;}
+.bk-slot:hover{background:rgba(200,151,58,.06);border-color:rgba(200,151,58,.25);transform:translateY(-1px);}
+.bk-slot.sel{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);border-color:#c8973a;color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.3);}
+.bk-slot.taken{opacity:.25;cursor:not-allowed;text-decoration:line-through;}
+.bk-slot.taken:hover{transform:none;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
+.bk-party{display:flex;align-items:center;justify-content:center;gap:18px;padding:24px 0;}
+.bk-party-btn{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:22px;cursor:pointer;transition:all .2s;font-weight:300;}
+.bk-party-btn:hover{background:rgba(200,151,58,.12);border-color:#c8973a;transform:scale(1.08);}
+.bk-party-btn:active{transform:scale(.96);}
+.bk-party-num{font-size:48px;font-weight:800;color:#c8973a;font-family:var(--ff,'Plus Jakarta Sans');min-width:80px;text-align:center;letter-spacing:-1px;line-height:1;}
+.bk-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:14px;font-family:inherit;margin-bottom:12px;box-sizing:border-box;transition:all .2s;}
+.bk-input:focus{outline:none;border-color:#c8973a;background:rgba(200,151,58,.04);box-shadow:0 0 0 3px rgba(200,151,58,.08);}
+.bk-input::placeholder{color:rgba(255,255,255,.3);}
+.bk-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:700;margin-bottom:7px;display:block;}
+.bk-summary{background:linear-gradient(135deg,rgba(200,151,58,.06) 0%,rgba(200,151,58,.02) 100%);border:1px solid rgba(200,151,58,.18);border-radius:12px;padding:16px;margin-bottom:18px;}
+.bk-sum-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;}
+.bk-sum-row+.bk-sum-row{border-top:1px solid rgba(200,151,58,.08);}
+.bk-sum-lbl{color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.3px;}
+.bk-sum-val{color:#fff;font-weight:700;font-size:13px;}
+.bk-actions{display:flex;gap:10px;}
+.bk-btn{flex:1;height:50px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.2px;}
+.bk-btn-back{background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1);}
+.bk-btn-back:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.18);}
+.bk-btn-next{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.2);}
+.bk-btn-next:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,151,58,.3);}
+.bk-btn-next:active{transform:translateY(0);}
+.bk-btn-next:disabled{opacity:.5;cursor:not-allowed;transform:none;filter:none;box-shadow:none;}
+/* Booking code success screen */
+.bk-success{text-align:center;padding:24px 8px;}
+.bk-success-ic{font-size:56px;margin-bottom:14px;animation:bkPop .6s cubic-bezier(.16,1,.3,1);}
+@keyframes bkPop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.bk-code-box{background:linear-gradient(135deg,rgba(200,151,58,.1) 0%,rgba(200,151,58,.03) 100%);border:1px dashed rgba(200,151,58,.5);border-radius:14px;padding:24px;margin:22px 0;}
+.bk-code-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:10px;}
+.bk-code-val{font-family:'Courier New','SF Mono',monospace;font-size:34px;font-weight:900;color:#c8973a;letter-spacing:8px;}
+.bk-code-hint{font-size:11px;color:rgba(255,255,255,.45);margin-top:10px;line-height:1.5;}
+/* Status check tabs */
+.bk-tabs{display:flex;gap:4px;margin-bottom:18px;background:rgba(255,255,255,.03);padding:4px;border-radius:10px;}
+.bk-tab{flex:1;padding:11px;background:transparent;border:none;color:rgba(255,255,255,.5);font-size:12px;font-weight:600;cursor:pointer;border-radius:7px;transition:all .2s;font-family:inherit;letter-spacing:.3px;}
+.bk-tab:hover{color:rgba(255,255,255,.8);}
+.bk-tab.on{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);color:#0a0a0a;font-weight:700;}
+.bk-status-list{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;}
+.bk-status-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;}
+.bk-status-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;}
+.bk-status-resto{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px;}
+.bk-status-pill{padding:5px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.bk-pill-pending{background:rgba(255,193,7,.12);color:#ffc107;border:1px solid rgba(255,193,7,.3);}
+.bk-pill-accepted{background:rgba(76,175,80,.12);color:#66bb6a;border:1px solid rgba(76,175,80,.3);}
+.bk-pill-rejected{background:rgba(244,67,54,.12);color:#ef5350;border:1px solid rgba(244,67,54,.3);}
+.bk-status-info{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;font-size:12px;color:rgba(255,255,255,.7);}
+.bk-status-info b{color:rgba(255,255,255,.5);font-weight:600;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:2px;}
+.bk-empty{text-align:center;padding:48px 20px;color:rgba(255,255,255,.45);font-size:13px;}
+.bk-link{background:none;border:none;color:#c8973a;font-size:12px;cursor:pointer;padding:0;text-decoration:none;font-family:inherit;font-weight:600;letter-spacing:.2px;transition:color .2s;}
+.bk-link:hover{color:#e0b455;text-decoration:underline;}
+
+/* OWNER bookings panel */
+.ob-card{background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,rgba(255,255,255,.08));border-radius:12px;padding:16px;margin-bottom:10px;transition:all .2s;}
+.ob-card:hover{border-color:rgba(200,151,58,.25);}
+.ob-card-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.ob-card-name{font-size:15px;font-weight:700;color:var(--s-text,#fff);display:flex;align-items:center;gap:10px;flex-wrap:wrap;letter-spacing:-.2px;}
+.ob-card-when{font-size:11px;color:var(--s-muted,rgba(255,255,255,.55));margin-top:4px;display:flex;gap:14px;flex-wrap:wrap;}
+.ob-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;font-size:13px;padding:12px 0;border-top:1px solid var(--s-border,rgba(255,255,255,.06));border-bottom:1px solid var(--s-border,rgba(255,255,255,.06));}
+.ob-card-grid div b{display:block;color:var(--s-muted,rgba(255,255,255,.5));font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;font-weight:700;}
+.ob-card-actions{display:flex;gap:10px;margin-top:12px;}
+.ob-pill{padding:3px 10px;border-radius:14px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+
+/* OWNER hours panel */
+.oh-day{display:flex;align-items:center;gap:12px;padding:14px;background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,rgba(255,255,255,.06));border-radius:10px;margin-bottom:8px;flex-wrap:wrap;transition:all .2s;}
+.oh-day:hover{border-color:rgba(200,151,58,.2);}
+.oh-day-name{font-weight:700;font-size:13px;width:90px;color:var(--s-text,#fff);letter-spacing:-.2px;}
+.oh-day-toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;}
+.oh-day input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:#c8973a;}
+.oh-day input[type="time"]{background:var(--s-surf2,#0d0d0d);border:1px solid var(--s-border,rgba(255,255,255,.1));color:var(--s-text,#fff);padding:7px 10px;border-radius:6px;font-size:13px;font-family:inherit;font-weight:600;}
+.oh-day input[type="time"]:focus{outline:none;border-color:#c8973a;}
+.oh-day-sep{color:var(--s-muted,rgba(255,255,255,.4));font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+.oh-closed{color:var(--s-muted,rgba(255,255,255,.4));font-size:11px;font-style:italic;}
+@media(max-width:600px){
+  .oh-day{padding:12px;gap:10px;}
+  .oh-day-name{width:70px;font-size:12px;}
+  .bkm-shell{max-height:95vh;border-radius:14px;}
+  .bk-modal-body{padding:18px 18px;}
+  .bkm-head{padding:18px 18px 4px;}
+  .bkm-foot{padding:12px 18px 16px;}
+  .bk-step-h{font-size:20px;}
 }
 </style>
 
@@ -2224,8 +2444,8 @@ setTimeout(function(){
           <button class="lp-lang-opt" onclick="setLpLang('ko','🇰🇷','한국어')"><span>🇰🇷</span> 한국어</button>
         </div>
       </div>
-      <button class="lp-nav-btn lp-btn-ghost" onclick="showPage('pg-owner-login')" data-lp="nav_login">Owner Login</button>
-      <button class="lp-nav-btn lp-btn-gold" onclick="openModal('mContact')" data-lp="nav_contact">Contact Us →</button>
+      <button class="lp-nav-btn lp-btn-ghost" onclick="openModal('mCustBookingStatus')" data-lp="nav_my_bookings">My Bookings</button>
+      <button class="lp-nav-btn lp-btn-gold" onclick="openCustBookingModal()" data-lp="nav_book">📅 Book a Table</button>
     </div>
   </nav>
 
@@ -2253,7 +2473,7 @@ setTimeout(function(){
     <h1 class="lp-h1" data-lp="h1_line1">The future<br>of dining<br>is <em>digital</em></h1>
     <p class="lp-hero-sub" data-lp="hero_sub">Customers scan a QR code, browse your menu and order directly from the table. No app. No cash. No waiting.</p>
     <div class="lp-hero-ctas">
-      <button class="lp-cta-primary" onclick="openModal('mContact')" data-lp="cta_start">Get Started Free <span style="font-size:18px">→</span></button>
+      <button class="lp-cta-primary" onclick="openCustBookingModal()" data-lp="cta_book_main">📅 Book a Table</button>
       <button class="lp-cta-secondary" onclick="document.getElementById('lp-restos').scrollIntoView({behavior:'smooth'})" data-lp="cta_view">View Restaurants <span style="opacity:.6">↓</span></button>
     </div>
     <div class="lp-stats-belt">
@@ -2301,9 +2521,12 @@ setTimeout(function(){
   <!-- RESTAURANTS -->
   <div class="lp-restos-section" id="lp-restos">
     <div style="text-align:center;margin-bottom:56px">
-      <div class="lp-section-eyebrow">Live on EATLAOS</div>
+      <div class="lp-section-eyebrow" data-lp="restos_eyebrow">Live on EATLAOS</div>
       <h2 class="lp-section-h" data-lp="restos_title">Our Restaurants</h2>
-      <p class="lp-section-sub" data-lp="restos_sub">Click any restaurant to browse their menu and order from your table.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px">
+        <span style="font-family:var(--ff);font-size:42px;font-weight:900;background:linear-gradient(135deg,#c8973a,#f0d080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:#c8973a" id="lpRestosCount">—</span>
+        <span style="font-size:16px;color:rgba(255,255,255,.35)" data-lp="restos_count_label">restaurants online</span>
+      </div>
     </div>
     <div class="lp-restos-grid" id="lpRestosGrid">
       <div class="lp-resto-skeleton"><div class="lp-skel-circle"></div><div class="lp-skel-line" style="width:65%;"></div><div class="lp-skel-line" style="width:45%;"></div></div>
@@ -2334,11 +2557,17 @@ setTimeout(function(){
     </div>
   </div>
 
-  <!-- CTA BAND -->
-  <div class="lp-cta-band">
-    <div class="lp-cta-band-title" data-lp="cta_band_title">Ready to modernise<br>your restaurant?</div>
-    <div class="lp-cta-band-sub" data-lp="cta_band_sub">Join the restaurants already on EATLAOS. Contact us to get started.</div>
-    <button class="lp-cta-primary" onclick="openModal('mContact')" style="margin:0 auto;display:inline-flex;">Contact Us Now →</button>
+  <!-- B2B SECTION — for restaurant owners -->
+  <div class="lp-b2b">
+    <div class="lp-b2b-inner">
+      <div class="lp-b2b-eyebrow" data-lp="b2b_eyebrow">For Restaurant Owners</div>
+      <h3 class="lp-b2b-title" data-lp="b2b_title">Run a restaurant?<br>Join EATLAOS.</h3>
+      <p class="lp-b2b-sub" data-lp="b2b_sub">List your restaurant, accept online bookings, and manage live orders — all in one place.</p>
+      <div class="lp-b2b-actions">
+        <button class="lp-b2b-primary" onclick="openModal('mContact')" data-lp="b2b_get_started">Get Started Free →</button>
+        <button class="lp-b2b-ghost" onclick="showPage('pg-owner-login')" data-lp="b2b_login">Owner Login</button>
+      </div>
+    </div>
   </div>
 
   <!-- FOOTER -->
@@ -2361,9 +2590,9 @@ setTimeout(function(){
     </div>
     <div class="lp-footer-txt">© 2026 EATLAOS. All rights reserved.</div>
     <div class="lp-footer-txt">
-      <span class="lp-footer-link" onclick="showPage('pg-owner-login')">Owner Login</span>
+      <span class="lp-footer-link" onclick="showPage('pg-owner-login')" data-lp="ft_owner_login">Owner Login</span>
       &nbsp;·&nbsp;
-      <span class="lp-footer-link" onclick="openModal('mContact')">Contact Us</span>
+      <span class="lp-footer-link" onclick="openModal('mContact')" data-lp="ft_contact">Contact Us</span>
     </div>
   </div>
 
@@ -2688,6 +2917,8 @@ setTimeout(function(){
         <button class="sb-item" onclick="owP('categories',this)"><span class="sb-ico">🏷️</span>Categories</button>
         <button class="sb-item" onclick="owP('tables',this)"><span class="sb-ico">🪑</span>Tables &amp; QR</button>
         <button class="sb-item" onclick="owP('history',this)"><span class="sb-ico">📋</span>Order History</button>
+        <button class="sb-item" onclick="owP('bookings',this)"><span class="sb-ico">📅</span><span data-ts="bookings">Bookings</span><span class="sb-num" id="owBookBadge" style="display:none">!</span></button>
+        <button class="sb-item" onclick="owP('hours',this)"><span class="sb-ico">🕐</span><span data-ts="open_hours">Open Hours</span></button>
         <button class="sb-item" onclick="owP('profile',this)"><span class="sb-ico">🏪</span>Profile</button>
       </nav>
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">🏪</div><div><div class="sb-un" id="owSbN">Owner</div><div class="sb-ur" id="owSbR">Restaurant</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
@@ -2869,6 +3100,34 @@ setTimeout(function(){
             <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total (₭)</th><th>VAT</th><th>Earn (₭)</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody id="ow-histtbl"></tbody></table></div></div>
         </div>
         <div class="panel" id="ow-profile"><div class="card"><div class="card-h"><div class="card-title">Restaurant Profile</div></div><div id="ow-profilebody" style="padding:20px"></div></div></div>
+
+        <!-- BOOKINGS PANEL (v4 NEW) -->
+        <div class="panel" id="ow-bookings">
+          <div class="card">
+            <div class="card-h">
+              <div class="card-title">📅 <span data-ts="table_bookings">Table Bookings</span></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="btn btn-sm btn-gold" id="bkFBtn-pending" onclick="setBookingFilter('pending',this)" data-ts="bk_pending">Pending</button>
+                <button class="btn btn-sm" id="bkFBtn-accepted" onclick="setBookingFilter('accepted',this)" data-ts="bk_accepted">Accepted</button>
+                <button class="btn btn-sm" id="bkFBtn-rejected" onclick="setBookingFilter('rejected',this)" data-ts="bk_rejected">Rejected</button>
+                <button class="btn btn-sm" id="bkFBtn-all" onclick="setBookingFilter('all',this)" data-ts="bk_all">All</button>
+              </div>
+            </div>
+            <div id="ow-bookingsbody" style="padding:14px"></div>
+          </div>
+        </div>
+
+        <!-- OPENING HOURS PANEL (v4 NEW) -->
+        <div class="panel" id="ow-hours">
+          <div class="card">
+            <div class="card-h">
+              <div class="card-title">🕐 <span data-ts="opening_hours">Opening Hours</span></div>
+              <button class="btn btn-gold" onclick="saveOwnerHours()" data-ts="bk_save_hours">💾 Save Hours</button>
+            </div>
+            <div style="padding:14px;font-size:12px;color:var(--s-muted);border-bottom:1px solid var(--s-border)" data-ts="bk_hours_intro">Set your weekly opening hours. Customers can only book during these hours, in 30-minute slots.</div>
+            <div id="ow-hoursbody" style="padding:14px"></div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -3559,6 +3818,30 @@ const STAFF_T={
     loading:'Loading...',search:'Search',filter:'Filter',sort:'Sort',reset:'Reset',
     table:'Table',items:'Items',total:'Total',time:'Time',status:'Status',
     qty:'Qty',price:'Price',name:'Name',
+    // v4 booking system
+    bookings:'Bookings',open_hours:'Opening Hours',
+    table_bookings:'Table Bookings',opening_hours:'Opening Hours',
+    bk_pending:'Pending',bk_accepted:'Accepted',bk_rejected:'Rejected',bk_all:'All',
+    bk_accept:'✅ Accept',bk_reject:'❌ Reject',
+    bk_no_bookings:'No bookings in this category.',
+    bk_loading:'Loading bookings…',
+    bk_party_label:'Party',bk_phone_label:'Phone',bk_code_label:'Code',
+    bk_date_label:'Date',bk_time_label:'Time',
+    bk_save_hours:'💾 Save Hours',
+    bk_hours_intro:'Set your weekly opening hours. Customers can only book during these hours, in 30-minute slots.',
+    bk_open:'Open',bk_closed_all_day:'Closed all day',
+    bk_to:'to',
+    bk_hours_saved:'✅ Opening hours saved.',
+    bk_confirm_accept:'Accept this booking?',
+    bk_confirm_reject:'Reject this booking?',
+    bk_err_save_hours:'Could not save hours.',
+    bk_err_accept:'Could not accept booking.',
+    bk_err_reject:'Could not reject booking.',
+    bk_err_time_order:'Day {d}: opening time must be before closing time.',
+    bk_new_booking_title:'New booking request',
+    bk_new_booking_body:'You have a new table booking pending.',
+    bk_day_sun:'Sunday',bk_day_mon:'Monday',bk_day_tue:'Tuesday',bk_day_wed:'Wednesday',
+    bk_day_thu:'Thursday',bk_day_fri:'Friday',bk_day_sat:'Saturday',
   },
   lo:{
     dashboard:'ໜ້າຫຼັກ',live_orders:'ອໍເດີສົດ',table_bills:'ໃບເກັບເງິນ',
@@ -3586,6 +3869,30 @@ const STAFF_T={
     loading:'ກຳລັງໂຫຼດ...',search:'ຄົ້ນຫາ',filter:'ກັ່ນຕອງ',sort:'ຈັດລຽງ',reset:'ຣີເຊັດ',
     table:'ໂຕະ',items:'ລາຍການ',total:'ລວມ',time:'ເວລາ',status:'ສະຖານະ',
     qty:'ຈຳນວນ',price:'ລາຄາ',name:'ຊື່',
+    // v4 booking system
+    bookings:'ການຈອງ',open_hours:'ຊົ່ວໂມງເປີດ',
+    table_bookings:'ການຈອງໂຕະ',opening_hours:'ຊົ່ວໂມງເປີດ',
+    bk_pending:'ລໍຖ້າ',bk_accepted:'ອະນຸມັດ',bk_rejected:'ປະຕິເສດ',bk_all:'ທັງໝົດ',
+    bk_accept:'✅ ອະນຸມັດ',bk_reject:'❌ ປະຕິເສດ',
+    bk_no_bookings:'ບໍ່ມີການຈອງໃນໝວດນີ້.',
+    bk_loading:'ກຳລັງໂຫຼດການຈອງ…',
+    bk_party_label:'ຈຳນວນຄົນ',bk_phone_label:'ເບີໂທ',bk_code_label:'ລະຫັດ',
+    bk_date_label:'ວັນທີ',bk_time_label:'ເວລາ',
+    bk_save_hours:'💾 ບັນທຶກຊົ່ວໂມງ',
+    bk_hours_intro:'ຕັ້ງຊົ່ວໂມງເປີດປະຈຳອາທິດ. ລູກຄ້າຈະຈອງໄດ້ສະເພາະໃນຊົ່ວໂມງເປີດ ໃນຊ່ອງເວລາ 30 ນາທີ.',
+    bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',
+    bk_to:'ຫາ',
+    bk_hours_saved:'✅ ບັນທຶກຊົ່ວໂມງເປີດແລ້ວ.',
+    bk_confirm_accept:'ອະນຸມັດການຈອງນີ້?',
+    bk_confirm_reject:'ປະຕິເສດການຈອງນີ້?',
+    bk_err_save_hours:'ບໍ່ສາມາດບັນທຶກຊົ່ວໂມງ.',
+    bk_err_accept:'ບໍ່ສາມາດອະນຸມັດການຈອງ.',
+    bk_err_reject:'ບໍ່ສາມາດປະຕິເສດການຈອງ.',
+    bk_err_time_order:'ວັນ {d}: ຊົ່ວໂມງເປີດຕ້ອງມາກ່ອນຊົ່ວໂມງປິດ.',
+    bk_new_booking_title:'ການຈອງໃໝ່',
+    bk_new_booking_body:'ທ່ານມີການຈອງໂຕະໃໝ່ທີ່ກຳລັງລໍຖ້າ.',
+    bk_day_sun:'ວັນອາທິດ',bk_day_mon:'ວັນຈັນ',bk_day_tue:'ວັນອັງຄານ',bk_day_wed:'ວັນພຸດ',
+    bk_day_thu:'ວັນພະຫັດ',bk_day_fri:'ວັນສຸກ',bk_day_sat:'ວັນເສົາ',
   },
   th:{
     dashboard:'แดชบอร์ด',live_orders:'ออร์เดอร์สด',table_bills:'บิลโต๊ะ',
@@ -3613,6 +3920,30 @@ const STAFF_T={
     loading:'กำลังโหลด...',search:'ค้นหา',filter:'กรอง',sort:'จัดเรียง',reset:'รีเซ็ต',
     table:'โต๊ะ',items:'รายการ',total:'รวม',time:'เวลา',status:'สถานะ',
     qty:'จำนวน',price:'ราคา',name:'ชื่อ',
+    // v4 booking system
+    bookings:'การจอง',open_hours:'เวลาเปิด',
+    table_bookings:'การจองโต๊ะ',opening_hours:'เวลาเปิด',
+    bk_pending:'รอดำเนินการ',bk_accepted:'อนุมัติ',bk_rejected:'ปฏิเสธ',bk_all:'ทั้งหมด',
+    bk_accept:'✅ อนุมัติ',bk_reject:'❌ ปฏิเสธ',
+    bk_no_bookings:'ไม่มีการจองในหมวดนี้',
+    bk_loading:'กำลังโหลดการจอง…',
+    bk_party_label:'จำนวนคน',bk_phone_label:'เบอร์โทร',bk_code_label:'รหัส',
+    bk_date_label:'วันที่',bk_time_label:'เวลา',
+    bk_save_hours:'💾 บันทึกเวลา',
+    bk_hours_intro:'ตั้งเวลาเปิดประจำสัปดาห์ ลูกค้าจะจองได้เฉพาะในเวลาเปิด ในช่วง 30 นาที',
+    bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',
+    bk_to:'ถึง',
+    bk_hours_saved:'✅ บันทึกเวลาเปิดเรียบร้อย',
+    bk_confirm_accept:'อนุมัติการจองนี้?',
+    bk_confirm_reject:'ปฏิเสธการจองนี้?',
+    bk_err_save_hours:'ไม่สามารถบันทึกเวลาได้',
+    bk_err_accept:'ไม่สามารถอนุมัติการจองได้',
+    bk_err_reject:'ไม่สามารถปฏิเสธการจองได้',
+    bk_err_time_order:'วัน {d}: เวลาเปิดต้องมาก่อนเวลาปิด',
+    bk_new_booking_title:'คำขอจองใหม่',
+    bk_new_booking_body:'มีการจองโต๊ะใหม่รอการอนุมัติ',
+    bk_day_sun:'อาทิตย์',bk_day_mon:'จันทร์',bk_day_tue:'อังคาร',bk_day_wed:'พุธ',
+    bk_day_thu:'พฤหัสบดี',bk_day_fri:'ศุกร์',bk_day_sat:'เสาร์',
   },
   zh:{
     dashboard:'控制台',live_orders:'实时订单',table_bills:'桌台账单',
@@ -3640,6 +3971,30 @@ const STAFF_T={
     loading:'加载中...',search:'搜索',filter:'筛选',sort:'排序',reset:'重置',
     table:'桌台',items:'项目',total:'合计',time:'时间',status:'状态',
     qty:'数量',price:'价格',name:'名称',
+    // v4 booking system
+    bookings:'预订',open_hours:'营业时间',
+    table_bookings:'餐桌预订',opening_hours:'营业时间',
+    bk_pending:'待确认',bk_accepted:'已确认',bk_rejected:'已拒绝',bk_all:'全部',
+    bk_accept:'✅ 确认',bk_reject:'❌ 拒绝',
+    bk_no_bookings:'此分类下暂无预订。',
+    bk_loading:'正在加载预订…',
+    bk_party_label:'人数',bk_phone_label:'电话',bk_code_label:'编号',
+    bk_date_label:'日期',bk_time_label:'时间',
+    bk_save_hours:'💾 保存营业时间',
+    bk_hours_intro:'设置每周营业时间。客户只能在营业时间内预订，每 30 分钟一个时段。',
+    bk_open:'营业',bk_closed_all_day:'全天休息',
+    bk_to:'至',
+    bk_hours_saved:'✅ 营业时间已保存。',
+    bk_confirm_accept:'确认接受此预订？',
+    bk_confirm_reject:'确认拒绝此预订？',
+    bk_err_save_hours:'无法保存营业时间。',
+    bk_err_accept:'无法接受预订。',
+    bk_err_reject:'无法拒绝预订。',
+    bk_err_time_order:'第 {d} 天：开始时间必须早于结束时间。',
+    bk_new_booking_title:'新预订请求',
+    bk_new_booking_body:'您有一个待处理的餐桌预订。',
+    bk_day_sun:'星期日',bk_day_mon:'星期一',bk_day_tue:'星期二',bk_day_wed:'星期三',
+    bk_day_thu:'星期四',bk_day_fri:'星期五',bk_day_sat:'星期六',
   },
   ko:{
     dashboard:'대시보드',live_orders:'실시간 주문',table_bills:'테이블 청구서',
@@ -3683,6 +4038,30 @@ const STAFF_T={
     no_data:'데이터 없음',no_edits:'수정 없음',view_all_live:'전체 보기',
     bill_total:'청구액 합계',live:'실시간',update:'업데이트',
     restaurant_profile:'레스토랑 프로필',vat_collected:'부가세 징수액',
+    // v4 booking system
+    bookings:'예약',open_hours:'영업 시간',
+    table_bookings:'테이블 예약',opening_hours:'영업 시간',
+    bk_pending:'대기 중',bk_accepted:'수락됨',bk_rejected:'거절됨',bk_all:'전체',
+    bk_accept:'✅ 수락',bk_reject:'❌ 거절',
+    bk_no_bookings:'이 카테고리에 예약이 없습니다.',
+    bk_loading:'예약을 불러오는 중…',
+    bk_party_label:'인원',bk_phone_label:'전화',bk_code_label:'코드',
+    bk_date_label:'날짜',bk_time_label:'시간',
+    bk_save_hours:'💾 영업 시간 저장',
+    bk_hours_intro:'주간 영업 시간을 설정하세요. 고객은 영업 시간 내 30분 단위로만 예약할 수 있습니다.',
+    bk_open:'영업',bk_closed_all_day:'종일 휴무',
+    bk_to:'~',
+    bk_hours_saved:'✅ 영업 시간이 저장되었습니다.',
+    bk_confirm_accept:'이 예약을 수락하시겠습니까?',
+    bk_confirm_reject:'이 예약을 거절하시겠습니까?',
+    bk_err_save_hours:'영업 시간을 저장할 수 없습니다.',
+    bk_err_accept:'예약을 수락할 수 없습니다.',
+    bk_err_reject:'예약을 거절할 수 없습니다.',
+    bk_err_time_order:'{d}일째: 시작 시간이 종료 시간보다 빨라야 합니다.',
+    bk_new_booking_title:'새 예약 요청',
+    bk_new_booking_body:'대기 중인 새 테이블 예약이 있습니다.',
+    bk_day_sun:'일요일',bk_day_mon:'월요일',bk_day_tue:'화요일',bk_day_wed:'수요일',
+    bk_day_thu:'목요일',bk_day_fri:'금요일',bk_day_sat:'토요일',
   }
 };
 
@@ -3761,6 +4140,8 @@ const PHRASE_MAP = {
     "No past reservations":"ບໍ່ມີການຈອງທີ່ຜ່ານມາ",
     "No cancelled reservations":"ບໍ່ມີການຈອງທີ່ຍົກເລີກ",
     "No reservations yet":"ຍັງບໍ່ມີການຈອງ",
+    // v4 booking system
+    "Table Bookings":"ການຈອງໂຕະ","Opening Hours":"ຊົ່ວໂມງເປີດ",
   },
   th:{
     "Dashboard":"แดชบอร์ด","Live Orders":"ออร์เดอร์สด","Table Bills":"บิลโต๊ะ",
@@ -3835,6 +4216,8 @@ const PHRASE_MAP = {
     "No past reservations":"ไม่มีการจองที่ผ่านมา",
     "No cancelled reservations":"ไม่มีการจองที่ยกเลิก",
     "No reservations yet":"ยังไม่มีการจอง",
+    // v4 booking system
+    "Table Bookings":"การจองโต๊ะ","Opening Hours":"เวลาเปิด",
   },
   zh:{
     "Dashboard":"控制台","Live Orders":"实时订单","Table Bills":"桌台账单",
@@ -3909,6 +4292,8 @@ const PHRASE_MAP = {
     "No past reservations":"没有过去的预订",
     "No cancelled reservations":"没有已取消的预订",
     "No reservations yet":"暂无预订",
+    // v4 booking system
+    "Table Bookings":"餐桌预订","Opening Hours":"营业时间",
   },
   ko:{
     "Dashboard":"대시보드","Live Orders":"실시간 주문","Table Bills":"테이블 청구서",
@@ -3983,6 +4368,8 @@ const PHRASE_MAP = {
     "No past reservations":"지난 예약 없음",
     "No cancelled reservations":"취소된 예약 없음",
     "No reservations yet":"예약 없음",
+    // v4 booking system
+    "Table Bookings":"테이블 예약","Opening Hours":"영업 시간",
   }
 };
 function ts(k){return STAFF_T[lang]?.[k]||STAFF_T.en[k]||k;}
@@ -4728,6 +5115,17 @@ const LP_TRANSLATIONS = {
     cta_view:'View Restaurants ↓',
     nav_login:'Owner Login',
     nav_contact:'Contact Us →',
+    // v5.1: Customer-first nav redesign
+    nav_book:'📅 Book a Table',
+    nav_my_bookings:'My Bookings',
+    cta_book_main:'📅 Book a Table',
+    b2b_eyebrow:'For Restaurant Owners',
+    b2b_title:'Run a restaurant?<br>Join EATLAOS.',
+    b2b_sub:'List your restaurant, accept online bookings, and manage live orders — all in one place.',
+    b2b_get_started:'Get Started Free →',
+    b2b_login:'Owner Login',
+    ft_owner_login:'Owner Login',
+    ft_contact:'Contact Us',
     how_eyebrow:'How it works',
     how_title:'Up and running<br>in 3 steps',
     how_sub:'Set up your restaurant in minutes. Start receiving orders today.',
@@ -4738,6 +5136,7 @@ const LP_TRANSLATIONS = {
     step3_title:'Receive live orders',
     step3_desc:'Orders appear on your kitchen screen in real time. Manage status, print bills and track daily revenue.',
     restos_eyebrow:'Live on EATLAOS',
+    restos_count_label:'restaurants online',
     restos_title:'Our Restaurants',
     restos_sub:'Click any restaurant to browse their menu and order from your table.',
     feat_eyebrow:'Platform Features',
@@ -4753,6 +5152,74 @@ const LP_TRANSLATIONS = {
     footer_tagline:'QR Restaurant Platform · Vientiane, Laos',
     contact_title:"Let's get started",
     contact_sub:"Tell us about your restaurant and we'll get back to you within 24 hours.",
+    // ── v4 BOOKING SYSTEM ──
+    cta_book:'📅 Book a Table',
+    bk_eyebrow:'Book a Table',
+    bk_step_of:'Step {n} of 5',
+    bk_pick_resto:'Choose a restaurant',
+    bk_pick_resto_sub:'Select where you would like to dine.',
+    bk_pick_date:'Choose a date',
+    bk_pick_date_sub:'Available up to 30 days ahead.',
+    bk_pick_time:'Choose a time',
+    bk_pick_time_sub:'Available time slots in 30-minute increments.',
+    bk_party:'How many people?',
+    bk_party_sub:'Including yourself.',
+    bk_min_max:'Minimum 1 · Maximum 20',
+    bk_contact:'Your details',
+    bk_contact_sub:'You can check your booking status using your phone or code.',
+    bk_name:'Full name',
+    bk_name_ph:'e.g. Sengphet Vongsa',
+    bk_phone:'Phone number',
+    bk_phone_ph:'e.g. 020 5555 1234',
+    bk_note:'Special request (optional)',
+    bk_note_ph:'Birthday, allergies, seating preferences…',
+    bk_summary_resto:'Restaurant',
+    bk_summary_date:'Date',
+    bk_summary_time:'Time',
+    bk_summary_people:'Guests',
+    bk_back:'← Back',
+    bk_next:'Next →',
+    bk_submit:'Submit Booking',
+    bk_sending:'Sending…',
+    bk_sent:'Booking submitted',
+    bk_sent_sub:'The restaurant will accept or reject your request shortly.',
+    bk_code:'Your Booking Reference',
+    bk_code_hint:'Save this code, or use your phone number to check status later.',
+    bk_check_status:'Check Status',
+    bk_close:'Close',
+    bk_already:'Already booked? Check status →',
+    bk_loading_restos:'Loading restaurants…',
+    bk_no_restos:'No restaurants available right now.',
+    bk_tap_book:'Tap to book',
+    bk_closed_day:'Closed on this day.',
+    bk_no_slots:'No slots available.',
+    bk_status_eyebrow:'Check Booking',
+    bk_status_title:'Your Bookings',
+    bk_by_phone:'By Phone',
+    bk_by_code:'By Code',
+    bk_phone_lbl:'Enter your phone number',
+    bk_code_lbl:'Enter your 6-character booking code',
+    bk_lookup:'Look up bookings',
+    bk_lookup_code:'Look up booking',
+    bk_searching:'Searching…',
+    bk_none_found:'No bookings found.',
+    bk_invalid_phone:'Please enter a valid phone number.',
+    bk_invalid_code:'Booking code must be 6 characters.',
+    bk_status_pending:'PENDING',
+    bk_status_accepted:'ACCEPTED',
+    bk_status_rejected:'REJECTED',
+    bk_status_date:'Date',
+    bk_status_time:'Time',
+    bk_status_people:'Guests',
+    bk_status_code:'Code',
+    bk_err_pick_resto:'Please select a restaurant.',
+    bk_err_pick_date:'Please select a date.',
+    bk_err_pick_slot:'Please select a time slot.',
+    bk_err_name:'Please enter your name.',
+    bk_err_phone:'Please enter a valid phone number.',
+    bk_err_submit:'Could not submit booking. Please try again.',
+    bk_err_load:'Could not load restaurants. Please try again.',
+    bk_err_lookup:'Could not look up bookings. Please try again.',
   },
   lo: {
     badge:'ລາວ · ແພລດຟອມຮ້ານອາຫານ',
@@ -4762,6 +5229,17 @@ const LP_TRANSLATIONS = {
     cta_view:'ເບິ່ງຮ້ານອາຫານ ↓',
     nav_login:'ເຂົ້າສູ່ລະບົບເຈົ້າຂອງຮ້ານ',
     nav_contact:'ຕິດຕໍ່ພວກເຮົາ →',
+    // v5.1: Customer-first nav redesign
+    nav_book:'📅 ຈອງໂຕະ',
+    nav_my_bookings:'ການຈອງຂອງຂ້ອຍ',
+    cta_book_main:'📅 ຈອງໂຕະ',
+    b2b_eyebrow:'ສຳລັບເຈົ້າຂອງຮ້ານ',
+    b2b_title:'ມີຮ້ານອາຫານບໍ?<br>ເຂົ້າຮ່ວມ EATLAOS.',
+    b2b_sub:'ລົງທະບຽນຮ້ານ, ຮັບການຈອງອອນລາຍ, ແລະ ຈັດການອໍເດີສົດ — ທັງໝົດໃນບ່ອນດຽວ.',
+    b2b_get_started:'ເລີ່ມໃຊ້ຟຣີ →',
+    b2b_login:'ເຂົ້າສູ່ລະບົບເຈົ້າຂອງຮ້ານ',
+    ft_owner_login:'ເຂົ້າສູ່ລະບົບເຈົ້າຂອງຮ້ານ',
+    ft_contact:'ຕິດຕໍ່ພວກເຮົາ',
     how_eyebrow:'ວິທີໃຊ້ງານ',
     how_title:'ພ້ອມໃຊ້ງານ<br>ພາຍໃນ 3 ຂັ້ນຕອນ',
     how_sub:'ຕັ້ງຄ່າຮ້ານຂອງທ່ານໃນໄລຍະສອງສາມນາທີ. ເລີ່ມຮັບອໍເດີໄດ້ໃນມື້ນີ້.',
@@ -4772,6 +5250,7 @@ const LP_TRANSLATIONS = {
     step3_title:'ຮັບອໍເດີສົດ',
     step3_desc:'ອໍເດີຂື້ນໜ້າຈໍຫ້ອງຄົວທັນທີ. ຈັດການສະຖານະ, ພິມໃບບິນ ແລະ ຕິດຕາມລາຍຮັບ.',
     restos_eyebrow:'ຮ້ານທີ່ໃຊ້ EATLAOS',
+    restos_count_label:'ຮ້ານອາຫານທີ່ໃຊ້ງານ',
     restos_title:'ຮ້ານອາຫານຂອງພວກເຮົາ',
     restos_sub:'ກົດທີ່ຮ້ານໃດໆ ເພື່ອເບິ່ງເມນູ ແລະ ສັ່ງອາຫານ.',
     feat_eyebrow:'ຟີເຈີຂອງແພລດຟອມ',
@@ -4785,6 +5264,76 @@ const LP_TRANSLATIONS = {
     stat_tables:'ໂຕະທີ່ໃຊ້ງານ',
     stat_themes:'ຮູບແບບ',
     footer_tagline:'ແພລດຟອມ QR ຮ້ານອາຫານ · ວຽງຈັນ, ລາວ',
+    contact_title:"ມາເລີ່ມຕົ້ນກັນເລີຍ",
+    contact_sub:"ບອກພວກເຮົາກ່ຽວກັບຮ້ານອາຫານຂອງທ່ານ ແລະ ພວກເຮົາຈະຕິດຕໍ່ກັບໃນ 24 ຊົ່ວໂມງ.",
+    // ── v4 BOOKING SYSTEM ──
+    cta_book:'📅 ຈອງໂຕະ',
+    bk_eyebrow:'ຈອງໂຕະ',
+    bk_step_of:'ຂັ້ນຕອນ {n} ຈາກ 5',
+    bk_pick_resto:'ເລືອກຮ້ານອາຫານ',
+    bk_pick_resto_sub:'ເລືອກຮ້ານທີ່ທ່ານຕ້ອງການໄປຮັບປະທານອາຫານ.',
+    bk_pick_date:'ເລືອກວັນທີ',
+    bk_pick_date_sub:'ຈອງລ່ວງໜ້າໄດ້ສູງສຸດ 30 ວັນ.',
+    bk_pick_time:'ເລືອກເວລາ',
+    bk_pick_time_sub:'ຊ່ອງເວລາທີ່ມີ ໃນລະຍະຫ່າງ 30 ນາທີ.',
+    bk_party:'ມີຈັກຄົນ?',
+    bk_party_sub:'ລວມຕົວທ່ານເອງ.',
+    bk_min_max:'ຕໍ່າສຸດ 1 · ສູງສຸດ 20',
+    bk_contact:'ຂໍ້ມູນຂອງທ່ານ',
+    bk_contact_sub:'ທ່ານສາມາດກວດສະຖານະການຈອງໄດ້ໂດຍໃຊ້ເບີໂທ ຫຼື ລະຫັດ.',
+    bk_name:'ຊື່ເຕັມ',
+    bk_name_ph:'ຕົວຢ່າງ ແສງເພັດ ວົງສາ',
+    bk_phone:'ເບີໂທລະສັບ',
+    bk_phone_ph:'ຕົວຢ່າງ 020 5555 1234',
+    bk_note:'ຄໍາຮ້ອງຂໍພິເສດ (ບໍ່ບັງຄັບ)',
+    bk_note_ph:'ວັນເກີດ, ອາການແພ້, ບ່ອນນັ່ງ…',
+    bk_summary_resto:'ຮ້ານອາຫານ',
+    bk_summary_date:'ວັນທີ',
+    bk_summary_time:'ເວລາ',
+    bk_summary_people:'ຈຳນວນຄົນ',
+    bk_back:'← ຍ້ອນກັບ',
+    bk_next:'ຕໍ່ໄປ →',
+    bk_submit:'ສົ່ງການຈອງ',
+    bk_sending:'ກຳລັງສົ່ງ…',
+    bk_sent:'ສົ່ງການຈອງສຳເລັດ',
+    bk_sent_sub:'ຮ້ານອາຫານຈະອະນຸມັດ ຫຼື ປະຕິເສດການຈອງໃນໄວໆນີ້.',
+    bk_code:'ລະຫັດການຈອງຂອງທ່ານ',
+    bk_code_hint:'ບັນທຶກລະຫັດນີ້ໄວ້ ຫຼື ໃຊ້ເບີໂທເພື່ອກວດສະຖານະໃນພາຍຫຼັງ.',
+    bk_check_status:'ກວດສະຖານະ',
+    bk_close:'ປິດ',
+    bk_already:'ຈອງແລ້ວ? ກວດສະຖານະ →',
+    bk_loading_restos:'ກຳລັງໂຫຼດຮ້ານອາຫານ…',
+    bk_no_restos:'ບໍ່ມີຮ້ານອາຫານໃນຕອນນີ້.',
+    bk_tap_book:'ກົດເພື່ອຈອງ',
+    bk_closed_day:'ຮ້ານປິດໃນວັນນີ້.',
+    bk_no_slots:'ບໍ່ມີຊ່ອງເວລາວ່າງ.',
+    bk_status_eyebrow:'ກວດການຈອງ',
+    bk_status_title:'ການຈອງຂອງທ່ານ',
+    bk_by_phone:'ດ້ວຍເບີໂທ',
+    bk_by_code:'ດ້ວຍລະຫັດ',
+    bk_phone_lbl:'ໃສ່ເບີໂທລະສັບຂອງທ່ານ',
+    bk_code_lbl:'ໃສ່ລະຫັດການຈອງ 6 ຕົວອັກສອນ',
+    bk_lookup:'ຄົ້ນຫາການຈອງ',
+    bk_lookup_code:'ຄົ້ນຫາການຈອງ',
+    bk_searching:'ກຳລັງຄົ້ນຫາ…',
+    bk_none_found:'ບໍ່ພົບການຈອງ.',
+    bk_invalid_phone:'ກະລຸນາໃສ່ເບີໂທທີ່ຖືກຕ້ອງ.',
+    bk_invalid_code:'ລະຫັດການຈອງຕ້ອງມີ 6 ຕົວອັກສອນ.',
+    bk_status_pending:'ລໍຖ້າ',
+    bk_status_accepted:'ອະນຸມັດ',
+    bk_status_rejected:'ປະຕິເສດ',
+    bk_status_date:'ວັນທີ',
+    bk_status_time:'ເວລາ',
+    bk_status_people:'ຄົນ',
+    bk_status_code:'ລະຫັດ',
+    bk_err_pick_resto:'ກະລຸນາເລືອກຮ້ານອາຫານ.',
+    bk_err_pick_date:'ກະລຸນາເລືອກວັນທີ.',
+    bk_err_pick_slot:'ກະລຸນາເລືອກຊ່ອງເວລາ.',
+    bk_err_name:'ກະລຸນາໃສ່ຊື່ຂອງທ່ານ.',
+    bk_err_phone:'ກະລຸນາໃສ່ເບີໂທທີ່ຖືກຕ້ອງ.',
+    bk_err_submit:'ບໍ່ສາມາດສົ່ງການຈອງໄດ້. ກະລຸນາລອງໃໝ່.',
+    bk_err_load:'ບໍ່ສາມາດໂຫຼດຮ້ານອາຫານ. ກະລຸນາລອງໃໝ່.',
+    bk_err_lookup:'ບໍ່ສາມາດຄົ້ນຫາການຈອງ. ກະລຸນາລອງໃໝ່.',
   },
   th: {
     badge:'ลาว · แพลตฟอร์มร้านอาหาร',
@@ -4794,6 +5343,17 @@ const LP_TRANSLATIONS = {
     cta_view:'ดูร้านอาหาร ↓',
     nav_login:'เข้าสู่ระบบเจ้าของร้าน',
     nav_contact:'ติดต่อเรา →',
+    // v5.1: Customer-first nav redesign
+    nav_book:'📅 จองโต๊ะ',
+    nav_my_bookings:'การจองของฉัน',
+    cta_book_main:'📅 จองโต๊ะ',
+    b2b_eyebrow:'สำหรับเจ้าของร้าน',
+    b2b_title:'มีร้านอาหารใช่ไหม?<br>มาร่วม EATLAOS.',
+    b2b_sub:'ลงทะเบียนร้าน รับการจองออนไลน์ และจัดการออร์เดอร์สด — ครบในที่เดียว',
+    b2b_get_started:'เริ่มใช้ฟรี →',
+    b2b_login:'เข้าสู่ระบบเจ้าของร้าน',
+    ft_owner_login:'เข้าสู่ระบบเจ้าของร้าน',
+    ft_contact:'ติดต่อเรา',
     how_eyebrow:'วิธีใช้งาน',
     how_title:'พร้อมใช้งาน<br>ใน 3 ขั้นตอน',
     how_sub:'ตั้งค่าร้านของคุณในไม่กี่นาที เริ่มรับออเดอร์ได้วันนี้เลย',
@@ -4804,6 +5364,7 @@ const LP_TRANSLATIONS = {
     step3_title:'รับออเดอร์สด',
     step3_desc:'ออเดอร์ปรากฏบนหน้าจอครัวทันที จัดการสถานะ พิมพ์บิล และติดตามรายได้',
     restos_eyebrow:'ร้านที่ใช้ EATLAOS',
+    restos_count_label:'ร้านอาหารออนไลน์',
     restos_title:'ร้านอาหารของเรา',
     restos_sub:'คลิกที่ร้านใดๆ เพื่อดูเมนูและสั่งอาหารจากโต๊ะของคุณ',
     feat_eyebrow:'ฟีเจอร์แพลตฟอร์ม',
@@ -4817,6 +5378,76 @@ const LP_TRANSLATIONS = {
     stat_tables:'โต๊ะที่ใช้งาน',
     stat_themes:'ธีม',
     footer_tagline:'แพลตฟอร์ม QR ร้านอาหาร · เวียงจันทน์ ลาว',
+    contact_title:"มาเริ่มกันเลย",
+    contact_sub:"บอกเราเกี่ยวกับร้านอาหารของคุณ แล้วเราจะติดต่อกลับภายใน 24 ชั่วโมง",
+    // ── v4 BOOKING SYSTEM ──
+    cta_book:'📅 จองโต๊ะ',
+    bk_eyebrow:'จองโต๊ะ',
+    bk_step_of:'ขั้นตอนที่ {n} จาก 5',
+    bk_pick_resto:'เลือกร้านอาหาร',
+    bk_pick_resto_sub:'เลือกร้านที่คุณต้องการรับประทานอาหาร',
+    bk_pick_date:'เลือกวันที่',
+    bk_pick_date_sub:'จองล่วงหน้าได้สูงสุด 30 วัน',
+    bk_pick_time:'เลือกเวลา',
+    bk_pick_time_sub:'ช่วงเวลาที่ว่าง ในช่วง 30 นาที',
+    bk_party:'มากี่คน?',
+    bk_party_sub:'รวมตัวคุณเอง',
+    bk_min_max:'ขั้นต่ำ 1 · สูงสุด 20',
+    bk_contact:'ข้อมูลของคุณ',
+    bk_contact_sub:'คุณสามารถตรวจสอบสถานะการจองได้โดยใช้เบอร์โทรหรือรหัส',
+    bk_name:'ชื่อ-นามสกุล',
+    bk_name_ph:'เช่น แสงเพชร วงศ์สา',
+    bk_phone:'เบอร์โทรศัพท์',
+    bk_phone_ph:'เช่น 020 5555 1234',
+    bk_note:'คำขอพิเศษ (ไม่บังคับ)',
+    bk_note_ph:'วันเกิด, อาการแพ้, ที่นั่ง…',
+    bk_summary_resto:'ร้านอาหาร',
+    bk_summary_date:'วันที่',
+    bk_summary_time:'เวลา',
+    bk_summary_people:'จำนวนคน',
+    bk_back:'← ย้อนกลับ',
+    bk_next:'ถัดไป →',
+    bk_submit:'ส่งการจอง',
+    bk_sending:'กำลังส่ง…',
+    bk_sent:'ส่งการจองเรียบร้อย',
+    bk_sent_sub:'ร้านจะอนุมัติหรือปฏิเสธการจองในไม่ช้า',
+    bk_code:'รหัสการจองของคุณ',
+    bk_code_hint:'บันทึกรหัสนี้ไว้ หรือใช้เบอร์โทรเพื่อตรวจสอบสถานะภายหลัง',
+    bk_check_status:'ตรวจสอบสถานะ',
+    bk_close:'ปิด',
+    bk_already:'จองแล้ว? ตรวจสอบสถานะ →',
+    bk_loading_restos:'กำลังโหลดร้านอาหาร…',
+    bk_no_restos:'ไม่มีร้านอาหารในขณะนี้',
+    bk_tap_book:'แตะเพื่อจอง',
+    bk_closed_day:'ร้านปิดในวันนี้',
+    bk_no_slots:'ไม่มีช่วงเวลาว่าง',
+    bk_status_eyebrow:'ตรวจสอบการจอง',
+    bk_status_title:'การจองของคุณ',
+    bk_by_phone:'ด้วยเบอร์โทร',
+    bk_by_code:'ด้วยรหัส',
+    bk_phone_lbl:'กรอกเบอร์โทรศัพท์ของคุณ',
+    bk_code_lbl:'กรอกรหัสการจอง 6 ตัวอักษร',
+    bk_lookup:'ค้นหาการจอง',
+    bk_lookup_code:'ค้นหาการจอง',
+    bk_searching:'กำลังค้นหา…',
+    bk_none_found:'ไม่พบการจอง',
+    bk_invalid_phone:'กรุณากรอกเบอร์โทรที่ถูกต้อง',
+    bk_invalid_code:'รหัสการจองต้องมี 6 ตัวอักษร',
+    bk_status_pending:'รอดำเนินการ',
+    bk_status_accepted:'อนุมัติ',
+    bk_status_rejected:'ปฏิเสธ',
+    bk_status_date:'วันที่',
+    bk_status_time:'เวลา',
+    bk_status_people:'คน',
+    bk_status_code:'รหัส',
+    bk_err_pick_resto:'กรุณาเลือกร้านอาหาร',
+    bk_err_pick_date:'กรุณาเลือกวันที่',
+    bk_err_pick_slot:'กรุณาเลือกช่วงเวลา',
+    bk_err_name:'กรุณากรอกชื่อของคุณ',
+    bk_err_phone:'กรุณากรอกเบอร์โทรที่ถูกต้อง',
+    bk_err_submit:'ไม่สามารถส่งการจองได้ กรุณาลองใหม่',
+    bk_err_load:'ไม่สามารถโหลดร้านอาหาร กรุณาลองใหม่',
+    bk_err_lookup:'ไม่สามารถค้นหาการจอง กรุณาลองใหม่',
   },
   zh: {
     badge:'老挝 · 餐厅平台',
@@ -4826,6 +5457,17 @@ const LP_TRANSLATIONS = {
     cta_view:'查看餐厅 ↓',
     nav_login:'餐厅业主登录',
     nav_contact:'联系我们 →',
+    // v5.1: Customer-first nav redesign
+    nav_book:'📅 预订餐桌',
+    nav_my_bookings:'我的预订',
+    cta_book_main:'📅 预订餐桌',
+    b2b_eyebrow:'餐厅业主专区',
+    b2b_title:'经营餐厅吗？<br>加入 EATLAOS。',
+    b2b_sub:'上架您的餐厅、接收在线预订并管理实时订单 — 一站式解决。',
+    b2b_get_started:'免费开始 →',
+    b2b_login:'餐厅业主登录',
+    ft_owner_login:'餐厅业主登录',
+    ft_contact:'联系我们',
     how_eyebrow:'使用方法',
     how_title:'3个步骤<br>即可开始运营',
     how_sub:'几分钟内完成设置，今天就开始接收订单。',
@@ -4836,6 +5478,7 @@ const LP_TRANSLATIONS = {
     step3_title:'实时接收订单',
     step3_desc:'订单实时显示在厨房屏幕上。管理状态，打印账单，追踪每日收入。',
     restos_eyebrow:'使用EATLAOS的餐厅',
+    restos_count_label:'家餐厅在线',
     restos_title:'我们的餐厅',
     restos_sub:'点击任意餐厅浏览菜单并从您的餐桌点餐。',
     feat_eyebrow:'平台功能',
@@ -4849,6 +5492,76 @@ const LP_TRANSLATIONS = {
     stat_tables:'活跃餐桌',
     stat_themes:'主题',
     footer_tagline:'二维码餐厅平台 · 万象，老挝',
+    contact_title:"开始合作",
+    contact_sub:"告诉我们您的餐厅情况，我们将在24小时内回复您。",
+    // ── v4 BOOKING SYSTEM ──
+    cta_book:'📅 预订餐桌',
+    bk_eyebrow:'预订餐桌',
+    bk_step_of:'第 {n} 步，共 5 步',
+    bk_pick_resto:'选择餐厅',
+    bk_pick_resto_sub:'选择您想用餐的餐厅。',
+    bk_pick_date:'选择日期',
+    bk_pick_date_sub:'最多可提前 30 天预订。',
+    bk_pick_time:'选择时间',
+    bk_pick_time_sub:'每 30 分钟一个时段。',
+    bk_party:'几位用餐?',
+    bk_party_sub:'包括您本人。',
+    bk_min_max:'最少 1 人 · 最多 20 人',
+    bk_contact:'您的资料',
+    bk_contact_sub:'您可以使用电话号码或预订码查询状态。',
+    bk_name:'姓名',
+    bk_name_ph:'例如：王小明',
+    bk_phone:'电话号码',
+    bk_phone_ph:'例如：020 5555 1234',
+    bk_note:'特殊要求（选填）',
+    bk_note_ph:'生日、过敏、座位偏好…',
+    bk_summary_resto:'餐厅',
+    bk_summary_date:'日期',
+    bk_summary_time:'时间',
+    bk_summary_people:'人数',
+    bk_back:'← 返回',
+    bk_next:'下一步 →',
+    bk_submit:'提交预订',
+    bk_sending:'正在发送…',
+    bk_sent:'预订已提交',
+    bk_sent_sub:'餐厅将很快确认或拒绝您的请求。',
+    bk_code:'您的预订编号',
+    bk_code_hint:'请保存此编号，或使用电话号码稍后查询状态。',
+    bk_check_status:'查看状态',
+    bk_close:'关闭',
+    bk_already:'已预订？查看状态 →',
+    bk_loading_restos:'正在加载餐厅…',
+    bk_no_restos:'目前没有可用的餐厅。',
+    bk_tap_book:'点击预订',
+    bk_closed_day:'本日休息。',
+    bk_no_slots:'没有可用时段。',
+    bk_status_eyebrow:'查看预订',
+    bk_status_title:'您的预订',
+    bk_by_phone:'通过电话',
+    bk_by_code:'通过编号',
+    bk_phone_lbl:'请输入您的电话号码',
+    bk_code_lbl:'请输入 6 位预订编号',
+    bk_lookup:'查询预订',
+    bk_lookup_code:'查询预订',
+    bk_searching:'查询中…',
+    bk_none_found:'未找到预订记录。',
+    bk_invalid_phone:'请输入有效的电话号码。',
+    bk_invalid_code:'预订编号必须为 6 位字符。',
+    bk_status_pending:'待确认',
+    bk_status_accepted:'已确认',
+    bk_status_rejected:'已拒绝',
+    bk_status_date:'日期',
+    bk_status_time:'时间',
+    bk_status_people:'人数',
+    bk_status_code:'编号',
+    bk_err_pick_resto:'请选择一家餐厅。',
+    bk_err_pick_date:'请选择日期。',
+    bk_err_pick_slot:'请选择时间段。',
+    bk_err_name:'请输入您的姓名。',
+    bk_err_phone:'请输入有效的电话号码。',
+    bk_err_submit:'无法提交预订，请重试。',
+    bk_err_load:'无法加载餐厅，请重试。',
+    bk_err_lookup:'无法查询预订，请重试。',
   },
   ko: {
     badge:'라오스 · 레스토랑 플랫폼',
@@ -4858,6 +5571,17 @@ const LP_TRANSLATIONS = {
     cta_view:'레스토랑 보기 ↓',
     nav_login:'사업자 로그인',
     nav_contact:'문의하기 →',
+    // v5.1: Customer-first nav redesign
+    nav_book:'📅 테이블 예약',
+    nav_my_bookings:'내 예약',
+    cta_book_main:'📅 테이블 예약',
+    b2b_eyebrow:'레스토랑 사업자용',
+    b2b_title:'레스토랑을 운영하시나요?<br>EATLAOS에 가입하세요.',
+    b2b_sub:'레스토랑 등록, 온라인 예약 접수, 실시간 주문 관리 — 한 곳에서 해결.',
+    b2b_get_started:'무료로 시작하기 →',
+    b2b_login:'사업자 로그인',
+    ft_owner_login:'사업자 로그인',
+    ft_contact:'문의하기',
     how_eyebrow:'사용 방법',
     how_title:'3단계로<br>바로 시작',
     how_sub:'몇 분 안에 레스토랑을 설정하고 오늘부터 주문을 받으세요.',
@@ -4868,6 +5592,7 @@ const LP_TRANSLATIONS = {
     step3_title:'실시간 주문 수신',
     step3_desc:'주문이 주방 화면에 실시간으로 표시됩니다. 상태를 관리하고 영수증을 인쇄하세요.',
     restos_eyebrow:'EATLAOS 파트너 레스토랑',
+    restos_count_label:'개 레스토랑 운영 중',
     restos_title:'우리 레스토랑',
     restos_sub:'레스토랑을 클릭하여 메뉴를 보고 테이블에서 주문하세요.',
     feat_eyebrow:'플랫폼 기능',
@@ -4881,6 +5606,76 @@ const LP_TRANSLATIONS = {
     stat_tables:'활성 테이블',
     stat_themes:'테마',
     footer_tagline:'QR 레스토랑 플랫폼 · 비엔티안, 라오스',
+    contact_title:"시작해 봅시다",
+    contact_sub:"귀하의 레스토랑에 대해 알려주시면 24시간 이내에 회신드리겠습니다.",
+    // ── v4 BOOKING SYSTEM ──
+    cta_book:'📅 테이블 예약',
+    bk_eyebrow:'테이블 예약',
+    bk_step_of:'단계 {n} / 5',
+    bk_pick_resto:'레스토랑 선택',
+    bk_pick_resto_sub:'식사하실 레스토랑을 선택하세요.',
+    bk_pick_date:'날짜 선택',
+    bk_pick_date_sub:'최대 30일 후까지 예약 가능합니다.',
+    bk_pick_time:'시간 선택',
+    bk_pick_time_sub:'30분 단위 시간대.',
+    bk_party:'몇 분이신가요?',
+    bk_party_sub:'본인 포함.',
+    bk_min_max:'최소 1명 · 최대 20명',
+    bk_contact:'연락처 정보',
+    bk_contact_sub:'전화번호 또는 예약 코드로 상태를 확인할 수 있습니다.',
+    bk_name:'성함',
+    bk_name_ph:'예: 김민수',
+    bk_phone:'전화번호',
+    bk_phone_ph:'예: 020 5555 1234',
+    bk_note:'특별 요청사항 (선택)',
+    bk_note_ph:'생일, 알레르기, 좌석 선호…',
+    bk_summary_resto:'레스토랑',
+    bk_summary_date:'날짜',
+    bk_summary_time:'시간',
+    bk_summary_people:'인원',
+    bk_back:'← 뒤로',
+    bk_next:'다음 →',
+    bk_submit:'예약 신청',
+    bk_sending:'전송 중…',
+    bk_sent:'예약 신청 완료',
+    bk_sent_sub:'레스토랑에서 곧 수락 또는 거절 처리됩니다.',
+    bk_code:'예약 참조 번호',
+    bk_code_hint:'이 코드를 저장하거나 전화번호로 추후 상태를 확인하실 수 있습니다.',
+    bk_check_status:'상태 확인',
+    bk_close:'닫기',
+    bk_already:'이미 예약하셨나요? 상태 확인 →',
+    bk_loading_restos:'레스토랑 불러오는 중…',
+    bk_no_restos:'현재 이용 가능한 레스토랑이 없습니다.',
+    bk_tap_book:'탭하여 예약',
+    bk_closed_day:'이 날은 휴무입니다.',
+    bk_no_slots:'이용 가능한 시간대가 없습니다.',
+    bk_status_eyebrow:'예약 확인',
+    bk_status_title:'나의 예약',
+    bk_by_phone:'전화번호로',
+    bk_by_code:'코드로',
+    bk_phone_lbl:'전화번호를 입력하세요',
+    bk_code_lbl:'6자리 예약 코드를 입력하세요',
+    bk_lookup:'예약 조회',
+    bk_lookup_code:'예약 조회',
+    bk_searching:'검색 중…',
+    bk_none_found:'예약을 찾을 수 없습니다.',
+    bk_invalid_phone:'유효한 전화번호를 입력하세요.',
+    bk_invalid_code:'예약 코드는 6자리여야 합니다.',
+    bk_status_pending:'대기 중',
+    bk_status_accepted:'수락됨',
+    bk_status_rejected:'거절됨',
+    bk_status_date:'날짜',
+    bk_status_time:'시간',
+    bk_status_people:'인원',
+    bk_status_code:'코드',
+    bk_err_pick_resto:'레스토랑을 선택해주세요.',
+    bk_err_pick_date:'날짜를 선택해주세요.',
+    bk_err_pick_slot:'시간대를 선택해주세요.',
+    bk_err_name:'성함을 입력해주세요.',
+    bk_err_phone:'유효한 전화번호를 입력해주세요.',
+    bk_err_submit:'예약을 신청할 수 없습니다. 다시 시도해주세요.',
+    bk_err_load:'레스토랑을 불러올 수 없습니다. 다시 시도해주세요.',
+    bk_err_lookup:'예약을 조회할 수 없습니다. 다시 시도해주세요.',
   }
 };
 
@@ -4889,6 +5684,15 @@ function applyLpTranslation(lang){
   document.querySelectorAll('[data-lp]').forEach(el=>{
     const key = el.getAttribute('data-lp');
     if(t[key] !== undefined) el.innerHTML = t[key];
+  });
+  // v4 booking system: support placeholder + aria-label translations
+  document.querySelectorAll('[data-lp-ph]').forEach(el=>{
+    const key = el.getAttribute('data-lp-ph');
+    if(t[key] !== undefined) el.placeholder = t[key];
+  });
+  document.querySelectorAll('[data-lp-aria]').forEach(el=>{
+    const key = el.getAttribute('data-lp-aria');
+    if(t[key] !== undefined) el.setAttribute('aria-label', t[key]);
   });
 }
 
@@ -4970,6 +5774,8 @@ async function loadLandingRestos(){
       try{
         active=JSON.parse(sessRestos);
         if(el_r) animateCount(el_r, active.length||0);
+    const el_rc=document.getElementById('lpRestosCount');
+    if(el_rc) animateCount(el_rc, active.length||0);
       }catch(e){}
     } else if(rCachedDate===rToday && rCachedCount>0){
       // Same day — use localStorage cache
@@ -6164,7 +6970,7 @@ function owP(panel,btn){
   document.getElementById('ow-'+panel).classList.add('on');
   document.querySelectorAll('#pg-ow .sb-item').forEach(n=>n.classList.remove('on'));
   if(btn) btn.classList.add('on');
-  const t={dashboard:'Dashboard',liveorders:'Live Orders',bills:'Table Bills',menu:'Menu Items',categories:'Categories',tables:'Tables & QR',history:'Order History',profile:'Restaurant Profile'};
+  const t={dashboard:'Dashboard',liveorders:'Live Orders',bills:'Table Bills',menu:'Menu Items',categories:'Categories',tables:'Tables & QR',history:'Order History',profile:'Restaurant Profile',bookings:'Table Bookings',hours:'Opening Hours'};
   document.getElementById('owTbar').textContent=t[panel]||panel;
   if(panel==='dashboard'){owStats();owRecentOrders();setTimeout(()=>initOwChart('rev'),100);}
   if(panel==='liveorders') renderLiveOrders();
@@ -6174,6 +6980,8 @@ function owP(panel,btn){
   if(panel==='tables') owTables();
   if(panel==='history') renderHistory();
   if(panel==='profile') owProfile().then(()=>setTimeout(()=>initEmojiPickers(),100));
+  if(panel==='bookings') loadOwnerBookings();
+  if(panel==='hours') loadOwnerHours();
 }
 
 let owFilter='today';
@@ -8672,6 +9480,682 @@ try{init();}catch(e){
   var ls=document.getElementById('loadingScreen');
   if(ls){ls.style.opacity='0';setTimeout(function(){ls.style.display='none';},400);}
 }
+
+/* ════════════════════════════════════════════════════════════════ */
+/* v4 BOOKING SYSTEM (Phase 1) — Customer + Owner + Hours          */
+/* ════════════════════════════════════════════════════════════════ */
+/* Naming: openCustBookingModal, mCustBooking, mCustBookingStatus  */
+/* Firebase nodes: bookings/{restoId}/{bookingId}, restoHours/{id} */
+/* DOES NOT touch existing owner mBooking / saveBooking            */
+/* Fully internationalised (en/lo/th/zh/ko) via LP_TRANSLATIONS    */
+/* and STAFF_T translation tables.                                 */
+/* ════════════════════════════════════════════════════════════════ */
+
+/* Translation helpers — landing-page (customer) and staff (owner) */
+function _lp(key, fallback){
+  try {
+    const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+    const t = (typeof LP_TRANSLATIONS!=='undefined' && LP_TRANSLATIONS[lng]) ? LP_TRANSLATIONS[lng] : (LP_TRANSLATIONS && LP_TRANSLATIONS.en);
+    if(t && t[key]!==undefined) return t[key];
+  } catch(e){}
+  return fallback || key;
+}
+function _ts(key, fallback){
+  try { if(typeof ts==='function'){ const v = ts(key); if(v && v!==key) return v; } } catch(e){}
+  return fallback || key;
+}
+/* Timezone-safe local YYYY-MM-DD — does NOT shift to UTC.
+   Critical: in Laos (UTC+7), Date.toISOString().slice(0,10) returns the WRONG day
+   between 17:00–23:59 local time. This helper always returns the user's local calendar date. */
+function _bkLocalISO(d){
+  d = d || new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return y + '-' + m + '-' + day;
+}
+function _lpDow(dayIdx, short){
+  // dayIdx: 0=Sun..6=Sat. short=true returns 3-letter abbreviation.
+  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  // Try Intl.DateTimeFormat for native long names (with LP locale)
+  try {
+    const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
+    const d = new Date(2024,0,7+dayIdx); // 2024-01-07 was a Sunday
+    return new Intl.DateTimeFormat(localeMap[lng]||'en-US',{weekday:short?'short':'long'}).format(d);
+  } catch(e){
+    const en = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    return en[dayIdx];
+  }
+}
+function _lpMonth(monthIdx, short){
+  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  try {
+    const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
+    const d = new Date(2024,monthIdx,1);
+    return new Intl.DateTimeFormat(localeMap[lng]||'en-US',{month:short?'short':'long'}).format(d);
+  } catch(e){
+    const en = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return en[monthIdx];
+  }
+}
+
+/* --- Booking flow state --- */
+let bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[] };
+let _bkOwnerCache = []; // owner-side cached bookings
+let _bkOwnerFilter = 'pending';
+let _bkLiveListener = null; // for sound notification
+let _bkLastBookingCount = 0;
+
+function openCustBookingModal(){
+  bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[] };
+  bkGoStep(1);
+  document.getElementById('bkPartyNum').textContent='2';
+  document.getElementById('bkName').value='';
+  document.getElementById('bkPhone').value='';
+  document.getElementById('bkNote').value='';
+  openModal('mCustBooking');
+  // Re-apply current LP language to the freshly visible modal
+  const curLang = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
+  loadBkRestaurants();
+}
+
+async function loadBkRestaurants(){
+  const list = document.getElementById('bkRestoList');
+  list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_restos','Loading restaurants…'))}</div>`;
+  try {
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    const data = await fbGet('restaurants');
+    const arr = [];
+    if(data) Object.keys(data).forEach(id=>{
+      const r = data[id];
+      if(r && r.name && r.active!==false) arr.push({id, name:r.name, icon:r.logo||r.icon||'🍽️', tag:r.tagline||r.cuisine||''});
+    });
+    bkState.allRestos = arr;
+    if(!arr.length){ list.innerHTML=`<div class="bk-empty">${escapeHtml(_lp('bk_no_restos','No restaurants available right now.'))}</div>`; return; }
+    const tapToBook = _lp('bk_tap_book','Tap to book');
+    // FIX (Bug #4): Use data-id with event delegation instead of inline onclick string
+    // interpolation. This is XSS-safe even if Firebase keys contain quotes/special chars.
+    list.innerHTML = arr.map(r=>{
+      const ic = (typeof r.icon==='string' && r.icon.length<=4) ? r.icon : '🍽️';
+      return `<div class="bk-resto-card" data-id="${escapeHtml(r.id)}">
+        <div class="bk-resto-ic">${escapeHtml(ic)}</div>
+        <div class="bk-resto-info">
+          <div class="bk-resto-name">${escapeHtml(r.name)}</div>
+          <div class="bk-resto-tag">${escapeHtml(r.tag||tapToBook)}</div>
+        </div>
+        <div class="bk-resto-arrow">→</div>
+      </div>`;
+    }).join('');
+    // Attach a single delegated click handler (idempotent — re-binding is safe)
+    list.onclick = function(ev){
+      const card = ev.target.closest('.bk-resto-card');
+      if(card && card.dataset.id) bkPickResto(card.dataset.id);
+    };
+  } catch(e){
+    console.error('bk loadRestos:',e);
+    list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_err_load','Could not load restaurants. Please try again.'))}</div>`;
+  }
+}
+
+function bkPickResto(id){
+  const r = bkState.allRestos.find(x=>x.id===id);
+  if(!r) return;
+  bkState.restoId = id;
+  bkState.restoName = r.name;
+  document.querySelectorAll('#bkRestoList .bk-resto-card').forEach(c=>c.classList.toggle('sel', c.dataset.id===id));
+  setTimeout(()=>bkGoStep(2), 220);
+}
+
+async function bkLoadHoursAndBuildDates(){
+  let h = null;
+  try { h = await fbGet('restoHours/'+bkState.restoId); } catch(e){}
+  if(!h){
+    h = {0:{open:true,from:'11:00',to:'22:00'},1:{open:true,from:'11:00',to:'22:00'},2:{open:true,from:'11:00',to:'22:00'},3:{open:true,from:'11:00',to:'22:00'},4:{open:true,from:'11:00',to:'22:00'},5:{open:true,from:'11:00',to:'22:00'},6:{open:true,from:'11:00',to:'22:00'}};
+  }
+  bkState.hours = h;
+  buildBkDateGrid();
+}
+
+function buildBkDateGrid(){
+  const grid = document.getElementById('bkDateGrid');
+  const today = new Date(); today.setHours(0,0,0,0);
+  let html = '';
+  for(let i=0; i<30; i++){
+    const d = new Date(today.getTime() + i*86400000);
+    const dow = d.getDay();
+    const dayHours = bkState.hours[dow] || bkState.hours[String(dow)];
+    const isOpen = dayHours && dayHours.open;
+    const iso = _bkLocalISO(d); // ← FIX: timezone-safe local YYYY-MM-DD
+    const cls = isOpen ? '' : 'closed';
+    const onclick = isOpen ? `onclick="bkPickDate('${iso}')"` : '';
+    html += `<div class="bk-date-card ${cls}" data-d="${iso}" ${onclick}>
+      <div class="bk-date-dow">${escapeHtml(_lpDow(dow,true))}</div>
+      <div class="bk-date-day">${d.getDate()}</div>
+      <div class="bk-date-mo">${escapeHtml(_lpMonth(d.getMonth(),true))}</div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function bkPickDate(iso){
+  bkState.date = iso;
+  document.querySelectorAll('#bkDateGrid .bk-date-card').forEach(c=>c.classList.toggle('sel', c.dataset.d===iso));
+  setTimeout(()=>bkGoStep(3), 220);
+}
+
+async function bkLoadSlotsAndBuild(){
+  let booked = [];
+  try {
+    const all = await fbGet('bookings/'+bkState.restoId);
+    if(all) Object.keys(all).forEach(k=>{
+      const b = all[k];
+      if(b && b.date===bkState.date && (b.status==='pending'||b.status==='accepted')){
+        booked.push(b.slot);
+      }
+    });
+  } catch(e){}
+  bkState.taken = booked;
+  buildBkSlotGrid();
+}
+
+function buildBkSlotGrid(){
+  const grid = document.getElementById('bkSlotGrid');
+  const d = new Date(bkState.date+'T00:00:00');
+  const dow = d.getDay();
+  const dayHours = bkState.hours[dow] || bkState.hours[String(dow)];
+  if(!dayHours || !dayHours.open){
+    grid.innerHTML = `<div class="bk-empty" style="grid-column:1/-1">${escapeHtml(_lp('bk_closed_day','Closed on this day.'))}</div>`;
+    return;
+  }
+  const [fH,fM] = dayHours.from.split(':').map(Number);
+  const [tH,tM] = dayHours.to.split(':').map(Number);
+  const startMin = fH*60+fM;
+  const endMin = tH*60+tM;
+  const now = new Date();
+  const isToday = bkState.date === _bkLocalISO(now); // ← FIX: timezone-safe comparison
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  let html = '';
+  for(let m=startMin; m<endMin; m+=30){
+    const hh = String(Math.floor(m/60)).padStart(2,'0');
+    const mm = String(m%60).padStart(2,'0');
+    const slot = hh+':'+mm;
+    const isPast = isToday && m<=nowMin+30;
+    const isTaken = bkState.taken.includes(slot) || isPast;
+    const cls = isTaken ? 'taken' : '';
+    const onclick = isTaken ? '' : `onclick="bkPickSlot('${slot}')"`;
+    html += `<div class="bk-slot ${cls}" data-s="${slot}" ${onclick}>${slot}</div>`;
+  }
+  grid.innerHTML = html || `<div class="bk-empty" style="grid-column:1/-1">${escapeHtml(_lp('bk_no_slots','No slots available.'))}</div>`;
+}
+
+function bkPickSlot(s){
+  bkState.slot = s;
+  document.querySelectorAll('#bkSlotGrid .bk-slot').forEach(c=>c.classList.toggle('sel', c.dataset.s===s));
+  setTimeout(()=>bkGoStep(4), 220);
+}
+
+function bkParty(delta){
+  let n = bkState.party + delta;
+  if(n<1) n=1; if(n>20) n=20;
+  bkState.party = n;
+  document.getElementById('bkPartyNum').textContent = n;
+}
+
+function bkGoStep(s){
+  bkState.step = s;
+  document.querySelectorAll('#mCustBooking .bk-step').forEach((el)=>{
+    el.classList.toggle('on', el.id==='bkStep'+s);
+  });
+  // Progress bar fill (steps 1-5 = 20-100%)
+  const pct = s>=6 ? 100 : (s/5)*100;
+  const bar = document.getElementById('bkProgressBar');
+  if(bar) bar.style.width = pct + '%';
+  // Step label
+  const stepTpl = _lp('bk_step_of','Step {n} of 5');
+  document.getElementById('bkProgressLbl').textContent = s<=5 ? stepTpl.replace('{n}', s) : '';
+  // Hide footer on success step
+  document.getElementById('bkActions').style.display = (s===6) ? 'none' : 'block';
+  // Submit button text on step 5
+  const nextBtn = document.getElementById('bkNextBtn');
+  if(nextBtn){
+    nextBtn.textContent = (s===5) ? _lp('bk_submit','Submit Booking') : _lp('bk_next','Next →');
+  }
+  // Step-specific loaders
+  if(s===2){ if(!bkState.hours) bkLoadHoursAndBuildDates(); else buildBkDateGrid(); }
+  if(s===3){ bkLoadSlotsAndBuild(); }
+  if(s===5){ renderBkSummary(); }
+  // Back button visibility
+  document.getElementById('bkBackBtn').style.visibility = (s>1 && s<6) ? 'visible' : 'hidden';
+}
+
+function bkBack(){
+  if(bkState.step>1) bkGoStep(bkState.step-1);
+}
+
+function bkNext(){
+  const s = bkState.step;
+  if(s===1 && !bkState.restoId){ alert(_lp('bk_err_pick_resto','Please select a restaurant.')); return; }
+  if(s===2 && !bkState.date){ alert(_lp('bk_err_pick_date','Please select a date.')); return; }
+  if(s===3 && !bkState.slot){ alert(_lp('bk_err_pick_slot','Please select a time slot.')); return; }
+  if(s===5){ submitCustBooking(); return; }
+  bkGoStep(s+1);
+}
+
+function renderBkSummary(){
+  const d = new Date(bkState.date+'T00:00:00');
+  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
+  let dateStr;
+  try {
+    dateStr = new Intl.DateTimeFormat(localeMap[lng]||'en-US',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);
+  } catch(e){
+    dateStr = `${_lpDow(d.getDay(),false)}, ${d.getDate()} ${_lpMonth(d.getMonth(),false)} ${d.getFullYear()}`;
+  }
+  const lblResto = _lp('bk_summary_resto','Restaurant');
+  const lblDate = _lp('bk_summary_date','Date');
+  const lblTime = _lp('bk_summary_time','Time');
+  const lblPpl = _lp('bk_summary_people','Guests');
+  document.getElementById('bkSummary').innerHTML = `
+    <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblResto)}</span><span class="bk-sum-val">${escapeHtml(bkState.restoName||'')}</span></div>
+    <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblDate)}</span><span class="bk-sum-val">${escapeHtml(dateStr)}</span></div>
+    <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTime)}</span><span class="bk-sum-val">${escapeHtml(bkState.slot||'')}</span></div>
+    <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblPpl)}</span><span class="bk-sum-val">${bkState.party}</span></div>`;
+}
+
+function genBookingCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = '';
+  for(let i=0; i<6; i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+
+async function submitCustBooking(){
+  const name = document.getElementById('bkName').value.trim();
+  const phone = document.getElementById('bkPhone').value.trim();
+  const note = document.getElementById('bkNote').value.trim();
+  if(!name){ alert(_lp('bk_err_name','Please enter your name.')); return; }
+  if(!phone || phone.length<6){ alert(_lp('bk_err_phone','Please enter a valid phone number.')); return; }
+  const btn = document.getElementById('bkNextBtn');
+  btn.disabled = true; btn.textContent = _lp('bk_sending','Sending…');
+  try {
+    const code = genBookingCode();
+    const booking = {
+      restoId: bkState.restoId,
+      restoName: bkState.restoName,
+      date: bkState.date,
+      slot: bkState.slot,
+      party: bkState.party,
+      name, phone, note,
+      code,
+      status: 'pending',
+      createdAt: Date.now()
+    };
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    await fbPush('bookings/'+bkState.restoId, booking);
+    document.getElementById('bkSuccessCode').textContent = code;
+    bkGoStep(6);
+  } catch(e){
+    console.error('submitCustBooking:',e);
+    alert(_lp('bk_err_submit','Could not submit booking. Please try again.'));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = _lp('bk_submit','Submit Booking');
+  }
+}
+
+/* ─── CUSTOMER STATUS CHECK ─── */
+function bsTab(which){
+  document.getElementById('bsTabPhone').classList.toggle('on', which==='phone');
+  document.getElementById('bsTabCode').classList.toggle('on', which==='code');
+  document.getElementById('bsPhoneInput').style.display = which==='phone' ? 'block' : 'none';
+  document.getElementById('bsCodeInput').style.display = which==='code' ? 'block' : 'none';
+  document.getElementById('bsResults').innerHTML = '';
+}
+
+async function bsLookup(by){
+  const results = document.getElementById('bsResults');
+  results.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_searching','Searching…'))}</div>`;
+  try {
+    // Validate input first
+    if(by==='phone'){
+      const q = document.getElementById('bsPhone').value.trim().replace(/\s+/g,'');
+      if(!q || q.length<6){
+        results.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_invalid_phone','Please enter a valid phone number.'))}</div>`;
+        return;
+      }
+    } else {
+      const q = document.getElementById('bsCode').value.trim().toUpperCase();
+      if(q.length!==6){
+        results.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_invalid_code','Booking code must be 6 characters.'))}</div>`;
+        return;
+      }
+    }
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    const all = await fbGet('bookings');
+    const found = [];
+    if(all){
+      Object.keys(all).forEach(rId=>{
+        const restoBookings = all[rId];
+        if(!restoBookings) return;
+        Object.keys(restoBookings).forEach(bId=>{
+          const b = restoBookings[bId];
+          if(!b) return;
+          if(by==='phone'){
+            const q = document.getElementById('bsPhone').value.trim().replace(/\s+/g,'');
+            const bp = (b.phone||'').replace(/\s+/g,'');
+            if(bp.includes(q) || q.includes(bp)) found.push(b);
+          } else {
+            const q = document.getElementById('bsCode').value.trim().toUpperCase();
+            if(b.code===q) found.push(b);
+          }
+        });
+      });
+    }
+    if(!found.length){
+      results.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_none_found','No bookings found.'))}</div>`;
+      return;
+    }
+    found.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+    const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
+    const lblDate = _lp('bk_status_date','Date');
+    const lblTime = _lp('bk_status_time','Time');
+    const lblPpl = _lp('bk_status_people','Guests');
+    const lblCode = _lp('bk_status_code','Code');
+    results.innerHTML = `<div class="bk-status-list">${found.map(b=>{
+      const pillClass = 'bk-pill-'+b.status;
+      const pillTxt = _lp('bk_status_'+b.status, b.status.toUpperCase());
+      let dStr = b.date || '';
+      try {
+        const d = new Date(b.date+'T00:00:00');
+        if(!isNaN(d.getTime())){
+          dStr = new Intl.DateTimeFormat(localeMap[lng]||'en-US',{weekday:'short',day:'numeric',month:'short'}).format(d);
+        }
+      } catch(e){}
+      return `<div class="bk-status-card">
+        <div class="bk-status-h">
+          <div class="bk-status-resto">${escapeHtml(b.restoName||'Restaurant')}</div>
+          <div class="bk-status-pill ${pillClass}">${escapeHtml(pillTxt)}</div>
+        </div>
+        <div class="bk-status-info">
+          <div><b>${escapeHtml(lblDate)}</b>${escapeHtml(dStr)}</div>
+          <div><b>${escapeHtml(lblTime)}</b>${escapeHtml(b.slot||'')}</div>
+          <div><b>${escapeHtml(lblPpl)}</b>${b.party||1}</div>
+          <div><b>${escapeHtml(lblCode)}</b><span style="font-family:monospace;letter-spacing:2px">${escapeHtml(b.code||'')}</span></div>
+        </div>
+        ${b.note?`<div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.55);font-style:italic">"${escapeHtml(b.note)}"</div>`:''}
+      </div>`;
+    }).join('')}</div>`;
+  } catch(e){
+    console.error('bsLookup:',e);
+    results.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_err_lookup','Could not look up bookings. Please try again.'))}</div>`;
+  }
+}
+
+/* ─── OWNER: BOOKINGS PANEL ─── */
+async function loadOwnerBookings(){
+  const body = document.getElementById('ow-bookingsbody');
+  body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_loading','Loading bookings…'))}</div>`;
+  if(typeof restoId==='undefined' || !restoId){
+    body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_no_bookings','No bookings.'))}</div>`;
+    return;
+  }
+  try {
+    const data = await fbGet('bookings/'+restoId);
+    const arr = [];
+    if(data) Object.keys(data).forEach(k=>{ arr.push({id:k, ...data[k]}); });
+    arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    _bkOwnerCache = arr;
+    renderOwnerBookings();
+    setupOwnerBookingListener();
+  } catch(e){
+    console.error('loadOwnerBookings:',e);
+    body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_no_bookings','Could not load bookings.'))}</div>`;
+  }
+}
+
+function setBookingFilter(f, btn){
+  _bkOwnerFilter = f;
+  document.querySelectorAll('[id^="bkFBtn-"]').forEach(b=>b.classList.remove('btn-gold'));
+  (btn||document.getElementById('bkFBtn-'+f))?.classList.add('btn-gold');
+  renderOwnerBookings();
+}
+
+function renderOwnerBookings(){
+  const body = document.getElementById('ow-bookingsbody');
+  const filtered = _bkOwnerFilter==='all' ? _bkOwnerCache : _bkOwnerCache.filter(b=>b.status===_bkOwnerFilter);
+  if(!filtered.length){
+    body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_no_bookings','No bookings in this category.'))}</div>`;
+    // Update badge
+    const pendingCount = _bkOwnerCache.filter(b=>b.status==='pending').length;
+    const badge = document.getElementById('owBookBadge');
+    if(badge){
+      if(pendingCount>0){ badge.style.display=''; badge.textContent = pendingCount; }
+      else { badge.style.display='none'; }
+    }
+    return;
+  }
+  const lng = (typeof lang!=='undefined') ? lang : ((typeof localStorage!=='undefined' && localStorage.getItem('el_lang')) || 'en');
+  const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
+  const lblDate = _ts('bk_date_label','Date');
+  const lblTime = _ts('bk_time_label','Time');
+  const lblParty = _ts('bk_party_label','Party');
+  const lblAccept = _ts('bk_accept','✅ Accept');
+  const lblReject = _ts('bk_reject','❌ Reject');
+  body.innerHTML = filtered.map(b=>{
+    let dStr = b.date || '';
+    try {
+      const d = new Date(b.date+'T00:00:00');
+      if(!isNaN(d.getTime())){
+        dStr = new Intl.DateTimeFormat(localeMap[lng]||'en-US',{weekday:'long',day:'numeric',month:'short',year:'numeric'}).format(d);
+      }
+    } catch(e){}
+    let created = '';
+    if(b.createdAt){
+      try { created = new Intl.DateTimeFormat(localeMap[lng]||'en-US',{dateStyle:'short',timeStyle:'short'}).format(new Date(b.createdAt)); }
+      catch(e){ created = new Date(b.createdAt).toLocaleString(); }
+    }
+    const pillClass = 'bk-pill-'+b.status;
+    const pillTxt = _ts('bk_'+b.status, (b.status||'').toUpperCase());    let actions = '';
+    if(b.status==='pending'){
+      // FIX (Bug #4): Use data-id with delegation for XSS safety on booking IDs
+      actions = `<div class="ob-card-actions">
+        <button class="btn btn-sm" data-bk-action="accept" data-bk-id="${escapeHtml(b.id)}" style="background:#2e7d32;color:#fff;border-color:#2e7d32">${escapeHtml(lblAccept)}</button>
+        <button class="btn btn-sm" data-bk-action="reject" data-bk-id="${escapeHtml(b.id)}" style="background:#c62828;color:#fff;border-color:#c62828">${escapeHtml(lblReject)}</button>
+      </div>`;
+    }
+    return `<div class="ob-card">
+      <div class="ob-card-h">
+        <div>
+          <div class="ob-card-name">${escapeHtml(b.name||'Guest')} <span class="ob-pill ${pillClass}">${escapeHtml(pillTxt)}</span></div>
+          <div class="ob-card-when">📞 ${escapeHtml(b.phone||'-')} · <span style="font-family:monospace;letter-spacing:1px">${escapeHtml(b.code||'-')}</span></div>
+        </div>
+        <div style="text-align:right;font-size:10px;color:var(--s-muted);font-weight:500">${escapeHtml(created)}</div>
+      </div>
+      <div class="ob-card-grid">
+        <div><b>${escapeHtml(lblDate)}</b>${escapeHtml(dStr)}</div>
+        <div><b>${escapeHtml(lblTime)}</b>${escapeHtml(b.slot||'-')}</div>
+        <div><b>${escapeHtml(lblParty)}</b>${b.party||1}</div>
+      </div>
+      ${b.note?`<div style="margin-top:10px;font-size:12px;color:var(--s-muted);font-style:italic">📝 "${escapeHtml(b.note)}"</div>`:''}
+      ${actions}
+    </div>`;
+  }).join('');
+  // FIX (Bug #4): Delegated click handler — XSS-safe even if booking IDs contain special chars
+  body.onclick = function(ev){
+    const btn = ev.target.closest('button[data-bk-action]');
+    if(!btn) return;
+    const action = btn.dataset.bkAction;
+    const id = btn.dataset.bkId;
+    if(!id) return;
+    if(action==='accept') acceptOwnerBooking(id);
+    else if(action==='reject') rejectOwnerBooking(id);
+  };
+  const pendingCount = _bkOwnerCache.filter(b=>b.status==='pending').length;
+  const badge = document.getElementById('owBookBadge');
+  if(badge){
+    if(pendingCount>0){ badge.style.display=''; badge.textContent = pendingCount; }
+    else { badge.style.display='none'; }
+  }
+}
+
+async function acceptOwnerBooking(id){
+  if(!confirm(_ts('bk_confirm_accept','Accept this booking?'))) return;
+  try {
+    await fbSet('bookings/'+restoId+'/'+id+'/status','accepted');
+    await fbSet('bookings/'+restoId+'/'+id+'/respondedAt',Date.now());
+    loadOwnerBookings();
+  } catch(e){ console.error(e); alert(_ts('bk_err_accept','Could not accept booking.')); }
+}
+
+async function rejectOwnerBooking(id){
+  if(!confirm(_ts('bk_confirm_reject','Reject this booking?'))) return;
+  try {
+    await fbSet('bookings/'+restoId+'/'+id+'/status','rejected');
+    await fbSet('bookings/'+restoId+'/'+id+'/respondedAt',Date.now());
+    loadOwnerBookings();
+  } catch(e){ console.error(e); alert(_ts('bk_err_reject','Could not reject booking.')); }
+}
+
+/* Owner live listener: sound + badge when new pending bookings arrive */
+function setupOwnerBookingListener(){
+  if(_bkLiveListener || typeof db==='undefined' || !db || !restoId) return;
+  try {
+    const ref = db.ref('bookings/'+restoId);
+    if(!ref) return;
+    let _bkInitialFire = true; // ← FIX: skip sound on first snapshot (existing pendings)
+    ref.on('value', snap=>{
+      const v = snap.val() || {};
+      const arr = Object.keys(v).map(k=>({id:k, ...v[k]}));
+      const pending = arr.filter(b=>b.status==='pending').length;
+      _bkOwnerCache = arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+      const isOnPanel = document.getElementById('ow-bookings')?.classList.contains('on');
+      if(isOnPanel) renderOwnerBookings();
+      const badge = document.getElementById('owBookBadge');
+      if(badge){
+        if(pending>0){ badge.style.display=''; badge.textContent=pending; }
+        else { badge.style.display='none'; }
+      }
+      // Sound only fires for genuinely new bookings (not the initial snapshot)
+      if(!_bkInitialFire && pending > _bkLastBookingCount){
+        playBookingSound();
+        try {
+          if('Notification' in window && Notification.permission==='granted'){
+            new Notification(_ts('bk_new_booking_title','New booking request'),{
+              body: _ts('bk_new_booking_body','You have a new table booking pending.'),
+              icon:'/favicon.ico'
+            });
+          }
+        } catch(e){}
+      }
+      _bkLastBookingCount = pending;
+      _bkInitialFire = false;
+    });
+    _bkLiveListener = true;
+    try { if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); } catch(e){}
+  } catch(e){ console.error('booking listener:',e); }
+}
+
+function playBookingSound(){
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime+0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.4);
+    osc.start();
+    osc.stop(ctx.currentTime+0.4);
+    setTimeout(()=>{
+      const o2 = ctx.createOscillator(); const g2 = ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination);
+      o2.frequency.value = 1100;
+      g2.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime+0.01);
+      g2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.4);
+      o2.start(); o2.stop(ctx.currentTime+0.4);
+    }, 180);
+  } catch(e){}
+}
+
+/* ─── OWNER: OPENING HOURS PANEL ─── */
+async function loadOwnerHours(){
+  const body = document.getElementById('ow-hoursbody');
+  body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_loading','Loading…'))}</div>`;
+  if(typeof restoId==='undefined' || !restoId){
+    body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_no_bookings','No restaurant context.'))}</div>`;
+    return;
+  }
+  let h = null;
+  try { h = await fbGet('restoHours/'+restoId); } catch(e){}
+  if(!h){
+    h = {0:{open:true,from:'11:00',to:'22:00'},1:{open:true,from:'11:00',to:'22:00'},2:{open:true,from:'11:00',to:'22:00'},3:{open:true,from:'11:00',to:'22:00'},4:{open:true,from:'11:00',to:'22:00'},5:{open:true,from:'11:00',to:'22:00'},6:{open:true,from:'11:00',to:'22:00'}};
+  }
+  const dayKeys = ['bk_day_sun','bk_day_mon','bk_day_tue','bk_day_wed','bk_day_thu','bk_day_fri','bk_day_sat'];
+  const dayDefaults = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const lblOpen = _ts('bk_open','Open');
+  const lblTo = _ts('bk_to','to');
+  const lblClosed = _ts('bk_closed_all_day','Closed all day');
+  let html = '';
+  for(let i=0; i<7; i++){
+    const day = h[i] || h[String(i)] || {open:false, from:'11:00', to:'22:00'};
+    const dayName = _ts(dayKeys[i], dayDefaults[i]);
+    html += `<div class="oh-day" data-dow="${i}">
+      <div class="oh-day-name">${escapeHtml(dayName)}</div>
+      <label class="oh-day-toggle">
+        <input type="checkbox" ${day.open?'checked':''} onchange="ohToggle(${i}, this.checked)">
+        <span style="font-size:12px">${escapeHtml(lblOpen)}</span>
+      </label>
+      <div id="ohRow-${i}" style="display:${day.open?'flex':'none'};align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap">
+        <input type="time" id="ohFrom-${i}" value="${day.from||'11:00'}" step="1800">
+        <span class="oh-day-sep">${escapeHtml(lblTo)}</span>
+        <input type="time" id="ohTo-${i}" value="${day.to||'22:00'}" step="1800">
+      </div>
+      <div id="ohClosed-${i}" class="oh-closed" style="display:${day.open?'none':'block'};margin-left:auto">${escapeHtml(lblClosed)}</div>
+    </div>`;
+  }
+  body.innerHTML = html;
+}
+
+function ohToggle(i, checked){
+  document.getElementById('ohRow-'+i).style.display = checked ? 'flex' : 'none';
+  document.getElementById('ohClosed-'+i).style.display = checked ? 'none' : 'block';
+}
+
+async function saveOwnerHours(){
+  if(typeof restoId==='undefined' || !restoId){
+    alert(_ts('bk_no_bookings','No restaurant context.'));
+    return;
+  }
+  const out = {};
+  const errTpl = _ts('bk_err_time_order','Day {d}: opening time must be before closing time.');
+  for(let i=0; i<7; i++){
+    const cb = document.querySelector(`.oh-day[data-dow="${i}"] input[type="checkbox"]`);
+    const open = !!(cb && cb.checked);
+    const from = document.getElementById('ohFrom-'+i)?.value || '11:00';
+    const to = document.getElementById('ohTo-'+i)?.value || '22:00';
+    if(open && from>=to){ alert(errTpl.replace('{d}', i+1)); return; }
+    out[i] = { open, from, to };
+  }
+  try {
+    await fbSet('restoHours/'+restoId, out);
+    alert(_ts('bk_hours_saved','✅ Opening hours saved.'));
+  } catch(e){
+    console.error(e);
+    alert(_ts('bk_err_save_hours','Could not save hours.'));
+  }
+}
+
+/* Helper: HTML escape (in case not already defined globally) */
+if(typeof escapeHtml!=='function'){
+  window.escapeHtml = function(s){
+    if(s==null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  };
+}
 </script>
 <!-- BOOKING MODAL -->
 <div class="modal-ov" id="mBooking">
@@ -8773,6 +10257,122 @@ try{init();}catch(e){
       </div>
       <button onclick="submitContact()" style="height:50px;background:#c8973a;color:#000;font-size:15px;font-weight:700;border-radius:8px;border:none;cursor:pointer;font-family:var(--fb);transition:all .2s;letter-spacing:.3px;margin-top:4px;" onmouseover="this.style.background='#e0b55a'" onmouseout="this.style.background='#c8973a'">Send Message →</button>
       <div id="cContactStatus" style="text-align:center;font-size:13px;color:rgba(255,255,255,.4);display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- v4 BOOKING SYSTEM — Customer Booking Modal -->
+<!-- ════════════════════════════════════════════ -->
+<div id="mCustBooking" class="modal-ov" onclick="if(event.target===this)closeModal('mCustBooking')">
+  <div class="bkm-shell">
+    <!-- Progress bar at top -->
+    <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
+    <div class="bkm-head">
+      <div>
+        <div class="bkm-eyebrow" data-lp="bk_eyebrow">Book a Table</div>
+        <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 5</div>
+      </div>
+      <button class="bkm-x" onclick="closeModal('mCustBooking')" aria-label="Close">×</button>
+    </div>
+    <div class="bk-modal-body">
+      <!-- STEP 1: PICK RESTAURANT -->
+      <div class="bk-step on" id="bkStep1">
+        <div class="bk-step-h" data-lp="bk_pick_resto">Choose a restaurant</div>
+        <div class="bk-step-sub" data-lp="bk_pick_resto_sub">Select where you would like to dine.</div>
+        <div class="bk-resto-list" id="bkRestoList"><div class="bk-empty" data-lp="bk_loading_restos">Loading restaurants…</div></div>
+      </div>
+      <!-- STEP 2: PICK DATE -->
+      <div class="bk-step" id="bkStep2">
+        <div class="bk-step-h" data-lp="bk_pick_date">Choose a date</div>
+        <div class="bk-step-sub" data-lp="bk_pick_date_sub">Available up to 30 days ahead.</div>
+        <div class="bk-date-grid" id="bkDateGrid"></div>
+      </div>
+      <!-- STEP 3: PICK TIME -->
+      <div class="bk-step" id="bkStep3">
+        <div class="bk-step-h" data-lp="bk_pick_time">Choose a time</div>
+        <div class="bk-step-sub" data-lp="bk_pick_time_sub">Available time slots in 30-minute increments.</div>
+        <div class="bk-slot-grid" id="bkSlotGrid"></div>
+      </div>
+      <!-- STEP 4: PARTY SIZE -->
+      <div class="bk-step" id="bkStep4">
+        <div class="bk-step-h" data-lp="bk_party">How many people?</div>
+        <div class="bk-step-sub" data-lp="bk_party_sub">Including yourself.</div>
+        <div class="bk-party">
+          <button class="bk-party-btn" onclick="bkParty(-1)" aria-label="Decrease">−</button>
+          <div class="bk-party-num" id="bkPartyNum">2</div>
+          <button class="bk-party-btn" onclick="bkParty(1)" aria-label="Increase">+</button>
+        </div>
+        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px" data-lp="bk_min_max">Minimum 1 · Maximum 20</div>
+      </div>
+      <!-- STEP 5: CONTACT INFO + CONFIRM -->
+      <div class="bk-step" id="bkStep5">
+        <div class="bk-step-h" data-lp="bk_contact">Your details</div>
+        <div class="bk-step-sub" data-lp="bk_contact_sub">You can check your booking status using your phone or code.</div>
+        <div class="bk-summary" id="bkSummary"></div>
+        <span class="bk-label" data-lp="bk_name">Full name</span>
+        <input type="text" id="bkName" class="bk-input" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
+        <span class="bk-label" data-lp="bk_phone">Phone number</span>
+        <input type="tel" id="bkPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel">
+        <span class="bk-label" data-lp="bk_note">Special request (optional)</span>
+        <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences…" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:60px"></textarea>
+      </div>
+      <!-- SUCCESS -->
+      <div class="bk-step" id="bkStep6">
+        <div class="bk-success">
+          <div class="bk-success-ic">✅</div>
+          <div class="bk-step-h" style="margin-bottom:4px" data-lp="bk_sent">Booking submitted</div>
+          <div class="bk-step-sub" data-lp="bk_sent_sub">The restaurant will accept or reject your request shortly.</div>
+          <div class="bk-code-box">
+            <div class="bk-code-lbl" data-lp="bk_code">Your Booking Reference</div>
+            <div class="bk-code-val" id="bkSuccessCode">——————</div>
+            <div class="bk-code-hint" data-lp="bk_code_hint">Save this code, or use your phone number to check status later.</div>
+          </div>
+          <button class="bk-btn bk-btn-next" style="width:100%" onclick="closeModal('mCustBooking');setTimeout(()=>openModal('mCustBookingStatus'),200)" data-lp="bk_check_status">Check Status</button>
+          <button class="bk-link" style="margin-top:14px" onclick="closeModal('mCustBooking')" data-lp="bk_close">Close</button>
+        </div>
+      </div>
+    </div>
+    <div id="bkActions" class="bkm-foot">
+      <div class="bk-actions">
+        <button class="bk-btn bk-btn-back" id="bkBackBtn" onclick="bkBack()" data-lp="bk_back">← Back</button>
+        <button class="bk-btn bk-btn-next" id="bkNextBtn" onclick="bkNext()" data-lp="bk_next">Next →</button>
+      </div>
+      <div style="text-align:center;margin-top:10px">
+        <button class="bk-link" onclick="closeModal('mCustBooking');setTimeout(()=>openModal('mCustBookingStatus'),200)" data-lp="bk_already">Already booked? Check status →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- v4 BOOKING SYSTEM — Customer Status Check    -->
+<!-- ════════════════════════════════════════════ -->
+<div id="mCustBookingStatus" class="modal-ov" onclick="if(event.target===this)closeModal('mCustBookingStatus')">
+  <div class="bkm-shell" style="max-width:480px">
+    <div class="bkm-head">
+      <div>
+        <div class="bkm-eyebrow" data-lp="bk_status_eyebrow">Check Booking</div>
+        <div class="bkm-title" data-lp="bk_status_title">Your Bookings</div>
+      </div>
+      <button class="bkm-x" onclick="closeModal('mCustBookingStatus')" aria-label="Close">×</button>
+    </div>
+    <div class="bk-modal-body">
+      <div class="bk-tabs">
+        <button class="bk-tab on" id="bsTabPhone" onclick="bsTab('phone')" data-lp="bk_by_phone">By Phone</button>
+        <button class="bk-tab" id="bsTabCode" onclick="bsTab('code')" data-lp="bk_by_code">By Code</button>
+      </div>
+      <div id="bsPhoneInput">
+        <span class="bk-label" data-lp="bk_phone_lbl">Enter your phone number</span>
+        <input type="tel" id="bsPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel">
+        <button class="bk-btn bk-btn-next" style="width:100%" onclick="bsLookup('phone')" data-lp="bk_lookup">Look up bookings</button>
+      </div>
+      <div id="bsCodeInput" style="display:none">
+        <span class="bk-label" data-lp="bk_code_lbl">Enter your 6-character booking code</span>
+        <input type="text" id="bsCode" class="bk-input" placeholder="ABC123" maxlength="6" style="font-family:'Courier New',monospace;letter-spacing:4px;text-align:center;font-size:18px;font-weight:700;text-transform:uppercase">
+        <button class="bk-btn bk-btn-next" style="width:100%" onclick="bsLookup('code')" data-lp="bk_lookup_code">Look up booking</button>
+      </div>
+      <div id="bsResults" style="margin-top:18px"></div>
     </div>
   </div>
 </div>
