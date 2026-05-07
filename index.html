@@ -2375,7 +2375,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-viewer-svg{width:100%;height:auto;display:block;max-height:60vh;}
 .fp-vw-el-shape{transition:filter .25s,opacity .25s;}
 .fp-vw-table{cursor:pointer;}
-.fp-vw-table.available .fp-vw-el-shape{fill:#c8973a;stroke:#f5c976;stroke-width:2.5;animation:fpPulse 1.6s ease-in-out infinite;}
+.fp-vw-table.available .fp-vw-el-shape{fill:#c8973a;stroke:#f5c976;stroke-width:3.5;animation:fpPulse 1.6s ease-in-out infinite;}
 @keyframes fpPulse{0%,100%{filter:drop-shadow(0 0 6px rgba(200,151,58,.55));opacity:1;}50%{filter:drop-shadow(0 0 14px rgba(245,201,118,.95));opacity:.95;}}
 .fp-vw-table.booked .fp-vw-el-shape{fill:rgba(220,53,69,.22);stroke:rgba(220,53,69,.5);stroke-width:1;}
 .fp-vw-table.locked .fp-vw-el-shape{fill:rgba(255,193,7,.2);stroke:rgba(255,193,7,.55);stroke-width:1;}
@@ -2383,7 +2383,9 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
 .fp-vw-table.booked,.fp-vw-table.locked{opacity:.5;}
 .fp-vw-fixed .fp-vw-el-shape{opacity:.45;}
-.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:18px;font-weight:900;fill:#1a1a1a;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:28px;font-weight:900;fill:#1a1a1a;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+.fp-vw-hit{cursor:pointer;}
+.fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
 .fp-vw-table.selected .fp-vw-tnum{fill:#000;}
 .fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.4);}
 .fp-vw-label{font-family:sans-serif;font-size:10px;font-weight:600;fill:rgba(255,255,255,.55);pointer-events:none;text-anchor:middle;dominant-baseline:central;}
@@ -10997,6 +10999,35 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   const bg = plan.bgColor || '#0f0f0f';
   const tableMap = {};
   tables.forEach(t => { tableMap[t.id] = t; });
+  // ─── v6.0: AUTO-FIT — compute bounding box of all placed elements ───
+  // This makes tables much bigger on small screens because we crop empty canvas space.
+  let minX = W, minY = H, maxX = 0, maxY = 0;
+  plan.elements.forEach(el => {
+    if(el.kind === 'wall-line'){
+      minX = Math.min(minX, el.x1, el.x2);
+      maxX = Math.max(maxX, el.x1, el.x2);
+      minY = Math.min(minY, el.y1, el.y2);
+      maxY = Math.max(maxY, el.y1, el.y2);
+    } else {
+      minX = Math.min(minX, el.x);
+      maxX = Math.max(maxX, el.x + (el.w || 0));
+      minY = Math.min(minY, el.y);
+      maxY = Math.max(maxY, el.y + (el.h || 0));
+    }
+  });
+  // Add padding so elements aren't flush with edges
+  const PAD = 60;
+  let vbX = Math.max(0, minX - PAD);
+  let vbY = Math.max(0, minY - PAD);
+  let vbX2 = Math.min(W, maxX + PAD);
+  let vbY2 = Math.min(H, maxY + PAD);
+  let vbW = vbX2 - vbX;
+  let vbH = vbY2 - vbY;
+  // Safety: if elements are too tightly packed, fall back to whole canvas
+  if(vbW < 100 || vbH < 100){
+    vbX = 0; vbY = 0; vbW = W; vbH = H;
+  }
+  // ─── End auto-fit ───
   let svgInner = `<defs>
     <pattern id="fpVwBrick" width="24" height="12" patternUnits="userSpaceOnUse">
       <rect width="24" height="12" fill="#5e5e5e"/>
@@ -11005,7 +11036,8 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
     </pattern>
   </defs>`;
-  svgInner += `<rect width="${W}" height="${H}" fill="${_fpEsc(bg)}"/>`;
+  // Background fills only the visible cropped area (not the full canvas)
+  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${_fpEsc(bg)}"/>`;
   const fixed = []; const tableEls = []; const walls = [];
   plan.elements.forEach(el => {
     const isTable = el.kind && el.kind.indexOf('table') === 0;
@@ -11037,7 +11069,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       svgInner += `<rect class="fp-vw-wall fp-vw-wall-block" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="url(#fpVwBrick)"/>`;
     }
   });
-  // Render tables on top
+  // Render tables on top — v6.0: invisible bigger hit-area for easier tapping
   tableEls.forEach(el => {
     if(!el.tableId) return;
     const t = tableMap[el.tableId];
@@ -11048,16 +11080,21 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     else if(lockedTableIds && lockedTableIds.has(el.tableId)) stateClass = 'locked';
     if(selectedTableId === el.tableId) stateClass = 'selected';
     let shape;
+    let hitArea;
     if(el.kind === 'table-round'){
       shape = `<ellipse class="fp-vw-el-shape" cx="${cx}" cy="${cy}" rx="${el.w/2}" ry="${el.h/2}"/>`;
+      // Invisible hit area — 30% bigger than visible shape, transparent
+      hitArea = `<ellipse class="fp-vw-hit" cx="${cx}" cy="${cy}" rx="${el.w/2 + 18}" ry="${el.h/2 + 18}" fill="transparent"/>`;
     } else {
       const rx = (el.kind === 'table-square' || el.kind === 'table-rect') ? 6 : 3;
       shape = `<rect class="fp-vw-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="${rx}"/>`;
+      hitArea = `<rect class="fp-vw-hit" x="${el.x - 18}" y="${el.y - 18}" width="${el.w + 36}" height="${el.h + 36}" rx="${rx}" fill="transparent"/>`;
     }
     const num = t.num || '';
-    svgInner += `<g class="fp-vw-table ${stateClass}" data-tid="${_fpEsc(el.tableId)}">${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text></g>`;
+    // hitArea first so visible shape sits on top (but hit area still catches clicks via parent <g>)
+    svgInner += `<g class="fp-vw-table ${stateClass}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text></g>`;
   });
-  return `<svg class="fp-viewer-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
+  return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
 
 
