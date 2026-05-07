@@ -9564,7 +9564,7 @@ async function loadBkRestaurants(){
   const list = document.getElementById('bkRestoList');
   list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_restos','Loading restaurants…'))}</div>`;
   try {
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    // FIX: fbGet uses REST, no SDK load needed (avoids hang on slow networks)
     const data = await fbGet('restaurants');
     const arr = [];
     if(data) Object.keys(data).forEach(id=>{
@@ -9791,8 +9791,13 @@ async function submitCustBooking(){
       status: 'pending',
       createdAt: Date.now()
     };
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
-    await fbPush('bookings/'+bkState.restoId, booking);
+    // FIX: Use REST API directly via fbPush (which falls back when db is null).
+    // Do NOT await loadFirebaseSDK — it can hang forever on slow networks/ad-blockers,
+    // leaving the button stuck on "Sending…". REST works without SDK.
+    const result = await fbPush('bookings/'+bkState.restoId, booking);
+    if(!result){
+      throw new Error('Booking write returned null');
+    }
     document.getElementById('bkSuccessCode').textContent = code;
     bkGoStep(6);
   } catch(e){
@@ -9831,7 +9836,7 @@ async function bsLookup(by){
         return;
       }
     }
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    // FIX: fbGet uses REST, no SDK load needed
     const all = await fbGet('bookings');
     const found = [];
     if(all){
