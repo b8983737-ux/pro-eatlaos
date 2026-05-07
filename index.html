@@ -2260,6 +2260,80 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-table-card.booked .bk-table-status{color:rgba(220,53,69,.85);}
 .bk-table-card.locked .bk-table-status{color:rgba(255,193,7,.9);}
 
+/* ═══ v5.5 FLOOR PLAN EDITOR & VIEWER ═══ */
+.fp-modal{display:none;}
+.fp-modal.open{display:flex;align-items:center;justify-content:center;}
+.fp-shell{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:14px;width:96vw;max-width:1400px;height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8);}
+.fp-head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);}
+.fp-title{font-family:var(--ff,inherit);font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.fp-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px;}
+.fp-head-acts{display:flex;gap:8px;}
+.fp-body{flex:1;display:grid;grid-template-columns:200px 1fr 240px;gap:0;overflow:hidden;min-height:0;}
+.fp-toolbox{background:#0d0d0d;border-right:1px solid rgba(255,255,255,.06);overflow-y:auto;padding:14px 12px;}
+.fp-toolbox-section{margin-bottom:18px;}
+.fp-toolbox-h{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px;}
+.fp-tool{display:flex;align-items:center;gap:10px;padding:10px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:6px;margin-bottom:6px;cursor:grab;transition:all .15s;user-select:none;}
+.fp-tool:hover{background:rgba(200,151,58,.08);border-color:rgba(200,151,58,.35);transform:translateX(2px);}
+.fp-tool:active{cursor:grabbing;}
+.fp-tool.dragging{opacity:.5;}
+.fp-tool-ic{width:24px;height:24px;flex-shrink:0;}
+.fp-tool-lbl{font-size:12px;color:rgba(255,255,255,.85);font-weight:600;}
+.fp-toolbox-help{margin-top:14px;padding:10px;background:rgba(200,151,58,.05);border:1px solid rgba(200,151,58,.15);border-radius:6px;font-size:10px;color:rgba(255,255,255,.55);line-height:1.7;}
+.fp-canvas-wrap{background:#050505;display:flex;align-items:center;justify-content:center;overflow:auto;position:relative;padding:20px;}
+#fpCanvas{width:100%;height:100%;max-width:1000px;max-height:700px;background:#0f0f0f;border:1px solid rgba(255,255,255,.05);border-radius:6px;cursor:default;}
+#fpCanvas.drop-active{outline:2px dashed rgba(200,151,58,.6);outline-offset:-4px;}
+.fp-el{cursor:move;}
+.fp-el.selected .fp-el-shape{filter:drop-shadow(0 0 6px rgba(200,151,58,.7));}
+.fp-el-shape{transition:filter .15s;}
+.fp-el-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;fill:rgba(255,255,255,.85);pointer-events:none;text-anchor:middle;dominant-baseline:central;}
+.fp-el-tnum{font-family:var(--ff,'Plus Jakarta Sans',sans-serif);font-size:18px;font-weight:900;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+.fp-handle{fill:#c8973a;stroke:#fff;stroke-width:1;cursor:nwse-resize;}
+.fp-handle.h-n,.fp-handle.h-s{cursor:ns-resize;}
+.fp-handle.h-e,.fp-handle.h-w{cursor:ew-resize;}
+.fp-handle.h-ne,.fp-handle.h-sw{cursor:nesw-resize;}
+.fp-props{background:#0d0d0d;border-left:1px solid rgba(255,255,255,.06);overflow-y:auto;padding:14px 14px;}
+.fp-props-empty{font-size:12px;color:rgba(255,255,255,.45);text-align:center;padding:30px 12px;line-height:1.6;}
+.fp-props-h{font-size:13px;font-weight:700;color:#c8973a;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06);text-transform:capitalize;}
+.fp-props-row{margin-bottom:10px;}
+.fp-props-row label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px;}
+.fp-props-row input,.fp-props-row select{width:100%;padding:8px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:5px;color:#fff;font-family:inherit;font-size:13px;outline:none;transition:border-color .15s;}
+.fp-props-row input:focus,.fp-props-row select:focus{border-color:rgba(200,151,58,.5);}
+.fp-props-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.fp-props-grid label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px;}
+.fp-props-grid input{width:100%;padding:6px 8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:#fff;font-size:12px;outline:none;}
+.fp-status{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.55);}
+.fp-status-r{color:rgba(255,255,255,.4);}
+@media(max-width:900px){
+  .fp-body{grid-template-columns:170px 1fr 200px;}
+}
+@media(max-width:700px){
+  .fp-body{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;overflow:auto;}
+  .fp-toolbox{display:flex;flex-direction:row;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);overflow-x:auto;}
+  .fp-toolbox-section{margin-bottom:0;margin-right:14px;flex-shrink:0;}
+  .fp-tool{flex-direction:column;text-align:center;min-width:60px;}
+  .fp-toolbox-help{display:none;}
+  .fp-props{border-left:none;border-top:1px solid rgba(255,255,255,.06);}
+}
+
+/* Customer-side floor plan viewer */
+.fp-viewer-wrap{background:#0a0a0a;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:6px;margin-bottom:14px;overflow:hidden;}
+.fp-viewer-svg{width:100%;height:auto;display:block;max-height:60vh;}
+.fp-vw-el-shape{transition:filter .25s,opacity .25s;}
+.fp-vw-table{cursor:pointer;}
+.fp-vw-table.available .fp-vw-el-shape{fill:rgba(200,151,58,.85);stroke:#c8973a;stroke-width:2;animation:fpPulse 2s ease-in-out infinite;}
+@keyframes fpPulse{0%,100%{filter:drop-shadow(0 0 4px rgba(200,151,58,.4));}50%{filter:drop-shadow(0 0 10px rgba(200,151,58,.8));}}
+.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(220,53,69,.4);stroke:rgba(220,53,69,.7);stroke-width:1.5;}
+.fp-vw-table.locked .fp-vw-el-shape{fill:rgba(255,193,7,.35);stroke:rgba(255,193,7,.7);stroke-width:1.5;}
+.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3;filter:drop-shadow(0 0 12px rgba(200,151,58,.9));animation:none;}
+.fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
+.fp-vw-fixed .fp-vw-el-shape{opacity:.5;}
+.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:14px;font-weight:900;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central;}
+.fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.55);}
+.fp-vw-label{font-family:sans-serif;font-size:10px;font-weight:600;fill:rgba(255,255,255,.55);pointer-events:none;text-anchor:middle;dominant-baseline:central;}
+.fp-vw-legend{display:flex;justify-content:center;gap:14px;font-size:10px;color:rgba(255,255,255,.5);margin-top:10px;flex-wrap:wrap;}
+.fp-vw-legend span{display:inline-flex;align-items:center;gap:5px;}
+.fp-vw-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+
 /* OWNER bookings panel */
 .ob-card{background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,rgba(255,255,255,.08));border-radius:12px;padding:16px;margin-bottom:10px;transition:all .2s;}
 .ob-card:hover{border-color:rgba(200,151,58,.25);}
@@ -3856,6 +3930,33 @@ const STAFF_T={
     bk_loading:'Loading bookings…',
     bk_party_label:'Party',bk_phone_label:'Phone',bk_code_label:'Code',
     bk_table_label:'Table',
+    // v5.5: Floor plan editor (SA only)
+    fp_title:'Floor Plan Editor',
+    fp_save:'💾 Save',
+    fp_close:'Close',
+    fp_clear:'Clear All',
+    fp_tables:'Tables',
+    fp_t_square:'Square',
+    fp_t_round:'Round',
+    fp_t_rect:'Rectangle',
+    fp_fixed:'Fixed Elements',
+    fp_counter:'Counter',
+    fp_toilet:'Toilet',
+    fp_stage:'Stage',
+    fp_door:'Door',
+    fp_kitchen:'Kitchen',
+    fp_help1:'💡 Drag from here onto canvas',
+    fp_help2:'💡 Click element to select',
+    fp_help3:'💡 Drag handles to resize',
+    fp_no_sel:'No element selected. Drag from toolbox to add. Click an element to edit.',
+    fp_label:'Label',
+    fp_link_table:'Linked table',
+    fp_no_link:'— Not linked —',
+    fp_width:'W',
+    fp_height:'H',
+    fp_delete:'🗑 Delete',
+    fp_ready:'Ready',
+    fp_elements:'elements',
     bk_date_label:'Date',bk_time_label:'Time',
     bk_save_hours:'💾 Save Hours',
     bk_hours_intro:'Set your weekly opening hours. Customers can only book during these hours, in 30-minute slots.',
@@ -3910,6 +4011,33 @@ const STAFF_T={
     bk_loading:'ກຳລັງໂຫຼດການຈອງ…',
     bk_party_label:'ຈຳນວນຄົນ',bk_phone_label:'ເບີໂທ',bk_code_label:'ລະຫັດ',
     bk_table_label:'ໂຕະ',
+    // v5.5: Floor plan editor (SA only)
+    fp_title:'ຕົວແກ້ໄຂແຜນຜັງຮ້ານ',
+    fp_save:'💾 ບັນທຶກ',
+    fp_close:'ປິດ',
+    fp_clear:'ລ້າງທັງໝົດ',
+    fp_tables:'ໂຕະ',
+    fp_t_square:'ສີ່ຫຼ່ຽມ',
+    fp_t_round:'ມົນ',
+    fp_t_rect:'ສີ່ຫຼ່ຽມຍາວ',
+    fp_fixed:'ສິ່ງປະກອບ',
+    fp_counter:'ເຄົາເຕີ',
+    fp_toilet:'ຫ້ອງນ້ຳ',
+    fp_stage:'ເວທີ',
+    fp_door:'ປະຕູ',
+    fp_kitchen:'ເຮືອນຄົວ',
+    fp_help1:'💡 ລາກຈາກນີ້ໄປໃສ່ກະດານ',
+    fp_help2:'💡 ຄລິກອົງປະກອບເພື່ອເລືອກ',
+    fp_help3:'💡 ລາກປຸ່ມຈັບເພື່ອປັບຂະໜາດ',
+    fp_no_sel:'ບໍ່ໄດ້ເລືອກອົງປະກອບ. ລາກຈາກກ່ອງເຄື່ອງມືເພື່ອເພີ່ມ. ຄລິກເພື່ອແກ້ໄຂ.',
+    fp_label:'ປ້າຍ',
+    fp_link_table:'ໂຕະທີ່ເຊື່ອມ',
+    fp_no_link:'— ບໍ່ໄດ້ເຊື່ອມ —',
+    fp_width:'ກວ້າງ',
+    fp_height:'ສູງ',
+    fp_delete:'🗑 ລຶບ',
+    fp_ready:'ພ້ອມ',
+    fp_elements:'ອົງປະກອບ',
     bk_date_label:'ວັນທີ',bk_time_label:'ເວລາ',
     bk_save_hours:'💾 ບັນທຶກຊົ່ວໂມງ',
     bk_hours_intro:'ຕັ້ງຊົ່ວໂມງເປີດປະຈຳອາທິດ. ລູກຄ້າຈະຈອງໄດ້ສະເພາະໃນຊົ່ວໂມງເປີດ ໃນຊ່ອງເວລາ 30 ນາທີ.',
@@ -3964,6 +4092,33 @@ const STAFF_T={
     bk_loading:'กำลังโหลดการจอง…',
     bk_party_label:'จำนวนคน',bk_phone_label:'เบอร์โทร',bk_code_label:'รหัส',
     bk_table_label:'โต๊ะ',
+    // v5.5: Floor plan editor (SA only)
+    fp_title:'ตัวแก้ไขแผนผังร้าน',
+    fp_save:'💾 บันทึก',
+    fp_close:'ปิด',
+    fp_clear:'ล้างทั้งหมด',
+    fp_tables:'โต๊ะ',
+    fp_t_square:'สี่เหลี่ยม',
+    fp_t_round:'กลม',
+    fp_t_rect:'สี่เหลี่ยมผืนผ้า',
+    fp_fixed:'องค์ประกอบคงที่',
+    fp_counter:'เคาน์เตอร์',
+    fp_toilet:'ห้องน้ำ',
+    fp_stage:'เวที',
+    fp_door:'ประตู',
+    fp_kitchen:'ห้องครัว',
+    fp_help1:'💡 ลากจากที่นี่มาวางบนผืนผ้า',
+    fp_help2:'💡 คลิกองค์ประกอบเพื่อเลือก',
+    fp_help3:'💡 ลากที่จับเพื่อปรับขนาด',
+    fp_no_sel:'ไม่ได้เลือกองค์ประกอบ ลากจากกล่องเครื่องมือเพื่อเพิ่ม คลิกเพื่อแก้ไข',
+    fp_label:'ป้ายกำกับ',
+    fp_link_table:'โต๊ะที่เชื่อมโยง',
+    fp_no_link:'— ไม่ได้เชื่อม —',
+    fp_width:'กว้าง',
+    fp_height:'สูง',
+    fp_delete:'🗑 ลบ',
+    fp_ready:'พร้อม',
+    fp_elements:'องค์ประกอบ',
     bk_date_label:'วันที่',bk_time_label:'เวลา',
     bk_save_hours:'💾 บันทึกเวลา',
     bk_hours_intro:'ตั้งเวลาเปิดประจำสัปดาห์ ลูกค้าจะจองได้เฉพาะในเวลาเปิด ในช่วง 30 นาที',
@@ -4018,6 +4173,33 @@ const STAFF_T={
     bk_loading:'正在加载预订…',
     bk_party_label:'人数',bk_phone_label:'电话',bk_code_label:'编号',
     bk_table_label:'桌位',
+    // v5.5: Floor plan editor (SA only)
+    fp_title:'平面图编辑器',
+    fp_save:'💾 保存',
+    fp_close:'关闭',
+    fp_clear:'清除全部',
+    fp_tables:'桌位',
+    fp_t_square:'方形',
+    fp_t_round:'圆形',
+    fp_t_rect:'长方形',
+    fp_fixed:'固定元素',
+    fp_counter:'柜台',
+    fp_toilet:'洗手间',
+    fp_stage:'舞台',
+    fp_door:'门',
+    fp_kitchen:'厨房',
+    fp_help1:'💡 从此处拖到画布',
+    fp_help2:'💡 点击元素进行选择',
+    fp_help3:'💡 拖动手柄调整大小',
+    fp_no_sel:'未选择元素。从工具箱拖动以添加。点击进行编辑。',
+    fp_label:'标签',
+    fp_link_table:'关联桌位',
+    fp_no_link:'— 未关联 —',
+    fp_width:'宽',
+    fp_height:'高',
+    fp_delete:'🗑 删除',
+    fp_ready:'就绪',
+    fp_elements:'个元素',
     bk_date_label:'日期',bk_time_label:'时间',
     bk_save_hours:'💾 保存营业时间',
     bk_hours_intro:'设置每周营业时间。客户只能在营业时间内预订，每 30 分钟一个时段。',
@@ -4088,6 +4270,33 @@ const STAFF_T={
     bk_loading:'예약을 불러오는 중…',
     bk_party_label:'인원',bk_phone_label:'전화',bk_code_label:'코드',
     bk_table_label:'테이블',
+    // v5.5: Floor plan editor (SA only)
+    fp_title:'평면도 편집기',
+    fp_save:'💾 저장',
+    fp_close:'닫기',
+    fp_clear:'모두 지우기',
+    fp_tables:'테이블',
+    fp_t_square:'정사각형',
+    fp_t_round:'원형',
+    fp_t_rect:'직사각형',
+    fp_fixed:'고정 요소',
+    fp_counter:'카운터',
+    fp_toilet:'화장실',
+    fp_stage:'무대',
+    fp_door:'문',
+    fp_kitchen:'주방',
+    fp_help1:'💡 여기서 캔버스로 끌어다 놓기',
+    fp_help2:'💡 요소를 클릭하여 선택',
+    fp_help3:'💡 핸들을 끌어 크기 조정',
+    fp_no_sel:'요소가 선택되지 않았습니다. 추가하려면 도구상자에서 드래그하세요. 클릭하여 편집.',
+    fp_label:'라벨',
+    fp_link_table:'연결된 테이블',
+    fp_no_link:'— 연결 안됨 —',
+    fp_width:'너비',
+    fp_height:'높이',
+    fp_delete:'🗑 삭제',
+    fp_ready:'준비',
+    fp_elements:'개 요소',
     bk_date_label:'날짜',bk_time_label:'시간',
     bk_save_hours:'💾 영업 시간 저장',
     bk_hours_intro:'주간 영업 시간을 설정하세요. 고객은 영업 시간 내 30분 단위로만 예약할 수 있습니다.',
@@ -5225,6 +5434,7 @@ const LP_TRANSLATIONS = {
     bk_lock_taken:'This table was just reserved by another customer.',
     bk_lock_failed:'Could not reserve this table. Try another.',
     bk_lock_expired:'Your table reservation expired. Please pick another table.',
+    bk_legend_available:'Available',
     bk_contact:'Your details',
     bk_contact_sub:'You can check your booking status using your phone or code.',
     bk_name:'Full name',
@@ -5355,6 +5565,7 @@ const LP_TRANSLATIONS = {
     bk_lock_taken:'ໂຕະນີ້ຫາກໍ່ຖືກຈອງໂດຍລູກຄ້າອື່ນ.',
     bk_lock_failed:'ບໍ່ສາມາດຈອງໂຕະນີ້ໄດ້. ກະລຸນາລອງໂຕະອື່ນ.',
     bk_lock_expired:'ການຈອງໂຕະຂອງທ່ານໝົດເວລາ. ກະລຸນາເລືອກໂຕະອື່ນ.',
+    bk_legend_available:'ວ່າງ',
     bk_contact:'ຂໍ້ມູນຂອງທ່ານ',
     bk_contact_sub:'ທ່ານສາມາດກວດສະຖານະການຈອງໄດ້ໂດຍໃຊ້ເບີໂທ ຫຼື ລະຫັດ.',
     bk_name:'ຊື່ເຕັມ',
@@ -5485,6 +5696,7 @@ const LP_TRANSLATIONS = {
     bk_lock_taken:'โต๊ะนี้ถูกจองโดยลูกค้าอื่นแล้ว',
     bk_lock_failed:'ไม่สามารถจองโต๊ะนี้ได้ กรุณาเลือกโต๊ะอื่น',
     bk_lock_expired:'การจองโต๊ะของคุณหมดเวลาแล้ว กรุณาเลือกโต๊ะใหม่',
+    bk_legend_available:'ว่าง',
     bk_contact:'ข้อมูลของคุณ',
     bk_contact_sub:'คุณสามารถตรวจสอบสถานะการจองได้โดยใช้เบอร์โทรหรือรหัส',
     bk_name:'ชื่อ-นามสกุล',
@@ -5615,6 +5827,7 @@ const LP_TRANSLATIONS = {
     bk_lock_taken:'此桌位刚被其他客户预订。',
     bk_lock_failed:'无法保留此桌位，请尝试其他。',
     bk_lock_expired:'您的桌位保留已过期。请选择其他桌位。',
+    bk_legend_available:'空闲',
     bk_contact:'您的资料',
     bk_contact_sub:'您可以使用电话号码或预订码查询状态。',
     bk_name:'姓名',
@@ -5745,6 +5958,7 @@ const LP_TRANSLATIONS = {
     bk_lock_taken:'이 테이블은 방금 다른 고객이 예약했습니다.',
     bk_lock_failed:'이 테이블을 예약할 수 없습니다. 다른 테이블을 선택하세요.',
     bk_lock_expired:'테이블 예약이 만료되었습니다. 다른 테이블을 선택해주세요.',
+    bk_legend_available:'이용 가능',
     bk_contact:'연락처 정보',
     bk_contact_sub:'전화번호 또는 예약 코드로 상태를 확인할 수 있습니다.',
     bk_name:'성함',
@@ -6415,6 +6629,7 @@ function renderRestoTable(){
       <td><div class="btn-acts">
         <button class="btn btn-sm" onclick="editResto('${k}')">Edit</button>
         <button class="btn btn-sm" onclick="previewRestoTheme('${k}')" style="border-color:var(--s-blue);color:var(--s-blue)">👁 Theme</button>
+        <button class="btn btn-sm" onclick="fpOpen('${k}')" style="border-color:#c8973a;color:#c8973a">📐 Layout</button>
         <button class="btn btn-sm btn-red" onclick="delResto('${k}')">Del</button>
         ${r.status==='pending'?`<button class="btn btn-sm btn-green" onclick="approveResto('${k}')">✓ Approve</button>`:''}
         <button class="btn btn-sm" onclick="renewResto('${k}')">🔄 Renew</button>
@@ -9941,7 +10156,538 @@ function bkNext(){
   bkGoStep(s+1);
 }
 
-/* ─── v5.4: TABLE PICKER + LOCK SYSTEM ─── */
+/* ════════════════════════════════════════════════════════════════ */
+/* v5.5 FLOOR PLAN EDITOR — SA only                                 */
+/* ════════════════════════════════════════════════════════════════ */
+/* Stored at: restaurants/{id}/floorPlan = { width, height, elements:[] }
+   Element kinds: table-square, table-round, table-rect, counter, toilet,
+                  stage, door, kitchen
+   Tables link to existing restaurants/{id}/tables[] via tableId.
+*/
+
+let fpState = {
+  restoId: null,
+  restoName: '',
+  tables: [],          // existing tables[] from the resto
+  plan: null,          // { width, height, elements:[] }
+  selectedId: null,    // currently selected element
+  dirty: false,        // unsaved changes flag
+  drag: null,          // { id, kind: 'move'|'resize-NE'|..., startX, startY, origX, origY, origW, origH }
+  newDrag: null        // dragging from toolbox: { tool }
+};
+
+const FP_DEFAULT_SIZES = {
+  'table-square': { w: 60,  h: 60  },
+  'table-round':  { w: 70,  h: 70  },
+  'table-rect':   { w: 120, h: 60  },
+  'counter':      { w: 200, h: 40  },
+  'toilet':       { w: 80,  h: 80  },
+  'stage':        { w: 200, h: 80  },
+  'door':         { w: 60,  h: 20  },
+  'kitchen':      { w: 200, h: 100 }
+};
+
+const FP_DEFAULT_LABELS = {
+  'counter': 'Bar',
+  'toilet':  'WC',
+  'stage':   'Stage',
+  'door':    'Door',
+  'kitchen': 'Kitchen'
+};
+
+const FP_GRID = 20; // snap grid in canvas units
+
+function _fpId(){ return 'el_' + Math.random().toString(36).substr(2,8) + '_' + Date.now().toString(36); }
+function _fpSnap(v){ return Math.round(v / FP_GRID) * FP_GRID; }
+function _fpClampX(x, w){ return Math.max(0, Math.min(1000 - w, x)); }
+function _fpClampY(y, h){ return Math.max(0, Math.min(700 - h, y)); }
+
+async function fpOpen(restoId){
+  fpState.restoId = restoId;
+  fpState.selectedId = null;
+  fpState.dirty = false;
+  fpState.drag = null;
+  if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+  const r = await fbGet('restaurants/'+restoId);
+  if(!r){ alert('Restaurant not found'); return; }
+  fpState.restoName = r.name || 'Restaurant';
+  fpState.tables = r.tables || [];
+  fpState.plan = r.floorPlan && r.floorPlan.elements ? {
+    width:  r.floorPlan.width  || 1000,
+    height: r.floorPlan.height || 700,
+    elements: r.floorPlan.elements.slice()
+  } : { width:1000, height:700, elements:[] };
+  document.getElementById('fpRestoName').textContent = fpState.restoName;
+  fpRenderAll();
+  fpRenderProps();
+  openModal('mFloorPlan');
+  // v5.5: Apply staff translations to the modal (data-ts attributes)
+  if(typeof applyTranslation === 'function' && typeof lang !== 'undefined' && lang !== 'en'){
+    try { applyTranslation(document.getElementById('mFloorPlan')); } catch(e){}
+  }
+  fpSetStatus('Loaded ' + fpState.plan.elements.length + ' element(s)');
+  // Wire up drag-from-toolbox + canvas events (idempotent — uses on*)
+  _fpWireToolbox();
+  _fpWireCanvas();
+}
+
+function fpClose(){
+  if(fpState.dirty){
+    if(!confirm('Discard unsaved changes?')) return;
+  }
+  closeModal('mFloorPlan');
+  fpState.restoId = null;
+  fpState.plan = null;
+  fpState.selectedId = null;
+  fpState.dirty = false;
+}
+
+function fpSetStatus(msg){
+  const el = document.getElementById('fpStatusMsg');
+  if(el) el.textContent = msg;
+  const cnt = document.getElementById('fpElCount');
+  if(cnt && fpState.plan) cnt.textContent = fpState.plan.elements.length;
+}
+
+function fpMarkDirty(){
+  fpState.dirty = true;
+  const btn = document.getElementById('fpSaveBtn');
+  if(btn){ btn.style.background = 'rgba(200,151,58,.95)'; btn.textContent = '💾 Save *'; }
+}
+
+/* ─── Render all elements ─── */
+function fpRenderAll(){
+  const layer = document.getElementById('fpElementsLayer');
+  if(!layer || !fpState.plan) return;
+  layer.innerHTML = fpState.plan.elements.map(el => fpElToSvg(el)).join('');
+  fpRenderHandles();
+  fpSetStatus(fpState.plan.elements.length + ' element(s)');
+}
+
+function fpElToSvg(el){
+  const isTable = el.kind && el.kind.indexOf('table') === 0;
+  const sel = (el.id === fpState.selectedId) ? ' selected' : '';
+  const cls = `fp-el${sel}`;
+  const cx = el.x + el.w/2;
+  const cy = el.y + el.h/2;
+  // Determine table number for tables
+  let tableNum = '';
+  if(isTable && el.tableId){
+    const t = fpState.tables.find(x => x.id === el.tableId);
+    if(t) tableNum = t.num || '';
+  }
+  // Build shape
+  let shape = '';
+  const fill = isTable ? '#c8973a' : _fpFixedFill(el.kind);
+  const stroke = isTable ? '#e0b455' : 'rgba(255,255,255,.15)';
+  if(el.kind === 'table-round'){
+    const rx = el.w/2, ry = el.h/2;
+    shape = `<ellipse class="fp-el-shape" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  } else {
+    const rx = (el.kind === 'table-square' || el.kind === 'table-rect') ? 6 : 3;
+    shape = `<rect class="fp-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="${rx}" ry="${rx}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  }
+  // Label / table number
+  let textEl = '';
+  if(isTable){
+    if(tableNum) textEl = `<text class="fp-el-tnum" x="${cx}" y="${cy}">${_fpEsc(tableNum)}</text>`;
+  } else {
+    const lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
+    if(lbl) textEl = `<text class="fp-el-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>`;
+  }
+  return `<g class="${cls}" data-elid="${el.id}">${shape}${textEl}</g>`;
+}
+
+function _fpFixedFill(kind){
+  switch(kind){
+    case 'counter': return '#8a6f4f';
+    case 'toilet':  return '#555';
+    case 'stage':   return '#3a3a3a';
+    case 'door':    return '#5d3f1f';
+    case 'kitchen': return '#444';
+    default:        return '#666';
+  }
+}
+
+function _fpEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ─── Resize handles ─── */
+function fpRenderHandles(){
+  const layer = document.getElementById('fpHandlesLayer');
+  if(!layer) return;
+  layer.innerHTML = '';
+  if(!fpState.selectedId) return;
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el) return;
+  // 8 handles: corners + edges
+  const HS = 8; // handle size
+  const hh = HS / 2;
+  const positions = [
+    { dir:'nw', x: el.x,       y: el.y       },
+    { dir:'n',  x: el.x+el.w/2,y: el.y       },
+    { dir:'ne', x: el.x+el.w,  y: el.y       },
+    { dir:'e',  x: el.x+el.w,  y: el.y+el.h/2},
+    { dir:'se', x: el.x+el.w,  y: el.y+el.h  },
+    { dir:'s',  x: el.x+el.w/2,y: el.y+el.h  },
+    { dir:'sw', x: el.x,       y: el.y+el.h  },
+    { dir:'w',  x: el.x,       y: el.y+el.h/2}
+  ];
+  layer.innerHTML = positions.map(p =>
+    `<rect class="fp-handle h-${p.dir}" x="${p.x-hh}" y="${p.y-hh}" width="${HS}" height="${HS}" data-handle="${p.dir}"/>`
+  ).join('');
+}
+
+/* ─── Properties panel ─── */
+function fpRenderProps(){
+  const empty = document.getElementById('fpPropsEmpty');
+  const form  = document.getElementById('fpPropsForm');
+  if(!empty || !form) return;
+  if(!fpState.selectedId){
+    empty.style.display = '';
+    form.style.display = 'none';
+    return;
+  }
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el){ fpState.selectedId = null; return fpRenderProps(); }
+  empty.style.display = 'none';
+  form.style.display = '';
+  // Kind label
+  document.getElementById('fpPropKindLabel').textContent = el.kind.replace('table-','Table — ').replace(/-/g,' ');
+  // Label field — disabled for tables (auto from tables[])
+  const lblInput = document.getElementById('fpPropLabel');
+  const isTable = el.kind && el.kind.indexOf('table') === 0;
+  if(isTable){
+    lblInput.disabled = true;
+    lblInput.value = '(auto from linked table)';
+    lblInput.style.opacity = '.5';
+  } else {
+    lblInput.disabled = false;
+    lblInput.value = el.label || FP_DEFAULT_LABELS[el.kind] || '';
+    lblInput.style.opacity = '1';
+  }
+  // Table linking dropdown — only for tables
+  const tableRow = document.getElementById('fpPropTableRow');
+  if(isTable){
+    tableRow.style.display = '';
+    const sel = document.getElementById('fpPropTable');
+    const usedIds = new Set(fpState.plan.elements
+      .filter(x => x.id !== el.id && x.kind && x.kind.indexOf('table')===0 && x.tableId)
+      .map(x => x.tableId));
+    const opts = [`<option value="">— Not linked —</option>`];
+    fpState.tables.forEach(t => {
+      const used = usedIds.has(t.id);
+      const txt = `Table ${t.num} (${t.seats} seats)${used?' — already placed':''}`;
+      opts.push(`<option value="${_fpEsc(t.id)}" ${t.id===el.tableId?'selected':''} ${used?'disabled':''}>${_fpEsc(txt)}</option>`);
+    });
+    sel.innerHTML = opts.join('');
+  } else {
+    tableRow.style.display = 'none';
+  }
+  // Position + size
+  document.getElementById('fpPropX').value = el.x;
+  document.getElementById('fpPropY').value = el.y;
+  document.getElementById('fpPropW').value = el.w;
+  document.getElementById('fpPropH').value = el.h;
+}
+
+function fpPropChange(field, value){
+  if(!fpState.selectedId) return;
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el) return;
+  if(field === 'x') value = _fpClampX(value, el.w);
+  if(field === 'y') value = _fpClampY(value, el.h);
+  if(field === 'w'){ value = Math.max(20, Math.min(1000 - el.x, value)); }
+  if(field === 'h'){ value = Math.max(20, Math.min(700  - el.y, value)); }
+  el[field] = value;
+  fpMarkDirty();
+  fpRenderAll();
+  // Don't re-render whole props (keeps focus on the input being edited)
+}
+
+function fpDeleteSelected(){
+  if(!fpState.selectedId) return;
+  if(!confirm('Delete this element?')) return;
+  fpState.plan.elements = fpState.plan.elements.filter(x => x.id !== fpState.selectedId);
+  fpState.selectedId = null;
+  fpMarkDirty();
+  fpRenderAll();
+  fpRenderProps();
+}
+
+function fpClearAll(){
+  if(!fpState.plan || !fpState.plan.elements.length){
+    fpSetStatus('Already empty');
+    return;
+  }
+  if(!confirm('Remove ALL elements from this floor plan? This cannot be undone (until you Save).')) return;
+  fpState.plan.elements = [];
+  fpState.selectedId = null;
+  fpMarkDirty();
+  fpRenderAll();
+  fpRenderProps();
+}
+
+async function fpSave(){
+  if(!fpState.restoId || !fpState.plan) return;
+  const btn = document.getElementById('fpSaveBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+  try {
+    const data = {
+      width: fpState.plan.width,
+      height: fpState.plan.height,
+      updatedAt: Date.now(),
+      elements: fpState.plan.elements
+    };
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    await fbSet('restaurants/'+fpState.restoId+'/floorPlan', data);
+    fpState.dirty = false;
+    fpSetStatus('Saved ✓');
+    if(btn){ btn.disabled = false; btn.style.background = ''; btn.textContent = '💾 Save'; }
+    notifyD('✅ Floor plan saved');
+  } catch(e){
+    console.error('fpSave:', e);
+    alert('Could not save floor plan: ' + (e.message||'unknown error') + '\n\nCheck Firebase rules for "floorPlan" path.');
+    if(btn){ btn.disabled = false; btn.textContent = '💾 Save'; }
+  }
+}
+
+/* ─── Toolbox: drag from toolbox to canvas ─── */
+function _fpWireToolbox(){
+  const tb = document.getElementById('fpToolbox');
+  const cv = document.getElementById('fpCanvas');
+  if(!tb || !cv) return;
+  // Use pointer events for cross-device
+  tb.querySelectorAll('.fp-tool').forEach(toolEl => {
+    toolEl.onpointerdown = (e) => {
+      e.preventDefault();
+      const tool = toolEl.dataset.tool;
+      fpState.newDrag = { tool, pointerId: e.pointerId };
+      toolEl.classList.add('dragging');
+      cv.classList.add('drop-active');
+      const onMove = (ev) => { /* no preview yet — keep simple */ };
+      const onUp = (ev) => {
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+        document.removeEventListener('pointercancel', onUp);
+        toolEl.classList.remove('dragging');
+        cv.classList.remove('drop-active');
+        // Hit-test against canvas
+        const rect = cv.getBoundingClientRect();
+        const cx = ev.clientX, cy = ev.clientY;
+        if(cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom){
+          // Convert client coords → SVG coords
+          const pt = _fpClientToSvg(cx, cy);
+          fpAddElement(tool, pt.x, pt.y);
+        }
+        fpState.newDrag = null;
+      };
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+      document.addEventListener('pointercancel', onUp);
+    };
+  });
+}
+
+function _fpClientToSvg(clientX, clientY){
+  const svg = document.getElementById('fpCanvas');
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  const ctm = svg.getScreenCTM();
+  if(!ctm) return { x:0, y:0 };
+  const sp = pt.matrixTransform(ctm.inverse());
+  return { x: sp.x, y: sp.y };
+}
+
+function fpAddElement(tool, cx, cy){
+  if(!fpState.plan) return;
+  const sz = FP_DEFAULT_SIZES[tool] || { w:60, h:60 };
+  const x = _fpSnap(cx - sz.w/2);
+  const y = _fpSnap(cy - sz.h/2);
+  const el = {
+    id: _fpId(),
+    kind: tool,
+    x: _fpClampX(x, sz.w),
+    y: _fpClampY(y, sz.h),
+    w: sz.w,
+    h: sz.h
+  };
+  // Tables: shape derives from kind, no extra field needed
+  // Auto-link to first available table for tables
+  if(tool.indexOf('table') === 0){
+    const usedIds = new Set(fpState.plan.elements
+      .filter(x => x.kind && x.kind.indexOf('table')===0 && x.tableId)
+      .map(x => x.tableId));
+    const free = fpState.tables.find(t => !usedIds.has(t.id));
+    if(free) el.tableId = free.id;
+  } else {
+    el.label = FP_DEFAULT_LABELS[tool] || '';
+  }
+  fpState.plan.elements.push(el);
+  fpState.selectedId = el.id;
+  fpMarkDirty();
+  fpRenderAll();
+  fpRenderProps();
+  fpSetStatus('Added ' + tool);
+}
+
+/* ─── Canvas: click to select, drag to move, drag handles to resize ─── */
+function _fpWireCanvas(){
+  const cv = document.getElementById('fpCanvas');
+  if(!cv) return;
+  cv.onpointerdown = (e) => {
+    if(fpState.newDrag) return; // toolbox drag in progress
+    // Check if clicked on a handle
+    const handle = e.target.closest('.fp-handle');
+    if(handle){
+      _fpStartResize(e, handle.dataset.handle);
+      return;
+    }
+    // Check if clicked on an element
+    const elGroup = e.target.closest('.fp-el');
+    if(elGroup){
+      const elid = elGroup.dataset.elid;
+      fpState.selectedId = elid;
+      fpRenderAll();
+      fpRenderProps();
+      _fpStartMove(e, elid);
+      return;
+    }
+    // Clicked empty canvas — deselect
+    fpState.selectedId = null;
+    fpRenderAll();
+    fpRenderProps();
+  };
+}
+
+function _fpStartMove(e, elid){
+  const el = fpState.plan.elements.find(x => x.id === elid);
+  if(!el) return;
+  e.preventDefault();
+  const start = _fpClientToSvg(e.clientX, e.clientY);
+  const orig = { x: el.x, y: el.y };
+  fpState.drag = { id: elid, kind:'move', startX: start.x, startY: start.y, origX: orig.x, origY: orig.y };
+  const onMove = (ev) => {
+    const cur = _fpClientToSvg(ev.clientX, ev.clientY);
+    const dx = cur.x - fpState.drag.startX;
+    const dy = cur.y - fpState.drag.startY;
+    el.x = _fpClampX(_fpSnap(fpState.drag.origX + dx), el.w);
+    el.y = _fpClampY(_fpSnap(fpState.drag.origY + dy), el.h);
+    fpRenderAll();
+  };
+  const onUp = () => {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    if(fpState.drag && (el.x !== fpState.drag.origX || el.y !== fpState.drag.origY)){
+      fpMarkDirty();
+    }
+    fpState.drag = null;
+    fpRenderProps();
+  };
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+  document.addEventListener('pointercancel', onUp);
+}
+
+function _fpStartResize(e, dir){
+  if(!fpState.selectedId) return;
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const start = _fpClientToSvg(e.clientX, e.clientY);
+  const orig = { x: el.x, y: el.y, w: el.w, h: el.h };
+  const MIN = 20;
+  const onMove = (ev) => {
+    const cur = _fpClientToSvg(ev.clientX, ev.clientY);
+    let dx = cur.x - start.x;
+    let dy = cur.y - start.y;
+    let nx = orig.x, ny = orig.y, nw = orig.w, nh = orig.h;
+    if(dir.indexOf('e') !== -1) nw = Math.max(MIN, _fpSnap(orig.w + dx));
+    if(dir.indexOf('s') !== -1) nh = Math.max(MIN, _fpSnap(orig.h + dy));
+    if(dir.indexOf('w') !== -1){
+      const newX = _fpSnap(orig.x + dx);
+      const newW = Math.max(MIN, orig.w - (newX - orig.x));
+      nx = newX; nw = newW;
+    }
+    if(dir.indexOf('n') !== -1){
+      const newY = _fpSnap(orig.y + dy);
+      const newH = Math.max(MIN, orig.h - (newY - orig.y));
+      ny = newY; nh = newH;
+    }
+    // Clamp
+    nx = Math.max(0, nx);
+    ny = Math.max(0, ny);
+    if(nx + nw > 1000) nw = 1000 - nx;
+    if(ny + nh > 700)  nh = 700  - ny;
+    el.x = nx; el.y = ny; el.w = nw; el.h = nh;
+    fpRenderAll();
+  };
+  const onUp = () => {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    if(el.x !== orig.x || el.y !== orig.y || el.w !== orig.w || el.h !== orig.h){
+      fpMarkDirty();
+    }
+    fpRenderProps();
+  };
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+  document.addEventListener('pointercancel', onUp);
+}
+
+/* ─── Customer-side viewer ─── */
+function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId){
+  if(!plan || !plan.elements || !plan.elements.length) return null;
+  const W = plan.width  || 1000;
+  const H = plan.height || 700;
+  const tableMap = {};
+  tables.forEach(t => { tableMap[t.id] = t; });
+  let svgInner = `<rect width="${W}" height="${H}" fill="#0f0f0f"/>`;
+  const fixed = []; const tableEls = [];
+  plan.elements.forEach(el => {
+    const isTable = el.kind && el.kind.indexOf('table') === 0;
+    (isTable ? tableEls : fixed).push(el);
+  });
+  // Render fixed first (under)
+  fixed.forEach(el => {
+    const cx = el.x + el.w/2, cy = el.y + el.h/2;
+    let shape;
+    const fill = _fpFixedFill(el.kind);
+    if(el.kind === 'table-round'){
+      shape = `<ellipse class="fp-vw-el-shape" cx="${cx}" cy="${cy}" rx="${el.w/2}" ry="${el.h/2}" fill="${fill}"/>`;
+    } else {
+      shape = `<rect class="fp-vw-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="3" fill="${fill}"/>`;
+    }
+    const lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
+    const txt = lbl ? `<text class="fp-vw-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>` : '';
+    svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}">${shape}${txt}</g>`;
+  });
+  // Render tables on top
+  tableEls.forEach(el => {
+    if(!el.tableId) return;
+    const t = tableMap[el.tableId];
+    if(!t) return;
+    const cx = el.x + el.w/2, cy = el.y + el.h/2;
+    let stateClass = 'available';
+    if(bookedTableIds && bookedTableIds.has(el.tableId)) stateClass = 'booked';
+    else if(lockedTableIds && lockedTableIds.has(el.tableId)) stateClass = 'locked';
+    if(selectedTableId === el.tableId) stateClass = 'selected';
+    let shape;
+    if(el.kind === 'table-round'){
+      shape = `<ellipse class="fp-vw-el-shape" cx="${cx}" cy="${cy}" rx="${el.w/2}" ry="${el.h/2}"/>`;
+    } else {
+      const rx = (el.kind === 'table-square' || el.kind === 'table-rect') ? 6 : 3;
+      shape = `<rect class="fp-vw-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="${rx}"/>`;
+    }
+    const num = t.num || '';
+    svgInner += `<g class="fp-vw-table ${stateClass}" data-tid="${_fpEsc(el.tableId)}">${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text></g>`;
+  });
+  return `<svg class="fp-viewer-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
+}
+
+
 let _bkLockTimer = null;       // setInterval handle for countdown
 let _bkLockTimeout = null;     // setTimeout handle for auto-release
 const BK_LOCK_DURATION_MS = 3 * 60 * 1000; // 3 minutes
@@ -9985,7 +10731,57 @@ async function bkLoadTables(){
         lockedTableIds.add(tId);
       }
     });
-    // Group by zone
+    // v5.5: If floor plan exists with at least one linked table, render visual map.
+    // Falls back to zone tabs if no plan or no tables placed on plan.
+    const plan = r && r.floorPlan;
+    const placedTableIds = (plan && plan.elements) ?
+      plan.elements.filter(e => e.kind && e.kind.indexOf('table')===0 && e.tableId).map(e => e.tableId) : [];
+    const hasUsablePlan = plan && placedTableIds.length > 0;
+    if(hasUsablePlan){
+      // Render visual floor plan. Restrict booked/locked sets to tables that exist in partyOK.
+      const partyIdSet = new Set(partyOK.map(t => t.id));
+      // Filter the plan to only include tables that fit party size — others shown as "too small"
+      // Actually let's show ALL tables in the plan, but mark ones too small as unavailable visually
+      const allTablesById = {};
+      tables.forEach(t => { allTablesById[t.id] = t; });
+      const tooSmall = new Set();
+      placedTableIds.forEach(tid => {
+        const t = allTablesById[tid];
+        if(t && (t.seats||0) < bkState.party) tooSmall.add(tid);
+      });
+      // Combined "unavailable" set for viewer
+      const viewerBooked = new Set([...bookedTableIds, ...tooSmall]);
+      const svg = fpRenderCustomerView(plan, tables, viewerBooked, lockedTableIds, bkState.tableId);
+      // Hide zone tabs (not used in floor-plan mode)
+      tabs.innerHTML = '';
+      tabs.style.display = 'none';
+      const lblAvail = _lp('bk_legend_available','Available');
+      const lblBooked = _lp('bk_table_booked','Booked');
+      const lblLocked = _lp('bk_table_locked_by_other','Reserved');
+      grid.innerHTML = `
+        <div class="fp-viewer-wrap">${svg}</div>
+        <div class="fp-vw-legend">
+          <span><i style="background:#c8973a"></i>${escapeHtml(lblAvail)}</span>
+          <span><i style="background:rgba(220,53,69,.4)"></i>${escapeHtml(lblBooked)}</span>
+          <span><i style="background:rgba(255,193,7,.35)"></i>${escapeHtml(lblLocked)}</span>
+        </div>
+      `;
+      // Wire up clicks on table elements
+      const svgEl = grid.querySelector('svg');
+      if(svgEl){
+        svgEl.onclick = function(ev){
+          const tEl = ev.target.closest('.fp-vw-table');
+          if(!tEl) return;
+          if(tEl.classList.contains('booked') || tEl.classList.contains('locked')) return;
+          const tid = tEl.dataset.tid;
+          if(tid) bkPickTable(tid);
+        };
+      }
+      return; // Done — don't render zone tabs
+    }
+    // Show zone tabs again (in case previously hidden by floor plan mode)
+    tabs.style.display = '';
+    // Group by zone (fallback path)
     const zonesMap = {};
     partyOK.forEach(t => {
       const z = t.zone || 'Indoor';
@@ -10758,6 +11554,120 @@ async function cleanupOldBookings(opts){
     </div>
   </div>
 </div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- v5.5 FLOOR PLAN EDITOR — SA only                                 -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="mFloorPlan" class="modal-ov fp-modal" onclick="if(event.target===this)fpClose()">
+  <div class="fp-shell">
+    <!-- Header -->
+    <div class="fp-head">
+      <div>
+        <div class="fp-title">📐 <span data-ts="fp_title">Floor Plan Editor</span></div>
+        <div class="fp-sub" id="fpRestoName">—</div>
+      </div>
+      <div class="fp-head-acts">
+        <button class="btn btn-sm" id="fpClearBtn" onclick="fpClearAll()" data-ts="fp_clear">Clear All</button>
+        <button class="btn btn-sm btn-gold" id="fpSaveBtn" onclick="fpSave()" data-ts="fp_save">💾 Save</button>
+        <button class="btn btn-sm" onclick="fpClose()" data-ts="fp_close">Close</button>
+      </div>
+    </div>
+    <!-- Body: 3-column layout -->
+    <div class="fp-body">
+      <!-- Toolbox -->
+      <div class="fp-toolbox" id="fpToolbox">
+        <div class="fp-toolbox-section">
+          <div class="fp-toolbox-h" data-ts="fp_tables">Tables</div>
+          <div class="fp-tool" data-tool="table-square" title="Square table">
+            <div class="fp-tool-ic" style="background:#c8973a;border-radius:4px"></div>
+            <div class="fp-tool-lbl" data-ts="fp_t_square">Square</div>
+          </div>
+          <div class="fp-tool" data-tool="table-round" title="Round table">
+            <div class="fp-tool-ic" style="background:#c8973a;border-radius:50%"></div>
+            <div class="fp-tool-lbl" data-ts="fp_t_round">Round</div>
+          </div>
+          <div class="fp-tool" data-tool="table-rect" title="Rectangle table">
+            <div class="fp-tool-ic" style="background:#c8973a;border-radius:4px;width:32px;height:14px"></div>
+            <div class="fp-tool-lbl" data-ts="fp_t_rect">Rectangle</div>
+          </div>
+        </div>
+        <div class="fp-toolbox-section">
+          <div class="fp-toolbox-h" data-ts="fp_fixed">Fixed Elements</div>
+          <div class="fp-tool" data-tool="counter" title="Counter / Bar">
+            <div class="fp-tool-ic" style="background:#8a6f4f;width:34px;height:10px"></div>
+            <div class="fp-tool-lbl" data-ts="fp_counter">Counter</div>
+          </div>
+          <div class="fp-tool" data-tool="toilet" title="Toilet">
+            <div class="fp-tool-ic" style="background:#666;font-size:14px;display:flex;align-items:center;justify-content:center">🚻</div>
+            <div class="fp-tool-lbl" data-ts="fp_toilet">Toilet</div>
+          </div>
+          <div class="fp-tool" data-tool="stage" title="Stage">
+            <div class="fp-tool-ic" style="background:#3a3a3a;font-size:13px;display:flex;align-items:center;justify-content:center">⭐</div>
+            <div class="fp-tool-lbl" data-ts="fp_stage">Stage</div>
+          </div>
+          <div class="fp-tool" data-tool="door" title="Door / Entrance">
+            <div class="fp-tool-ic" style="background:#5d3f1f;width:30px;height:8px"></div>
+            <div class="fp-tool-lbl" data-ts="fp_door">Door</div>
+          </div>
+          <div class="fp-tool" data-tool="kitchen" title="Kitchen">
+            <div class="fp-tool-ic" style="background:#444;font-size:13px;display:flex;align-items:center;justify-content:center">🍳</div>
+            <div class="fp-tool-lbl" data-ts="fp_kitchen">Kitchen</div>
+          </div>
+        </div>
+        <div class="fp-toolbox-help">
+          <div data-ts="fp_help1">💡 Drag from here onto canvas</div>
+          <div data-ts="fp_help2">💡 Click element to select</div>
+          <div data-ts="fp_help3">💡 Drag handles to resize</div>
+        </div>
+      </div>
+      <!-- Canvas -->
+      <div class="fp-canvas-wrap" id="fpCanvasWrap">
+        <svg id="fpCanvas" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+          <!-- Grid background -->
+          <defs>
+            <pattern id="fpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="1000" height="700" fill="#0f0f0f"/>
+          <rect width="1000" height="700" fill="url(#fpGrid)"/>
+          <g id="fpElementsLayer"></g>
+          <g id="fpHandlesLayer"></g>
+        </svg>
+      </div>
+      <!-- Properties panel -->
+      <div class="fp-props" id="fpProps">
+        <div class="fp-props-empty" id="fpPropsEmpty" data-ts="fp_no_sel">No element selected.<br><br>Drag from toolbox to add. Click an element to edit.</div>
+        <div class="fp-props-form" id="fpPropsForm" style="display:none">
+          <div class="fp-props-h"><span id="fpPropKindLabel">—</span></div>
+          <div class="fp-props-row">
+            <label data-ts="fp_label">Label</label>
+            <input type="text" id="fpPropLabel" maxlength="40" oninput="fpPropChange('label', this.value)">
+          </div>
+          <div class="fp-props-row" id="fpPropTableRow" style="display:none">
+            <label data-ts="fp_link_table">Linked table</label>
+            <select id="fpPropTable" onchange="fpPropChange('tableId', this.value)">
+              <option value="" data-ts="fp_no_link">— Not linked —</option>
+            </select>
+          </div>
+          <div class="fp-props-grid">
+            <div><label>X</label><input type="number" id="fpPropX" oninput="fpPropChange('x', parseInt(this.value)||0)"></div>
+            <div><label>Y</label><input type="number" id="fpPropY" oninput="fpPropChange('y', parseInt(this.value)||0)"></div>
+            <div><label data-ts="fp_width">W</label><input type="number" id="fpPropW" min="20" oninput="fpPropChange('w', parseInt(this.value)||20)"></div>
+            <div><label data-ts="fp_height">H</label><input type="number" id="fpPropH" min="20" oninput="fpPropChange('h', parseInt(this.value)||20)"></div>
+          </div>
+          <button class="btn btn-sm btn-red" style="width:100%;margin-top:10px" onclick="fpDeleteSelected()" data-ts="fp_delete">🗑 Delete</button>
+        </div>
+      </div>
+    </div>
+    <!-- Status bar -->
+    <div class="fp-status">
+      <span id="fpStatusMsg" data-ts="fp_ready">Ready</span>
+      <span class="fp-status-r"><span id="fpElCount">0</span> <span data-ts="fp_elements">elements</span></span>
+    </div>
+  </div>
+</div>
+
 <!-- ── CONTACT MODAL ── -->
 <div id="mContact" class="modal-ov" onclick="if(event.target===this)closeModal('mContact')">
   <div style="background:#111;border:1px solid rgba(200,151,58,.2);border-radius:16px;padding:40px;max-width:480px;width:100%;position:relative;animation:fadeUp .3s ease;">
