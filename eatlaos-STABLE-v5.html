@@ -2294,6 +2294,29 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-datefilter-input{padding:6px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#fff;font-family:inherit;font-size:13px;font-weight:600;outline:none;cursor:pointer;color-scheme:dark;}
 .bk-datefilter-input:focus{border-color:rgba(200,151,58,.55);}
 #bkDateBtnToday.on,#bkDateBtnClear.on{background:rgba(200,151,58,.15);border-color:#c8973a;color:#c8973a;}
+
+/* v6.5: Stats dashboard at top of bookings panel */
+.bk-stats-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px 14px 0;}
+.bk-stats-bar:empty{display:none;}
+.bk-stat-card{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.015) 100%);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:4px;transition:all .2s;overflow:hidden;}
+.bk-stat-card:hover{border-color:rgba(255,255,255,.14);transform:translateY(-1px);}
+.bk-stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;background:var(--stat-accent,#c8973a);}
+.bk-stat-icon{font-size:18px;line-height:1;}
+.bk-stat-num{font-family:var(--ff,'Plus Jakarta Sans');font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1.05;}
+.bk-stat-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.55);}
+.bk-stat-card.stat-total{--stat-accent:#c8973a;}
+.bk-stat-card.stat-booked{--stat-accent:#4ade80;}
+.bk-stat-card.stat-pending{--stat-accent:#ffc107;}
+.bk-stat-card.stat-noshow{--stat-accent:#ef5350;}
+.bk-stat-card.stat-total .bk-stat-num{color:#e0b455;}
+.bk-stat-card.stat-booked .bk-stat-num{color:#7fe3a3;}
+.bk-stat-card.stat-pending .bk-stat-num{color:#ffd456;}
+.bk-stat-card.stat-noshow .bk-stat-num{color:#ff7a78;}
+.bk-stats-context{grid-column:1/-1;font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-align:center;letter-spacing:.3px;margin-top:2px;}
+@media(max-width:640px){
+  .bk-stats-bar{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .bk-stat-num{font-size:24px;}
+}
 .bk-status-info{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;font-size:12px;color:rgba(255,255,255,.7);}
 .bk-status-info b{color:rgba(255,255,255,.5);font-weight:600;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:2px;}
 .bk-empty{text-align:center;padding:48px 20px;color:rgba(255,255,255,.45);font-size:13px;}
@@ -2361,6 +2384,35 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-props-grid input{width:100%;padding:6px 8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:#fff;font-size:12px;outline:none;}
 .fp-status{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.55);}
 .fp-status-r{color:rgba(255,255,255,.4);}
+/* v6.6: Area tabs bar in SA editor */
+.fp-areas-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.05);overflow-x:auto;flex-shrink:0;}
+.fp-areas-tabs{display:flex;gap:6px;flex:1;min-width:0;}
+.fp-area-tab{position:relative;display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;letter-spacing:.2px;}
+.fp-area-tab:hover{background:rgba(255,255,255,.07);color:#fff;}
+.fp-area-tab.on{background:rgba(200,151,58,.18);border-color:#c8973a;color:#c8973a;}
+.fp-area-x{background:rgba(0,0,0,.25);border:none;color:rgba(255,255,255,.5);width:18px;height:18px;border-radius:50%;font-size:11px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;transition:all .15s;}
+.fp-area-tab.on .fp-area-x{background:rgba(200,151,58,.25);color:#c8973a;}
+.fp-area-x:hover{background:rgba(220,53,69,.5);color:#fff;}
+.fp-area-add{background:transparent;border:1px dashed rgba(255,255,255,.18);color:rgba(255,255,255,.6);font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;flex-shrink:0;transition:all .15s;}
+.fp-area-add:hover:not(:disabled){background:rgba(200,151,58,.08);border-color:rgba(200,151,58,.4);color:#c8973a;}
+.fp-area-add:disabled{opacity:.4;cursor:not-allowed;}
+/* Add Area picker modal */
+.fp-aa-modal{display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.fp-aa-modal.open{display:flex;}
+.fp-aa-shell{background:#0d0d0d;border:1px solid rgba(200,151,58,.25);border-radius:14px;padding:24px;max-width:380px;width:100%;position:relative;box-shadow:0 16px 60px rgba(0,0,0,.7);animation:tiUp .3s cubic-bezier(.16,1,.3,1);}
+.fp-aa-x{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.05);border:none;color:rgba(255,255,255,.5);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;line-height:1;}
+.fp-aa-title{font-family:var(--ff,'Plus Jakarta Sans');font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;}
+.fp-aa-sub{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:14px;}
+.fp-aa-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.fp-aa-opt{display:flex;align-items:center;gap:10px;padding:11px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;cursor:pointer;color:rgba(255,255,255,.85);font-size:13px;font-weight:600;transition:all .15s;}
+.fp-aa-opt:hover{background:rgba(200,151,58,.07);border-color:rgba(200,151,58,.3);}
+.fp-aa-opt.on{background:rgba(200,151,58,.15);border-color:#c8973a;color:#c8973a;}
+.fp-aa-opt.disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through;}
+.fp-aa-opt-ic{font-size:16px;width:20px;text-align:center;}
+.fp-aa-custom-row{margin-bottom:12px;}
+.fp-aa-input{width:100%;padding:9px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none;}
+.fp-aa-input:focus{border-color:rgba(200,151,58,.55);}
+.fp-aa-actions{display:flex;justify-content:flex-end;gap:8px;}
 .fp-floor-pick{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:6px;margin-right:8px;}
 .fp-floor-lbl{font-size:10px;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-right:4px;}
 .fp-floor-sw{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);cursor:pointer;padding:0;transition:all .15s;}
@@ -2401,6 +2453,11 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.4);}
 .fp-vw-label{font-family:var(--fb,'Inter','Plus Jakarta Sans',sans-serif);font-size:18px;font-weight:700;fill:rgba(255,255,255,.85);pointer-events:none;text-anchor:middle;dominant-baseline:central;text-shadow:0 1px 3px rgba(0,0,0,.6);paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:2.5px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:22px;font-size:14px;font-weight:700;color:rgba(255,255,255,.85);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:14px 18px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);}
+/* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
+.bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
+.bk-area-tab{padding:9px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;}
+.bk-area-tab:hover{background:rgba(255,255,255,.07);color:#fff;}
+.bk-area-tab.on{background:rgba(200,151,58,.18);border-color:#c8973a;color:#c8973a;box-shadow:0 0 0 1px rgba(200,151,58,.2);}
 .bkm-shell.fp-fullscreen .fp-vw-legend{margin-top:6px;}
 .fp-vw-legend span{display:inline-flex;align-items:center;gap:8px;}
 .fp-vw-legend i{width:14px;height:14px;border-radius:50%;display:inline-block;}
@@ -3325,6 +3382,8 @@ setTimeout(function(){
                 <button class="btn btn-sm" id="bkFBtn-all" onclick="setBookingFilter('all',this)" data-ts="bk_all">All</button>
               </div>
             </div>
+            <!-- v6.5: Stats dashboard cards (auto-respects date filter) -->
+            <div id="bkStatsBar" class="bk-stats-bar"></div>
             <div id="ow-bookingsbody" style="padding:14px"></div>
           </div>
         </div>
@@ -4055,6 +4114,13 @@ const STAFF_T={
     bk_status_label:'Status:',
     bk_no_bookings_for_date:'No bookings on {date}.',
     bk_no_bookings_for_filter:'No bookings match these filters.',
+    // v6.5: Stats dashboard
+    bk_stat_total:'Total tables',
+    bk_stat_booked:'Booked',
+    bk_stat_pending:'Pending',
+    bk_stat_noshow:'No-shows',
+    bk_stat_for_date:'For {date}',
+    bk_stat_all_time:'All time',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'Expired',
     bk_checkin:'✓ Customer arrived',
@@ -4092,6 +4158,18 @@ const STAFF_T={
     fp_wall_block:'Wall',
     fp_wall_line:'Line',
     fp_floor:'Floor:',
+    // v6.6: Multi-area editor
+    fp_indoor:'Indoor',
+    fp_outdoor:'Outdoor',
+    fp_garden:'Garden',
+    fp_bar:'Bar',
+    fp_private_room:'Private Room',
+    fp_add_area:'+ Add area',
+    fp_custom_area:'Custom name…',
+    fp_aa_title:'Add a new area',
+    fp_aa_sub:'Pick which kind of area this map represents.',
+    fp_aa_cancel:'Cancel',
+    fp_aa_create:'Create',
     fp_help1:'💡 Drag from here onto canvas',
     fp_help2:'💡 Click element to select',
     fp_help3:'💡 Drag handles to resize',
@@ -4160,6 +4238,13 @@ const STAFF_T={
     bk_status_label:'ສະຖານະ:',
     bk_no_bookings_for_date:'ບໍ່ມີການຈອງໃນວັນທີ {date}.',
     bk_no_bookings_for_filter:'ບໍ່ມີການຈອງທີ່ກົງກັບເງື່ອນໄຂ.',
+    // v6.5: Stats dashboard
+    bk_stat_total:'ໂຕະທັງໝົດ',
+    bk_stat_booked:'ຈອງແລ້ວ',
+    bk_stat_pending:'ລໍຖ້າ',
+    bk_stat_noshow:'ບໍ່ມາ',
+    bk_stat_for_date:'ສຳລັບ {date}',
+    bk_stat_all_time:'ທັງໝົດ',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'ໝົດເວລາ',
     bk_checkin:'✓ ລູກຄ້າມາແລ້ວ',
@@ -4197,6 +4282,18 @@ const STAFF_T={
     fp_wall_block:'ກຳແພງ',
     fp_wall_line:'ເສັ້ນ',
     fp_floor:'ພື້ນ:',
+    // v6.6: Multi-area editor
+    fp_indoor:'ໃນອາຄານ',
+    fp_outdoor:'ນອກອາຄານ',
+    fp_garden:'ສວນ',
+    fp_bar:'ບາ',
+    fp_private_room:'ຫ້ອງສ່ວນຕົວ',
+    fp_add_area:'+ ເພີ່ມເຂດ',
+    fp_custom_area:'ຊື່ຕາມໃຈ…',
+    fp_aa_title:'ເພີ່ມເຂດໃໝ່',
+    fp_aa_sub:'ເລືອກປະເພດເຂດສຳລັບແຜນຜັງນີ້.',
+    fp_aa_cancel:'ຍົກເລີກ',
+    fp_aa_create:'ສ້າງ',
     fp_help1:'💡 ລາກຈາກນີ້ໄປໃສ່ກະດານ',
     fp_help2:'💡 ຄລິກອົງປະກອບເພື່ອເລືອກ',
     fp_help3:'💡 ລາກປຸ່ມຈັບເພື່ອປັບຂະໜາດ',
@@ -4265,6 +4362,13 @@ const STAFF_T={
     bk_status_label:'สถานะ:',
     bk_no_bookings_for_date:'ไม่มีการจองในวันที่ {date}',
     bk_no_bookings_for_filter:'ไม่มีการจองที่ตรงกับเงื่อนไข',
+    // v6.5: Stats dashboard
+    bk_stat_total:'โต๊ะทั้งหมด',
+    bk_stat_booked:'จองแล้ว',
+    bk_stat_pending:'รอดำเนินการ',
+    bk_stat_noshow:'ไม่มา',
+    bk_stat_for_date:'สำหรับ {date}',
+    bk_stat_all_time:'ตลอดกาล',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'หมดเวลา',
     bk_checkin:'✓ ลูกค้ามาแล้ว',
@@ -4302,6 +4406,18 @@ const STAFF_T={
     fp_wall_block:'กำแพง',
     fp_wall_line:'เส้น',
     fp_floor:'พื้น:',
+    // v6.6: Multi-area editor
+    fp_indoor:'ในร่ม',
+    fp_outdoor:'กลางแจ้ง',
+    fp_garden:'สวน',
+    fp_bar:'บาร์',
+    fp_private_room:'ห้องส่วนตัว',
+    fp_add_area:'+ เพิ่มโซน',
+    fp_custom_area:'ชื่อเอง…',
+    fp_aa_title:'เพิ่มโซนใหม่',
+    fp_aa_sub:'เลือกประเภทโซนสำหรับแผนผังนี้',
+    fp_aa_cancel:'ยกเลิก',
+    fp_aa_create:'สร้าง',
     fp_help1:'💡 ลากจากที่นี่มาวางบนผืนผ้า',
     fp_help2:'💡 คลิกองค์ประกอบเพื่อเลือก',
     fp_help3:'💡 ลากที่จับเพื่อปรับขนาด',
@@ -4370,6 +4486,13 @@ const STAFF_T={
     bk_status_label:'状态:',
     bk_no_bookings_for_date:'{date} 没有预订。',
     bk_no_bookings_for_filter:'没有符合筛选条件的预订。',
+    // v6.5: Stats dashboard
+    bk_stat_total:'桌位总数',
+    bk_stat_booked:'已预订',
+    bk_stat_pending:'待确认',
+    bk_stat_noshow:'未到店',
+    bk_stat_for_date:'{date}',
+    bk_stat_all_time:'全部时间',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'已过期',
     bk_checkin:'✓ 客人已到达',
@@ -4407,6 +4530,18 @@ const STAFF_T={
     fp_wall_block:'墙壁',
     fp_wall_line:'线条',
     fp_floor:'地板:',
+    // v6.6: Multi-area editor
+    fp_indoor:'室内',
+    fp_outdoor:'户外',
+    fp_garden:'花园',
+    fp_bar:'吧台',
+    fp_private_room:'包房',
+    fp_add_area:'+ 添加区域',
+    fp_custom_area:'自定义名称…',
+    fp_aa_title:'添加新区域',
+    fp_aa_sub:'选择此地图代表哪种区域。',
+    fp_aa_cancel:'取消',
+    fp_aa_create:'创建',
     fp_help1:'💡 从此处拖到画布',
     fp_help2:'💡 点击元素进行选择',
     fp_help3:'💡 拖动手柄调整大小',
@@ -4491,6 +4626,13 @@ const STAFF_T={
     bk_status_label:'상태:',
     bk_no_bookings_for_date:'{date}에 예약이 없습니다.',
     bk_no_bookings_for_filter:'필터 조건과 일치하는 예약이 없습니다.',
+    // v6.5: Stats dashboard
+    bk_stat_total:'전체 테이블',
+    bk_stat_booked:'예약됨',
+    bk_stat_pending:'대기 중',
+    bk_stat_noshow:'노쇼',
+    bk_stat_for_date:'{date} 기준',
+    bk_stat_all_time:'전체 기간',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'만료됨',
     bk_checkin:'✓ 고객 도착',
@@ -4528,6 +4670,18 @@ const STAFF_T={
     fp_wall_block:'벽',
     fp_wall_line:'선',
     fp_floor:'바닥:',
+    // v6.6: Multi-area editor
+    fp_indoor:'실내',
+    fp_outdoor:'야외',
+    fp_garden:'정원',
+    fp_bar:'바',
+    fp_private_room:'프라이빗 룸',
+    fp_add_area:'+ 영역 추가',
+    fp_custom_area:'사용자 지정 이름…',
+    fp_aa_title:'새 영역 추가',
+    fp_aa_sub:'이 지도가 나타내는 영역 종류를 선택하세요.',
+    fp_aa_cancel:'취소',
+    fp_aa_create:'만들기',
     fp_help1:'💡 여기서 캔버스로 끌어다 놓기',
     fp_help2:'💡 요소를 클릭하여 선택',
     fp_help3:'💡 핸들을 끌어 크기 조정',
@@ -5694,6 +5848,12 @@ const LP_TRANSLATIONS = {
     fp_stage:'Stage',
     fp_door:'Door',
     fp_kitchen:'Kitchen',
+    // v6.6: Floor area names (multi-area)
+    fp_indoor:'Indoor',
+    fp_outdoor:'Outdoor',
+    fp_garden:'Garden',
+    fp_bar:'Bar',
+    fp_private_room:'Private Room',
     // v5.9: Customer table info popup
     ti_table_label:'Table',
     ti_reserve:'Reserve this table →',
@@ -5842,6 +6002,12 @@ const LP_TRANSLATIONS = {
     fp_stage:'ເວທີ',
     fp_door:'ປະຕູ',
     fp_kitchen:'ເຮືອນຄົວ',
+    // v6.6: Floor area names (multi-area)
+    fp_indoor:'ໃນອາຄານ',
+    fp_outdoor:'ນອກອາຄານ',
+    fp_garden:'ສວນ',
+    fp_bar:'ບາ',
+    fp_private_room:'ຫ້ອງສ່ວນຕົວ',
     // v5.9: Customer table info popup
     ti_table_label:'ໂຕະ',
     ti_reserve:'ຈອງໂຕະນີ້ →',
@@ -5990,6 +6156,12 @@ const LP_TRANSLATIONS = {
     fp_stage:'เวที',
     fp_door:'ประตู',
     fp_kitchen:'ห้องครัว',
+    // v6.6: Floor area names (multi-area)
+    fp_indoor:'ในร่ม',
+    fp_outdoor:'กลางแจ้ง',
+    fp_garden:'สวน',
+    fp_bar:'บาร์',
+    fp_private_room:'ห้องส่วนตัว',
     // v5.9: Customer table info popup
     ti_table_label:'โต๊ะ',
     ti_reserve:'จองโต๊ะนี้ →',
@@ -6138,6 +6310,12 @@ const LP_TRANSLATIONS = {
     fp_stage:'舞台',
     fp_door:'门',
     fp_kitchen:'厨房',
+    // v6.6: Floor area names (multi-area)
+    fp_indoor:'室内',
+    fp_outdoor:'户外',
+    fp_garden:'花园',
+    fp_bar:'吧台',
+    fp_private_room:'包房',
     // v5.9: Customer table info popup
     ti_table_label:'桌位',
     ti_reserve:'预订此桌 →',
@@ -6286,6 +6464,12 @@ const LP_TRANSLATIONS = {
     fp_stage:'무대',
     fp_door:'문',
     fp_kitchen:'주방',
+    // v6.6: Floor area names (multi-area)
+    fp_indoor:'실내',
+    fp_outdoor:'야외',
+    fp_garden:'정원',
+    fp_bar:'바',
+    fp_private_room:'프라이빗 룸',
     // v5.9: Customer table info popup
     ti_table_label:'테이블',
     ti_reserve:'이 테이블 예약 →',
@@ -10308,6 +10492,7 @@ let bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, ste
 let _bkOwnerCache = []; // owner-side cached bookings
 let _bkOwnerFilter = 'pending';
 let _bkOwnerDateFilter = null; // v6.4: 'YYYY-MM-DD' or null = all dates
+let _bkRestoTableCount = 0;    // v6.5: tables count for stats dashboard
 let _bkLiveListener = null; // for sound notification
 let _bkLastBookingCount = 0;
 
@@ -10575,12 +10760,75 @@ let fpState = {
   restoId: null,
   restoName: '',
   tables: [],          // existing tables[] from the resto
-  plan: null,          // { width, height, elements:[] }
+  plan: null,          // { width, height, elements:[] } — view of the active area
+  // v6.6 MULTI-AREA: Each area has its own canvas of elements
+  // areas: { 'indoor': { area:'Indoor', width, height, bgColor, elements:[] }, 'outdoor': {...} }
+  areas: {},
+  activeArea: null,    // slug of the area currently shown in the canvas
   selectedId: null,    // currently selected element
   dirty: false,        // unsaved changes flag
   drag: null,          // { id, kind: 'move'|'resize-NE'|..., startX, startY, origX, origY, origW, origH }
   newDrag: null        // dragging from toolbox: { tool }
 };
+
+/* v6.6: Standard area types + their slugs.
+   "custom" is a sentinel — actual slug becomes 'custom_<safe>'. */
+const FP_AREA_TYPES = [
+  { slug: 'indoor',       label: 'Indoor' },
+  { slug: 'outdoor',      label: 'Outdoor' },
+  { slug: 'garden',       label: 'Garden' },
+  { slug: 'bar',          label: 'Bar' },
+  { slug: 'private_room', label: 'Private Room' }
+];
+const FP_MAX_AREAS = 3;
+
+function _fpAreaSlugify(name){
+  return String(name||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,32);
+}
+
+/* v6.6: Migrate legacy single floorPlan → multi-area map.
+   Old: r.floorPlan = { width, height, bgColor, elements }
+   New: r.floorPlans = { 'indoor': { area:'Indoor', width, height, bgColor, elements } }
+   Always returns an object (possibly empty) — never null. */
+function _fpReadAreas(restoData){
+  if(!restoData) return {};
+  // Prefer the new field
+  if(restoData.floorPlans && typeof restoData.floorPlans === 'object'){
+    const out = {};
+    Object.keys(restoData.floorPlans).forEach(slug => {
+      const a = restoData.floorPlans[slug];
+      if(!a || typeof a !== 'object') return;
+      out[slug] = {
+        area: a.area || _fpAreaLabelFromSlug(slug),
+        width:  a.width  || 1000,
+        height: a.height || 700,
+        bgColor: a.bgColor || '#0f0f0f',
+        elements: Array.isArray(a.elements) ? a.elements.slice() : []
+      };
+    });
+    if(Object.keys(out).length) return out;
+  }
+  // Fallback: legacy single floorPlan → wrap as 'indoor'
+  if(restoData.floorPlan && Array.isArray(restoData.floorPlan.elements)){
+    return {
+      indoor: {
+        area: 'Indoor',
+        width:  restoData.floorPlan.width  || 1000,
+        height: restoData.floorPlan.height || 700,
+        bgColor: restoData.floorPlan.bgColor || '#0f0f0f',
+        elements: restoData.floorPlan.elements.slice()
+      }
+    };
+  }
+  return {};
+}
+
+function _fpAreaLabelFromSlug(slug){
+  const std = FP_AREA_TYPES.find(t => t.slug === slug);
+  if(std) return std.label;
+  // Custom slug like 'custom_xyz' → fall back to capitalised slug
+  return String(slug||'').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
 
 const FP_DEFAULT_SIZES = {
   'table-square': { w: 60,  h: 60  },
@@ -10622,13 +10870,17 @@ async function fpOpen(restoId){
   if(!r){ alert('Restaurant not found'); return; }
   fpState.restoName = r.name || 'Restaurant';
   fpState.tables = r.tables || [];
-  fpState.plan = r.floorPlan && r.floorPlan.elements ? {
-    width:  r.floorPlan.width  || 1000,
-    height: r.floorPlan.height || 700,
-    bgColor: r.floorPlan.bgColor || '#0f0f0f',
-    elements: r.floorPlan.elements.slice()
-  } : { width:1000, height:700, bgColor:'#0f0f0f', elements:[] };
+  // v6.6: Load multi-area maps (auto-migrates legacy single floorPlan)
+  fpState.areas = _fpReadAreas(r);
+  // If still no areas (brand-new resto), seed an empty Indoor area
+  if(!Object.keys(fpState.areas).length){
+    fpState.areas.indoor = { area:'Indoor', width:1000, height:700, bgColor:'#0f0f0f', elements:[] };
+  }
+  // Pick the first area as active
+  fpState.activeArea = Object.keys(fpState.areas)[0];
+  fpState.plan = fpState.areas[fpState.activeArea];
   document.getElementById('fpRestoName').textContent = fpState.restoName;
+  fpRenderAreaTabs();
   // v5.6: Apply floor color to canvas + sync swatches
   _fpApplyFloorColor(fpState.plan.bgColor);
   fpRenderAll();
@@ -10652,8 +10904,194 @@ function fpClose(){
   closeModal('mFloorPlan');
   fpState.restoId = null;
   fpState.plan = null;
+  fpState.areas = {};
+  fpState.activeArea = null;
   fpState.selectedId = null;
   fpState.dirty = false;
+}
+
+/* v6.6: Render the area tabs row at top of editor */
+function fpRenderAreaTabs(){
+  const tabs = document.getElementById('fpAreasTabs');
+  const addBtn = document.getElementById('fpAreaAddBtn');
+  if(!tabs) return;
+  const slugs = Object.keys(fpState.areas);
+  tabs.innerHTML = slugs.map(slug => {
+    const a = fpState.areas[slug];
+    const active = (slug === fpState.activeArea) ? ' on' : '';
+    const showX = slugs.length > 1; // never let user delete the last area
+    const xBtn = showX
+      ? `<button class="fp-area-x" onclick="event.stopPropagation();fpDeleteArea('${_fpEsc(slug)}')" title="Delete area">×</button>`
+      : '';
+    return `<button class="fp-area-tab${active}" data-slug="${_fpEsc(slug)}" onclick="fpSwitchArea('${_fpEsc(slug)}')">${_fpEsc(a.area)}${xBtn}</button>`;
+  }).join('');
+  // Disable Add button when at max
+  if(addBtn){
+    if(slugs.length >= FP_MAX_AREAS){
+      addBtn.disabled = true;
+      addBtn.title = 'Maximum ' + FP_MAX_AREAS + ' areas reached';
+    } else {
+      addBtn.disabled = false;
+      addBtn.title = '';
+    }
+  }
+}
+
+/* v6.6: Switch the active area being edited */
+function fpSwitchArea(slug){
+  if(!fpState.areas[slug]) return;
+  if(fpState.activeArea === slug) return;
+  // Persist current active area state (it's already a reference, so mutations are saved)
+  // — but make sure bgColor on canvas resets correctly after switch
+  fpState.activeArea = slug;
+  fpState.plan = fpState.areas[slug];
+  fpState.selectedId = null;
+  _fpApplyFloorColor(fpState.plan.bgColor);
+  fpRenderAreaTabs();
+  fpRenderAll();
+  fpRenderProps();
+  fpSetStatus('Switched to ' + fpState.plan.area);
+}
+
+/* v6.6: Delete an area (with safety + confirmation) */
+function fpDeleteArea(slug){
+  if(!fpState.areas[slug]) return;
+  const slugs = Object.keys(fpState.areas);
+  if(slugs.length <= 1){ alert('Cannot delete the last area.'); return; }
+  const a = fpState.areas[slug];
+  const elemCount = (a.elements && a.elements.length) || 0;
+  const msg = 'Delete area "' + a.area + '"?' + (elemCount ? '\n\nThis will remove ' + elemCount + ' element(s) on this map.' : '');
+  if(!confirm(msg)) return;
+  delete fpState.areas[slug];
+  // If we just deleted the active area, switch to another
+  if(fpState.activeArea === slug){
+    fpState.activeArea = Object.keys(fpState.areas)[0];
+    fpState.plan = fpState.areas[fpState.activeArea];
+    _fpApplyFloorColor(fpState.plan.bgColor);
+  }
+  fpState.selectedId = null;
+  fpMarkDirty();
+  fpRenderAreaTabs();
+  fpRenderAll();
+  fpRenderProps();
+}
+
+/* v6.6: Add Area modal — pick area type + create empty map */
+let _fpAaPick = null; // selected slug or 'custom'
+
+function fpOpenAddAreaModal(){
+  if(Object.keys(fpState.areas).length >= FP_MAX_AREAS){
+    alert('Maximum ' + FP_MAX_AREAS + ' areas already reached.');
+    return;
+  }
+  _fpAaPick = null;
+  // Build option list — disable already-existing slugs
+  const list = document.getElementById('fpAreaTypeList');
+  if(list){
+    const used = new Set(Object.keys(fpState.areas));
+    const lblIndoor = _ts('fp_indoor','Indoor');
+    const lblOutdoor = _ts('fp_outdoor','Outdoor');
+    const lblGarden = _ts('fp_garden','Garden');
+    const lblBar = _ts('fp_bar','Bar');
+    const lblPrivate = _ts('fp_private_room','Private Room');
+    const lblCustom = _ts('fp_custom_area','Custom name…');
+    const labels = {
+      indoor: lblIndoor, outdoor: lblOutdoor, garden: lblGarden,
+      bar: lblBar, private_room: lblPrivate
+    };
+    const icons = {
+      indoor: '🏠', outdoor: '☀️', garden: '🌿', bar: '🍸', private_room: '🚪'
+    };
+    let html = FP_AREA_TYPES.map(t => {
+      const dis = used.has(t.slug) ? ' disabled' : '';
+      return `<div class="fp-aa-opt${dis}" data-slug="${t.slug}" onclick="${dis?'':`_fpAaSelect('${t.slug}')`}">
+        <span class="fp-aa-opt-ic">${icons[t.slug]||'•'}</span>
+        <span>${_fpEsc(labels[t.slug])}</span>
+      </div>`;
+    }).join('');
+    html += `<div class="fp-aa-opt" data-slug="__custom__" onclick="_fpAaSelect('__custom__')">
+      <span class="fp-aa-opt-ic">✏️</span>
+      <span>${_fpEsc(lblCustom)}</span>
+    </div>`;
+    list.innerHTML = html;
+  }
+  // Reset custom input row
+  const customRow = document.getElementById('fpAreaCustomRow');
+  const customInput = document.getElementById('fpAreaCustomInput');
+  if(customRow) customRow.style.display = 'none';
+  if(customInput) customInput.value = '';
+  const confirmBtn = document.getElementById('fpAreaAddConfirm');
+  if(confirmBtn) confirmBtn.disabled = true;
+  document.getElementById('mFpAddArea').classList.add('open');
+  if(typeof applyTranslation === 'function' && typeof lang !== 'undefined' && lang !== 'en'){
+    try { applyTranslation(document.getElementById('mFpAddArea')); } catch(e){}
+  }
+}
+
+function fpCloseAddAreaModal(){
+  document.getElementById('mFpAddArea').classList.remove('open');
+  _fpAaPick = null;
+}
+
+function _fpAaSelect(slug){
+  _fpAaPick = slug;
+  // Visual selection
+  document.querySelectorAll('#fpAreaTypeList .fp-aa-opt').forEach(el => {
+    el.classList.toggle('on', el.dataset.slug === slug);
+  });
+  // Show custom input if "custom" picked
+  const customRow = document.getElementById('fpAreaCustomRow');
+  const customInput = document.getElementById('fpAreaCustomInput');
+  const confirmBtn = document.getElementById('fpAreaAddConfirm');
+  if(slug === '__custom__'){
+    if(customRow) customRow.style.display = '';
+    if(customInput){
+      customInput.focus();
+      customInput.oninput = () => {
+        if(confirmBtn) confirmBtn.disabled = !customInput.value.trim();
+      };
+    }
+    if(confirmBtn) confirmBtn.disabled = !(customInput && customInput.value.trim());
+  } else {
+    if(customRow) customRow.style.display = 'none';
+    if(confirmBtn) confirmBtn.disabled = false;
+  }
+}
+
+function fpConfirmAddArea(){
+  if(!_fpAaPick) return;
+  let slug, label;
+  if(_fpAaPick === '__custom__'){
+    const raw = (document.getElementById('fpAreaCustomInput').value || '').trim();
+    if(!raw){ alert('Enter a custom name.'); return; }
+    label = raw;
+    const baseSlug = 'custom_' + _fpAreaSlugify(raw);
+    let candidate = baseSlug;
+    let n = 2;
+    while(fpState.areas[candidate]){ candidate = baseSlug + '_' + (n++); }
+    slug = candidate;
+  } else {
+    if(fpState.areas[_fpAaPick]){ alert('That area already exists.'); return; }
+    slug = _fpAaPick;
+    label = _fpAreaLabelFromSlug(slug);
+  }
+  fpState.areas[slug] = {
+    area: label,
+    width: 1000,
+    height: 700,
+    bgColor: '#0f0f0f',
+    elements: []
+  };
+  fpState.activeArea = slug;
+  fpState.plan = fpState.areas[slug];
+  fpState.selectedId = null;
+  fpMarkDirty();
+  fpRenderAreaTabs();
+  _fpApplyFloorColor(fpState.plan.bgColor);
+  fpRenderAll();
+  fpRenderProps();
+  fpCloseAddAreaModal();
+  fpSetStatus('Added area: ' + label);
 }
 
 function fpSetStatus(msg){
@@ -10950,26 +11388,34 @@ function fpClearAll(){
 }
 
 async function fpSave(){
-  if(!fpState.restoId || !fpState.plan) return;
+  if(!fpState.restoId || !fpState.areas) return;
   const btn = document.getElementById('fpSaveBtn');
   if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
   try {
-    const data = {
-      width: fpState.plan.width,
-      height: fpState.plan.height,
-      bgColor: fpState.plan.bgColor || '#0f0f0f',
-      updatedAt: Date.now(),
-      elements: fpState.plan.elements
-    };
+    // v6.6: Build a new floorPlans object with all areas
+    const out = {};
+    Object.keys(fpState.areas).forEach(slug => {
+      const a = fpState.areas[slug];
+      out[slug] = {
+        area: a.area,
+        width: a.width,
+        height: a.height,
+        bgColor: a.bgColor || '#0f0f0f',
+        updatedAt: Date.now(),
+        elements: a.elements || []
+      };
+    });
     if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
-    await fbSet('restaurants/'+fpState.restoId+'/floorPlan', data);
+    await fbSet('restaurants/'+fpState.restoId+'/floorPlans', out);
+    // Clean up legacy single-plan field once successfully migrated to floorPlans
+    try { await fbSet('restaurants/'+fpState.restoId+'/floorPlan', null); } catch(e){}
     fpState.dirty = false;
     fpSetStatus('Saved ✓');
     if(btn){ btn.disabled = false; btn.style.background = ''; btn.textContent = '💾 Save'; }
     notifyD('✅ Floor plan saved');
   } catch(e){
     console.error('fpSave:', e);
-    alert('Could not save floor plan: ' + (e.message||'unknown error') + '\n\nCheck Firebase rules for "floorPlan" path.');
+    alert('Could not save floor plan: ' + (e.message||'unknown error') + '\n\nCheck Firebase rules for "floorPlans" path.');
     if(btn){ btn.disabled = false; btn.textContent = '💾 Save'; }
   }
 }
@@ -11388,65 +11834,83 @@ async function bkLoadTables(){
         lockedTableIds.add(tId);
       }
     });
-    // v5.5: If floor plan exists with at least one linked table, render visual map.
-    // Falls back to zone tabs if no plan or no tables placed on plan.
-    const plan = r && r.floorPlan;
-    const placedTableIds = (plan && plan.elements) ?
-      plan.elements.filter(e => e.kind && e.kind.indexOf('table')===0 && e.tableId).map(e => e.tableId) : [];
-    const hasUsablePlan = plan && placedTableIds.length > 0;
-    if(hasUsablePlan){
-      // v5.7: Expand the booking modal to full-screen so the floor plan is usable on phones.
+    // v6.6: MULTI-AREA support — read all area maps and let customer pick
+    const allAreas = _fpReadAreas(r);
+    const allTablesById = {};
+    tables.forEach(t => { allTablesById[t.id] = t; });
+    // Filter to areas that actually have at least one placed table
+    const usableAreaSlugs = Object.keys(allAreas).filter(slug => {
+      const a = allAreas[slug];
+      const placed = (a.elements || []).filter(e => e.kind && e.kind.indexOf('table')===0 && e.tableId);
+      return placed.length > 0;
+    });
+    if(usableAreaSlugs.length > 0){
+      // v5.7: Full-screen mode for the table picker
       const _fpShell = document.querySelector('#mCustBooking .bkm-shell');
       if(_fpShell) _fpShell.classList.add('fp-fullscreen');
-      // v5.8: Tell the grid to switch from "card grid" mode to "floor plan flex column" mode.
-      // Without this, the grid CSS forces the SVG into a tiny 110px cell.
+      // v5.8: Switch grid to floor-plan layout
       grid.classList.add('fp-mode');
-      // Render visual floor plan. Restrict booked/locked sets to tables that exist in partyOK.
-      const partyIdSet = new Set(partyOK.map(t => t.id));
-      // Show ALL tables in the plan; mark booked/locked/too-small as unavailable (industry standard).
-      const allTablesById = {};
-      tables.forEach(t => { allTablesById[t.id] = t; });
-      const tooSmall = new Set();
-      placedTableIds.forEach(tid => {
-        const t = allTablesById[tid];
-        if(!t) return;
-        const max = t.maxSeats || t.seats || 0;
-        const min = t.minSeats || 1;
-        if(bkState.party > max || bkState.party < min) tooSmall.add(tid);
-      });
-      // Combined "unavailable" set for viewer
-      const viewerBooked = new Set([...bookedTableIds, ...tooSmall]);
-      // v5.9: Cache plan so tiOpen can read shape info
-      bkState._cachedPlan = plan;
-      const svg = fpRenderCustomerView(plan, tables, viewerBooked, lockedTableIds, bkState.tableId);
-      // Hide zone tabs (not used in floor-plan mode)
+      // Hide the legacy zone tabs row (we use our own area tabs above the map)
       tabs.innerHTML = '';
       tabs.style.display = 'none';
+      // Pick initial area: keep current if still valid, else first usable
+      if(!bkState._activeArea || usableAreaSlugs.indexOf(bkState._activeArea) < 0){
+        bkState._activeArea = usableAreaSlugs[0];
+      }
+      // Cache for re-renders
+      bkState._allAreas = allAreas;
+      bkState._usableAreaSlugs = usableAreaSlugs;
+      bkState._allTablesById = allTablesById;
+      bkState._bookedTableIds = bookedTableIds;
+      bkState._lockedTableIds = lockedTableIds;
+      // Build legend labels
       const lblAvail = _lp('bk_legend_available','Available');
       const lblBooked = _lp('bk_table_booked','Booked');
       const lblLocked = _lp('bk_table_locked_by_other','Reserved');
-      grid.innerHTML = `
-        <div class="fp-viewer-wrap">${svg}</div>
+      // Build area tabs (only when more than one area)
+      let tabsHtml = '';
+      if(usableAreaSlugs.length > 1){
+        tabsHtml = `<div class="bk-area-tabs">${usableAreaSlugs.map(slug => {
+          const a = allAreas[slug];
+          // Translate standard areas
+          let label = a.area || _fpAreaLabelFromSlug(slug);
+          const stdLabelKey = 'fp_'+slug;
+          const t = _lp(stdLabelKey, '');
+          if(t && t !== stdLabelKey) label = t;
+          const cls = (slug === bkState._activeArea) ? 'bk-area-tab on' : 'bk-area-tab';
+          return `<button class="${cls}" data-area="${escapeHtml(slug)}">${escapeHtml(label)}</button>`;
+        }).join('')}</div>`;
+      }
+      // Initial render
+      _bkRenderActiveAreaMap();
+      // Insert tabs (above the wrap) + legend (below the wrap)
+      const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
+      grid.innerHTML = tabsHtml + wrapHtml + `
         <div class="fp-vw-legend">
           <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
           <span><i style="background:rgba(220,53,69,.4)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
           <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
       `;
-      // Wire up clicks on table elements — v5.9: open info popup instead of locking immediately
-      const svgEl = grid.querySelector('svg');
-      if(svgEl){
-        svgEl.onclick = function(ev){
-          const tEl = ev.target.closest('.fp-vw-table');
-          if(!tEl) return;
-          if(tEl.classList.contains('booked') || tEl.classList.contains('locked')) return;
-          const tid = tEl.dataset.tid;
-          if(tid) tiOpen(tid);
+      // Wire up area tab clicks
+      const tabsEl = grid.querySelector('.bk-area-tabs');
+      if(tabsEl){
+        tabsEl.onclick = function(ev){
+          const btn = ev.target.closest('button[data-area]');
+          if(!btn) return;
+          const slug = btn.dataset.area;
+          if(!slug || slug === bkState._activeArea) return;
+          bkState._activeArea = slug;
+          // Re-render only the map portion
+          tabsEl.querySelectorAll('button[data-area]').forEach(b => b.classList.toggle('on', b.dataset.area === slug));
+          _bkRenderActiveAreaMap(true);
         };
       }
-      return; // Done — don't render zone tabs
+      // Wire up SVG click handler — picks a table, then opens info popup
+      _bkWireMapClicks();
+      return; // Done
     }
-    // No floor plan — make sure fullscreen is OFF (zone tabs UI doesn't need it)
+    // No usable area at all — fall back to zone tabs (legacy behavior)
     const _fpShell2 = document.querySelector('#mCustBooking .bkm-shell');
     if(_fpShell2) _fpShell2.classList.remove('fp-fullscreen');
     // v5.8: Restore grid layout for zone-tab fallback
@@ -11581,6 +12045,56 @@ async function tiConfirm(){
   // Restore button text (in case lock failed and modal is reopened later)
   if(btn){ btn.disabled = false; btn.textContent = _lp('ti_reserve','Reserve this table →'); }
   tiClose();
+}
+
+/* v6.6: Render the SVG map for the currently-active area into the grid container.
+   When called with replaceOnly=true, replaces only the .fp-viewer-wrap so the tabs/legend stay. */
+function _bkRenderActiveAreaMap(replaceOnly){
+  const grid = document.getElementById('bkTableGrid');
+  if(!grid) return;
+  const slug = bkState._activeArea;
+  if(!slug || !bkState._allAreas) return;
+  const area = bkState._allAreas[slug];
+  if(!area) return;
+  // Compute too-small tables (per party size) for THIS area only
+  const placedTableIds = (area.elements || [])
+    .filter(e => e.kind && e.kind.indexOf('table')===0 && e.tableId)
+    .map(e => e.tableId);
+  const tooSmall = new Set();
+  placedTableIds.forEach(tid => {
+    const t = bkState._allTablesById[tid];
+    if(!t) return;
+    const max = t.maxSeats || t.seats || 0;
+    const min = t.minSeats || 1;
+    if(bkState.party > max || bkState.party < min) tooSmall.add(tid);
+  });
+  const viewerBooked = new Set([...(bkState._bookedTableIds||[]), ...tooSmall]);
+  // Cache plan for tiOpen popup (so it knows shape)
+  bkState._cachedPlan = area;
+  const svg = fpRenderCustomerView(area, bkState.tables, viewerBooked, bkState._lockedTableIds, bkState.tableId);
+  const wrapHtml = `<div class="fp-viewer-wrap">${svg}</div>`;
+  if(replaceOnly){
+    const oldWrap = grid.querySelector('.fp-viewer-wrap');
+    if(oldWrap) oldWrap.outerHTML = wrapHtml;
+  } else {
+    grid.innerHTML = wrapHtml;
+  }
+  // Re-wire clicks (DOM changed)
+  _bkWireMapClicks();
+}
+
+function _bkWireMapClicks(){
+  const grid = document.getElementById('bkTableGrid');
+  if(!grid) return;
+  const svgEl = grid.querySelector('svg');
+  if(!svgEl) return;
+  svgEl.onclick = function(ev){
+    const tEl = ev.target.closest('.fp-vw-table');
+    if(!tEl) return;
+    if(tEl.classList.contains('booked') || tEl.classList.contains('locked')) return;
+    const tid = tEl.dataset.tid;
+    if(tid) tiOpen(tid);
+  };
 }
 
 async function bkPickTable(tableId){
@@ -11891,6 +12405,11 @@ async function loadOwnerBookings(){
     if(data) Object.keys(data).forEach(k=>{ arr.push({id:k, ...data[k]}); });
     arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     _bkOwnerCache = arr;
+    // v6.5: Fetch restaurant's table count for stats dashboard
+    try {
+      const r = await fbGet('restaurants/'+restoId);
+      _bkRestoTableCount = (r && Array.isArray(r.tables)) ? r.tables.length : 0;
+    } catch(e){ _bkRestoTableCount = 0; }
     // v6.4: Sync date filter button highlight (default: All dates)
     _bkUpdateDateFilterButtons();
     renderOwnerBookings();
@@ -11955,8 +12474,64 @@ function _bkUpdateDateFilterButtons(){
   else if(_bkOwnerDateFilter === null) clearBtn.classList.add('on');
 }
 
+/* v6.5: Stats dashboard — 4 cards above the booking list.
+   Respects the active date filter (or shows all-time if no date filter).
+   Counts:
+     - Total tables: from restaurants/$restoId/tables
+     - Booked: bookings with status=accepted on the date(s) in scope
+     - Pending: bookings with status=pending on the date(s) in scope
+     - No-show: bookings with status=expired (auto-cancelled, customer didn't arrive)
+*/
+function renderBkStats(){
+  const bar = document.getElementById('bkStatsBar');
+  if(!bar) return;
+  // Determine the booking set in scope of the date filter
+  const scope = _bkOwnerDateFilter
+    ? _bkOwnerCache.filter(b => b.date === _bkOwnerDateFilter)
+    : _bkOwnerCache;
+  const totalTables = _bkRestoTableCount || 0;
+  const booked  = scope.filter(b => b.status === 'accepted').length;
+  const pending = scope.filter(b => b.status === 'pending').length;
+  const noShow  = scope.filter(b => b.status === 'expired').length;
+  // Translation labels
+  const lblTotal   = _ts('bk_stat_total','Total tables');
+  const lblBooked  = _ts('bk_stat_booked','Booked');
+  const lblPending = _ts('bk_stat_pending','Pending');
+  const lblNoShow  = _ts('bk_stat_noshow','No-shows');
+  const lblForDate = _ts('bk_stat_for_date','For {date}');
+  const lblAllTime = _ts('bk_stat_all_time','All time');
+  const contextTxt = _bkOwnerDateFilter
+    ? lblForDate.replace('{date}', _bkOwnerDateFilter)
+    : lblAllTime;
+  bar.innerHTML = `
+    <div class="bk-stat-card stat-total">
+      <div class="bk-stat-icon">🪑</div>
+      <div class="bk-stat-num">${totalTables}</div>
+      <div class="bk-stat-lbl">${escapeHtml(lblTotal)}</div>
+    </div>
+    <div class="bk-stat-card stat-booked">
+      <div class="bk-stat-icon">✅</div>
+      <div class="bk-stat-num">${booked}</div>
+      <div class="bk-stat-lbl">${escapeHtml(lblBooked)}</div>
+    </div>
+    <div class="bk-stat-card stat-pending">
+      <div class="bk-stat-icon">⏳</div>
+      <div class="bk-stat-num">${pending}</div>
+      <div class="bk-stat-lbl">${escapeHtml(lblPending)}</div>
+    </div>
+    <div class="bk-stat-card stat-noshow">
+      <div class="bk-stat-icon">⚠️</div>
+      <div class="bk-stat-num">${noShow}</div>
+      <div class="bk-stat-lbl">${escapeHtml(lblNoShow)}</div>
+    </div>
+    <div class="bk-stats-context">${escapeHtml(contextTxt)}</div>
+  `;
+}
+
 function renderOwnerBookings(){
   const body = document.getElementById('ow-bookingsbody');
+  // v6.5: Always render the stats dashboard at the top — uses date filter if set
+  renderBkStats();
   // v6.4: Apply BOTH status filter AND date filter
   let filtered = _bkOwnerFilter==='all' ? _bkOwnerCache : _bkOwnerCache.filter(b=>b.status===_bkOwnerFilter);
   if(_bkOwnerDateFilter){
@@ -12557,6 +13132,11 @@ async function cleanupOldBookings(opts){
         <button class="btn btn-sm" onclick="fpClose()" data-ts="fp_close">Close</button>
       </div>
     </div>
+    <!-- v6.6: Area tabs row -->
+    <div class="fp-areas-bar" id="fpAreasBar">
+      <div class="fp-areas-tabs" id="fpAreasTabs"></div>
+      <button class="fp-area-add" id="fpAreaAddBtn" type="button" onclick="fpOpenAddAreaModal()" data-ts="fp_add_area">+ Add area</button>
+    </div>
     <!-- Body: 3-column layout -->
     <div class="fp-body">
       <!-- Toolbox -->
@@ -12663,6 +13243,23 @@ async function cleanupOldBookings(opts){
     <div class="fp-status">
       <span id="fpStatusMsg" data-ts="fp_ready">Ready</span>
       <span class="fp-status-r"><span id="fpElCount">0</span> <span data-ts="fp_elements">elements</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- v6.6: Add Area picker (small modal nested in SA editor) -->
+<div id="mFpAddArea" class="modal-ov fp-aa-modal" onclick="if(event.target===this)fpCloseAddAreaModal()">
+  <div class="fp-aa-shell">
+    <button class="fp-aa-x" onclick="fpCloseAddAreaModal()" aria-label="Close">×</button>
+    <div class="fp-aa-title" data-ts="fp_aa_title">Add a new area</div>
+    <div class="fp-aa-sub" data-ts="fp_aa_sub">Pick which kind of area this map represents.</div>
+    <div class="fp-aa-list" id="fpAreaTypeList"></div>
+    <div class="fp-aa-custom-row" id="fpAreaCustomRow" style="display:none">
+      <input type="text" class="fp-aa-input" id="fpAreaCustomInput" maxlength="32" placeholder="e.g. Rooftop">
+    </div>
+    <div class="fp-aa-actions">
+      <button class="btn btn-sm" onclick="fpCloseAddAreaModal()" data-ts="fp_aa_cancel">Cancel</button>
+      <button class="btn btn-sm btn-gold" id="fpAreaAddConfirm" onclick="fpConfirmAddArea()" disabled data-ts="fp_aa_create">Create</button>
     </div>
   </div>
 </div>
