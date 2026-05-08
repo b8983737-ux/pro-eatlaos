@@ -2288,6 +2288,12 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-pill-accepted{background:rgba(76,175,80,.12);color:#66bb6a;border:1px solid rgba(76,175,80,.3);}
 .bk-pill-rejected{background:rgba(244,67,54,.12);color:#ef5350;border:1px solid rgba(244,67,54,.3);}
 .bk-pill-expired{background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);}
+/* v6.4: Date filter on owner bookings panel */
+.bk-datefilter{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.bk-datefilter-lbl{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.bk-datefilter-input{padding:6px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#fff;font-family:inherit;font-size:13px;font-weight:600;outline:none;cursor:pointer;color-scheme:dark;}
+.bk-datefilter-input:focus{border-color:rgba(200,151,58,.55);}
+#bkDateBtnToday.on,#bkDateBtnClear.on{background:rgba(200,151,58,.15);border-color:#c8973a;color:#c8973a;}
 .bk-status-info{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;font-size:12px;color:rgba(255,255,255,.7);}
 .bk-status-info b{color:rgba(255,255,255,.5);font-weight:600;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:2px;}
 .bk-empty{text-align:center;padding:48px 20px;color:rgba(255,255,255,.45);font-size:13px;}
@@ -3300,8 +3306,18 @@ setTimeout(function(){
         <!-- BOOKINGS PANEL (v4 NEW) -->
         <div class="panel" id="ow-bookings">
           <div class="card">
-            <div class="card-h">
+            <div class="card-h" style="flex-wrap:wrap;gap:10px">
               <div class="card-title">📅 <span data-ts="table_bookings">Table Bookings</span></div>
+              <!-- v6.4: Date filter row -->
+              <div class="bk-datefilter">
+                <span class="bk-datefilter-lbl" data-ts="bk_date_filter">Date:</span>
+                <input type="date" id="bkDateFilter" class="bk-datefilter-input" oninput="setBookingDateFilter(this.value)">
+                <button class="btn btn-sm" id="bkDateBtnToday" onclick="setBookingDateFilterToday()" data-ts="bk_today">Today</button>
+                <button class="btn btn-sm" id="bkDateBtnClear" onclick="clearBookingDateFilter()" data-ts="bk_all_dates">All dates</button>
+              </div>
+            </div>
+            <div class="card-h" style="border-top:1px solid rgba(255,255,255,.05);padding-top:10px;margin-top:0;justify-content:flex-start">
+              <span class="bk-datefilter-lbl" style="margin-right:6px" data-ts="bk_status_label">Status:</span>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
                 <button class="btn btn-sm btn-gold" id="bkFBtn-pending" onclick="setBookingFilter('pending',this)" data-ts="bk_pending">Pending</button>
                 <button class="btn btn-sm" id="bkFBtn-accepted" onclick="setBookingFilter('accepted',this)" data-ts="bk_accepted">Accepted</button>
@@ -4032,6 +4048,13 @@ const STAFF_T={
     bookings:'Bookings',open_hours:'Opening Hours',
     table_bookings:'Table Bookings',opening_hours:'Opening Hours',
     bk_pending:'Pending',bk_accepted:'Accepted',bk_rejected:'Rejected',bk_all:'All',
+    // v6.4: Owner booking date filter
+    bk_date_filter:'Date:',
+    bk_today:'Today',
+    bk_all_dates:'All dates',
+    bk_status_label:'Status:',
+    bk_no_bookings_for_date:'No bookings on {date}.',
+    bk_no_bookings_for_filter:'No bookings match these filters.',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'Expired',
     bk_checkin:'✓ Customer arrived',
@@ -4130,6 +4153,13 @@ const STAFF_T={
     bookings:'ການຈອງ',open_hours:'ຊົ່ວໂມງເປີດ',
     table_bookings:'ການຈອງໂຕະ',opening_hours:'ຊົ່ວໂມງເປີດ',
     bk_pending:'ລໍຖ້າ',bk_accepted:'ອະນຸມັດ',bk_rejected:'ປະຕິເສດ',bk_all:'ທັງໝົດ',
+    // v6.4: Owner booking date filter
+    bk_date_filter:'ວັນທີ:',
+    bk_today:'ມື້ນີ້',
+    bk_all_dates:'ທຸກວັນ',
+    bk_status_label:'ສະຖານະ:',
+    bk_no_bookings_for_date:'ບໍ່ມີການຈອງໃນວັນທີ {date}.',
+    bk_no_bookings_for_filter:'ບໍ່ມີການຈອງທີ່ກົງກັບເງື່ອນໄຂ.',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'ໝົດເວລາ',
     bk_checkin:'✓ ລູກຄ້າມາແລ້ວ',
@@ -4228,6 +4258,13 @@ const STAFF_T={
     bookings:'การจอง',open_hours:'เวลาเปิด',
     table_bookings:'การจองโต๊ะ',opening_hours:'เวลาเปิด',
     bk_pending:'รอดำเนินการ',bk_accepted:'อนุมัติ',bk_rejected:'ปฏิเสธ',bk_all:'ทั้งหมด',
+    // v6.4: Owner booking date filter
+    bk_date_filter:'วันที่:',
+    bk_today:'วันนี้',
+    bk_all_dates:'ทุกวัน',
+    bk_status_label:'สถานะ:',
+    bk_no_bookings_for_date:'ไม่มีการจองในวันที่ {date}',
+    bk_no_bookings_for_filter:'ไม่มีการจองที่ตรงกับเงื่อนไข',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'หมดเวลา',
     bk_checkin:'✓ ลูกค้ามาแล้ว',
@@ -4326,6 +4363,13 @@ const STAFF_T={
     bookings:'预订',open_hours:'营业时间',
     table_bookings:'餐桌预订',opening_hours:'营业时间',
     bk_pending:'待确认',bk_accepted:'已确认',bk_rejected:'已拒绝',bk_all:'全部',
+    // v6.4: Owner booking date filter
+    bk_date_filter:'日期:',
+    bk_today:'今天',
+    bk_all_dates:'所有日期',
+    bk_status_label:'状态:',
+    bk_no_bookings_for_date:'{date} 没有预订。',
+    bk_no_bookings_for_filter:'没有符合筛选条件的预订。',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'已过期',
     bk_checkin:'✓ 客人已到达',
@@ -4440,6 +4484,13 @@ const STAFF_T={
     bookings:'예약',open_hours:'영업 시간',
     table_bookings:'테이블 예약',opening_hours:'영업 시간',
     bk_pending:'대기 중',bk_accepted:'수락됨',bk_rejected:'거절됨',bk_all:'전체',
+    // v6.4: Owner booking date filter
+    bk_date_filter:'날짜:',
+    bk_today:'오늘',
+    bk_all_dates:'모든 날짜',
+    bk_status_label:'상태:',
+    bk_no_bookings_for_date:'{date}에 예약이 없습니다.',
+    bk_no_bookings_for_filter:'필터 조건과 일치하는 예약이 없습니다.',
     // v6.3: Custom booking times + check-in + auto-expiry
     bk_expired:'만료됨',
     bk_checkin:'✓ 고객 도착',
@@ -10256,6 +10307,7 @@ function _lpMonth(monthIdx, short){
 let bkState = { restoId:null, restoName:null, date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[], tables:[], tableId:null, tableNum:null, tableZone:null, lockSessionId:null, lockExpiresAt:0 };
 let _bkOwnerCache = []; // owner-side cached bookings
 let _bkOwnerFilter = 'pending';
+let _bkOwnerDateFilter = null; // v6.4: 'YYYY-MM-DD' or null = all dates
 let _bkLiveListener = null; // for sound notification
 let _bkLastBookingCount = 0;
 
@@ -11839,6 +11891,8 @@ async function loadOwnerBookings(){
     if(data) Object.keys(data).forEach(k=>{ arr.push({id:k, ...data[k]}); });
     arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     _bkOwnerCache = arr;
+    // v6.4: Sync date filter button highlight (default: All dates)
+    _bkUpdateDateFilterButtons();
     renderOwnerBookings();
     setupOwnerBookingListener();
     // v6.3: Run auto-expiry sweep — frees slots from no-show accepted bookings
@@ -11856,12 +11910,71 @@ function setBookingFilter(f, btn){
   renderOwnerBookings();
 }
 
+/* v6.4: Date filter helpers */
+function setBookingDateFilter(dateStr){
+  // Empty value (user cleared the picker) → null = all dates
+  _bkOwnerDateFilter = (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) ? dateStr : null;
+  _bkUpdateDateFilterButtons();
+  renderOwnerBookings();
+}
+
+function setBookingDateFilterToday(){
+  // Use Laos-local date (UTC+7) — match _bkLocalISO logic
+  let todayStr;
+  try {
+    todayStr = (typeof _bkLocalISO === 'function') ? _bkLocalISO(new Date()) : new Date().toISOString().slice(0,10);
+  } catch(e){
+    todayStr = new Date().toISOString().slice(0,10);
+  }
+  _bkOwnerDateFilter = todayStr;
+  const inp = document.getElementById('bkDateFilter');
+  if(inp) inp.value = todayStr;
+  _bkUpdateDateFilterButtons();
+  renderOwnerBookings();
+}
+
+function clearBookingDateFilter(){
+  _bkOwnerDateFilter = null;
+  const inp = document.getElementById('bkDateFilter');
+  if(inp) inp.value = '';
+  _bkUpdateDateFilterButtons();
+  renderOwnerBookings();
+}
+
+function _bkUpdateDateFilterButtons(){
+  // Highlight whichever quick button matches current filter
+  const todayBtn = document.getElementById('bkDateBtnToday');
+  const clearBtn = document.getElementById('bkDateBtnClear');
+  if(!todayBtn || !clearBtn) return;
+  todayBtn.classList.remove('on');
+  clearBtn.classList.remove('on');
+  let todayStr;
+  try { todayStr = (typeof _bkLocalISO === 'function') ? _bkLocalISO(new Date()) : new Date().toISOString().slice(0,10); }
+  catch(e){ todayStr = new Date().toISOString().slice(0,10); }
+  if(_bkOwnerDateFilter === todayStr) todayBtn.classList.add('on');
+  else if(_bkOwnerDateFilter === null) clearBtn.classList.add('on');
+}
+
 function renderOwnerBookings(){
   const body = document.getElementById('ow-bookingsbody');
-  const filtered = _bkOwnerFilter==='all' ? _bkOwnerCache : _bkOwnerCache.filter(b=>b.status===_bkOwnerFilter);
+  // v6.4: Apply BOTH status filter AND date filter
+  let filtered = _bkOwnerFilter==='all' ? _bkOwnerCache : _bkOwnerCache.filter(b=>b.status===_bkOwnerFilter);
+  if(_bkOwnerDateFilter){
+    filtered = filtered.filter(b => b.date === _bkOwnerDateFilter);
+  }
   if(!filtered.length){
-    body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_no_bookings','No bookings in this category.'))}</div>`;
-    // Update badge
+    // Tailor empty-state message based on what filters are active
+    let emptyMsg;
+    if(_bkOwnerDateFilter && _bkOwnerFilter !== 'all'){
+      emptyMsg = _ts('bk_no_bookings_for_filter','No bookings match these filters.');
+    } else if(_bkOwnerDateFilter){
+      const tpl = _ts('bk_no_bookings_for_date','No bookings on {date}.');
+      emptyMsg = tpl.replace('{date}', _bkOwnerDateFilter);
+    } else {
+      emptyMsg = _ts('bk_no_bookings','No bookings in this category.');
+    }
+    body.innerHTML = `<div class="bk-empty">${escapeHtml(emptyMsg)}</div>`;
+    // Update badge (always reflects PENDING regardless of filters)
     const pendingCount = _bkOwnerCache.filter(b=>b.status==='pending').length;
     const badge = document.getElementById('owBookBadge');
     if(badge){
