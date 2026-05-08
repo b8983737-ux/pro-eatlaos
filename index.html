@@ -3193,11 +3193,11 @@ setTimeout(function(){
     <aside class="sb">
       <div class="sb-brand"><div class="sb-logo">EAT<em>LAOS</em></div><div class="sb-badge badge-ow">🏪 Owner</div></div>
       <nav class="sb-nav">
-        <button class="sb-item on" onclick="owP('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
-        <button class="sb-item" onclick="owP('liveorders',this)"><span class="sb-ico">🔴</span data-ts="live_orders">Live Orders<span class="sb-num" id="owNewBadge" style="display:none">!</span></button>
-        <button class="sb-item" onclick="owP('bills',this)"><span class="sb-ico">🧾</span>Table Bills</button>
-        <button class="sb-item" onclick="owP('menu',this)"><span class="sb-ico">🍽️</span>Menu Items</button>
-        <button class="sb-item" onclick="owP('categories',this)"><span class="sb-ico">🏷️</span>Categories</button>
+        <button class="sb-item on" id="owNav-dashboard" onclick="owP('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
+        <button class="sb-item" id="owNav-liveorders" onclick="owP('liveorders',this)"><span class="sb-ico">🔴</span data-ts="live_orders">Live Orders<span class="sb-num" id="owNewBadge" style="display:none">!</span></button>
+        <button class="sb-item" id="owNav-bills" onclick="owP('bills',this)"><span class="sb-ico">🧾</span>Table Bills</button>
+        <button class="sb-item" id="owNav-menu" onclick="owP('menu',this)"><span class="sb-ico">🍽️</span>Menu Items</button>
+        <button class="sb-item" id="owNav-categories" onclick="owP('categories',this)"><span class="sb-ico">🏷️</span>Categories</button>
         <button class="sb-item" id="owNav-tables" onclick="owP('tables',this)"><span class="sb-ico">🪑</span>Tables &amp; QR</button>
         <button class="sb-item" id="owNav-history" onclick="owP('history',this)"><span class="sb-ico">📋</span>Order History</button>
         <button class="sb-item" id="owNav-bookings" onclick="owP('bookings',this)"><span class="sb-ico">📅</span><span data-ts="bookings">Bookings</span><span class="sb-num" id="owBookBadge" style="display:none">!</span></button>
@@ -3426,7 +3426,7 @@ setTimeout(function(){
       </div>
     </main>
   </div>
-  <nav class="mob-sb"><div class="mob-sb-inner"><button class="mob-sb-btn on" onclick="owP('dashboard',this)"><span class="mob-sb-ico">📊</span>Home</button><button class="mob-sb-btn" onclick="owP('liveorders',this)"><span class="mob-sb-ico">🔴</span>Live</button><button class="mob-sb-btn" onclick="owP('bills',this)"><span class="mob-sb-ico">🧾</span>Bills</button><button class="mob-sb-btn" onclick="owP('tables',this)"><span class="mob-sb-ico">🪑</span>Tables</button></div></nav>
+  <nav class="mob-sb"><div class="mob-sb-inner"><button class="mob-sb-btn on" id="owMob-dashboard" onclick="owP('dashboard',this)"><span class="mob-sb-ico">📊</span>Home</button><button class="mob-sb-btn" id="owMob-liveorders" onclick="owP('liveorders',this)"><span class="mob-sb-ico">🔴</span>Live</button><button class="mob-sb-btn" id="owMob-bills" onclick="owP('bills',this)"><span class="mob-sb-ico">🧾</span>Bills</button><button class="mob-sb-btn" id="owMob-tables" onclick="owP('tables',this)"><span class="mob-sb-ico">🪑</span>Tables</button></div></nav>
 </div>
 
 <!-- CUSTOMER -->
@@ -7991,16 +7991,30 @@ function owP(panel,btn){
 }
 
 /* v6.8: Owner-side feature gating — load this restaurant's features and hide
-   any nav buttons/panels for disabled features. Idempotent: safe to call repeatedly. */
+   any nav buttons/panels for disabled features. Idempotent: safe to call repeatedly.
+   v6.9: Caches the features so it doesn't re-fetch on every panel switch. */
 let _owFeaturesCache = null;
+let _owFeaturesCacheRestoId = null;
+let _owFeaturesLoadedAt = 0;
+const _OW_FEATURES_TTL = 60000; // 60 seconds — re-fetch if older than this
 
-async function _owLoadAndApplyFeatures(){
+async function _owLoadAndApplyFeatures(forceRefresh){
   if(typeof restoId === 'undefined' || !restoId) return;
+  // Use cache if fresh and for the same restaurant
+  const cacheValid = _owFeaturesCache &&
+                     _owFeaturesCacheRestoId === restoId &&
+                     (Date.now() - _owFeaturesLoadedAt) < _OW_FEATURES_TTL;
+  if(cacheValid && !forceRefresh){
+    _owApplyFeatures(_owFeaturesCache);
+    return;
+  }
   try {
     const r = await fbGet('restaurants/'+restoId);
     if(!r) return;
     const f = _resGetFeatures(r);
     _owFeaturesCache = f;
+    _owFeaturesCacheRestoId = restoId;
+    _owFeaturesLoadedAt = Date.now();
     _owApplyFeatures(f);
   } catch(e){
     console.error('_owLoadAndApplyFeatures:', e);
@@ -8009,26 +8023,62 @@ async function _owLoadAndApplyFeatures(){
 
 function _owApplyFeatures(f){
   if(!f) return;
-  // Hide/show Bookings nav
-  const navBookings = document.getElementById('owNav-bookings');
-  if(navBookings) navBookings.style.display = f.booking ? '' : 'none';
-  // QR Order disabled → hide Tables&QR + Order History (the parts that depend on QR ordering)
-  // Note: 'Live Orders' / 'Bills' / 'Dashboard' are ALSO QR-related, but they're considered
-  // core (owner sees their orders even if QR is restricted on customer side). To keep this
-  // surgical, we hide ONLY the two most directly QR-related navs. Owner can still see other
-  // panels but customer-side QR access is blocked separately.
-  const navTables = document.getElementById('owNav-tables');
-  if(navTables) navTables.style.display = f.qrOrder ? '' : 'none';
-  const navHistory = document.getElementById('owNav-history');
-  if(navHistory) navHistory.style.display = f.qrOrder ? '' : 'none';
-  // If currently on a hidden panel, redirect to dashboard
+  // v6.9: Per-feature panel visibility mapping.
+  //   Booking flag controls: Bookings panel
+  //   QR Order flag controls: Dashboard, Live Orders, Table Bills, Menu, Categories, Order History
+  //   Tables & QR: visible if EITHER feature is on (booking needs tables, QR needs tables too)
+  //   Open Hours + Profile: ALWAYS visible (every owner needs these)
+  //
+  // Result for booking-only restaurant (booking ON, QR OFF):
+  //   → Tables & QR + Bookings + Open Hours + Profile (4 panels)
+  // Result for QR-only restaurant (booking OFF, QR ON):
+  //   → Dashboard + Live Orders + Bills + Menu + Cats + Tables & QR + History + Open Hours + Profile (9)
+  // Result for full restaurant (both ON):
+  //   → All 10 panels visible
+  // Result for no features (legacy → both default ON): all panels visible (backward compat)
+  const showQR      = !!f.qrOrder;
+  const showBooking = !!f.booking;
+  const showTables  = showQR || showBooking; // both features need tables
+  const setVis = (id, show) => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = show ? '' : 'none';
+  };
+  // Desktop sidebar
+  setVis('owNav-dashboard',  showQR);
+  setVis('owNav-liveorders', showQR);
+  setVis('owNav-bills',      showQR);
+  setVis('owNav-menu',       showQR);
+  setVis('owNav-categories', showQR);
+  setVis('owNav-tables',     showTables);
+  setVis('owNav-history',    showQR);
+  setVis('owNav-bookings',   showBooking);
+  // Mobile sidebar (smaller subset)
+  setVis('owMob-dashboard',  showQR);
+  setVis('owMob-liveorders', showQR);
+  setVis('owMob-bills',      showQR);
+  setVis('owMob-tables',     showTables);
+  // If currently on a hidden panel, redirect to a visible one
   const activePanel = document.querySelector('#pg-ow .panel.on');
   if(activePanel){
     const id = activePanel.id;
-    if((id === 'ow-bookings' && !f.booking) ||
-       ((id === 'ow-tables' || id === 'ow-history') && !f.qrOrder)){
-      const dash = document.querySelector('#pg-ow .sb-item');
-      if(dash && typeof owP === 'function') owP('dashboard', dash);
+    const isHidden =
+      (id === 'ow-bookings'   && !showBooking) ||
+      (id === 'ow-tables'     && !showTables)  ||
+      (id === 'ow-history'    && !showQR)      ||
+      (id === 'ow-dashboard'  && !showQR)      ||
+      (id === 'ow-liveorders' && !showQR)      ||
+      (id === 'ow-bills'      && !showQR)      ||
+      (id === 'ow-menu'       && !showQR)      ||
+      (id === 'ow-categories' && !showQR);
+    if(isHidden){
+      // Pick the first available panel as fallback (priority: bookings → tables → hours → profile)
+      let target = null;
+      if(showBooking) target = 'bookings';
+      else if(showTables) target = 'tables';
+      else target = 'hours';
+      // Find the matching nav button to highlight
+      const navBtn = document.getElementById('owNav-' + target);
+      if(navBtn && typeof owP === 'function') owP(target, navBtn);
     }
   }
 }
@@ -11061,6 +11111,10 @@ async function rfSave(){
     };
     if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
     await fbSet('restaurants/'+_rfRestoId+'/features', features);
+    // v6.9: Invalidate the owner-side cache so next owner login/refresh sees the new flags.
+    // (The owner is in a separate browser session, but if SA is also testing as owner in the same
+    //  browser, they'll get the new flags on next panel switch within 60s anyway.)
+    if(typeof _owFeaturesCache !== 'undefined') _owFeaturesCache = null;
     if(typeof notifyD === 'function') notifyD('✅ Features saved');
     rfClose();
     // Refresh the SA list so any visual feature indicators update
