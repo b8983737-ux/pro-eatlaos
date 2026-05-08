@@ -2413,6 +2413,30 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-aa-input{width:100%;padding:9px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none;}
 .fp-aa-input:focus{border-color:rgba(200,151,58,.55);}
 .fp-aa-actions{display:flex;justify-content:flex-end;gap:8px;}
+/* v6.8: SA Features (licensing) modal */
+.rf-modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.rf-modal.open{display:flex;}
+.rf-shell{background:#0d0d0d;border:1px solid rgba(200,151,58,.25);border-radius:14px;padding:24px;max-width:440px;width:100%;position:relative;box-shadow:0 16px 60px rgba(0,0,0,.7);animation:tiUp .3s cubic-bezier(.16,1,.3,1);}
+.rf-x{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.05);border:none;color:rgba(255,255,255,.5);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;line-height:1;}
+.rf-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.rf-icon{font-size:24px;background:rgba(200,151,58,.12);width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(200,151,58,.2);flex-shrink:0;}
+.rf-title{font-family:var(--ff,'Plus Jakarta Sans');font-size:18px;font-weight:800;color:#fff;}
+.rf-sub{font-size:12px;color:rgba(200,151,58,.85);font-weight:600;}
+.rf-desc{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:18px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid rgba(200,151,58,.4);}
+.rf-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.rf-row{display:flex;align-items:center;gap:14px;padding:14px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;cursor:pointer;transition:all .15s;}
+.rf-row:hover{background:rgba(255,255,255,.05);}
+.rf-row-icon{font-size:24px;width:34px;text-align:center;flex-shrink:0;}
+.rf-row-text{flex:1;min-width:0;}
+.rf-row-title{font-size:14px;font-weight:700;color:#fff;letter-spacing:.2px;}
+.rf-row-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.4;}
+.rf-toggle{flex-shrink:0;}
+.rf-cb{display:none;}
+.rf-sw{display:block;width:42px;height:24px;background:rgba(255,255,255,.1);border-radius:24px;position:relative;cursor:pointer;transition:all .25s;}
+.rf-sw::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:all .25s;box-shadow:0 1px 3px rgba(0,0,0,.4);}
+.rf-cb:checked + .rf-sw{background:#c8973a;}
+.rf-cb:checked + .rf-sw::after{left:20px;}
+.rf-actions{display:flex;justify-content:flex-end;gap:8px;}
 .fp-floor-pick{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:6px;margin-right:8px;}
 .fp-floor-lbl{font-size:10px;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-right:4px;}
 .fp-floor-sw{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);cursor:pointer;padding:0;transition:all .15s;}
@@ -3174,9 +3198,9 @@ setTimeout(function(){
         <button class="sb-item" onclick="owP('bills',this)"><span class="sb-ico">🧾</span>Table Bills</button>
         <button class="sb-item" onclick="owP('menu',this)"><span class="sb-ico">🍽️</span>Menu Items</button>
         <button class="sb-item" onclick="owP('categories',this)"><span class="sb-ico">🏷️</span>Categories</button>
-        <button class="sb-item" onclick="owP('tables',this)"><span class="sb-ico">🪑</span>Tables &amp; QR</button>
-        <button class="sb-item" onclick="owP('history',this)"><span class="sb-ico">📋</span>Order History</button>
-        <button class="sb-item" onclick="owP('bookings',this)"><span class="sb-ico">📅</span><span data-ts="bookings">Bookings</span><span class="sb-num" id="owBookBadge" style="display:none">!</span></button>
+        <button class="sb-item" id="owNav-tables" onclick="owP('tables',this)"><span class="sb-ico">🪑</span>Tables &amp; QR</button>
+        <button class="sb-item" id="owNav-history" onclick="owP('history',this)"><span class="sb-ico">📋</span>Order History</button>
+        <button class="sb-item" id="owNav-bookings" onclick="owP('bookings',this)"><span class="sb-ico">📅</span><span data-ts="bookings">Bookings</span><span class="sb-num" id="owBookBadge" style="display:none">!</span></button>
         <button class="sb-item" onclick="owP('hours',this)"><span class="sb-ico">🕐</span><span data-ts="open_hours">Open Hours</span></button>
         <button class="sb-item" onclick="owP('profile',this)"><span class="sb-ico">🏪</span>Profile</button>
       </nav>
@@ -4170,6 +4194,20 @@ const STAFF_T={
     fp_aa_sub:'Pick which kind of area this map represents.',
     fp_aa_cancel:'Cancel',
     fp_aa_create:'Create',
+    // v6.7: Cross-area duplicate prevention
+    fp_already_placed:'already placed',
+    fp_already_in:'already in {area}',
+    fp_err_duplicate_save:'Cannot save — the same table is placed on multiple area maps:',
+    // v6.8: SA Feature licensing modal
+    rf_title:'Features',
+    rf_desc:'Toggle which features this restaurant has access to. Disabled features are hidden from the owner panel and blocked for customers.',
+    rf_booking_title:'Booking system',
+    rf_booking_sub:'Customers can reserve tables in advance.',
+    rf_qr_title:'QR Order system',
+    rf_qr_sub:'Customers scan a QR code to order from the menu.',
+    rf_cancel:'Cancel',
+    rf_save:'💾 Save',
+    rf_err_save:'Could not save features.',
     fp_help1:'💡 Drag from here onto canvas',
     fp_help2:'💡 Click element to select',
     fp_help3:'💡 Drag handles to resize',
@@ -4294,6 +4332,20 @@ const STAFF_T={
     fp_aa_sub:'ເລືອກປະເພດເຂດສຳລັບແຜນຜັງນີ້.',
     fp_aa_cancel:'ຍົກເລີກ',
     fp_aa_create:'ສ້າງ',
+    // v6.7: Cross-area duplicate prevention
+    fp_already_placed:'ວາງແລ້ວ',
+    fp_already_in:'ວາງຢູ່ໃນ {area} ແລ້ວ',
+    fp_err_duplicate_save:'ບໍ່ສາມາດບັນທຶກໄດ້ — ໂຕະດຽວກັນຖືກວາງໃນຫຼາຍແຜນຜັງ:',
+    // v6.8: SA Feature licensing modal
+    rf_title:'ຄຸນສົມບັດ',
+    rf_desc:'ເລືອກຄຸນສົມບັດທີ່ຮ້ານອາຫານນີ້ສາມາດໃຊ້ໄດ້. ຄຸນສົມບັດທີ່ປິດຈະຖືກເຊື່ອງຈາກເຈົ້າຂອງ ແລະ ບລັອກສຳລັບລູກຄ້າ.',
+    rf_booking_title:'ລະບົບຈອງໂຕະ',
+    rf_booking_sub:'ລູກຄ້າສາມາດຈອງໂຕະລ່ວງໜ້າໄດ້.',
+    rf_qr_title:'ລະບົບສັ່ງດ້ວຍ QR',
+    rf_qr_sub:'ລູກຄ້າສະແກນ QR ເພື່ອສັ່ງຈາກເມນູ.',
+    rf_cancel:'ຍົກເລີກ',
+    rf_save:'💾 ບັນທຶກ',
+    rf_err_save:'ບໍ່ສາມາດບັນທຶກຄຸນສົມບັດໄດ້.',
     fp_help1:'💡 ລາກຈາກນີ້ໄປໃສ່ກະດານ',
     fp_help2:'💡 ຄລິກອົງປະກອບເພື່ອເລືອກ',
     fp_help3:'💡 ລາກປຸ່ມຈັບເພື່ອປັບຂະໜາດ',
@@ -4418,6 +4470,20 @@ const STAFF_T={
     fp_aa_sub:'เลือกประเภทโซนสำหรับแผนผังนี้',
     fp_aa_cancel:'ยกเลิก',
     fp_aa_create:'สร้าง',
+    // v6.7: Cross-area duplicate prevention
+    fp_already_placed:'วางแล้ว',
+    fp_already_in:'วางอยู่ใน {area} แล้ว',
+    fp_err_duplicate_save:'บันทึกไม่ได้ — โต๊ะเดียวกันถูกวางในหลายแผนผัง:',
+    // v6.8: SA Feature licensing modal
+    rf_title:'ฟีเจอร์',
+    rf_desc:'เลือกฟีเจอร์ที่ร้านอาหารนี้สามารถใช้ได้ ฟีเจอร์ที่ปิดจะถูกซ่อนจากเจ้าของร้าน และถูกบล็อกสำหรับลูกค้า',
+    rf_booking_title:'ระบบจองโต๊ะ',
+    rf_booking_sub:'ลูกค้าสามารถจองโต๊ะล่วงหน้าได้',
+    rf_qr_title:'ระบบสั่งด้วย QR',
+    rf_qr_sub:'ลูกค้าสแกน QR เพื่อสั่งจากเมนู',
+    rf_cancel:'ยกเลิก',
+    rf_save:'💾 บันทึก',
+    rf_err_save:'ไม่สามารถบันทึกฟีเจอร์ได้',
     fp_help1:'💡 ลากจากที่นี่มาวางบนผืนผ้า',
     fp_help2:'💡 คลิกองค์ประกอบเพื่อเลือก',
     fp_help3:'💡 ลากที่จับเพื่อปรับขนาด',
@@ -4542,6 +4608,20 @@ const STAFF_T={
     fp_aa_sub:'选择此地图代表哪种区域。',
     fp_aa_cancel:'取消',
     fp_aa_create:'创建',
+    // v6.7: Cross-area duplicate prevention
+    fp_already_placed:'已放置',
+    fp_already_in:'已在 {area}',
+    fp_err_duplicate_save:'无法保存 — 同一张桌子被放置在多个区域地图上:',
+    // v6.8: SA Feature licensing modal
+    rf_title:'功能',
+    rf_desc:'切换该餐厅可使用的功能。禁用的功能将从店主面板中隐藏，并对客户屏蔽。',
+    rf_booking_title:'预订系统',
+    rf_booking_sub:'客户可以提前预订桌位。',
+    rf_qr_title:'扫码点餐系统',
+    rf_qr_sub:'客户扫描二维码从菜单点餐。',
+    rf_cancel:'取消',
+    rf_save:'💾 保存',
+    rf_err_save:'无法保存功能设置。',
     fp_help1:'💡 从此处拖到画布',
     fp_help2:'💡 点击元素进行选择',
     fp_help3:'💡 拖动手柄调整大小',
@@ -4682,6 +4762,20 @@ const STAFF_T={
     fp_aa_sub:'이 지도가 나타내는 영역 종류를 선택하세요.',
     fp_aa_cancel:'취소',
     fp_aa_create:'만들기',
+    // v6.7: Cross-area duplicate prevention
+    fp_already_placed:'이미 배치됨',
+    fp_already_in:'{area}에 이미 배치됨',
+    fp_err_duplicate_save:'저장할 수 없습니다 — 동일한 테이블이 여러 영역 지도에 배치되어 있습니다:',
+    // v6.8: SA Feature licensing modal
+    rf_title:'기능',
+    rf_desc:'이 레스토랑이 사용할 수 있는 기능을 전환합니다. 비활성화된 기능은 점주 패널에서 숨겨지고 고객에게도 차단됩니다.',
+    rf_booking_title:'예약 시스템',
+    rf_booking_sub:'고객이 미리 테이블을 예약할 수 있습니다.',
+    rf_qr_title:'QR 주문 시스템',
+    rf_qr_sub:'고객이 QR 코드를 스캔하여 메뉴를 주문합니다.',
+    rf_cancel:'취소',
+    rf_save:'💾 저장',
+    rf_err_save:'기능을 저장할 수 없습니다.',
     fp_help1:'💡 여기서 캔버스로 끌어다 놓기',
     fp_help2:'💡 요소를 클릭하여 선택',
     fp_help3:'💡 핸들을 끌어 크기 조정',
@@ -5261,8 +5355,27 @@ async function init(){
         const _ls=document.getElementById('loadingScreen');
         const _themeColors={'classic':'#1a1209','cny':'#1a0000','halloween':'#0d0d0d','christmas':'#0a1a0a','ice':'#0a1520','tropical':'#0a1a10','sakura':'#1a0a10','galaxy':'#050510','neon':'#050505','luxury':'#0d0a05','lao':'#1a1205','zen':'#0a1205','ember':'#1a0800','brasserie':'#1c2330','terroir':'#1a1005'};
         if(_ls) _ls.style.background=_themeColors[_lastTheme]||'#080808';
-        // Start loading — setupCustomerUI will hide loading screen when fully ready
-        startCustomerSession(r,t,s);
+        // v6.8: Check QR Order feature gate BEFORE starting customer session
+        // (so disabled restaurants never get past the URL handler)
+        (async () => {
+          try {
+            await loadFirebaseSDK();
+            const restoCheck = await fbGet('restaurants/'+r);
+            const featCheck = _resGetFeatures(restoCheck);
+            if(!featCheck.qrOrder){
+              hideLoading();
+              showPage('pg-land');
+              alert(_lp('qr_err_disabled','Sorry, QR ordering is not available at this restaurant.'));
+              return;
+            }
+            // Feature enabled — proceed normally
+            startCustomerSession(r,t,s);
+          } catch(e){
+            // On error, fall through to normal flow (don't block legit customers due to network blip)
+            console.error('feature-check failed, allowing fallback:', e);
+            startCustomerSession(r,t,s);
+          }
+        })();
       } else {
         showPage('pg-land');
         hideLoading();
@@ -5914,6 +6027,9 @@ const LP_TRANSLATIONS = {
     bk_err_pick_slot:'Please select a time slot.',
     bk_err_name:'Please enter your name.',
     bk_err_phone:'Please enter a valid phone number.',
+    // v6.8: Feature licensing — disabled-feature messages
+    bk_err_disabled:'Sorry, online booking is not available at this restaurant.',
+    qr_err_disabled:'Sorry, QR ordering is not available at this restaurant.',
     bk_err_submit:'Could not submit booking. Please try again.',
     bk_err_load:'Could not load restaurants. Please try again.',
     bk_err_lookup:'Could not look up bookings. Please try again.',
@@ -6068,6 +6184,9 @@ const LP_TRANSLATIONS = {
     bk_err_pick_slot:'ກະລຸນາເລືອກຊ່ອງເວລາ.',
     bk_err_name:'ກະລຸນາໃສ່ຊື່ຂອງທ່ານ.',
     bk_err_phone:'ກະລຸນາໃສ່ເບີໂທທີ່ຖືກຕ້ອງ.',
+    // v6.8: Feature licensing — disabled-feature messages
+    bk_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ຈອງອອນລາຍ.',
+    qr_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ສັ່ງດ້ວຍ QR.',
     bk_err_submit:'ບໍ່ສາມາດສົ່ງການຈອງໄດ້. ກະລຸນາລອງໃໝ່.',
     bk_err_load:'ບໍ່ສາມາດໂຫຼດຮ້ານອາຫານ. ກະລຸນາລອງໃໝ່.',
     bk_err_lookup:'ບໍ່ສາມາດຄົ້ນຫາການຈອງ. ກະລຸນາລອງໃໝ່.',
@@ -6222,6 +6341,9 @@ const LP_TRANSLATIONS = {
     bk_err_pick_slot:'กรุณาเลือกช่วงเวลา',
     bk_err_name:'กรุณากรอกชื่อของคุณ',
     bk_err_phone:'กรุณากรอกเบอร์โทรที่ถูกต้อง',
+    // v6.8: Feature licensing — disabled-feature messages
+    bk_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้จองออนไลน์',
+    qr_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้สั่งด้วย QR',
     bk_err_submit:'ไม่สามารถส่งการจองได้ กรุณาลองใหม่',
     bk_err_load:'ไม่สามารถโหลดร้านอาหาร กรุณาลองใหม่',
     bk_err_lookup:'ไม่สามารถค้นหาการจอง กรุณาลองใหม่',
@@ -6376,6 +6498,9 @@ const LP_TRANSLATIONS = {
     bk_err_pick_slot:'请选择时间段。',
     bk_err_name:'请输入您的姓名。',
     bk_err_phone:'请输入有效的电话号码。',
+    // v6.8: Feature licensing — disabled-feature messages
+    bk_err_disabled:'抱歉，此餐厅暂不支持在线预订。',
+    qr_err_disabled:'抱歉，此餐厅暂不支持扫码点餐。',
     bk_err_submit:'无法提交预订，请重试。',
     bk_err_load:'无法加载餐厅，请重试。',
     bk_err_lookup:'无法查询预订，请重试。',
@@ -6530,6 +6655,9 @@ const LP_TRANSLATIONS = {
     bk_err_pick_slot:'시간대를 선택해주세요.',
     bk_err_name:'성함을 입력해주세요.',
     bk_err_phone:'유효한 전화번호를 입력해주세요.',
+    // v6.8: Feature licensing — disabled-feature messages
+    bk_err_disabled:'죄송합니다. 이 레스토랑은 온라인 예약을 지원하지 않습니다.',
+    qr_err_disabled:'죄송합니다. 이 레스토랑은 QR 주문을 지원하지 않습니다.',
     bk_err_submit:'예약을 신청할 수 없습니다. 다시 시도해주세요.',
     bk_err_load:'레스토랑을 불러올 수 없습니다. 다시 시도해주세요.',
     bk_err_lookup:'예약을 조회할 수 없습니다. 다시 시도해주세요.',
@@ -7149,6 +7277,7 @@ function renderRestoTable(){
         <button class="btn btn-sm" onclick="editResto('${k}')">Edit</button>
         <button class="btn btn-sm" onclick="previewRestoTheme('${k}')" style="border-color:var(--s-blue);color:var(--s-blue)">👁 Theme</button>
         <button class="btn btn-sm" onclick="fpOpen('${k}')" style="border-color:#c8973a;color:#c8973a">📐 Layout</button>
+        <button class="btn btn-sm" onclick="rfOpen('${k}')" style="border-color:#ffc107;color:#ffc107">🔐 Features</button>
         <button class="btn btn-sm btn-red" onclick="delResto('${k}')">Del</button>
         ${r.status==='pending'?`<button class="btn btn-sm btn-green" onclick="approveResto('${k}')">✓ Approve</button>`:''}
         <button class="btn btn-sm" onclick="renewResto('${k}')">🔄 Renew</button>
@@ -7857,6 +7986,51 @@ function owP(panel,btn){
   if(panel==='profile') owProfile().then(()=>setTimeout(()=>initEmojiPickers(),100));
   if(panel==='bookings') loadOwnerBookings();
   if(panel==='hours') loadOwnerHours();
+  // v6.8: Apply feature flags (hide nav buttons for disabled features)
+  if(typeof _owLoadAndApplyFeatures === 'function') _owLoadAndApplyFeatures();
+}
+
+/* v6.8: Owner-side feature gating — load this restaurant's features and hide
+   any nav buttons/panels for disabled features. Idempotent: safe to call repeatedly. */
+let _owFeaturesCache = null;
+
+async function _owLoadAndApplyFeatures(){
+  if(typeof restoId === 'undefined' || !restoId) return;
+  try {
+    const r = await fbGet('restaurants/'+restoId);
+    if(!r) return;
+    const f = _resGetFeatures(r);
+    _owFeaturesCache = f;
+    _owApplyFeatures(f);
+  } catch(e){
+    console.error('_owLoadAndApplyFeatures:', e);
+  }
+}
+
+function _owApplyFeatures(f){
+  if(!f) return;
+  // Hide/show Bookings nav
+  const navBookings = document.getElementById('owNav-bookings');
+  if(navBookings) navBookings.style.display = f.booking ? '' : 'none';
+  // QR Order disabled → hide Tables&QR + Order History (the parts that depend on QR ordering)
+  // Note: 'Live Orders' / 'Bills' / 'Dashboard' are ALSO QR-related, but they're considered
+  // core (owner sees their orders even if QR is restricted on customer side). To keep this
+  // surgical, we hide ONLY the two most directly QR-related navs. Owner can still see other
+  // panels but customer-side QR access is blocked separately.
+  const navTables = document.getElementById('owNav-tables');
+  if(navTables) navTables.style.display = f.qrOrder ? '' : 'none';
+  const navHistory = document.getElementById('owNav-history');
+  if(navHistory) navHistory.style.display = f.qrOrder ? '' : 'none';
+  // If currently on a hidden panel, redirect to dashboard
+  const activePanel = document.querySelector('#pg-ow .panel.on');
+  if(activePanel){
+    const id = activePanel.id;
+    if((id === 'ow-bookings' && !f.booking) ||
+       ((id === 'ow-tables' || id === 'ow-history') && !f.qrOrder)){
+      const dash = document.querySelector('#pg-ow .sb-item');
+      if(dash && typeof owP === 'function') owP('dashboard', dash);
+    }
+  }
 }
 
 let owFilter='today';
@@ -10524,7 +10698,11 @@ async function loadBkRestaurants(){
     const arr = [];
     if(data) Object.keys(data).forEach(id=>{
       const r = data[id];
-      if(r && r.name && r.active!==false) arr.push({id, name:r.name, icon:r.logo||r.icon||'🍽️', tag:r.tagline||r.cuisine||''});
+      if(!r || !r.name || r.active===false) return;
+      // v6.8: Skip restaurants where booking feature is disabled by SA
+      const feats = _resGetFeatures(r);
+      if(!feats.booking) return;
+      arr.push({id, name:r.name, icon:r.logo||r.icon||'🍽️', tag:r.tagline||r.cuisine||''});
     });
     bkState.allRestos = arr;
     if(!arr.length){ list.innerHTML=`<div class="bk-empty">${escapeHtml(_lp('bk_no_restos','No restaurants available right now.'))}</div>`; return; }
@@ -10828,6 +11006,92 @@ function _fpAreaLabelFromSlug(slug){
   if(std) return std.label;
   // Custom slug like 'custom_xyz' → fall back to capitalised slug
   return String(slug||'').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/* v6.8: Feature licensing — SA controls which features each restaurant has access to.
+   Returns { booking: bool, qrOrder: bool }.
+   Backward compatible: any restaurant without a `features` field gets EVERYTHING enabled
+   (so existing restaurants keep working as today). */
+function _resGetFeatures(r){
+  if(!r) return { booking: true, qrOrder: true };
+  const f = r.features;
+  if(!f || typeof f !== 'object'){
+    // No features field → assume legacy restaurant with everything enabled
+    return { booking: true, qrOrder: true };
+  }
+  return {
+    booking: f.booking !== false,  // default true if undefined
+    qrOrder: f.qrOrder !== false   // default true if undefined
+  };
+}
+
+/* v6.8: SA Features modal — open, save, close */
+let _rfRestoId = null;
+
+async function rfOpen(restoId){
+  _rfRestoId = restoId;
+  if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+  const r = await fbGet('restaurants/'+restoId);
+  if(!r){ alert('Restaurant not found'); return; }
+  const f = _resGetFeatures(r);
+  document.getElementById('rfRestoName').textContent = r.name || 'Restaurant';
+  document.getElementById('rfBooking').checked = !!f.booking;
+  document.getElementById('rfQrOrder').checked = !!f.qrOrder;
+  const m = document.getElementById('mResFeat');
+  m.classList.add('open');
+  // Apply translations to the modal
+  if(typeof applyTranslation === 'function' && typeof lang !== 'undefined' && lang !== 'en'){
+    try { applyTranslation(m); } catch(e){}
+  }
+}
+
+function rfClose(){
+  document.getElementById('mResFeat').classList.remove('open');
+  _rfRestoId = null;
+}
+
+async function rfSave(){
+  if(!_rfRestoId) return;
+  const btn = document.getElementById('rfSaveBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+  try {
+    const features = {
+      booking: !!document.getElementById('rfBooking').checked,
+      qrOrder: !!document.getElementById('rfQrOrder').checked
+    };
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    await fbSet('restaurants/'+_rfRestoId+'/features', features);
+    if(typeof notifyD === 'function') notifyD('✅ Features saved');
+    rfClose();
+    // Refresh the SA list so any visual feature indicators update
+    if(typeof loadAndRenderRestos === 'function') loadAndRenderRestos(true);
+  } catch(e){
+    console.error('rfSave:', e);
+    alert(_ts('rf_err_save','Could not save features.') + '\n\n' + (e.message || 'unknown error'));
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = '💾 Save'; }
+  }
+}
+
+/* v6.7: Cross-area duplicate detection.
+   Returns a Map of tableId → area-slug for tables placed on ANY area's map.
+   Excludes the element with id `excludeElemId` (so the currently-selected element doesn't see itself).
+   Used to prevent placing the same physical table on two different area maps. */
+function _fpUsedTableIdMap(excludeElemId){
+  const used = new Map(); // tableId → slug
+  if(!fpState.areas) return used;
+  Object.keys(fpState.areas).forEach(slug => {
+    const area = fpState.areas[slug];
+    if(!area || !Array.isArray(area.elements)) return;
+    area.elements.forEach(x => {
+      if(!x || !x.kind || x.kind.indexOf('table') !== 0) return;
+      if(!x.tableId) return;
+      if(excludeElemId && x.id === excludeElemId) return;
+      // First seen wins (same table shouldn't appear twice; if it does, this prevents both being marked free)
+      if(!used.has(x.tableId)) used.set(x.tableId, slug);
+    });
+  });
+  return used;
 }
 
 const FP_DEFAULT_SIZES = {
@@ -11296,14 +11560,30 @@ function fpRenderProps(){
   if(isTable){
     tableRow.style.display = '';
     const sel = document.getElementById('fpPropTable');
-    const usedIds = new Set(fpState.plan.elements
-      .filter(x => x.id !== el.id && x.kind && x.kind.indexOf('table')===0 && x.tableId)
-      .map(x => x.tableId));
+    // v6.7: Check across ALL areas, not just the active one — prevents placing
+    // the same physical table on two different area maps.
+    const usedMap = _fpUsedTableIdMap(el.id);
+    const activeArea = (fpState.areas && fpState.areas[fpState.activeArea]) ? fpState.areas[fpState.activeArea].area : '';
+    const lblAlreadyHere = _ts('fp_already_placed','already placed');
+    const lblAlreadyIn = _ts('fp_already_in','already in {area}');
     const opts = [`<option value="">— Not linked —</option>`];
     fpState.tables.forEach(t => {
-      const used = usedIds.has(t.id);
-      const txt = `Table ${t.num} (${t.seats} seats)${used?' — already placed':''}`;
-      opts.push(`<option value="${_fpEsc(t.id)}" ${t.id===el.tableId?'selected':''} ${used?'disabled':''}>${_fpEsc(txt)}</option>`);
+      const usedSlug = usedMap.get(t.id);
+      let suffix = '';
+      let disabled = false;
+      if(usedSlug){
+        disabled = true;
+        if(usedSlug === fpState.activeArea){
+          // Placed on this same map (different element — exclude check already happened)
+          suffix = ' — ' + lblAlreadyHere;
+        } else {
+          // Placed on a different area's map — show which one
+          const otherLabel = (fpState.areas[usedSlug] && fpState.areas[usedSlug].area) || _fpAreaLabelFromSlug(usedSlug);
+          suffix = ' — ' + lblAlreadyIn.replace('{area}', otherLabel);
+        }
+      }
+      const txt = `Table ${t.num} (${t.seats} seats)${suffix}`;
+      opts.push(`<option value="${_fpEsc(t.id)}" ${t.id===el.tableId?'selected':''} ${disabled?'disabled':''}>${_fpEsc(txt)}</option>`);
     });
     sel.innerHTML = opts.join('');
   } else {
@@ -11389,6 +11669,36 @@ function fpClearAll(){
 
 async function fpSave(){
   if(!fpState.restoId || !fpState.areas) return;
+  // v6.7: Defense-in-depth — scan ALL areas for any table placed twice. Block save with clear message.
+  const seen = new Map(); // tableId → slug
+  const dups = []; // {tableId, slugs:[]}
+  Object.keys(fpState.areas).forEach(slug => {
+    const a = fpState.areas[slug];
+    if(!a || !Array.isArray(a.elements)) return;
+    a.elements.forEach(x => {
+      if(!x || !x.kind || x.kind.indexOf('table') !== 0) return;
+      if(!x.tableId) return;
+      const prev = seen.get(x.tableId);
+      if(prev && prev !== slug){
+        dups.push({tableId: x.tableId, areas: [prev, slug]});
+      } else if(!prev){
+        seen.set(x.tableId, slug);
+      }
+    });
+  });
+  if(dups.length){
+    const tablesById = {};
+    (fpState.tables||[]).forEach(t => { tablesById[t.id] = t; });
+    const lines = dups.map(d => {
+      const t = tablesById[d.tableId];
+      const num = (t && t.num) || d.tableId;
+      const a1 = (fpState.areas[d.areas[0]] && fpState.areas[d.areas[0]].area) || d.areas[0];
+      const a2 = (fpState.areas[d.areas[1]] && fpState.areas[d.areas[1]].area) || d.areas[1];
+      return '  • Table ' + num + ' (in ' + a1 + ' AND ' + a2 + ')';
+    }).join('\n');
+    alert(_ts('fp_err_duplicate_save','Cannot save — the same table is placed on multiple area maps:') + '\n\n' + lines);
+    return;
+  }
   const btn = document.getElementById('fpSaveBtn');
   if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
   try {
@@ -11496,10 +11806,9 @@ function fpAddElement(tool, cx, cy){
     el.h = sz.h;
     // Auto-link to first available table for tables
     if(tool.indexOf('table') === 0){
-      const usedIds = new Set(fpState.plan.elements
-        .filter(x => x.kind && x.kind.indexOf('table')===0 && x.tableId)
-        .map(x => x.tableId));
-      const free = fpState.tables.find(t => !usedIds.has(t.id));
+      // v6.7: Check ALL areas — never auto-link to a table already placed elsewhere
+      const usedMap = _fpUsedTableIdMap(null);
+      const free = fpState.tables.find(t => !usedMap.has(t.id));
       if(free) el.tableId = free.id;
     } else if(tool !== 'wall-block') {
       el.label = FP_DEFAULT_LABELS[tool] || '';
@@ -12249,6 +12558,17 @@ async function submitCustBooking(){
   const btn = document.getElementById('bkNextBtn');
   btn.disabled = true; btn.textContent = _lp('bk_sending','Sending…');
   try {
+    // v6.8: Defense-in-depth — verify booking is still enabled at this restaurant
+    // (in case SA disabled it after customer started the flow)
+    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    const restoCheck = await fbGet('restaurants/'+bkState.restoId);
+    const featCheck = _resGetFeatures(restoCheck);
+    if(!featCheck.booking){
+      btn.disabled = false; btn.textContent = _lp('bk_step_continue','Continue →');
+      alert(_lp('bk_err_disabled','Sorry, online booking is not available at this restaurant.'));
+      closeModal('mCustBooking');
+      return;
+    }
     const code = genBookingCode();
     const booking = {
       restoId: bkState.restoId,
@@ -13260,6 +13580,52 @@ async function cleanupOldBookings(opts){
     <div class="fp-aa-actions">
       <button class="btn btn-sm" onclick="fpCloseAddAreaModal()" data-ts="fp_aa_cancel">Cancel</button>
       <button class="btn btn-sm btn-gold" id="fpAreaAddConfirm" onclick="fpConfirmAddArea()" disabled data-ts="fp_aa_create">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- v6.8 SA FEATURE LICENSING MODAL — toggle which features a       -->
+<!-- restaurant has access to (booking, QR order).                   -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="mResFeat" class="modal-ov rf-modal" onclick="if(event.target===this)rfClose()">
+  <div class="rf-shell">
+    <button class="rf-x" onclick="rfClose()" aria-label="Close">×</button>
+    <div class="rf-head">
+      <div class="rf-icon">🔐</div>
+      <div>
+        <div class="rf-title" data-ts="rf_title">Features</div>
+        <div class="rf-sub" id="rfRestoName"></div>
+      </div>
+    </div>
+    <div class="rf-desc" data-ts="rf_desc">Toggle which features this restaurant has access to. Disabled features are hidden from the owner panel and blocked for customers.</div>
+    <div class="rf-list">
+      <label class="rf-row">
+        <div class="rf-row-icon">📅</div>
+        <div class="rf-row-text">
+          <div class="rf-row-title" data-ts="rf_booking_title">Booking system</div>
+          <div class="rf-row-sub" data-ts="rf_booking_sub">Customers can reserve tables in advance.</div>
+        </div>
+        <div class="rf-toggle">
+          <input type="checkbox" id="rfBooking" class="rf-cb">
+          <label for="rfBooking" class="rf-sw"></label>
+        </div>
+      </label>
+      <label class="rf-row">
+        <div class="rf-row-icon">📱</div>
+        <div class="rf-row-text">
+          <div class="rf-row-title" data-ts="rf_qr_title">QR Order system</div>
+          <div class="rf-row-sub" data-ts="rf_qr_sub">Customers scan a QR code to order from the menu.</div>
+        </div>
+        <div class="rf-toggle">
+          <input type="checkbox" id="rfQrOrder" class="rf-cb">
+          <label for="rfQrOrder" class="rf-sw"></label>
+        </div>
+      </label>
+    </div>
+    <div class="rf-actions">
+      <button class="btn btn-sm" onclick="rfClose()" data-ts="rf_cancel">Cancel</button>
+      <button class="btn btn-sm btn-gold" id="rfSaveBtn" onclick="rfSave()" data-ts="rf_save">💾 Save</button>
     </div>
   </div>
 </div>
