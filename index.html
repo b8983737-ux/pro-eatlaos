@@ -5299,6 +5299,23 @@ async function fbGet(path){
   return restGet(path);
 }
 
+// v5.3 PERF: Server-side filtered fetch. Requires the indexed field to be in Firebase Rules
+// (e.g. "bookings": { "$rid": { ".indexOn": ["date"] } }). If the index isn't configured,
+// Firebase still returns data but logs a warning. Falls back to full fetch on any error.
+async function fbGetFiltered(path, orderBy, equalTo){
+  try {
+    const url = DB_URL+'/'+path+'.json?auth='+API_KEY
+              +'&orderBy='+encodeURIComponent(JSON.stringify(orderBy))
+              +'&equalTo='+encodeURIComponent(JSON.stringify(equalTo));
+    const r = await fetch(url);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  } catch(e){
+    console.warn('fbGetFiltered fallback:', path, e.message);
+    return restGet(path);
+  }
+}
+
 function setFbStatus(connected, isOwner=false){
   const dot=document.getElementById(isOwner?'owFbDot':'globalFbDot');
   const txt=document.getElementById(isOwner?'owFbTxt':'globalFbTxt');
@@ -5371,6 +5388,17 @@ async function init(){
         loadLandingRestos().catch(()=>{});
         initLandingNav();
         initLpLang();
+        // v5.3 PERF: Pre-warm Firebase SDK in the background (idle priority).
+        // The customer booking flow uses REST and doesn't need the SDK, but other paths
+        // (owner login, real-time listeners) do. Loading the SDK now means zero wait later.
+        // Non-blocking — the landing page renders normally while this happens.
+        if(typeof loadFirebaseSDK === 'function'){
+          if(typeof requestIdleCallback === 'function'){
+            requestIdleCallback(() => loadFirebaseSDK().catch(()=>{}), { timeout: 2000 });
+          } else {
+            setTimeout(() => loadFirebaseSDK().catch(()=>{}), 1500);
+          }
+        }
         return;
       }
       // Has session — keep loading screen while we restore
@@ -10801,7 +10829,8 @@ async function loadBkRestaurants(){
   const list = document.getElementById('bkRestoList');
   list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_restos','Loading restaurants…'))}</div>`;
   try {
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    // v5.3 PERF: Removed loadFirebaseSDK() — fbGet uses REST, no SDK needed.
+    // Saves ~1-2s on first booking click (no script download wait).
     const data = await fbGet('restaurants');
     const arr = [];
     if(data) Object.keys(data).forEach(id=>{
@@ -10890,13 +10919,17 @@ async function bkLoadSlotsAndBuild(){
   const bookedCount = {};  // { '20:00': 3, '21:00': 1 }
   let totalTables = 0;
   try {
-    // Fetch restaurant's table count for capacity math
-    const r = await fbGet('restaurants/'+bkState.restoId);
+    // v5.3 PERF: Parallelize the 2 fetches (was sequential) and filter bookings by date
+    // server-side. Restaurant fetch is needed only for table count — could be cached future v6.
+    const [r, all] = await Promise.all([
+      fbGet('restaurants/'+bkState.restoId),
+      fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date)
+    ]);
     if(r && Array.isArray(r.tables)) totalTables = r.tables.length;
-    const all = await fbGet('bookings/'+bkState.restoId);
     if(all) Object.keys(all).forEach(k=>{
       const b = all[k];
       // Only count bookings that hold a table — exclude rejected and expired
+      // (date check kept as defense-in-depth in case index missing → fbGetFiltered fell back to full fetch)
       if(b && b.date===bkState.date && (b.status==='pending' || b.status==='accepted')){
         bookedCount[b.slot] = (bookedCount[b.slot]||0) + 1;
       }
@@ -12223,8 +12256,15 @@ async function bkLoadTables(){
   grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_tables','Loading tables…'))}</div>`;
   tabs.innerHTML = '';
   try {
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
-    const r = await fbGet('restaurants/'+bkState.restoId);
+    // v5.3 PERF: Parallelize 3 fetches (was sequential, ~3-5s → now ~1s).
+    // Removed unnecessary loadFirebaseSDK() call — fbGet uses REST and doesn't need the SDK.
+    // Bookings filtered by date server-side (requires .indexOn:["date"] in Firebase Rules;
+    // falls back to full fetch automatically if index missing — see fbGetFiltered).
+    const [r, dayBookings, locks] = await Promise.all([
+      fbGet('restaurants/'+bkState.restoId),
+      fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date),
+      fbGet('tableLocks/'+bkState.restoId)
+    ]);
     const tables = (r && r.tables) ? r.tables : [];
     // Filter tables that have enough seats for the party size
     // v5.9: Filter by both min and max seats. If table has no minSeats, only check max.
@@ -12238,8 +12278,10 @@ async function bkLoadTables(){
       return;
     }
     bkState.tables = partyOK;
-    // Read existing bookings for this date+slot to mark booked tables
-    const allBookings = await fbGet('bookings/'+bkState.restoId) || {};
+    // Mark tables already booked for this date+slot.
+    // v5.3 PERF: dayBookings is pre-filtered to today's date by server.
+    // Edge case: if fbGetFiltered fell back to full fetch (no index), still works — we re-check date below.
+    const allBookings = dayBookings || {};
     const bookedTableIds = new Set();
     Object.values(allBookings).forEach(b => {
       if(b && b.date===bkState.date && b.slot===bkState.slot && b.status!=='rejected' && b.tableId){
@@ -12247,10 +12289,9 @@ async function bkLoadTables(){
       }
     });
     // Read active locks
-    const locks = await fbGet('tableLocks/'+bkState.restoId) || {};
     const lockedTableIds = new Set();
     const now = Date.now();
-    Object.entries(locks).forEach(([tId, lk])=>{
+    Object.entries(locks || {}).forEach(([tId, lk])=>{
       if(lk && lk.lockedUntil > now && lk.sessionId !== bkState.lockSessionId){
         lockedTableIds.add(tId);
       }
@@ -12541,7 +12582,7 @@ async function bkPickTable(tableId){
 }
 
 async function bkLockTable(tableId){
-  if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+  // v5.3 PERF: Removed loadFirebaseSDK() — fbGet/fbSet use REST.
   const sessionId = _bkRandomSessionId();
   const lockedUntil = Date.now() + BK_LOCK_DURATION_MS;
   // Check current lock first
@@ -12672,7 +12713,7 @@ async function submitCustBooking(){
   try {
     // v6.8: Defense-in-depth — verify booking is still enabled at this restaurant
     // (in case SA disabled it after customer started the flow)
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    // v5.3 PERF: Removed loadFirebaseSDK() — fbGet/fbPush use REST.
     const restoCheck = await fbGet('restaurants/'+bkState.restoId);
     const featCheck = _resGetFeatures(restoCheck);
     if(!featCheck.booking){
@@ -12699,7 +12740,7 @@ async function submitCustBooking(){
       booking.tableNum = bkState.tableNum || '';
       booking.tableZone = bkState.tableZone || '';
     }
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    // v5.3 PERF: Removed loadFirebaseSDK() — fbPush uses REST.
     await fbPush('bookings/'+bkState.restoId, booking);
     // v5.4: Release table lock now that booking is saved
     bkReleaseLock();
@@ -12742,7 +12783,8 @@ async function bsLookup(by){
         return;
       }
     }
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
+    // v5.3 PERF: Removed loadFirebaseSDK() — fbGet uses REST, no SDK needed.
+    // Saves ~1-2s on first "Check My Booking" click.
     // FIX (v5.1): Loop through each restaurant's bookings instead of one top-level read.
     // The new Firebase rules block .read at top "bookings/" level for security
     // (prevents mass-dump of all bookings). Read is allowed at "bookings/{restoId}/" level.
@@ -12769,9 +12811,13 @@ async function bsLookup(by){
     }
     const phoneQ = (by==='phone') ? document.getElementById('bsPhone').value : '';
     const codeQ  = (by==='code')  ? document.getElementById('bsCode').value.trim().toUpperCase() : '';
-    for(const rId of restoIds){
-      const restoBookings = await fbGet('bookings/'+rId);
-      if(!restoBookings) continue;
+    // v5.3 PERF: Fetch all restaurants' bookings in PARALLEL (was sequential — N sequential
+    // round-trips for N restaurants). Now N=10 restaurants takes 1 round-trip wall time, not 10.
+    const allRestoBookings = await Promise.all(
+      restoIds.map(rId => fbGet('bookings/'+rId).catch(()=>null))
+    );
+    allRestoBookings.forEach(restoBookings => {
+      if(!restoBookings) return;
       Object.keys(restoBookings).forEach(bId=>{
         const b = restoBookings[bId];
         if(!b) return;
@@ -12781,7 +12827,7 @@ async function bsLookup(by){
           if(b.code === codeQ) found.push(b);
         }
       });
-    }
+    });
     if(!found.length){
       results.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_none_found','No bookings found.'))}</div>`;
       return;
