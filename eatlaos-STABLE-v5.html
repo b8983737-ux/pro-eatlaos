@@ -1750,7 +1750,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,151,58,.5);}
 
 /* ── HERO ── */
-.lp-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 6% 60px;position:relative;overflow:hidden;background:#040404;}
+.lp-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:170px 6% 60px;position:relative;overflow:hidden;background:#040404;}
 .lp-hero-noise{position:absolute;inset:0;opacity:.04;background-image:radial-gradient(rgba(200,151,58,.03) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
 .lp-hero-orb1{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(200,151,58,.15) 0%,transparent 65%);top:-200px;left:-150px;pointer-events:none;animation:orbFloat 8s ease-in-out infinite;}
 .lp-hero-orb2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,151,58,.08) 0%,transparent 65%);bottom:-100px;right:-100px;pointer-events:none;animation:orbFloat 10s ease-in-out infinite reverse;}
@@ -1769,6 +1769,31 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-cta-primary:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(200,151,58,.5);}
 .lp-cta-secondary{height:56px;padding:0 36px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);font-size:15px;font-weight:600;border-radius:8px;border:1px solid rgba(255,255,255,.14);cursor:pointer;font-family:var(--fb);transition:all .3s;display:inline-flex;align-items:center;gap:8px;}
 .lp-cta-secondary:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.28);transform:translateY(-2px);}
+
+/* === STICKY BOOKING BAR (Apple-luxury, docks below nav) === */
+.lp-stickybar{position:fixed;top:72px;left:0;right:0;z-index:190;display:flex;justify-content:center;pointer-events:none;transition:top .35s cubic-bezier(.16,1,.3,1),opacity .35s ease;}
+.lp-stickybar-inner{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(8,8,8,.72);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(200,151,58,.18);border-radius:999px;box-shadow:0 10px 40px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.04) inset;margin-top:14px;animation:sbFade .5s cubic-bezier(.16,1,.3,1) both;animation-delay:.15s;}
+@keyframes sbFade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.lp-sb-label{display:flex;align-items:center;gap:8px;padding:0 14px 0 10px;font-family:var(--fb);font-size:12px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.5px;border-right:1px solid rgba(255,255,255,.08);}
+.lp-sb-label::before{content:"";width:6px;height:6px;border-radius:50%;background:#c8973a;box-shadow:0 0 12px rgba(200,151,58,.7);animation:sbPulse 2.4s ease-in-out infinite;}
+@keyframes sbPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.lp-sb-btn{height:42px;padding:0 22px;border-radius:999px;font-family:var(--fb);font-size:13.5px;font-weight:600;letter-spacing:.2px;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s cubic-bezier(.16,1,.3,1);white-space:nowrap;}
+.lp-sb-primary{background:linear-gradient(135deg,#c8973a,#e0b55a);color:#0a0a0a;font-weight:700;box-shadow:0 4px 18px rgba(200,151,58,.35);}
+.lp-sb-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(200,151,58,.5);}
+.lp-sb-ghost{background:transparent;color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.12);}
+.lp-sb-ghost:hover{background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.22);}
+.lp-stickybar.compact .lp-stickybar-inner{padding:8px 10px;gap:8px;}
+.lp-stickybar.compact .lp-sb-label{display:none;}
+.lp-stickybar.compact .lp-sb-btn{height:38px;padding:0 18px;font-size:13px;}
+@media (max-width:780px){
+  .lp-stickybar{top:64px;}
+  .lp-stickybar-inner{margin:10px 12px 0;padding:8px;gap:6px;width:calc(100% - 24px);max-width:480px;border-radius:14px;}
+  .lp-sb-label{display:none;}
+  .lp-sb-btn{flex:1;height:42px;padding:0 12px;font-size:13px;justify-content:center;}
+}
+@media (max-width:420px){
+  .lp-sb-btn{font-size:12px;padding:0 10px;gap:5px;}
+}
 
 /* Stats */
 .lp-stats-belt{display:flex;gap:0;border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.03);animation:fadeUp .6s cubic-bezier(.16,1,.3,1) both;animation-delay:.4s;backdrop-filter:blur(12px);}
@@ -1864,7 +1889,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
   .lp-nav{height:64px;padding:0 4%;}
   .lp-nav-logo{font-size:22px;}
   .lp-btn-ghost{display:none;}
-  .lp-hero{padding:80px 4% 40px;min-height:auto;}
+  .lp-hero{padding:155px 4% 40px;min-height:auto;}
   .lp-h1{font-size:clamp(40px,10vw,68px);letter-spacing:-2px;}
   .lp-hero-sub{font-size:15px;}
   .lp-hero-ctas{gap:10px;}
@@ -2727,10 +2752,18 @@ setTimeout(function(){
           <button class="lp-lang-opt" onclick="setLpLang('ko','🇰🇷','한국어')"><span>🇰🇷</span> 한국어</button>
         </div>
       </div>
-      <button class="lp-nav-btn lp-btn-ghost" onclick="openModal('mCustBookingStatus')" data-lp="nav_my_bookings">My Bookings</button>
-      <button class="lp-nav-btn lp-btn-gold" onclick="openCustBookingModal()" data-lp="nav_book">📅 Book a Table</button>
+      <button class="lp-nav-btn lp-btn-ghost" onclick="document.getElementById('owner').scrollIntoView({behavior:'smooth'})" data-lp="nav_for_owners" style="opacity:.7">For Restaurants</button>
     </div>
   </nav>
+
+  <!-- STICKY BOOKING BAR (Apple-luxury, docked below nav) -->
+  <div class="lp-stickybar" id="lpStickybar">
+    <div class="lp-stickybar-inner">
+      <span class="lp-sb-label" data-lp="sb_label">RESERVE</span>
+      <button class="lp-sb-btn lp-sb-primary" onclick="openCustBookingModal()" data-lp="sb_book">📅 Book a Table</button>
+      <button class="lp-sb-btn lp-sb-ghost" onclick="openModal('mCustBookingStatus')" data-lp="sb_check">Check My Booking</button>
+    </div>
+  </div>
 
   <!-- HERO -->
   <div class="lp-hero">
@@ -2753,10 +2786,9 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="lp-badge"><span class="lp-badge-dot"></span><span class="lp-badge-txt" data-lp="badge">Laos · Restaurant Platform</span></div>
-    <h1 class="lp-h1" data-lp="h1_line1">The future<br>of dining<br>is <em>digital</em></h1>
-    <p class="lp-hero-sub" data-lp="hero_sub">Customers scan a QR code, browse your menu and order directly from the table. No app. No cash. No waiting.</p>
+    <h1 class="lp-h1" data-lp="h1_line1">Reserve your table.<br>Anywhere in <em>Laos</em>.</h1>
+    <p class="lp-hero-sub" data-lp="hero_sub">Browse restaurants, book a table in seconds, and check your reservation anytime. No app to download.</p>
     <div class="lp-hero-ctas">
-      <button class="lp-cta-primary" onclick="openCustBookingModal()" data-lp="cta_book_main">📅 Book a Table</button>
       <button class="lp-cta-secondary" onclick="document.getElementById('lp-restos').scrollIntoView({behavior:'smooth'})" data-lp="cta_view">View Restaurants <span style="opacity:.6">↓</span></button>
     </div>
     <div class="lp-stats-belt">
@@ -2841,7 +2873,7 @@ setTimeout(function(){
   </div>
 
   <!-- B2B SECTION — for restaurant owners -->
-  <div class="lp-b2b">
+  <div class="lp-b2b" id="owner">
     <div class="lp-b2b-inner">
       <div class="lp-b2b-eyebrow" data-lp="b2b_eyebrow">For Restaurant Owners</div>
       <h3 class="lp-b2b-title" data-lp="b2b_title">Run a restaurant?<br>Join EATLAOS.</h3>
@@ -5879,8 +5911,8 @@ function toggleLpLang(){
 const LP_TRANSLATIONS = {
   en: {
     badge:'Laos · Restaurant Platform',
-    h1_line1:'The future<br>of dining<br>is <em>digital</em>',
-    hero_sub:'Customers scan a QR code, browse your menu and order directly from the table. No app. No cash. No waiting.',
+    h1_line1:'Reserve your table.<br>Anywhere in <em>Laos</em>.',
+    hero_sub:'Browse restaurants, book a table in seconds, and check your reservation anytime. No app to download.',
     cta_start:'Get Started Free →',
     cta_view:'View Restaurants ↓',
     nav_login:'Owner Login',
@@ -5889,6 +5921,11 @@ const LP_TRANSLATIONS = {
     nav_book:'📅 Book a Table',
     nav_my_bookings:'My Bookings',
     cta_book_main:'📅 Book a Table',
+    // v5.2: Sticky booking bar
+    nav_for_owners:'For Restaurants',
+    sb_label:'RESERVE',
+    sb_book:'📅 Book a Table',
+    sb_check:'Check My Booking',
     b2b_eyebrow:'For Restaurant Owners',
     b2b_title:'Run a restaurant?<br>Join EATLAOS.',
     b2b_sub:'List your restaurant, accept online bookings, and manage live orders — all in one place.',
@@ -6036,8 +6073,8 @@ const LP_TRANSLATIONS = {
   },
   lo: {
     badge:'ລາວ · ແພລດຟອມຮ້ານອາຫານ',
-    h1_line1:'ອະນາຄົດຂອງ<br>ການທານອາຫານ<br>ແມ່ນ <em>ດິຈິຕອລ</em>',
-    hero_sub:'ລູກຄ້າສະແກນ QR Code, ເບິ່ງເມນູ ແລະ ສັ່ງອາຫານໄດ້ໂດຍກົງຈາກໂຕະ. ບໍ່ຕ້ອງໂຫລດແອັບ. ບໍ່ຕ້ອງໃຊ້ເງິນສົດ.',
+    h1_line1:'ຈອງໂຕະ.<br>ທຸກບ່ອນໃນ <em>ລາວ</em>.',
+    hero_sub:'ເບິ່ງຮ້ານອາຫານ, ຈອງໂຕະພາຍໃນວິນາທີ, ແລະກວດການຈອງຂອງເຈົ້າໄດ້ທຸກເວລາ. ບໍ່ຕ້ອງໂຫລດແອັບ.',
     cta_start:'ເລີ່ມໃຊ້ຟຣີ →',
     cta_view:'ເບິ່ງຮ້ານອາຫານ ↓',
     nav_login:'ເຂົ້າສູ່ລະບົບເຈົ້າຂອງຮ້ານ',
@@ -6046,6 +6083,11 @@ const LP_TRANSLATIONS = {
     nav_book:'📅 ຈອງໂຕະ',
     nav_my_bookings:'ການຈອງຂອງຂ້ອຍ',
     cta_book_main:'📅 ຈອງໂຕະ',
+    // v5.2: Sticky booking bar
+    nav_for_owners:'ສຳລັບຮ້ານອາຫານ',
+    sb_label:'ຈອງ',
+    sb_book:'📅 ຈອງໂຕະ',
+    sb_check:'ກວດການຈອງ',
     b2b_eyebrow:'ສຳລັບເຈົ້າຂອງຮ້ານ',
     b2b_title:'ມີຮ້ານອາຫານບໍ?<br>ເຂົ້າຮ່ວມ EATLAOS.',
     b2b_sub:'ລົງທະບຽນຮ້ານ, ຮັບການຈອງອອນລາຍ, ແລະ ຈັດການອໍເດີສົດ — ທັງໝົດໃນບ່ອນດຽວ.',
@@ -6193,8 +6235,8 @@ const LP_TRANSLATIONS = {
   },
   th: {
     badge:'ลาว · แพลตฟอร์มร้านอาหาร',
-    h1_line1:'อนาคต<br>ของการรับประทานอาหาร<br>คือ <em>ดิจิทัล</em>',
-    hero_sub:'ลูกค้าสแกน QR Code ดูเมนู และสั่งอาหารได้โดยตรงจากโต๊ะ ไม่ต้องโหลดแอป ไม่ต้องใช้เงินสด',
+    h1_line1:'จองโต๊ะ.<br>ทุกที่ใน <em>ลาว</em>.',
+    hero_sub:'ดูร้านอาหาร จองโต๊ะภายในไม่กี่วินาที และตรวจสอบการจองของคุณได้ทุกเมื่อ ไม่ต้องโหลดแอป',
     cta_start:'เริ่มใช้ฟรี →',
     cta_view:'ดูร้านอาหาร ↓',
     nav_login:'เข้าสู่ระบบเจ้าของร้าน',
@@ -6203,6 +6245,11 @@ const LP_TRANSLATIONS = {
     nav_book:'📅 จองโต๊ะ',
     nav_my_bookings:'การจองของฉัน',
     cta_book_main:'📅 จองโต๊ะ',
+    // v5.2: Sticky booking bar
+    nav_for_owners:'สำหรับร้านอาหาร',
+    sb_label:'จอง',
+    sb_book:'📅 จองโต๊ะ',
+    sb_check:'ตรวจสอบการจอง',
     b2b_eyebrow:'สำหรับเจ้าของร้าน',
     b2b_title:'มีร้านอาหารใช่ไหม?<br>มาร่วม EATLAOS.',
     b2b_sub:'ลงทะเบียนร้าน รับการจองออนไลน์ และจัดการออร์เดอร์สด — ครบในที่เดียว',
@@ -6350,8 +6397,8 @@ const LP_TRANSLATIONS = {
   },
   zh: {
     badge:'老挝 · 餐厅平台',
-    h1_line1:'餐饮的<br>未来<br>是 <em>数字化</em>',
-    hero_sub:'顾客扫描二维码，浏览菜单并直接从餐桌点餐。无需下载应用，无需现金，无需等待。',
+    h1_line1:'预订您的餐桌。<br>遍布 <em>老挝</em>。',
+    hero_sub:'浏览餐厅、几秒钟即可预订餐桌、随时查看您的预订。无需下载应用。',
     cta_start:'免费开始 →',
     cta_view:'查看餐厅 ↓',
     nav_login:'餐厅业主登录',
@@ -6360,6 +6407,11 @@ const LP_TRANSLATIONS = {
     nav_book:'📅 预订餐桌',
     nav_my_bookings:'我的预订',
     cta_book_main:'📅 预订餐桌',
+    // v5.2: Sticky booking bar
+    nav_for_owners:'餐厅入口',
+    sb_label:'预订',
+    sb_book:'📅 预订餐桌',
+    sb_check:'查看我的预订',
     b2b_eyebrow:'餐厅业主专区',
     b2b_title:'经营餐厅吗？<br>加入 EATLAOS。',
     b2b_sub:'上架您的餐厅、接收在线预订并管理实时订单 — 一站式解决。',
@@ -6507,8 +6559,8 @@ const LP_TRANSLATIONS = {
   },
   ko: {
     badge:'라오스 · 레스토랑 플랫폼',
-    h1_line1:'식사의<br>미래는<br><em>디지털</em>입니다',
-    hero_sub:'고객이 QR 코드를 스캔하고 메뉴를 보고 테이블에서 직접 주문합니다. 앱 다운로드 불필요. 현금 불필요.',
+    h1_line1:'테이블을 예약하세요.<br><em>라오스</em> 어디서나.',
+    hero_sub:'레스토랑을 둘러보고, 몇 초 안에 테이블을 예약하고, 언제든지 예약을 확인하세요. 앱 다운로드 불필요.',
     cta_start:'무료로 시작하기 →',
     cta_view:'레스토랑 보기 ↓',
     nav_login:'사업자 로그인',
@@ -6517,6 +6569,11 @@ const LP_TRANSLATIONS = {
     nav_book:'📅 테이블 예약',
     nav_my_bookings:'내 예약',
     cta_book_main:'📅 테이블 예약',
+    // v5.2: Sticky booking bar
+    nav_for_owners:'레스토랑 운영',
+    sb_label:'예약',
+    sb_book:'📅 테이블 예약',
+    sb_check:'예약 확인',
     b2b_eyebrow:'레스토랑 사업자용',
     b2b_title:'레스토랑을 운영하시나요?<br>EATLAOS에 가입하세요.',
     b2b_sub:'레스토랑 등록, 온라인 예약 접수, 실시간 주문 관리 — 한 곳에서 해결.',
@@ -6731,9 +6788,10 @@ function animateCount(el, target){
 function initLandingNav(){
   const nav=document.getElementById('lpNav');
   if(!nav) return;
+  const sb=document.getElementById('lpStickybar');
   const onScroll=()=>{
-    if(window.scrollY>40) nav.classList.add('scrolled');
-    else nav.classList.remove('scrolled');
+    if(window.scrollY>40){ nav.classList.add('scrolled'); if(sb) sb.classList.add('compact'); }
+    else { nav.classList.remove('scrolled'); if(sb) sb.classList.remove('compact'); }
   };
   window.removeEventListener('scroll',window._lpNavScroll||onScroll);
   window._lpNavScroll=onScroll;
