@@ -1205,6 +1205,9 @@ button,input,select,textarea{font-family:var(--fb);}
 .fi-l{display:block;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px;}
 .fi{width:100%;padding:11px 14px;background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-text);font-size:15px;outline:none;transition:border-color .2s;}
 .fi:focus{border-color:var(--s-gold);}
+/* v5.5: Error state for inputs — red border + shake when validation fails (e.g. duplicate table number) */
+.fi.fi-error{border-color:#dc3545!important;box-shadow:0 0 0 3px rgba(220,53,69,.15);animation:fiShake .45s cubic-bezier(.36,.07,.19,.97) both;}
+@keyframes fiShake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-4px)}20%,40%,60%,80%{transform:translateX(4px)}}
 .fi::placeholder{color:var(--s-muted2);}
 select.fi{cursor:pointer;}
 .btn-sign{width:100%;padding:14px;background:var(--s-gold);border:none;color:#000;font-family:var(--ff);font-size:14px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .25s;margin-top:8px;}
@@ -1639,6 +1642,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
 /* ═══ NOTIFICATIONS ═══ */
 .notif{position:fixed;top:16px;right:16px;background:var(--s-surf);border:1px solid var(--s-border);border-left:2px solid var(--s-gold);color:var(--s-text);padding:12px 18px;z-index:900;font-size:12px;display:flex;align-items:center;gap:9px;transform:translateY(-80px);opacity:0;transition:all .35s cubic-bezier(.16,1,.3,1);min-width:220px;max-width:320px;box-shadow:var(--shadow);}
 .notif.show{transform:translateY(0);opacity:1;}
+/* v5.5: Error variant — red border, larger text, shake animation, longer visible time */
+.notif.notif-error{border-left:3px solid #dc3545;border-color:rgba(220,53,69,.4);background:linear-gradient(135deg,rgba(220,53,69,.08),var(--s-surf));font-size:13px;font-weight:600;padding:14px 20px;min-width:280px;max-width:380px;box-shadow:0 12px 40px rgba(220,53,69,.25),0 2px 8px rgba(0,0,0,.4);}
+.notif.notif-error.show{animation:notifShake .5s cubic-bezier(.36,.07,.19,.97) both;}
+@keyframes notifShake{0%,100%{transform:translateY(0) translateX(0);}10%,30%,50%,70%,90%{transform:translateY(0) translateX(-4px);}20%,40%,60%,80%{transform:translateY(0) translateX(4px);}}
 .notif-c{background:var(--c-surf);border-color:var(--c-border);border-left-color:var(--c-gold);color:var(--c-text);box-shadow:0 8px 32px rgba(26,18,9,.12);}
 .notif-c.notif-success{border-left-color:var(--c-green);}
 .new-ord-bar{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--s-green);color:#000;padding:11px 22px;z-index:950;font-family:var(--ff);font-size:13px;font-weight:900;display:flex;align-items:center;gap:8px;transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s ease;opacity:0;border-radius:4px;box-shadow:0 4px 20px rgba(29,185,84,.35);cursor:pointer;}
@@ -1749,8 +1756,20 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-btn-gold{background:linear-gradient(135deg,#c8973a,#e0b55a);color:#000;font-weight:800;box-shadow:0 4px 16px rgba(200,151,58,.3);}
 .lp-btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,151,58,.5);}
 
+/* v5.6: Owner login button — visible at ALL screen sizes (mobile too) */
+.lp-nav-owner{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;background:rgba(200,151,58,.08);color:rgba(200,151,58,.9);border:1px solid rgba(200,151,58,.22);border-radius:8px;font-family:var(--fb);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;letter-spacing:.3px;}
+.lp-nav-owner:hover{background:rgba(200,151,58,.15);color:#e0b55a;border-color:rgba(200,151,58,.4);transform:translateY(-1px);}
+.lp-nav-owner svg{opacity:.85;}
+@media (max-width:780px){
+  .lp-nav-owner{height:36px;padding:0 11px;font-size:11.5px;gap:5px;}
+}
+@media (max-width:420px){
+  .lp-nav-owner-txt{display:none;}
+  .lp-nav-owner{padding:0 10px;width:36px;justify-content:center;}
+}
+
 /* ── HERO ── */
-.lp-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:170px 6% 60px;position:relative;overflow:hidden;background:#040404;}
+.lp-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:185px 6% 60px;position:relative;overflow:hidden;background:#040404;}
 .lp-hero-noise{position:absolute;inset:0;opacity:.04;background-image:radial-gradient(rgba(200,151,58,.03) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
 .lp-hero-orb1{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(200,151,58,.15) 0%,transparent 65%);top:-200px;left:-150px;pointer-events:none;animation:orbFloat 8s ease-in-out infinite;}
 .lp-hero-orb2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,151,58,.08) 0%,transparent 65%);bottom:-100px;right:-100px;pointer-events:none;animation:orbFloat 10s ease-in-out infinite reverse;}
@@ -1771,28 +1790,33 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-cta-secondary:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.28);transform:translateY(-2px);}
 
 /* === STICKY BOOKING BAR (Apple-luxury, docks below nav) === */
-.lp-stickybar{position:fixed;top:72px;left:0;right:0;z-index:190;display:flex;justify-content:center;pointer-events:none;transition:top .35s cubic-bezier(.16,1,.3,1),opacity .35s ease;}
-.lp-stickybar-inner{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(8,8,8,.72);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(200,151,58,.18);border-radius:999px;box-shadow:0 10px 40px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.04) inset;margin-top:14px;animation:sbFade .5s cubic-bezier(.16,1,.3,1) both;animation-delay:.15s;}
+/* v5.6: Larger, more prominent — booking is the primary call-to-action */
+.lp-stickybar{position:fixed;top:72px;left:0;right:0;z-index:190;display:flex;justify-content:center;pointer-events:none;transition:top .35s cubic-bezier(.16,1,.3,1),opacity .35s ease;padding:0 16px;}
+.lp-stickybar-inner{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(8,8,8,.78);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(200,151,58,.22);border-radius:999px;box-shadow:0 14px 50px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.05) inset;margin-top:18px;animation:sbFade .5s cubic-bezier(.16,1,.3,1) both;animation-delay:.15s;}
 @keyframes sbFade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.lp-sb-label{display:flex;align-items:center;gap:8px;padding:0 14px 0 10px;font-family:var(--fb);font-size:12px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.5px;border-right:1px solid rgba(255,255,255,.08);}
-.lp-sb-label::before{content:"";width:6px;height:6px;border-radius:50%;background:#c8973a;box-shadow:0 0 12px rgba(200,151,58,.7);animation:sbPulse 2.4s ease-in-out infinite;}
+.lp-sb-label{display:flex;align-items:center;gap:9px;padding:0 16px 0 12px;font-family:var(--fb);font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:1.2px;border-right:1px solid rgba(255,255,255,.09);text-transform:uppercase;}
+.lp-sb-label::before{content:"";width:7px;height:7px;border-radius:50%;background:#c8973a;box-shadow:0 0 14px rgba(200,151,58,.8);animation:sbPulse 2.4s ease-in-out infinite;}
 @keyframes sbPulse{0%,100%{opacity:1}50%{opacity:.4}}
-.lp-sb-btn{height:42px;padding:0 22px;border-radius:999px;font-family:var(--fb);font-size:13.5px;font-weight:600;letter-spacing:.2px;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s cubic-bezier(.16,1,.3,1);white-space:nowrap;}
-.lp-sb-primary{background:linear-gradient(135deg,#c8973a,#e0b55a);color:#0a0a0a;font-weight:700;box-shadow:0 4px 18px rgba(200,151,58,.35);}
-.lp-sb-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(200,151,58,.5);}
-.lp-sb-ghost{background:transparent;color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.12);}
-.lp-sb-ghost:hover{background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.22);}
-.lp-stickybar.compact .lp-stickybar-inner{padding:8px 10px;gap:8px;}
+.lp-sb-btn{height:52px;padding:0 28px;border-radius:999px;font-family:var(--fb);font-size:14.5px;font-weight:700;letter-spacing:.2px;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:9px;transition:all .25s cubic-bezier(.16,1,.3,1);white-space:nowrap;}
+.lp-sb-primary{background:linear-gradient(135deg,#c8973a,#e0b55a);color:#0a0a0a;font-weight:800;box-shadow:0 6px 22px rgba(200,151,58,.4);}
+.lp-sb-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(200,151,58,.6);filter:brightness(1.05);}
+.lp-sb-ghost{background:rgba(255,255,255,.05);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.14);}
+.lp-sb-ghost:hover{background:rgba(255,255,255,.09);color:#fff;border-color:rgba(200,151,58,.4);transform:translateY(-1px);}
+.lp-stickybar.compact .lp-stickybar-inner{padding:9px 12px;gap:10px;margin-top:10px;}
 .lp-stickybar.compact .lp-sb-label{display:none;}
-.lp-stickybar.compact .lp-sb-btn{height:38px;padding:0 18px;font-size:13px;}
+.lp-stickybar.compact .lp-sb-btn{height:44px;padding:0 22px;font-size:13.5px;}
 @media (max-width:780px){
-  .lp-stickybar{top:64px;}
-  .lp-stickybar-inner{margin:10px 12px 0;padding:8px;gap:6px;width:calc(100% - 24px);max-width:480px;border-radius:14px;}
+  .lp-stickybar{top:64px;padding:0 12px;}
+  .lp-stickybar-inner{margin:12px 0 0;padding:9px;gap:8px;width:100%;max-width:520px;border-radius:16px;}
   .lp-sb-label{display:none;}
-  .lp-sb-btn{flex:1;height:42px;padding:0 12px;font-size:13px;justify-content:center;}
+  .lp-sb-btn{flex:1;height:50px;padding:0 14px;font-size:14px;justify-content:center;font-weight:700;}
+  .lp-stickybar.compact .lp-stickybar-inner{padding:7px;gap:6px;margin-top:8px;}
+  .lp-stickybar.compact .lp-sb-btn{height:44px;font-size:13px;}
 }
 @media (max-width:420px){
-  .lp-sb-btn{font-size:12px;padding:0 10px;gap:5px;}
+  .lp-stickybar{padding:0 10px;}
+  .lp-stickybar-inner{padding:8px;gap:7px;}
+  .lp-sb-btn{font-size:13px;padding:0 10px;gap:6px;height:48px;}
 }
 
 /* Stats */
@@ -1889,7 +1913,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
   .lp-nav{height:64px;padding:0 4%;}
   .lp-nav-logo{font-size:22px;}
   .lp-btn-ghost{display:none;}
-  .lp-hero{padding:155px 4% 40px;min-height:auto;}
+  .lp-hero{padding:175px 4% 40px;min-height:auto;}
   .lp-h1{font-size:clamp(40px,10vw,68px);letter-spacing:-2px;}
   .lp-hero-sub{font-size:15px;}
   .lp-hero-ctas{gap:10px;}
@@ -1917,7 +1941,8 @@ body{min-height:100%;overscroll-behavior-x:none;}
 @media(max-width:480px){
   .lp-nav{height:60px;padding:0 4%;}
   .lp-nav-logo span,.lp-nav-logo>div>div:last-child{display:none;}
-  .lp-hero{padding:72px 4% 36px;}
+  .lp-stickybar{top:60px;}
+  .lp-hero{padding:165px 4% 36px;}
   .lp-h1{font-size:clamp(36px,11vw,54px);letter-spacing:-1.5px;}
   .lp-hero-sub{font-size:14px;margin-bottom:28px;}
   .lp-stats-belt{border-radius:10px;}
@@ -1988,6 +2013,31 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .sl-btn-sa{background:linear-gradient(135deg,#1a0a0a,#2a1010);border:1px solid rgba(229,72,77,.3);color:#e5484d;}
 .sl-btn-sa:hover{background:linear-gradient(135deg,#2a1010,#3a1515);border-color:rgba(229,72,77,.6);box-shadow:0 8px 24px rgba(229,72,77,.2);}
 /* Responsive login */
+/* v5.6: Owner & SA login pages — mobile layout (was broken: stayed 2-column on phones) */
+@media (max-width:860px){
+  .sl-wrap{grid-template-columns:1fr;min-height:100vh;}
+  .sl-left{padding:32px 24px 24px;border-right:none;border-bottom:1px solid rgba(200,151,58,.1);}
+  .sl-left::before{display:none;}
+  .sl-back{margin-bottom:24px;}
+  .sl-logo{font-size:36px;}
+  .sl-features{display:none;} /* Save space — features pitch is for desktop only */
+  .sl-info{padding-top:20px;}
+  .sl-sa-badge{margin-bottom:24px;}
+  .sl-sa-warning{display:none;}
+  .sl-right{padding:32px 24px 48px;}
+  .sl-title{font-size:28px;}
+  .sl-subtitle{margin-bottom:28px;}
+  .sl-form-wrap{max-width:100%;}
+  .sl-form-header{margin-bottom:24px;}
+  .sl-btn{height:50px;font-size:15px;}
+}
+@media (max-width:420px){
+  .sl-left{padding:24px 18px 18px;}
+  .sl-right{padding:24px 18px 36px;}
+  .sl-logo{font-size:32px;}
+  .sl-title{font-size:24px;}
+  .sl-input{padding:13px 14px;font-size:14.5px;}
+}
 
 /* ══ V4 LANG SWITCHER ══ */
 /* ══ LANDING LANG SWITCHER ══ */
@@ -2753,6 +2803,10 @@ setTimeout(function(){
         </div>
       </div>
       <button class="lp-nav-btn lp-btn-ghost" onclick="document.getElementById('owner').scrollIntoView({behavior:'smooth'})" data-lp="nav_for_owners" style="opacity:.7">For Restaurants</button>
+      <button class="lp-nav-owner" onclick="showPage('pg-owner-login')" data-lp="nav_owner_login" title="Owner Login">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="lp-nav-owner-txt">Owner</span>
+      </button>
     </div>
   </nav>
 
@@ -3020,7 +3074,7 @@ setTimeout(function(){
       <nav class="sb-nav">
         <div class="sb-sec">Overview</div>
         <button class="sb-item on" onclick="saP('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
-        <button class="sb-item" onclick="saP('revenue',this)"><span class="sb-ico">💰</span data-ts="revenue">Revenue</button>
+        <button class="sb-item" onclick="saP('revenue',this)"><span class="sb-ico">💰</span>Revenue</button>
         <div class="sb-sec">Management</div>
         <button class="sb-item" onclick="saP('restaurants',this)"><span class="sb-ico">🏪</span>Restaurants<span class="sb-num" id="pendNum" style="display:none">!</span></button>
         <button class="sb-item" onclick="saP('orders',this)"><span class="sb-ico">🧾</span>All Orders</button>
@@ -3226,7 +3280,7 @@ setTimeout(function(){
       <div class="sb-brand"><div class="sb-logo">EAT<em>LAOS</em></div><div class="sb-badge badge-ow">🏪 Owner</div></div>
       <nav class="sb-nav">
         <button class="sb-item on" id="owNav-dashboard" onclick="owP('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
-        <button class="sb-item" id="owNav-liveorders" onclick="owP('liveorders',this)"><span class="sb-ico">🔴</span data-ts="live_orders">Live Orders<span class="sb-num" id="owNewBadge" style="display:none">!</span></button>
+        <button class="sb-item" id="owNav-liveorders" onclick="owP('liveorders',this)"><span class="sb-ico">🔴</span><span data-ts="live_orders">Live Orders</span><span class="sb-num" id="owNewBadge" style="display:none">!</span></button>
         <button class="sb-item" id="owNav-bills" onclick="owP('bills',this)"><span class="sb-ico">🧾</span>Table Bills</button>
         <button class="sb-item" id="owNav-menu" onclick="owP('menu',this)"><span class="sb-ico">🍽️</span>Menu Items</button>
         <button class="sb-item" id="owNav-categories" onclick="owP('categories',this)"><span class="sb-ico">🏷️</span>Categories</button>
@@ -5463,8 +5517,14 @@ async function init(){
           hideLoading();
           const _sl=document.getElementById('staffLangSel');
           if(_sl){_sl.value=lang;if(lang!=='en'){setTimeout(()=>{applyTranslation(document.getElementById('pg-ow'));startTranslationObserver();},100);}}
-          owP('dashboard',document.querySelector('#pg-ow .sb-item'));
-          // Load Firebase in background after page is visible
+          // v5.4: Load features FIRST so we open the right panel for booking-only restaurants
+          // (fbGet uses REST so this is fast; no SDK wait). Removes the 3-5s Dashboard flash.
+          const _feats = await _owLoadAndApplyFeatures();
+          const _startPanel = _owPickStartPanel(_feats);
+          const _startBtn = document.querySelector('#pg-ow .sb-item[onclick*="\''+_startPanel+'\'"]')
+                         || document.querySelector('#pg-ow .sb-item');
+          owP(_startPanel, _startBtn);
+          // Load Firebase SDK in background (only needed for real-time listeners)
           await loadFirebaseSDK();
           startOwnerListeners();
           setTimeout(()=>initOwChart('rev'),300);
@@ -5825,7 +5885,14 @@ async function doOwnerLogin(){
       b.classList.add('show');
     }
   }
-  owP('dashboard',document.querySelector('#pg-ow .sb-item'));
+  // v5.4: Load features FIRST, then pick the correct starting panel.
+  // Fixes the flash where Dashboard renders for ~5s before being hidden on booking-only restaurants.
+  const _feats = await _owLoadAndApplyFeatures();
+  const _startPanel = _owPickStartPanel(_feats);
+  // Find the corresponding sidebar button so it gets the active highlight
+  const _startBtn = document.querySelector('#pg-ow .sb-item[onclick*="\''+_startPanel+'\'"]')
+                 || document.querySelector('#pg-ow .sb-item');
+  owP(_startPanel, _startBtn);
   startOwnerListeners();
   setTimeout(()=>initOwChart('rev'),300);
 }
@@ -5954,6 +6021,7 @@ const LP_TRANSLATIONS = {
     sb_label:'RESERVE',
     sb_book:'📅 Book a Table',
     sb_check:'Check My Booking',
+    nav_owner_login:'Owner',
     b2b_eyebrow:'For Restaurant Owners',
     b2b_title:'Run a restaurant?<br>Join EATLAOS.',
     b2b_sub:'List your restaurant, accept online bookings, and manage live orders — all in one place.',
@@ -6116,6 +6184,7 @@ const LP_TRANSLATIONS = {
     sb_label:'ຈອງ',
     sb_book:'📅 ຈອງໂຕະ',
     sb_check:'ກວດການຈອງ',
+    nav_owner_login:'ເຈົ້າຂອງ',
     b2b_eyebrow:'ສຳລັບເຈົ້າຂອງຮ້ານ',
     b2b_title:'ມີຮ້ານອາຫານບໍ?<br>ເຂົ້າຮ່ວມ EATLAOS.',
     b2b_sub:'ລົງທະບຽນຮ້ານ, ຮັບການຈອງອອນລາຍ, ແລະ ຈັດການອໍເດີສົດ — ທັງໝົດໃນບ່ອນດຽວ.',
@@ -6278,6 +6347,7 @@ const LP_TRANSLATIONS = {
     sb_label:'จอง',
     sb_book:'📅 จองโต๊ะ',
     sb_check:'ตรวจสอบการจอง',
+    nav_owner_login:'เจ้าของ',
     b2b_eyebrow:'สำหรับเจ้าของร้าน',
     b2b_title:'มีร้านอาหารใช่ไหม?<br>มาร่วม EATLAOS.',
     b2b_sub:'ลงทะเบียนร้าน รับการจองออนไลน์ และจัดการออร์เดอร์สด — ครบในที่เดียว',
@@ -6440,6 +6510,7 @@ const LP_TRANSLATIONS = {
     sb_label:'预订',
     sb_book:'📅 预订餐桌',
     sb_check:'查看我的预订',
+    nav_owner_login:'业主',
     b2b_eyebrow:'餐厅业主专区',
     b2b_title:'经营餐厅吗？<br>加入 EATLAOS。',
     b2b_sub:'上架您的餐厅、接收在线预订并管理实时订单 — 一站式解决。',
@@ -6602,6 +6673,7 @@ const LP_TRANSLATIONS = {
     sb_label:'예약',
     sb_book:'📅 테이블 예약',
     sb_check:'예약 확인',
+    nav_owner_login:'사업자',
     b2b_eyebrow:'레스토랑 사업자용',
     b2b_title:'레스토랑을 운영하시나요?<br>EATLAOS에 가입하세요.',
     b2b_sub:'레스토랑 등록, 온라인 예약 접수, 실시간 주문 관리 — 한 곳에서 해결.',
@@ -8085,26 +8157,39 @@ let _owFeaturesLoadedAt = 0;
 const _OW_FEATURES_TTL = 60000; // 60 seconds — re-fetch if older than this
 
 async function _owLoadAndApplyFeatures(forceRefresh){
-  if(typeof restoId === 'undefined' || !restoId) return;
+  if(typeof restoId === 'undefined' || !restoId) return null;
   // Use cache if fresh and for the same restaurant
   const cacheValid = _owFeaturesCache &&
                      _owFeaturesCacheRestoId === restoId &&
                      (Date.now() - _owFeaturesLoadedAt) < _OW_FEATURES_TTL;
   if(cacheValid && !forceRefresh){
     _owApplyFeatures(_owFeaturesCache);
-    return;
+    return _owFeaturesCache;
   }
   try {
     const r = await fbGet('restaurants/'+restoId);
-    if(!r) return;
+    if(!r) return null;
     const f = _resGetFeatures(r);
     _owFeaturesCache = f;
     _owFeaturesCacheRestoId = restoId;
     _owFeaturesLoadedAt = Date.now();
     _owApplyFeatures(f);
+    return f;
   } catch(e){
     console.error('_owLoadAndApplyFeatures:', e);
+    return null;
   }
+}
+
+/* v5.4: Pick the right starting panel for an owner based on enabled features.
+   Priority: dashboard (QR) > bookings > tables > hours > profile.
+   This prevents the flash where the QR-only Dashboard renders for ~3-5s before
+   the feature gate hides it. Called synchronously after features are loaded. */
+function _owPickStartPanel(features){
+  if(!features) return 'dashboard'; // legacy default if no flags
+  if(features.qrOrder) return 'dashboard';   // QR enabled → start at Dashboard
+  if(features.booking) return 'bookings';    // Booking-only → start at Bookings
+  return 'hours'; // Edge case: both disabled (shouldn't happen) → Hours panel always exists
 }
 
 function _owApplyFeatures(f){
@@ -8396,7 +8481,7 @@ async function renderBills(){
       <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,var(--s-surf2),var(--s-surf3));border-bottom:2px solid var(--s-gold)">
         <div>
           <div style="font-family:var(--ff);font-size:22px;font-weight:900">🪑 Table ${sess.tNum||'?'}</div>
-          <div style="font-size:10px;color:var(--s-muted);margin-top:2px">${allOrders.length} order${allOrders.length!==1?'s':''} · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>
+          <div style="font-size:10px;color:var(--s-muted);margin-top:2px">${allOrders.length} order${allOrders.length!==1?'s':''} · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>
         </div>
         <div style="text-align:right">
           <div style="font-family:var(--ff);font-size:26px;font-weight:900;color:var(--s-gold)">${fmtK(grandTotal)}</div>
@@ -8451,7 +8536,7 @@ async function editBillItem(fbKey,itemId,newQty,sessId){
   item.qty=newQtyNum;
   const newTotal=order.items.reduce((s,i)=>s+(i.price*(i.qty||0)),0);
   // Save edit history
-  const histEntry={ts:Date.now(),time:new Date().toLocaleTimeString(),editor:'Owner',change:`${item.name}: ${oldQty} → ${newQtyNum}`,oldTotal:order.total,newTotal};
+  const histEntry={ts:Date.now(),time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),editor:'Owner',change:`${item.name}: ${oldQty} → ${newQtyNum}`,oldTotal:order.total,newTotal};
   const histKey='orders/'+fbKey+'/editHistory';
   await fbPush(histKey,histEntry);
   await fbUpdate('orders/'+fbKey,{items:order.items,total:newTotal,edited:true,editedAt:Date.now()});
@@ -8570,7 +8655,7 @@ async function printBill(sessKey){
   </div>
   <div class="meta">
     <div class="meta-item"><b>${now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</b>Date</div>
-    <div class="meta-item" style="text-align:right"><b>${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</b>Time</div>
+    <div class="meta-item" style="text-align:right"><b>${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</b>Time</div>
   </div>
   <div class="sec-title">Order Summary</div>
   <div class="items">
@@ -9299,7 +9384,16 @@ async function saveOwTable(){
   if(!num){notifyD('⚠ Enter table number');return;}
   // Prevent duplicate table numbers
   if((r?.tables||[]).find(t=>String(t.num).toLowerCase()===num.toLowerCase())){
-    notifyD('⚠ Table "'+num+'" already exists');return;
+    notifyD('⚠ Table number "'+num+'" already exists — please use a different number');
+    // v5.5: Flash + focus the input so the user immediately sees what's wrong
+    const _inp = document.getElementById('mTnum');
+    if(_inp){
+      _inp.classList.remove('fi-error'); void _inp.offsetWidth; // restart animation
+      _inp.classList.add('fi-error');
+      _inp.focus(); _inp.select();
+      setTimeout(()=>_inp.classList.remove('fi-error'), 1500);
+    }
+    return;
   }
   // v5.4: Capture zone (default "Indoor" if empty)
   let zone = document.getElementById('mTzone')?.value || 'Indoor';
@@ -9632,7 +9726,16 @@ async function saveEditTable(){
   const r=await fbGet('restaurants/'+restoId);
   const tables=[...(r?.tables||[])];
   if(tables.some((t,i)=>i!==idx&&String(t.num).toLowerCase()===num.toLowerCase())){
-    notifyD('⚠ Table "'+num+'" already exists');return;
+    notifyD('⚠ Table number "'+num+'" already exists — please use a different number');
+    // v5.5: Flash + focus the input so the user immediately sees what's wrong
+    const _inp = document.getElementById('mEtNum');
+    if(_inp){
+      _inp.classList.remove('fi-error'); void _inp.offsetWidth;
+      _inp.classList.add('fi-error');
+      _inp.focus(); _inp.select();
+      setTimeout(()=>_inp.classList.remove('fi-error'), 1500);
+    }
+    return;
   }
   // Build the updated table — keep `seats` field for backward compat (= maxSeats)
   const updated = {...tables[idx],num,seats:maxSeats,maxSeats,desc,zone};
@@ -9906,7 +10009,7 @@ async function generateSession(){
     }
     // Create new session
     const sessData={rId,rName:r?.name||'',tId,tNum,start:now,exp,duration:hours,
-      startTime:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+      startTime:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
       startDate:new Date().toLocaleDateString()};
     const sessRef=await fbPush('sessions',sessData);
     const sessKey=sessRef.key;
@@ -10526,7 +10629,7 @@ async function placeOrder(){
       total:tot,
       vatRate:r?.vat||0, comm:Number(r?.comm??0), // stored as number, 0% stays 0
       status:'pending', ts:Date.now(),
-      time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+      time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
       date:new Date().toLocaleDateString()
     };
     await fbPush('orders',order);
@@ -10696,7 +10799,19 @@ function openModal(id){const el=document.getElementById(id);if(!el)return;el.cla
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
 let ntD,ntC;
-function notifyD(txt){const el=document.getElementById('notifD');document.getElementById('notifDTxt').textContent=txt;el.classList.add('show');clearTimeout(ntD);ntD=setTimeout(()=>el.classList.remove('show'),3000);}
+function notifyD(txt){
+  const el=document.getElementById('notifD');
+  document.getElementById('notifDTxt').textContent=txt;
+  // v5.5: Auto-detect error/warning toasts (start with ⚠, ❌, or 🚫) and apply
+  // error styling — red border, shake animation, longer visible time.
+  // Backward-compatible: callers don't need to change anything.
+  const isError = /^[⚠❌🚫]/.test(txt);
+  el.classList.toggle('notif-error', isError);
+  el.classList.add('show');
+  clearTimeout(ntD);
+  // Errors stay visible 5s (was 3s) so the user actually reads them
+  ntD=setTimeout(()=>el.classList.remove('show'), isError ? 5000 : 3000);
+}
 function notifyC(txt,success=false){const id=success?'notifS':'notifC',txtId=success?'notifSTxt':'notifCTxt';const el=document.getElementById(id);document.getElementById(txtId).textContent=txt;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
 function toggleSound(){soundOn=!soundOn;['saSound','owSound'].forEach(id=>{const e=document.getElementById(id);if(e) e.textContent=soundOn?'🔔 ON':'🔕 OFF';});notifyD(soundOn?'🔔 Sound on':'🔕 Sound off');}
 function playSound(){if(!soundOn) return;try{const ac=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0,ac.currentTime+i*.15);g.gain.linearRampToValueAtTime(.2,ac.currentTime+i*.15+.06);g.gain.linearRampToValueAtTime(0,ac.currentTime+i*.15+.28);o.start(ac.currentTime+i*.15);o.stop(ac.currentTime+i*.15+.32);});}catch(e){}}
@@ -13294,9 +13409,9 @@ async function loadOwnerHours(){
         <span style="font-size:12px">${escapeHtml(lblOpen)}</span>
       </label>
       <div id="ohRow-${i}" style="display:${day.open?'flex':'none'};align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap">
-        <input type="time" id="ohFrom-${i}" value="${day.from||'11:00'}" step="1800">
+        <input type="time" lang="en-GB" id="ohFrom-${i}" value="${day.from||'11:00'}" step="1800">
         <span class="oh-day-sep">${escapeHtml(lblTo)}</span>
-        <input type="time" id="ohTo-${i}" value="${day.to||'22:00'}" step="1800">
+        <input type="time" lang="en-GB" id="ohTo-${i}" value="${day.to||'22:00'}" step="1800">
       </div>
       <div id="ohClosed-${i}" class="oh-closed" style="display:${day.open?'none':'block'};margin-left:auto">${escapeHtml(lblClosed)}</div>
       <!-- v6.3: BOOKING MODE row (only shown when day is open) -->
@@ -13518,8 +13633,8 @@ async function cleanupOldBookings(opts){
         <div class="fg"><label>Number of Guests *</label><input class="fi" type="number" id="mBookGuests" min="1" max="100" value="2"></div>
       </div>
       <div class="form-row">
-        <div class="fg"><label>Arrival Time *</label><input class="fi" type="time" id="mBookTime" onchange="updateTimeDisplay()"></div>
-        <div class="fg"><label>End Time / Checkout *</label><input class="fi" type="time" id="mBookEnd" onchange="updateTimeDisplay()"></div>
+        <div class="fg"><label>Arrival Time *</label><input class="fi" type="time" lang="en-GB" id="mBookTime" onchange="updateTimeDisplay()"></div>
+        <div class="fg"><label>End Time / Checkout *</label><input class="fi" type="time" lang="en-GB" id="mBookEnd" onchange="updateTimeDisplay()"></div>
       </div>
       <div class="time-range-display" id="timeRangeDisplay">Select arrival and end time</div>
       <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Table &amp; Status</div>
