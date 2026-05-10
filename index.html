@@ -2724,6 +2724,10 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .ob-card-grid div b{display:block;color:var(--s-muted,rgba(255,255,255,.5));font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;font-weight:700;}
 .ob-card-actions{display:flex;gap:10px;margin-top:12px;}
 .ob-pill{padding:3px 10px;border-radius:14px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+/* VIP requirement panel inside booking card — owner sees what was promised */
+.ob-vip-req{margin-top:12px;padding:10px 12px;background:rgba(200,151,58,.08);border:1px solid rgba(200,151,58,.25);border-radius:8px;}
+.ob-vip-req-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c8973a;margin-bottom:4px;}
+.ob-vip-req-text{font-size:13px;color:var(--s-text,#fff);line-height:1.45;font-weight:500;white-space:pre-wrap;word-break:break-word;}
 
 /* OWNER hours panel */
 .oh-day{display:flex;align-items:center;gap:12px;padding:14px;background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,rgba(255,255,255,.06));border-radius:10px;margin-bottom:8px;flex-wrap:wrap;transition:all .2s;}
@@ -4388,6 +4392,11 @@ const STAFF_T={
     bk_loading:'Loading bookings…',
     bk_party_label:'Party',bk_phone_label:'Phone',bk_code_label:'Code',
     bk_table_label:'Table',
+    bk_vip_requirement:'VIP requirement',
+    bk_map_today_tag:'Today',
+    bk_view_map_title_today:'View booked tables on the map (today)',
+    bk_view_map_title_date:'View booked tables on the map for {date}',
+    bk_view_map_cta:'🗺️ View map →',
     // v5.5: Floor plan editor (SA only)
     fp_title:'Floor Plan Editor',
     fp_save:'💾 Save',
@@ -4530,6 +4539,11 @@ const STAFF_T={
     bk_loading:'ກຳລັງໂຫຼດການຈອງ…',
     bk_party_label:'ຈຳນວນຄົນ',bk_phone_label:'ເບີໂທ',bk_code_label:'ລະຫັດ',
     bk_table_label:'ໂຕະ',
+    bk_vip_requirement:'ເງື່ອນໄຂໂຕະ VIP',
+    bk_map_today_tag:'ມື້ນີ້',
+    bk_view_map_title_today:'ເບິ່ງໂຕະທີ່ຖືກຈອງໃນແຜນທີ່ (ມື້ນີ້)',
+    bk_view_map_title_date:'ເບິ່ງໂຕະທີ່ຖືກຈອງໃນແຜນທີ່ ສຳລັບ {date}',
+    bk_view_map_cta:'🗺️ ເບິ່ງແຜນທີ່ →',
     // v5.5: Floor plan editor (SA only)
     fp_title:'ຕົວແກ້ໄຂແຜນຜັງຮ້ານ',
     fp_save:'💾 ບັນທຶກ',
@@ -4672,6 +4686,11 @@ const STAFF_T={
     bk_loading:'กำลังโหลดการจอง…',
     bk_party_label:'จำนวนคน',bk_phone_label:'เบอร์โทร',bk_code_label:'รหัส',
     bk_table_label:'โต๊ะ',
+    bk_vip_requirement:'เงื่อนไขโต๊ะ VIP',
+    bk_map_today_tag:'วันนี้',
+    bk_view_map_title_today:'ดูโต๊ะที่จองในแผนที่ (วันนี้)',
+    bk_view_map_title_date:'ดูโต๊ะที่จองในแผนที่สำหรับ {date}',
+    bk_view_map_cta:'🗺️ ดูแผนที่ →',
     // v5.5: Floor plan editor (SA only)
     fp_title:'ตัวแก้ไขแผนผังร้าน',
     fp_save:'💾 บันทึก',
@@ -4814,6 +4833,11 @@ const STAFF_T={
     bk_loading:'正在加载预订…',
     bk_party_label:'人数',bk_phone_label:'电话',bk_code_label:'编号',
     bk_table_label:'桌位',
+    bk_vip_requirement:'VIP 桌位要求',
+    bk_map_today_tag:'今日',
+    bk_view_map_title_today:'在地图上查看已预订的桌位（今日）',
+    bk_view_map_title_date:'查看 {date} 已预订的桌位地图',
+    bk_view_map_cta:'🗺️ 查看地图 →',
     // v5.5: Floor plan editor (SA only)
     fp_title:'平面图编辑器',
     fp_save:'💾 保存',
@@ -4972,6 +4996,11 @@ const STAFF_T={
     bk_loading:'예약을 불러오는 중…',
     bk_party_label:'인원',bk_phone_label:'전화',bk_code_label:'코드',
     bk_table_label:'테이블',
+    bk_vip_requirement:'VIP 테이블 요구사항',
+    bk_map_today_tag:'오늘',
+    bk_view_map_title_today:'지도에서 예약된 테이블 보기 (오늘)',
+    bk_view_map_title_date:'{date}의 예약된 테이블 지도 보기',
+    bk_view_map_cta:'🗺️ 지도 보기 →',
     // v5.5: Floor plan editor (SA only)
     fp_title:'평면도 편집기',
     fp_save:'💾 저장',
@@ -11371,6 +11400,7 @@ let _bkOwnerCache = []; // owner-side cached bookings
 let _bkOwnerFilter = 'pending';
 let _bkOwnerDateFilter = null; // v6.4: 'YYYY-MM-DD' or null = all dates
 let _bkRestoTableCount = 0;    // v6.5: tables count for stats dashboard
+let _bkRestoTables = [];       // tables array — used to look up VIP requirement for each booking
 let _bkLiveListener = null; // for sound notification
 let _bkLastBookingCount = 0;
 
@@ -13548,7 +13578,9 @@ async function loadOwnerBookings(){
     if(data) Object.keys(data).forEach(k=>{ arr.push({id:k, ...data[k]}); });
     arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     _bkOwnerCache = arr;
-    _bkRestoTableCount = (r && Array.isArray(r.tables)) ? r.tables.length : 0;
+    // Store tables array so renderOwnerBookings can show VIP requirement details
+    _bkRestoTables = (r && Array.isArray(r.tables)) ? r.tables : [];
+    _bkRestoTableCount = _bkRestoTables.length;
     _bkUpdateDateFilterButtons();
     renderOwnerBookings();
     setupOwnerBookingListener();
@@ -13640,17 +13672,24 @@ function renderBkStats(){
   const contextTxt = _bkOwnerDateFilter
     ? lblForDate.replace('{date}', _bkOwnerDateFilter)
     : lblAllTime;
+  // Build the map-card title and CTA so it reflects the active date filter
+  const lblViewMapTitleToday = _ts('bk_view_map_title_today','View booked tables on the map (today)');
+  const lblViewMapTitleDate = _ts('bk_view_map_title_date','View booked tables on the map for {date}');
+  const mapCardTitle = _bkOwnerDateFilter
+    ? lblViewMapTitleDate.replace('{date}', _bkOwnerDateFilter)
+    : lblViewMapTitleToday;
+  const lblViewMapCta = _ts('bk_view_map_cta','🗺️ View map →');
   bar.innerHTML = `
     <div class="bk-stat-card stat-total">
       <div class="bk-stat-icon">🪑</div>
       <div class="bk-stat-num">${totalTables}</div>
       <div class="bk-stat-lbl">${escapeHtml(lblTotal)}</div>
     </div>
-    <div class="bk-stat-card stat-booked stat-clickable" onclick="owOpenTodayMap()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();owOpenTodayMap();}" title="View today's booked tables on the map">
+    <div class="bk-stat-card stat-booked stat-clickable" onclick="owOpenTodayMap()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();owOpenTodayMap();}" title="${escapeHtml(mapCardTitle)}">
       <div class="bk-stat-icon">✅</div>
       <div class="bk-stat-num">${booked}</div>
       <div class="bk-stat-lbl">${escapeHtml(lblBooked)}</div>
-      <div class="bk-stat-cta">🗺️ View map →</div>
+      <div class="bk-stat-cta">${escapeHtml(lblViewMapCta)}</div>
     </div>
     <div class="bk-stat-card stat-pending">
       <div class="bk-stat-icon">⏳</div>
@@ -13700,11 +13739,14 @@ async function owOpenTodayMap(){
 }
 
 async function _owTmFetchAndRender(silent){
-  // Fetch restaurant (for tables + floor plan) and today's bookings in parallel
+  // Use the active date filter from the bookings panel (if any), else today.
+  // This makes the "View Map" button respect the date the owner is currently filtering by.
   const todayStr = (typeof _bkLocalISO === 'function') ? _bkLocalISO(new Date()) : new Date().toISOString().slice(0,10);
+  const targetDate = (typeof _bkOwnerDateFilter === 'string' && _bkOwnerDateFilter) ? _bkOwnerDateFilter : todayStr;
+  const isToday = (targetDate === todayStr);
   const [r, dayBookings] = await Promise.all([
     fbGet('restaurants/'+restoId),
-    fbGetFiltered('bookings/'+restoId, 'date', todayStr)
+    fbGetFiltered('bookings/'+restoId, 'date', targetDate)
   ]);
   if(!r){
     document.getElementById('owTmMap').innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">⚠️</span>Could not load restaurant data.</div>`;
@@ -13712,12 +13754,12 @@ async function _owTmFetchAndRender(silent){
   }
   const tables = Array.isArray(r.tables) ? r.tables : [];
   const areas = _fpReadAreas(r);
-  // Compute booked table IDs for today (active bookings only — pending or accepted)
+  // Compute booked table IDs for the chosen date (active bookings only — pending or accepted)
   const bookedTableIds = new Set();
   if(dayBookings){
     Object.values(dayBookings).forEach(b=>{
       // Defensive date check (in case fbGetFiltered fell back to full fetch)
-      if(b && b.date===todayStr && (b.status==='pending' || b.status==='accepted') && b.tableId){
+      if(b && b.date===targetDate && (b.status==='pending' || b.status==='accepted') && b.tableId){
         bookedTableIds.add(b.tableId);
       }
     });
@@ -13730,12 +13772,15 @@ async function _owTmFetchAndRender(silent){
   if(!_owTmState.activeArea || !areas[_owTmState.activeArea]){
     _owTmState.activeArea = areaSlugs[0] || null;
   }
-  // Update subtitle with restaurant name + today's date + last refresh
+  // Update subtitle with restaurant name + date label + last refresh
   const sub = document.getElementById('owTmSub');
   if(sub){
-    const niceDate = _owTmFormatDate(todayStr);
+    const niceDate = _owTmFormatDate(targetDate);
+    const dateLabel = isToday
+      ? niceDate + ' · ' + _ts('bk_map_today_tag','Today')
+      : niceDate;
     const refreshTxt = silent ? ` · ${_owTmRefreshLabel()}` : '';
-    sub.textContent = `${r.name || 'Restaurant'} · ${niceDate}${refreshTxt}`;
+    sub.textContent = `${r.name || 'Restaurant'} · ${dateLabel}${refreshTxt}`;
   }
   _owTmRenderAll();
 }
@@ -13891,6 +13936,18 @@ function renderOwnerBookings(){
         <div><b>${escapeHtml(lblParty)}</b>${b.party||1}</div>
         ${b.tableNum?`<div><b>${escapeHtml(lblTable)}</b>${escapeHtml(b.tableNum)}${b.tableZone?` · <span style="color:var(--s-gold,#c8973a);font-size:11px">${escapeHtml(b.tableZone)}</span>`:''}</div>`:''}
       </div>
+      ${(()=>{
+        // Look up the linked table to show VIP requirement (if any) — owner needs to see what was promised
+        if(!b.tableId) return '';
+        const linked = _bkRestoTables.find(t => t && t.id === b.tableId);
+        const req = linked && linked.bookingRequirement ? String(linked.bookingRequirement).trim() : '';
+        if(!req) return '';
+        const lblVipReq = _ts('bk_vip_requirement','VIP requirement');
+        return `<div class="ob-vip-req">
+          <div class="ob-vip-req-label">⭐ ${escapeHtml(lblVipReq)}</div>
+          <div class="ob-vip-req-text">${escapeHtml(req)}</div>
+        </div>`;
+      })()}
       ${b.note?`<div style="margin-top:10px;font-size:12px;color:var(--s-muted);font-style:italic">📝 "${escapeHtml(b.note)}"</div>`:''}
       ${actions}
     </div>`;
