@@ -2365,6 +2365,12 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-sum-row+.bk-sum-row{border-top:1px solid rgba(200,151,58,.08);}
 .bk-sum-lbl{color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.3px;}
 .bk-sum-val{color:#fff;font-weight:700;font-size:13px;}
+/* VIP requirement panel inside customer summary — final notice before submit */
+.bk-sum-vip-req{margin-top:12px;padding:12px 14px;background:rgba(200,151,58,.12);border:1px solid rgba(200,151,58,.4);border-radius:10px;border-top:1px solid rgba(200,151,58,.4);}
+.bk-sum-row+.bk-sum-vip-req{margin-top:14px;}
+.bk-sum-vip-req-h{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#e0b455;margin-bottom:6px;}
+.bk-sum-vip-req-text{font-size:13px;color:#fff;line-height:1.5;font-weight:500;white-space:pre-wrap;word-break:break-word;margin-bottom:8px;}
+.bk-sum-vip-req-note{font-size:11px;color:rgba(255,255,255,.7);font-style:italic;line-height:1.4;}
 .bk-actions{display:flex;gap:10px;}
 .bk-btn{flex:1;height:50px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.2px;}
 .bk-btn-back{background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1);}
@@ -4397,6 +4403,12 @@ const STAFF_T={
     bk_view_map_title_today:'View booked tables on the map (today)',
     bk_view_map_title_date:'View booked tables on the map for {date}',
     bk_view_map_cta:'🗺️ View map →',
+    owtm_title:'Booked Tables',
+    owtm_stat_booked:'Booked',
+    owtm_stat_free:'Free',
+    owtm_stat_total:'Total tables in area',
+    owtm_leg_free:'Free',
+    owtm_leg_booked:'Booked',
     // v5.5: Floor plan editor (SA only)
     fp_title:'Floor Plan Editor',
     fp_save:'💾 Save',
@@ -4544,6 +4556,12 @@ const STAFF_T={
     bk_view_map_title_today:'ເບິ່ງໂຕະທີ່ຖືກຈອງໃນແຜນທີ່ (ມື້ນີ້)',
     bk_view_map_title_date:'ເບິ່ງໂຕະທີ່ຖືກຈອງໃນແຜນທີ່ ສຳລັບ {date}',
     bk_view_map_cta:'🗺️ ເບິ່ງແຜນທີ່ →',
+    owtm_title:'ໂຕະທີ່ຖືກຈອງ',
+    owtm_stat_booked:'ຖືກຈອງ',
+    owtm_stat_free:'ວ່າງ',
+    owtm_stat_total:'ໂຕະທັງໝົດໃນເຂດ',
+    owtm_leg_free:'ວ່າງ',
+    owtm_leg_booked:'ຖືກຈອງ',
     // v5.5: Floor plan editor (SA only)
     fp_title:'ຕົວແກ້ໄຂແຜນຜັງຮ້ານ',
     fp_save:'💾 ບັນທຶກ',
@@ -4691,6 +4709,12 @@ const STAFF_T={
     bk_view_map_title_today:'ดูโต๊ะที่จองในแผนที่ (วันนี้)',
     bk_view_map_title_date:'ดูโต๊ะที่จองในแผนที่สำหรับ {date}',
     bk_view_map_cta:'🗺️ ดูแผนที่ →',
+    owtm_title:'โต๊ะที่จอง',
+    owtm_stat_booked:'จองแล้ว',
+    owtm_stat_free:'ว่าง',
+    owtm_stat_total:'โต๊ะทั้งหมดในโซน',
+    owtm_leg_free:'ว่าง',
+    owtm_leg_booked:'จองแล้ว',
     // v5.5: Floor plan editor (SA only)
     fp_title:'ตัวแก้ไขแผนผังร้าน',
     fp_save:'💾 บันทึก',
@@ -4838,6 +4862,12 @@ const STAFF_T={
     bk_view_map_title_today:'在地图上查看已预订的桌位（今日）',
     bk_view_map_title_date:'查看 {date} 已预订的桌位地图',
     bk_view_map_cta:'🗺️ 查看地图 →',
+    owtm_title:'已预订桌位',
+    owtm_stat_booked:'已预订',
+    owtm_stat_free:'空闲',
+    owtm_stat_total:'区域内桌位总数',
+    owtm_leg_free:'空闲',
+    owtm_leg_booked:'已预订',
     // v5.5: Floor plan editor (SA only)
     fp_title:'平面图编辑器',
     fp_save:'💾 保存',
@@ -5001,6 +5031,12 @@ const STAFF_T={
     bk_view_map_title_today:'지도에서 예약된 테이블 보기 (오늘)',
     bk_view_map_title_date:'{date}의 예약된 테이블 지도 보기',
     bk_view_map_cta:'🗺️ 지도 보기 →',
+    owtm_title:'예약된 테이블',
+    owtm_stat_booked:'예약됨',
+    owtm_stat_free:'이용 가능',
+    owtm_stat_total:'구역 내 전체 테이블',
+    owtm_leg_free:'이용 가능',
+    owtm_leg_booked:'예약됨',
     // v5.5: Floor plan editor (SA only)
     fp_title:'평면도 편집기',
     fp_save:'💾 저장',
@@ -6352,6 +6388,8 @@ const LP_TRANSLATIONS = {
     bk_table_locked:'TABLE RESERVED FOR YOU',
     bk_lock_msg:'Complete booking in',
     bk_summary_table:'Table',
+    bk_vip_req_summary:'VIP table requirement',
+    bk_vip_req_note:'By submitting, you agree to this requirement.',
     bk_err_pick_table:'Please select a table.',
     bk_err_load_tables:'Could not load tables. Please try again.',
     bk_lock_taken:'This table was just reserved by another customer.',
@@ -6517,6 +6555,8 @@ const LP_TRANSLATIONS = {
     bk_table_locked:'ໂຕະຈອງໄວ້ສຳລັບທ່ານ',
     bk_lock_msg:'ສຳເລັດການຈອງພາຍໃນ',
     bk_summary_table:'ໂຕະ',
+    bk_vip_req_summary:'ເງື່ອນໄຂໂຕະ VIP',
+    bk_vip_req_note:'ໂດຍການສົ່ງ, ທ່ານຍອມຮັບເງື່ອນໄຂນີ້.',
     bk_err_pick_table:'ກະລຸນາເລືອກໂຕະ.',
     bk_err_load_tables:'ບໍ່ສາມາດໂຫຼດໂຕະ. ກະລຸນາລອງໃໝ່.',
     bk_lock_taken:'ໂຕະນີ້ຫາກໍ່ຖືກຈອງໂດຍລູກຄ້າອື່ນ.',
@@ -6682,6 +6722,8 @@ const LP_TRANSLATIONS = {
     bk_table_locked:'โต๊ะถูกจองไว้สำหรับคุณ',
     bk_lock_msg:'ทำการจองให้เสร็จภายใน',
     bk_summary_table:'โต๊ะ',
+    bk_vip_req_summary:'เงื่อนไขโต๊ะ VIP',
+    bk_vip_req_note:'การส่งคำขอนี้ ถือว่าคุณยอมรับเงื่อนไขนี้',
     bk_err_pick_table:'กรุณาเลือกโต๊ะ',
     bk_err_load_tables:'ไม่สามารถโหลดโต๊ะได้ กรุณาลองอีกครั้ง',
     bk_lock_taken:'โต๊ะนี้ถูกจองโดยลูกค้าอื่นแล้ว',
@@ -6847,6 +6889,8 @@ const LP_TRANSLATIONS = {
     bk_table_locked:'桌位已为您保留',
     bk_lock_msg:'请在以下时间内完成预订',
     bk_summary_table:'桌位',
+    bk_vip_req_summary:'VIP 桌位要求',
+    bk_vip_req_note:'提交即表示您同意此要求。',
     bk_err_pick_table:'请选择一张桌位。',
     bk_err_load_tables:'无法加载桌位，请重试。',
     bk_lock_taken:'此桌位刚被其他客户预订。',
@@ -7012,6 +7056,8 @@ const LP_TRANSLATIONS = {
     bk_table_locked:'테이블이 예약되었습니다',
     bk_lock_msg:'다음 시간 내에 예약 완료',
     bk_summary_table:'테이블',
+    bk_vip_req_summary:'VIP 테이블 요구사항',
+    bk_vip_req_note:'제출하시면 이 요구사항에 동의하는 것으로 간주됩니다.',
     bk_err_pick_table:'테이블을 선택해 주세요.',
     bk_err_load_tables:'테이블을 불러올 수 없습니다. 다시 시도해주세요.',
     bk_lock_taken:'이 테이블은 방금 다른 고객이 예약했습니다.',
@@ -13370,12 +13416,28 @@ function renderBkSummary(){
   const lblTable = _lp('bk_summary_table','Table');
   // v5.4: Show table info if customer picked one
   const tableRow = bkState.tableId ? `<div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTable)}</span><span class="bk-sum-val">${escapeHtml(bkState.tableNum||'')} · ${escapeHtml(bkState.tableZone||'')}</span></div>` : '';
+  // VIP booking requirement — shown to customer one final time before submit so they commit knowingly
+  let vipReqBlock = '';
+  if(bkState.tableId){
+    const linked = (bkState.tables || []).find(x => x && x.id === bkState.tableId);
+    const req = linked && linked.bookingRequirement ? String(linked.bookingRequirement).trim() : '';
+    if(req){
+      const lblVipReq = _lp('bk_vip_req_summary','VIP table requirement');
+      const lblVipNote = _lp('bk_vip_req_note','By submitting, you agree to this requirement.');
+      vipReqBlock = `<div class="bk-sum-vip-req">
+        <div class="bk-sum-vip-req-h">⭐ ${escapeHtml(lblVipReq)}</div>
+        <div class="bk-sum-vip-req-text">${escapeHtml(req)}</div>
+        <div class="bk-sum-vip-req-note">${escapeHtml(lblVipNote)}</div>
+      </div>`;
+    }
+  }
   document.getElementById('bkSummary').innerHTML = `
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblResto)}</span><span class="bk-sum-val">${escapeHtml(bkState.restoName||'')}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblDate)}</span><span class="bk-sum-val">${escapeHtml(dateStr)}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTime)}</span><span class="bk-sum-val">${escapeHtml(bkState.slot||'')}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblPpl)}</span><span class="bk-sum-val">${bkState.party}</span></div>
-    ${tableRow}`;
+    ${tableRow}
+    ${vipReqBlock}`;
 }
 
 function genBookingCode(){
@@ -13822,16 +13884,22 @@ function _owTmRenderAll(){
   if(activeArea){
     const tableIdsInArea = new Set();
     (activeArea.elements || []).forEach(el => {
-      if(el.kind === 'table' && el.tableId) tableIdsInArea.add(el.tableId);
+      // FIX: el.kind is 'table-square'/'table-round'/'table-rect'/'table-vip-*' — not literal 'table'.
+      // Match any element whose kind starts with 'table' (covers regular + VIP variants).
+      if(el.kind && el.kind.indexOf('table') === 0 && el.tableId) tableIdsInArea.add(el.tableId);
     });
     tablesInArea = _owTmState.tables.filter(t => tableIdsInArea.has(t.id));
     tablesInArea.forEach(t => { if(_owTmState.bookedTableIds.has(t.id)) bookedInArea++; });
   }
   const freeInArea = Math.max(0, tablesInArea.length - bookedInArea);
+  // FIX: Translate stat labels (was hardcoded English)
+  const lblBk = _ts('owtm_stat_booked','Booked');
+  const lblFree = _ts('owtm_stat_free','Free');
+  const lblTotal = _ts('owtm_stat_total','Total tables in area');
   stats.innerHTML = `
-    <div class="ow-tm-stat-bk">Booked: <b>${bookedInArea}</b></div>
-    <div class="ow-tm-stat-free">Free: <b>${freeInArea}</b></div>
-    <div>Total tables in area: <b>${tablesInArea.length}</b></div>
+    <div class="ow-tm-stat-bk">${escapeHtml(lblBk)}: <b>${bookedInArea}</b></div>
+    <div class="ow-tm-stat-free">${escapeHtml(lblFree)}: <b>${freeInArea}</b></div>
+    <div>${escapeHtml(lblTotal)}: <b>${tablesInArea.length}</b></div>
   `;
   // Render the map SVG using the existing customer-side renderer
   if(!activeArea || !activeArea.elements || !activeArea.elements.length){
@@ -14368,7 +14436,7 @@ async function cleanupOldBookings(opts){
       <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:10px">Guest Information</div>
       <div class="form-row">
         <div class="fg"><label>Full Name *</label><input class="fi" id="mBookName" placeholder="e.g. Somphone Vongsa"></div>
-        <div class="fg"><label>Phone Number</label><input class="fi" id="mBookPhone" placeholder="+856 20 xxx xxxx" type="tel"></div>
+        <div class="fg"><label>Phone Number</label><input class="fi" id="mBookPhone" placeholder="+856 20 xxx xxxx" type="tel" inputmode="tel" pattern="[0-9 +()\-]*"></div>
       </div>
       <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Date &amp; Time</div>
       <div class="form-row">
@@ -14400,8 +14468,8 @@ async function cleanupOldBookings(opts){
   <div class="modal-box ow-tm-shell">
     <div class="modal-h">
       <div>
-        <div class="modal-title">🗺️ Today's Booked Tables</div>
-        <div class="modal-sub" id="owTmSub">Live view · today only</div>
+        <div class="modal-title">🗺️ <span data-ts="owtm_title">Booked Tables</span></div>
+        <div class="modal-sub" id="owTmSub">Live view</div>
       </div>
       <button class="modal-x" onclick="closeModal('mOwTodayMap')">✕</button>
     </div>
@@ -14410,8 +14478,8 @@ async function cleanupOldBookings(opts){
       <div class="ow-tm-stats" id="owTmStats"></div>
       <div class="ow-tm-map" id="owTmMap"></div>
       <div class="ow-tm-legend">
-        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-free"></span>Free</span>
-        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-bk"></span>Booked today</span>
+        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-free"></span><span data-ts="owtm_leg_free">Free</span></span>
+        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-bk"></span><span data-ts="owtm_leg_booked">Booked</span></span>
       </div>
     </div>
   </div>
@@ -14753,7 +14821,7 @@ async function cleanupOldBookings(opts){
       </div>
       <div>
         <label style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);display:block;margin-bottom:6px">Phone / WhatsApp *</label>
-        <input id="cPhone" class="fi" placeholder="e.g. +856 20 xxxx xxxx" type="tel" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:12px 16px;font-size:14px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='rgba(200,151,58,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+        <input id="cPhone" class="fi" placeholder="e.g. +856 20 xxxx xxxx" type="tel" inputmode="tel" pattern="[0-9 +()\-]*" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:12px 16px;font-size:14px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='rgba(200,151,58,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
       </div>
       <div>
         <label style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);display:block;margin-bottom:6px">Message</label>
@@ -14835,7 +14903,7 @@ async function cleanupOldBookings(opts){
         <span class="bk-label" data-lp="bk_name">Full name</span>
         <input type="text" id="bkName" class="bk-input" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
         <span class="bk-label" data-lp="bk_phone">Phone number</span>
-        <input type="tel" id="bkPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel">
+        <input type="tel" id="bkPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]*">
         <span class="bk-label" data-lp="bk_note">Special request (optional)</span>
         <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences…" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:60px"></textarea>
       </div>
@@ -14886,7 +14954,7 @@ async function cleanupOldBookings(opts){
       </div>
       <div id="bsPhoneInput">
         <span class="bk-label" data-lp="bk_phone_lbl">Enter your phone number</span>
-        <input type="tel" id="bsPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel">
+        <input type="tel" id="bsPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]*">
         <button class="bk-btn bk-btn-next" style="width:100%" onclick="bsLookup('phone')" data-lp="bk_lookup">Look up bookings</button>
       </div>
       <div id="bsCodeInput" style="display:none">
