@@ -24,9 +24,6 @@
   <meta property="og:description" content="Scan & Order from your table">
   <meta property="og:type" content="website">
 
-  <meta property="og:title" id="ogTitle" content="EATLAOS">
-  <meta property="og:description" content="Scan & Order from your table">
-  <meta property="og:type" content="website">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>EATLAOS v2111</title><!-- EATLAOS-1777266531 -->
 <meta name="application-name" content="EATLAOS">
@@ -1205,7 +1202,7 @@ button,input,select,textarea{font-family:var(--fb);}
 .fi-l{display:block;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px;}
 .fi{width:100%;padding:11px 14px;background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-text);font-size:15px;outline:none;transition:border-color .2s;}
 .fi:focus{border-color:var(--s-gold);}
-/* v5.5: Error state for inputs — red border + shake when validation fails (e.g. duplicate table number) */
+/* Error state for inputs — red border + shake when validation fails (e.g. duplicate table number) */
 .fi.fi-error{border-color:#dc3545!important;box-shadow:0 0 0 3px rgba(220,53,69,.15);animation:fiShake .45s cubic-bezier(.36,.07,.19,.97) both;}
 @keyframes fiShake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-4px)}20%,40%,60%,80%{transform:translateX(4px)}}
 .fi::placeholder{color:var(--s-muted2);}
@@ -1642,7 +1639,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 /* ═══ NOTIFICATIONS ═══ */
 .notif{position:fixed;top:16px;right:16px;background:var(--s-surf);border:1px solid var(--s-border);border-left:2px solid var(--s-gold);color:var(--s-text);padding:12px 18px;z-index:900;font-size:12px;display:flex;align-items:center;gap:9px;transform:translateY(-80px);opacity:0;transition:all .35s cubic-bezier(.16,1,.3,1);min-width:220px;max-width:320px;box-shadow:var(--shadow);}
 .notif.show{transform:translateY(0);opacity:1;}
-/* v5.5: Error variant — red border, larger text, shake animation, longer visible time */
+/* Error variant — red border, larger text, shake animation, longer visible time */
 .notif.notif-error{border-left:3px solid #dc3545;border-color:rgba(220,53,69,.4);background:linear-gradient(135deg,rgba(220,53,69,.08),var(--s-surf));font-size:13px;font-weight:600;padding:14px 20px;min-width:280px;max-width:380px;box-shadow:0 12px 40px rgba(220,53,69,.25),0 2px 8px rgba(0,0,0,.4);}
 .notif.notif-error.show{animation:notifShake .5s cubic-bezier(.36,.07,.19,.97) both;}
 @keyframes notifShake{0%,100%{transform:translateY(0) translateX(0);}10%,30%,50%,70%,90%{transform:translateY(0) translateX(-4px);}20%,40%,60%,80%{transform:translateY(0) translateX(4px);}}
@@ -1756,18 +1753,6 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-btn-gold{background:linear-gradient(135deg,#c8973a,#e0b55a);color:#000;font-weight:800;box-shadow:0 4px 16px rgba(200,151,58,.3);}
 .lp-btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,151,58,.5);}
 
-/* v5.6: Owner login button — visible at ALL screen sizes (mobile too) */
-.lp-nav-owner{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;background:rgba(200,151,58,.08);color:rgba(200,151,58,.9);border:1px solid rgba(200,151,58,.22);border-radius:8px;font-family:var(--fb);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;letter-spacing:.3px;}
-.lp-nav-owner:hover{background:rgba(200,151,58,.15);color:#e0b55a;border-color:rgba(200,151,58,.4);transform:translateY(-1px);}
-.lp-nav-owner svg{opacity:.85;}
-@media (max-width:780px){
-  .lp-nav-owner{height:36px;padding:0 11px;font-size:11.5px;gap:5px;}
-}
-@media (max-width:420px){
-  .lp-nav-owner-txt{display:none;}
-  .lp-nav-owner{padding:0 10px;width:36px;justify-content:center;}
-}
-
 /* ── HERO ── */
 .lp-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:185px 6% 60px;position:relative;overflow:hidden;background:#040404;}
 .lp-hero-noise{position:absolute;inset:0;opacity:.04;background-image:radial-gradient(rgba(200,151,58,.03) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
@@ -1790,7 +1775,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-cta-secondary:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.28);transform:translateY(-2px);}
 
 /* === STICKY BOOKING BAR (Apple-luxury, docks below nav) === */
-/* v5.6: Larger, more prominent — booking is the primary call-to-action */
+/* Larger, more prominent — booking is the primary call-to-action */
 .lp-stickybar{position:fixed;top:72px;left:0;right:0;z-index:190;display:flex;justify-content:center;pointer-events:none;transition:top .35s cubic-bezier(.16,1,.3,1),opacity .35s ease;padding:0 16px;}
 .lp-stickybar-inner{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(8,8,8,.78);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(200,151,58,.22);border-radius:999px;box-shadow:0 14px 50px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.05) inset;margin-top:18px;animation:sbFade .5s cubic-bezier(.16,1,.3,1) both;animation-delay:.15s;}
 @keyframes sbFade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
@@ -1904,7 +1889,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-footer-link{color:rgba(200,151,58,.7);cursor:pointer;text-decoration:none;transition:color .2s;}
 .lp-footer-link:hover{color:#c8973a;}
 
-/* v5.7: Footer Owner Login button — professional, clearly visible, Apple-luxury */
+/* Footer Owner Login button */
 .lp-footer-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
 .lp-footer-owner-btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 20px;background:rgba(200,151,58,.06);color:rgba(200,151,58,.95);border:1px solid rgba(200,151,58,.25);border-radius:8px;font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1);letter-spacing:.3px;}
 .lp-footer-owner-btn:hover{background:rgba(200,151,58,.12);color:#e0b55a;border-color:rgba(200,151,58,.5);transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,151,58,.18);}
@@ -2023,7 +2008,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .sl-btn-sa{background:linear-gradient(135deg,#1a0a0a,#2a1010);border:1px solid rgba(229,72,77,.3);color:#e5484d;}
 .sl-btn-sa:hover{background:linear-gradient(135deg,#2a1010,#3a1515);border-color:rgba(229,72,77,.6);box-shadow:0 8px 24px rgba(229,72,77,.2);}
 /* Responsive login */
-/* v5.6: Owner & SA login pages — mobile layout (was broken: stayed 2-column on phones) */
+/* Owner & SA login pages — mobile layout */
 @media (max-width:860px){
   .sl-wrap{grid-template-columns:1fr;min-height:100vh;}
   .sl-left{padding:32px 24px 24px;border-right:none;border-bottom:1px solid rgba(200,151,58,.1);}
@@ -5361,9 +5346,9 @@ async function fbGet(path){
   return restGet(path);
 }
 
-// v5.3 PERF: Server-side filtered fetch. Requires the indexed field to be in Firebase Rules
-// (e.g. "bookings": { "$rid": { ".indexOn": ["date"] } }). If the index isn't configured,
-// Firebase still returns data but logs a warning. Falls back to full fetch on any error.
+// Server-side filtered fetch. Requires .indexOn:["date"] in Firebase Rules
+// (e.g. "bookings": { "$rid": { ".indexOn": ["date"] } }) for best performance.
+// Falls back to full fetch automatically if the index is missing.
 async function fbGetFiltered(path, orderBy, equalTo){
   try {
     const url = DB_URL+'/'+path+'.json?auth='+API_KEY
@@ -5450,10 +5435,7 @@ async function init(){
         loadLandingRestos().catch(()=>{});
         initLandingNav();
         initLpLang();
-        // v5.3 PERF: Pre-warm Firebase SDK in the background (idle priority).
-        // The customer booking flow uses REST and doesn't need the SDK, but other paths
-        // (owner login, real-time listeners) do. Loading the SDK now means zero wait later.
-        // Non-blocking — the landing page renders normally while this happens.
+        // Pre-warm Firebase SDK in background — non-blocking, zero wait when owner clicks login
         if(typeof loadFirebaseSDK === 'function'){
           if(typeof requestIdleCallback === 'function'){
             requestIdleCallback(() => loadFirebaseSDK().catch(()=>{}), { timeout: 2000 });
@@ -5525,14 +5507,12 @@ async function init(){
           hideLoading();
           const _sl=document.getElementById('staffLangSel');
           if(_sl){_sl.value=lang;if(lang!=='en'){setTimeout(()=>{applyTranslation(document.getElementById('pg-ow'));startTranslationObserver();},100);}}
-          // v5.4: Load features FIRST so we open the right panel for booking-only restaurants
-          // (fbGet uses REST so this is fast; no SDK wait). Removes the 3-5s Dashboard flash.
+          // Load features first → pick correct starting panel (avoids Dashboard flash on booking-only restos)
           const _feats = await _owLoadAndApplyFeatures();
           const _startPanel = _owPickStartPanel(_feats);
           const _startBtn = document.querySelector('#pg-ow .sb-item[onclick*="\''+_startPanel+'\'"]')
                          || document.querySelector('#pg-ow .sb-item');
           owP(_startPanel, _startBtn);
-          // Load Firebase SDK in background (only needed for real-time listeners)
           await loadFirebaseSDK();
           startOwnerListeners();
           setTimeout(()=>initOwChart('rev'),300);
@@ -5893,11 +5873,9 @@ async function doOwnerLogin(){
       b.classList.add('show');
     }
   }
-  // v5.4: Load features FIRST, then pick the correct starting panel.
-  // Fixes the flash where Dashboard renders for ~5s before being hidden on booking-only restaurants.
+  // Load features first → pick correct starting panel (avoids Dashboard flash on booking-only restos)
   const _feats = await _owLoadAndApplyFeatures();
   const _startPanel = _owPickStartPanel(_feats);
-  // Find the corresponding sidebar button so it gets the active highlight
   const _startBtn = document.querySelector('#pg-ow .sb-item[onclick*="\''+_startPanel+'\'"]')
                  || document.querySelector('#pg-ow .sb-item');
   owP(_startPanel, _startBtn);
@@ -6029,7 +6007,6 @@ const LP_TRANSLATIONS = {
     sb_label:'RESERVE',
     sb_book:'📅 Book a Table',
     sb_check:'Check My Booking',
-    nav_owner_login:'Owner',
     b2b_eyebrow:'For Restaurant Owners',
     b2b_title:'Run a restaurant?<br>Join EATLAOS.',
     b2b_sub:'List your restaurant, accept online bookings, and manage live orders — all in one place.',
@@ -6192,7 +6169,6 @@ const LP_TRANSLATIONS = {
     sb_label:'ຈອງ',
     sb_book:'📅 ຈອງໂຕະ',
     sb_check:'ກວດການຈອງ',
-    nav_owner_login:'ເຈົ້າຂອງ',
     b2b_eyebrow:'ສຳລັບເຈົ້າຂອງຮ້ານ',
     b2b_title:'ມີຮ້ານອາຫານບໍ?<br>ເຂົ້າຮ່ວມ EATLAOS.',
     b2b_sub:'ລົງທະບຽນຮ້ານ, ຮັບການຈອງອອນລາຍ, ແລະ ຈັດການອໍເດີສົດ — ທັງໝົດໃນບ່ອນດຽວ.',
@@ -6355,7 +6331,6 @@ const LP_TRANSLATIONS = {
     sb_label:'จอง',
     sb_book:'📅 จองโต๊ะ',
     sb_check:'ตรวจสอบการจอง',
-    nav_owner_login:'เจ้าของ',
     b2b_eyebrow:'สำหรับเจ้าของร้าน',
     b2b_title:'มีร้านอาหารใช่ไหม?<br>มาร่วม EATLAOS.',
     b2b_sub:'ลงทะเบียนร้าน รับการจองออนไลน์ และจัดการออร์เดอร์สด — ครบในที่เดียว',
@@ -6518,7 +6493,6 @@ const LP_TRANSLATIONS = {
     sb_label:'预订',
     sb_book:'📅 预订餐桌',
     sb_check:'查看我的预订',
-    nav_owner_login:'业主',
     b2b_eyebrow:'餐厅业主专区',
     b2b_title:'经营餐厅吗？<br>加入 EATLAOS。',
     b2b_sub:'上架您的餐厅、接收在线预订并管理实时订单 — 一站式解决。',
@@ -6681,7 +6655,6 @@ const LP_TRANSLATIONS = {
     sb_label:'예약',
     sb_book:'📅 테이블 예약',
     sb_check:'예약 확인',
-    nav_owner_login:'사업자',
     b2b_eyebrow:'레스토랑 사업자용',
     b2b_title:'레스토랑을 운영하시나요?<br>EATLAOS에 가입하세요.',
     b2b_sub:'레스토랑 등록, 온라인 예약 접수, 실시간 주문 관리 — 한 곳에서 해결.',
@@ -8189,15 +8162,13 @@ async function _owLoadAndApplyFeatures(forceRefresh){
   }
 }
 
-/* v5.4: Pick the right starting panel for an owner based on enabled features.
-   Priority: dashboard (QR) > bookings > tables > hours > profile.
-   This prevents the flash where the QR-only Dashboard renders for ~3-5s before
-   the feature gate hides it. Called synchronously after features are loaded. */
+/* Pick the starting panel for owner login, based on enabled features.
+   QR enabled → Dashboard, booking-only → Bookings, neither → Hours. */
 function _owPickStartPanel(features){
   if(!features) return 'dashboard'; // legacy default if no flags
-  if(features.qrOrder) return 'dashboard';   // QR enabled → start at Dashboard
-  if(features.booking) return 'bookings';    // Booking-only → start at Bookings
-  return 'hours'; // Edge case: both disabled (shouldn't happen) → Hours panel always exists
+  if(features.qrOrder) return 'dashboard';
+  if(features.booking) return 'bookings';
+  return 'hours';
 }
 
 function _owApplyFeatures(f){
@@ -9393,7 +9364,7 @@ async function saveOwTable(){
   // Prevent duplicate table numbers
   if((r?.tables||[]).find(t=>String(t.num).toLowerCase()===num.toLowerCase())){
     notifyD('⚠ Table number "'+num+'" already exists — please use a different number');
-    // v5.5: Flash + focus the input so the user immediately sees what's wrong
+    // Flash + focus the input field
     const _inp = document.getElementById('mTnum');
     if(_inp){
       _inp.classList.remove('fi-error'); void _inp.offsetWidth; // restart animation
@@ -9735,7 +9706,7 @@ async function saveEditTable(){
   const tables=[...(r?.tables||[])];
   if(tables.some((t,i)=>i!==idx&&String(t.num).toLowerCase()===num.toLowerCase())){
     notifyD('⚠ Table number "'+num+'" already exists — please use a different number');
-    // v5.5: Flash + focus the input so the user immediately sees what's wrong
+    // Flash + focus the input field
     const _inp = document.getElementById('mEtNum');
     if(_inp){
       _inp.classList.remove('fi-error'); void _inp.offsetWidth;
@@ -10810,14 +10781,11 @@ let ntD,ntC;
 function notifyD(txt){
   const el=document.getElementById('notifD');
   document.getElementById('notifDTxt').textContent=txt;
-  // v5.5: Auto-detect error/warning toasts (start with ⚠, ❌, or 🚫) and apply
-  // error styling — red border, shake animation, longer visible time.
-  // Backward-compatible: callers don't need to change anything.
+  // Auto-detect error toasts (⚠, ❌, 🚫) → red border, shake, 5s visible (vs 3s for normal)
   const isError = /^[⚠❌🚫]/.test(txt);
   el.classList.toggle('notif-error', isError);
   el.classList.add('show');
   clearTimeout(ntD);
-  // Errors stay visible 5s (was 3s) so the user actually reads them
   ntD=setTimeout(()=>el.classList.remove('show'), isError ? 5000 : 3000);
 }
 function notifyC(txt,success=false){const id=success?'notifS':'notifC',txtId=success?'notifSTxt':'notifCTxt';const el=document.getElementById(id);document.getElementById(txtId).textContent=txt;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
@@ -10952,8 +10920,6 @@ async function loadBkRestaurants(){
   const list = document.getElementById('bkRestoList');
   list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_restos','Loading restaurants…'))}</div>`;
   try {
-    // v5.3 PERF: Removed loadFirebaseSDK() — fbGet uses REST, no SDK needed.
-    // Saves ~1-2s on first booking click (no script download wait).
     const data = await fbGet('restaurants');
     const arr = [];
     if(data) Object.keys(data).forEach(id=>{
@@ -11042,8 +11008,7 @@ async function bkLoadSlotsAndBuild(){
   const bookedCount = {};  // { '20:00': 3, '21:00': 1 }
   let totalTables = 0;
   try {
-    // v5.3 PERF: Parallelize the 2 fetches (was sequential) and filter bookings by date
-    // server-side. Restaurant fetch is needed only for table count — could be cached future v6.
+    // Parallel fetches; bookings server-side filtered by date
     const [r, all] = await Promise.all([
       fbGet('restaurants/'+bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date)
@@ -11052,7 +11017,6 @@ async function bkLoadSlotsAndBuild(){
     if(all) Object.keys(all).forEach(k=>{
       const b = all[k];
       // Only count bookings that hold a table — exclude rejected and expired
-      // (date check kept as defense-in-depth in case index missing → fbGetFiltered fell back to full fetch)
       if(b && b.date===bkState.date && (b.status==='pending' || b.status==='accepted')){
         bookedCount[b.slot] = (bookedCount[b.slot]||0) + 1;
       }
@@ -12379,10 +12343,7 @@ async function bkLoadTables(){
   grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_tables','Loading tables…'))}</div>`;
   tabs.innerHTML = '';
   try {
-    // v5.3 PERF: Parallelize 3 fetches (was sequential, ~3-5s → now ~1s).
-    // Removed unnecessary loadFirebaseSDK() call — fbGet uses REST and doesn't need the SDK.
-    // Bookings filtered by date server-side (requires .indexOn:["date"] in Firebase Rules;
-    // falls back to full fetch automatically if index missing — see fbGetFiltered).
+    // Parallel fetches; bookings server-side filtered by date (see fbGetFiltered for index fallback)
     const [r, dayBookings, locks] = await Promise.all([
       fbGet('restaurants/'+bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date),
@@ -12402,8 +12363,7 @@ async function bkLoadTables(){
     }
     bkState.tables = partyOK;
     // Mark tables already booked for this date+slot.
-    // v5.3 PERF: dayBookings is pre-filtered to today's date by server.
-    // Edge case: if fbGetFiltered fell back to full fetch (no index), still works — we re-check date below.
+    // (date check is defensive — if fbGetFiltered fell back to full fetch, it still works)
     const allBookings = dayBookings || {};
     const bookedTableIds = new Set();
     Object.values(allBookings).forEach(b => {
@@ -12705,7 +12665,6 @@ async function bkPickTable(tableId){
 }
 
 async function bkLockTable(tableId){
-  // v5.3 PERF: Removed loadFirebaseSDK() — fbGet/fbSet use REST.
   const sessionId = _bkRandomSessionId();
   const lockedUntil = Date.now() + BK_LOCK_DURATION_MS;
   // Check current lock first
@@ -12836,7 +12795,6 @@ async function submitCustBooking(){
   try {
     // v6.8: Defense-in-depth — verify booking is still enabled at this restaurant
     // (in case SA disabled it after customer started the flow)
-    // v5.3 PERF: Removed loadFirebaseSDK() — fbGet/fbPush use REST.
     const restoCheck = await fbGet('restaurants/'+bkState.restoId);
     const featCheck = _resGetFeatures(restoCheck);
     if(!featCheck.booking){
@@ -12863,7 +12821,6 @@ async function submitCustBooking(){
       booking.tableNum = bkState.tableNum || '';
       booking.tableZone = bkState.tableZone || '';
     }
-    // v5.3 PERF: Removed loadFirebaseSDK() — fbPush uses REST.
     await fbPush('bookings/'+bkState.restoId, booking);
     // v5.4: Release table lock now that booking is saved
     bkReleaseLock();
@@ -12906,8 +12863,6 @@ async function bsLookup(by){
         return;
       }
     }
-    // v5.3 PERF: Removed loadFirebaseSDK() — fbGet uses REST, no SDK needed.
-    // Saves ~1-2s on first "Check My Booking" click.
     // FIX (v5.1): Loop through each restaurant's bookings instead of one top-level read.
     // The new Firebase rules block .read at top "bookings/" level for security
     // (prevents mass-dump of all bookings). Read is allowed at "bookings/{restoId}/" level.
@@ -12934,8 +12889,7 @@ async function bsLookup(by){
     }
     const phoneQ = (by==='phone') ? document.getElementById('bsPhone').value : '';
     const codeQ  = (by==='code')  ? document.getElementById('bsCode').value.trim().toUpperCase() : '';
-    // v5.3 PERF: Fetch all restaurants' bookings in PARALLEL (was sequential — N sequential
-    // round-trips for N restaurants). Now N=10 restaurants takes 1 round-trip wall time, not 10.
+    // Fetch all restaurants' bookings in parallel (1 round-trip wall time, not N)
     const allRestoBookings = await Promise.all(
       restoIds.map(rId => fbGet('bookings/'+rId).catch(()=>null))
     );
