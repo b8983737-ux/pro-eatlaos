@@ -2222,11 +2222,12 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
   align-items:center;
   justify-content:center;
   min-height:300px;
-  background:#0a0a0a;
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:10px;
-  padding:6px;
+  background:radial-gradient(ellipse at center, #15110c 0%, #0a0805 100%);
+  border:1px solid rgba(200,151,58,.18);
+  border-radius:14px;
+  padding:8px;
   overflow:hidden;
+  box-shadow:inset 0 0 60px rgba(0,0,0,.6),0 4px 24px rgba(0,0,0,.5);
 }
 .bk-table-grid.fp-mode .fp-viewer-svg{
   width:100%;
@@ -2307,6 +2308,16 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 @keyframes bkFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .bk-step-h{font-family:var(--ff,'Plus Jakarta Sans');font-size:22px;font-weight:800;margin-bottom:6px;color:#fff;letter-spacing:-.4px;}
 .bk-step-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;line-height:1.5;}
+/* Restaurant search bar (Step 1 of customer booking) */
+.bk-resto-search-wrap{position:relative;margin-bottom:14px;display:flex;align-items:center;}
+.bk-resto-search-ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);pointer-events:none;display:flex;}
+.bk-resto-search{width:100%;height:42px;padding:0 38px 0 40px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:14px;font-family:var(--fb);outline:none;transition:all .2s;}
+.bk-resto-search:focus{border-color:rgba(200,151,58,.5);background:rgba(200,151,58,.05);}
+.bk-resto-search:focus + .bk-resto-search-x{display:flex;}
+.bk-resto-search::placeholder{color:rgba(255,255,255,.35);}
+.bk-resto-search-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:26px;height:26px;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:none;border-radius:50%;color:rgba(255,255,255,.7);cursor:pointer;font-size:18px;line-height:1;transition:all .2s;}
+.bk-resto-search-x:hover{background:rgba(220,53,69,.2);color:#ff7a78;}
+.bk-resto-search-wrap.has-text .bk-resto-search-x{display:flex;}
 .bk-resto-list{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;padding-right:4px;}
 .bk-resto-list::-webkit-scrollbar,.bk-modal-body::-webkit-scrollbar,.bk-date-grid::-webkit-scrollbar,.bk-slot-grid::-webkit-scrollbar,.bk-status-list::-webkit-scrollbar{width:6px;}
 .bk-resto-list::-webkit-scrollbar-thumb,.bk-modal-body::-webkit-scrollbar-thumb,.bk-date-grid::-webkit-scrollbar-thumb,.bk-slot-grid::-webkit-scrollbar-thumb,.bk-status-list::-webkit-scrollbar-thumb{background:rgba(200,151,58,.2);border-radius:3px;}
@@ -2428,6 +2439,18 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .ti-req-notice{margin:14px 0 4px;padding:12px 14px;background:linear-gradient(135deg,rgba(200,151,58,.1),rgba(200,151,58,.04));border:1px solid rgba(200,151,58,.3);border-left:3px solid #c8973a;border-radius:8px;text-align:left;}
 .ti-req-label{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#e0b55a;margin-bottom:6px;}
 .ti-req-text{font-size:13.5px;color:rgba(255,255,255,.92);line-height:1.55;font-weight:500;white-space:pre-wrap;word-break:break-word;}
+
+/* 24-hour time picker (HH and MM number inputs side-by-side) */
+.t24{display:inline-flex;align-items:center;background:var(--s-surf2,#0d0d0d);border:1px solid var(--s-border,rgba(255,255,255,.1));border-radius:6px;padding:0 4px;height:36px;font-family:var(--fb,inherit);transition:border-color .2s;}
+.t24:focus-within{border-color:#c8973a;}
+.t24-input{background:transparent;border:none;color:var(--s-text,#fff);font-size:14px;font-weight:600;font-family:inherit;text-align:center;width:32px;outline:none;padding:0;-moz-appearance:textfield;appearance:textfield;}
+.t24-input::-webkit-outer-spin-button,.t24-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.t24-input:focus{color:#c8973a;}
+.t24-sep{color:var(--s-muted,rgba(255,255,255,.5));font-size:14px;font-weight:600;padding:0 1px;user-select:none;}
+.t24.fi{display:inline-flex;width:auto;}
+/* When inside an .fi context (modal forms), match .fi sizing */
+.fg .t24{height:38px;}
+.fg .t24-input{font-size:14.5px;}
 .bk-stat-cta{margin-top:6px;font-size:10.5px;font-weight:600;color:rgba(74,222,128,.75);letter-spacing:.5px;opacity:0;transform:translateY(2px);transition:all .25s;}
 .bk-stat-card.stat-clickable:hover .bk-stat-cta{opacity:1;transform:translateY(0);}
 @media(max-width:600px){
@@ -2508,6 +2531,14 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-tool.dragging{opacity:.5;}
 .fp-tool-ic{width:24px;height:24px;flex-shrink:0;}
 .fp-tool-lbl{font-size:12px;color:rgba(255,255,255,.85);font-weight:600;}
+/* VIP toolbox tools — gold gradient icon + glow on hover */
+.fp-tool-vip{background:linear-gradient(135deg,rgba(200,151,58,.08),rgba(200,151,58,.03));border-color:rgba(200,151,58,.3);}
+.fp-tool-vip:hover{background:linear-gradient(135deg,rgba(200,151,58,.18),rgba(200,151,58,.08));border-color:rgba(245,201,118,.6);box-shadow:0 4px 14px rgba(200,151,58,.2);}
+.fp-tool-ic-vip{background:linear-gradient(135deg,#f5d987 0%,#e0b455 50%,#c8973a 100%);box-shadow:0 0 0 1.5px #fff8dc,0 0 8px rgba(245,201,118,.5);}
+.fp-tool-vip .fp-tool-lbl{color:#e0b455;font-weight:700;}
+/* SA editor: VIP elements get a stronger visual */
+.fp-el-vip{filter:drop-shadow(0 0 6px rgba(245,201,118,.5));}
+.fp-el-vip-crown{font-size:14px;text-anchor:middle;dominant-baseline:central;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7));}
 .fp-toolbox-help{margin-top:14px;padding:10px;background:rgba(200,151,58,.05);border:1px solid rgba(200,151,58,.15);border-radius:6px;font-size:10px;color:rgba(255,255,255,.55);line-height:1.7;}
 .fp-canvas-wrap{background:#050505;display:flex;align-items:center;justify-content:center;overflow:auto;position:relative;padding:20px;}
 #fpCanvas{width:100%;height:100%;max-width:1000px;max-height:700px;background:#0f0f0f;border:1px solid rgba(255,255,255,.05);border-radius:6px;cursor:default;}
@@ -2608,24 +2639,41 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 }
 
 /* Customer-side floor plan viewer */
-.fp-viewer-wrap{background:#0a0a0a;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:6px;margin-bottom:14px;overflow:hidden;}
+.fp-viewer-wrap{background:radial-gradient(ellipse at center,#15110c 0%,#0a0805 100%);border:1px solid rgba(200,151,58,.15);border-radius:12px;padding:8px;margin-bottom:14px;overflow:hidden;box-shadow:inset 0 0 40px rgba(0,0,0,.5);}
 .fp-viewer-svg{width:100%;height:auto;display:block;max-height:60vh;}
 .fp-vw-el-shape{transition:filter .25s,opacity .25s;}
 .fp-vw-table{cursor:pointer;}
-.fp-vw-table.available .fp-vw-el-shape{fill:#c8973a;stroke:#f5c976;stroke-width:3.5;animation:fpPulse 1.6s ease-in-out infinite;}
-@keyframes fpPulse{0%,100%{filter:drop-shadow(0 0 6px rgba(200,151,58,.55));opacity:1;}50%{filter:drop-shadow(0 0 14px rgba(245,201,118,.95));opacity:.95;}}
-.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(220,53,69,.22);stroke:rgba(220,53,69,.5);stroke-width:1;}
-.fp-vw-table.locked .fp-vw-el-shape{fill:rgba(255,193,7,.2);stroke:rgba(255,193,7,.55);stroke-width:1;}
-.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:4;filter:drop-shadow(0 0 16px rgba(200,151,58,1));animation:none;}
+/* Available table — refined gold gradient + soft drop-shadow + gentle pulse */
+.fp-vw-table.available .fp-vw-el-shape{fill:url(#fpVwGoldGrad);stroke:#f5c976;stroke-width:2.5;filter:url(#fpVwTableShadow);animation:fpPulse 2.4s ease-in-out infinite;}
+@keyframes fpPulse{
+  0%,100%{filter:url(#fpVwTableShadow) drop-shadow(0 0 4px rgba(200,151,58,.35));}
+  50%{filter:url(#fpVwTableShadow) drop-shadow(0 0 10px rgba(245,201,118,.7));}
+}
+.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(180,90,90,.18);stroke:rgba(220,53,69,.4);stroke-width:1.5;filter:none;}
+.fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.18);stroke:rgba(255,193,7,.45);stroke-width:1.5;filter:none;}
+.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3.5;filter:drop-shadow(0 0 18px rgba(200,151,58,1));animation:none;}
 .fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
-.fp-vw-table.booked,.fp-vw-table.locked{opacity:.5;}
-.fp-vw-fixed .fp-vw-el-shape{opacity:.45;}
-.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:28px;font-weight:900;fill:#1a1a1a;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+.fp-vw-table.booked,.fp-vw-table.locked{opacity:.55;}
+/* Fixed elements (Kitchen, Bar, WC, Stage, Door) — recede with subtle border + slight desaturation */
+.fp-vw-fixed .fp-vw-el-shape{stroke:rgba(255,255,255,.06);stroke-width:1;opacity:.88;}
+.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:28px;font-weight:900;fill:#1a1209;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
 .fp-vw-hit{cursor:pointer;}
 .fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
 .fp-vw-table.selected .fp-vw-tnum{fill:#000;}
-.fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.4);}
-.fp-vw-label{font-family:var(--fb,'Inter','Plus Jakarta Sans',sans-serif);font-size:18px;font-weight:700;fill:rgba(255,255,255,.85);pointer-events:none;text-anchor:middle;dominant-baseline:central;text-shadow:0 1px 3px rgba(0,0,0,.6);paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:2.5px;stroke-linejoin:round;}
+.fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.45);}
+/* VIP TABLES — premium gold border + crown badge + slow shimmer glow */
+.fp-vw-table.vip.available .fp-vw-el-shape{fill:url(#fpVwVipGrad);stroke:#fff8dc;stroke-width:5;animation:fpVipShimmer 2.4s ease-in-out infinite;}
+.fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(200,151,58,.18);stroke:rgba(245,201,118,.5);stroke-width:2;animation:none;}
+.fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(200,151,58,.18);stroke:rgba(255,193,7,.7);stroke-width:2;animation:none;}
+.fp-vw-table.vip.selected .fp-vw-el-shape{fill:#fff;stroke:#e0b455;stroke-width:5;filter:drop-shadow(0 0 20px rgba(245,201,118,1));animation:none;}
+@keyframes fpVipShimmer{
+  0%,100%{filter:drop-shadow(0 0 10px rgba(245,201,118,.7));}
+  50%{filter:drop-shadow(0 0 20px rgba(255,233,150,1)) drop-shadow(0 0 8px rgba(255,255,255,.4));}
+}
+.fp-vw-vip-crown{font-size:18px;text-anchor:middle;dominant-baseline:central;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7));}
+.fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
+.fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:900;}
+.fp-vw-label{font-family:var(--fb,'Inter','Plus Jakarta Sans',sans-serif);font-size:14px;font-weight:600;fill:rgba(220,200,170,.72);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:1.2px;text-transform:uppercase;paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:2px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:22px;font-size:14px;font-weight:700;color:rgba(255,255,255,.85);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:14px 18px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
@@ -2648,6 +2696,9 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .ti-shape{width:64px;height:64px;background:#c8973a;border:2px solid #e0b455;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#1a1a1a;font-family:var(--ff,'Plus Jakarta Sans');font-weight:900;font-size:24px;letter-spacing:-.5px;box-shadow:0 0 24px rgba(200,151,58,.4);}
 .ti-shape.round{border-radius:50%;}
 .ti-shape.rect{width:88px;height:48px;}
+/* VIP shape in popup — gold gradient + crown corner badge */
+.ti-shape.vip{background:linear-gradient(135deg,#f5d987 0%,#e0b455 50%,#c8973a 100%);border:2px solid #fff8dc;box-shadow:0 0 24px rgba(245,201,118,.6),inset 0 0 12px rgba(255,255,255,.2);position:relative;color:#1a1209;}
+.ti-shape.vip::after{content:'⭐';position:absolute;top:-6px;right:-6px;font-size:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));}
 .ti-num{font-family:var(--ff,sans-serif);font-size:24px;font-weight:800;color:#fff;text-align:center;margin-bottom:18px;letter-spacing:-.4px;}
 .ti-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;padding:14px 16px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:10px;}
 .ti-row{display:flex;align-items:center;gap:12px;}
@@ -4345,6 +4396,10 @@ const STAFF_T={
     fp_t_square:'Square',
     fp_t_round:'Round',
     fp_t_rect:'Rectangle',
+    fp_vip_tables:'⭐ VIP Tables',
+    fp_t_vip_square:'VIP Square',
+    fp_t_vip_round:'VIP Round',
+    fp_t_vip_rect:'VIP Rectangle',
     fp_fixed:'Fixed Elements',
     fp_counter:'Counter',
     fp_toilet:'Toilet',
@@ -4483,6 +4538,10 @@ const STAFF_T={
     fp_t_square:'ສີ່ຫຼ່ຽມ',
     fp_t_round:'ມົນ',
     fp_t_rect:'ສີ່ຫຼ່ຽມຍາວ',
+    fp_vip_tables:'⭐ ໂຕະ VIP',
+    fp_t_vip_square:'VIP ສີ່ຫຼ່ຽມ',
+    fp_t_vip_round:'VIP ມົນ',
+    fp_t_vip_rect:'VIP ສີ່ຫຼ່ຽມຍາວ',
     fp_fixed:'ສິ່ງປະກອບ',
     fp_counter:'ເຄົາເຕີ',
     fp_toilet:'ຫ້ອງນ້ຳ',
@@ -4621,6 +4680,10 @@ const STAFF_T={
     fp_t_square:'สี่เหลี่ยม',
     fp_t_round:'กลม',
     fp_t_rect:'สี่เหลี่ยมผืนผ้า',
+    fp_vip_tables:'⭐ โต๊ะ VIP',
+    fp_t_vip_square:'VIP สี่เหลี่ยม',
+    fp_t_vip_round:'VIP กลม',
+    fp_t_vip_rect:'VIP สี่เหลี่ยมผืนผ้า',
     fp_fixed:'องค์ประกอบคงที่',
     fp_counter:'เคาน์เตอร์',
     fp_toilet:'ห้องน้ำ',
@@ -4759,6 +4822,10 @@ const STAFF_T={
     fp_t_square:'方形',
     fp_t_round:'圆形',
     fp_t_rect:'长方形',
+    fp_vip_tables:'⭐ VIP 桌位',
+    fp_t_vip_square:'VIP 方形',
+    fp_t_vip_round:'VIP 圆形',
+    fp_t_vip_rect:'VIP 长方形',
     fp_fixed:'固定元素',
     fp_counter:'柜台',
     fp_toilet:'洗手间',
@@ -4913,6 +4980,10 @@ const STAFF_T={
     fp_t_square:'정사각형',
     fp_t_round:'원형',
     fp_t_rect:'직사각형',
+    fp_vip_tables:'⭐ VIP 테이블',
+    fp_t_vip_square:'VIP 정사각형',
+    fp_t_vip_round:'VIP 원형',
+    fp_t_vip_rect:'VIP 직사각형',
     fp_fixed:'고정 요소',
     fp_counter:'카운터',
     fp_toilet:'화장실',
@@ -6145,7 +6216,7 @@ const LP_TRANSLATIONS = {
     bk_pick_time_sub:'Available time slots in 30-minute increments.',
     bk_party:'How many people?',
     bk_party_sub:'Including yourself.',
-    bk_min_max:'Minimum 1 · Maximum 20',
+    bk_min_max:'Minimum 1 · Maximum 30',
     // v5.4: Zone+Table picker
     bk_pick_table:'Choose a table',
     bk_pick_table_sub:'Pick a zone, then select an available table.',
@@ -6212,6 +6283,8 @@ const LP_TRANSLATIONS = {
     bk_already:'Already booked? Check status →',
     bk_loading_restos:'Loading restaurants…',
     bk_no_restos:'No restaurants available right now.',
+    bk_search_resto_ph:'Search restaurants…',
+    bk_no_match_restos:'No restaurants match your search.',
     bk_tap_book:'Tap to book',
     bk_closed_day:'Closed on this day.',
     bk_no_slots:'No slots available.',
@@ -6308,7 +6381,7 @@ const LP_TRANSLATIONS = {
     bk_pick_time_sub:'ຊ່ອງເວລາທີ່ມີ ໃນລະຍະຫ່າງ 30 ນາທີ.',
     bk_party:'ມີຈັກຄົນ?',
     bk_party_sub:'ລວມຕົວທ່ານເອງ.',
-    bk_min_max:'ຕໍ່າສຸດ 1 · ສູງສຸດ 20',
+    bk_min_max:'ຕໍ່າສຸດ 1 · ສູງສຸດ 30',
     // v5.4: Zone+Table picker
     bk_pick_table:'ເລືອກໂຕະ',
     bk_pick_table_sub:'ເລືອກພື້ນທີ່ ແລ້ວເລືອກໂຕະທີ່ວ່າງ.',
@@ -6375,6 +6448,8 @@ const LP_TRANSLATIONS = {
     bk_already:'ຈອງແລ້ວ? ກວດສະຖານະ →',
     bk_loading_restos:'ກຳລັງໂຫຼດຮ້ານອາຫານ…',
     bk_no_restos:'ບໍ່ມີຮ້ານອາຫານໃນຕອນນີ້.',
+    bk_search_resto_ph:'ຄົ້ນຫາຮ້ານອາຫານ…',
+    bk_no_match_restos:'ບໍ່ພົບຮ້ານອາຫານທີ່ກົງກັບການຄົ້ນຫາ.',
     bk_tap_book:'ກົດເພື່ອຈອງ',
     bk_closed_day:'ຮ້ານປິດໃນວັນນີ້.',
     bk_no_slots:'ບໍ່ມີຊ່ອງເວລາວ່າງ.',
@@ -6471,7 +6546,7 @@ const LP_TRANSLATIONS = {
     bk_pick_time_sub:'ช่วงเวลาที่ว่าง ในช่วง 30 นาที',
     bk_party:'มากี่คน?',
     bk_party_sub:'รวมตัวคุณเอง',
-    bk_min_max:'ขั้นต่ำ 1 · สูงสุด 20',
+    bk_min_max:'ขั้นต่ำ 1 · สูงสุด 30',
     // v5.4: Zone+Table picker
     bk_pick_table:'เลือกโต๊ะ',
     bk_pick_table_sub:'เลือกโซน แล้วเลือกโต๊ะที่ว่าง',
@@ -6538,6 +6613,8 @@ const LP_TRANSLATIONS = {
     bk_already:'จองแล้ว? ตรวจสอบสถานะ →',
     bk_loading_restos:'กำลังโหลดร้านอาหาร…',
     bk_no_restos:'ไม่มีร้านอาหารในขณะนี้',
+    bk_search_resto_ph:'ค้นหาร้านอาหาร…',
+    bk_no_match_restos:'ไม่พบร้านอาหารที่ตรงกับการค้นหา',
     bk_tap_book:'แตะเพื่อจอง',
     bk_closed_day:'ร้านปิดในวันนี้',
     bk_no_slots:'ไม่มีช่วงเวลาว่าง',
@@ -6634,7 +6711,7 @@ const LP_TRANSLATIONS = {
     bk_pick_time_sub:'每 30 分钟一个时段。',
     bk_party:'几位用餐?',
     bk_party_sub:'包括您本人。',
-    bk_min_max:'最少 1 人 · 最多 20 人',
+    bk_min_max:'最少 1 人 · 最多 30 人',
     // v5.4: Zone+Table picker
     bk_pick_table:'选择桌位',
     bk_pick_table_sub:'选择区域，然后选择空闲的桌位。',
@@ -6701,6 +6778,8 @@ const LP_TRANSLATIONS = {
     bk_already:'已预订？查看状态 →',
     bk_loading_restos:'正在加载餐厅…',
     bk_no_restos:'目前没有可用的餐厅。',
+    bk_search_resto_ph:'搜索餐厅…',
+    bk_no_match_restos:'没有找到匹配的餐厅。',
     bk_tap_book:'点击预订',
     bk_closed_day:'本日休息。',
     bk_no_slots:'没有可用时段。',
@@ -6797,7 +6876,7 @@ const LP_TRANSLATIONS = {
     bk_pick_time_sub:'30분 단위 시간대.',
     bk_party:'몇 분이신가요?',
     bk_party_sub:'본인 포함.',
-    bk_min_max:'최소 1명 · 최대 20명',
+    bk_min_max:'최소 1명 · 최대 30명',
     // v5.4: Zone+Table picker
     bk_pick_table:'테이블 선택',
     bk_pick_table_sub:'구역을 선택한 후 이용 가능한 테이블을 고르세요.',
@@ -6864,6 +6943,8 @@ const LP_TRANSLATIONS = {
     bk_already:'이미 예약하셨나요? 상태 확인 →',
     bk_loading_restos:'레스토랑 불러오는 중…',
     bk_no_restos:'현재 이용 가능한 레스토랑이 없습니다.',
+    bk_search_resto_ph:'레스토랑 검색…',
+    bk_no_match_restos:'검색 결과가 없습니다.',
     bk_tap_book:'탭하여 예약',
     bk_closed_day:'이 날은 휴무입니다.',
     bk_no_slots:'이용 가능한 시간대가 없습니다.',
@@ -9514,6 +9595,96 @@ function _resetAddTableModal(){
   const reqBody = document.getElementById('mTreqBody'); if(reqBody) reqBody.style.display = 'none';
 }
 
+// ═══ 24-HOUR TIME PICKER ═══
+// Reusable component: 2 number inputs (HH, MM) + a hidden input mirroring HH:MM.
+// The hidden input keeps the original element ID so existing readers/writers (.value getters,
+// onchange handlers) continue to work without any code changes elsewhere.
+
+/* Build HTML for a 24-hour time picker.
+   id        — the ID for the hidden input (and the original input being replaced)
+   value     — initial HH:MM string (e.g. "20:00")
+   onchange  — optional onchange handler string (e.g. "updateTimeDisplay()")
+   step      — '30' to snap minutes to :00/:30 only, otherwise free 0-59 (default 'any') */
+function _t24Html(id, value, onchange, step){
+  const v = (value || '').match(/^(\d{1,2}):(\d{1,2})$/);
+  const hh = v ? String(Math.min(23, Math.max(0, parseInt(v[1])||0))).padStart(2,'0') : '00';
+  const mm = v ? String(Math.min(59, Math.max(0, parseInt(v[2])||0))).padStart(2,'0') : '00';
+  const oc = onchange ? `;${onchange}` : '';
+  const stepAttr = step === '30' ? ' data-step="30"' : '';
+  return `<span class="t24" data-t24="${id}"${stepAttr}>` +
+    `<input type="number" class="t24-input t24-hh" min="0" max="23" inputmode="numeric" value="${hh}" oninput="_t24Sync('${id}')" onblur="_t24Pad('${id}','hh')${oc}" aria-label="Hour">` +
+    `<span class="t24-sep">:</span>` +
+    `<input type="number" class="t24-input t24-mm" min="0" max="59" inputmode="numeric" value="${mm}" oninput="_t24Sync('${id}')" onblur="_t24Pad('${id}','mm')${oc}" aria-label="Minute">` +
+    `<input type="hidden" id="${id}" value="${hh}:${mm}">` +
+  `</span>`;
+}
+
+/* Sync hidden input value when HH or MM changes (called on every keystroke).
+   Validates range, but leaves visible inputs alone until blur (user might be mid-typing). */
+function _t24Sync(id){
+  const wrap = document.querySelector(`.t24[data-t24="${id}"]`);
+  if(!wrap) return;
+  const hhInp = wrap.querySelector('.t24-hh');
+  const mmInp = wrap.querySelector('.t24-mm');
+  const hidden = document.getElementById(id);
+  if(!hhInp || !mmInp || !hidden) return;
+  // Clamp typed values to valid range without reformatting (don't disrupt typing)
+  let hh = parseInt(hhInp.value, 10); if(isNaN(hh)) hh = 0;
+  let mm = parseInt(mmInp.value, 10); if(isNaN(mm)) mm = 0;
+  if(hh < 0) hh = 0; if(hh > 23) hh = 23;
+  if(mm < 0) mm = 0; if(mm > 59) mm = 59;
+  hidden.value = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+}
+
+/* Pad/normalize the visible input on blur (e.g. "8" → "08"). */
+function _t24Pad(id, which){
+  const wrap = document.querySelector(`.t24[data-t24="${id}"]`);
+  if(!wrap) return;
+  const inp = wrap.querySelector('.t24-'+which);
+  if(!inp) return;
+  let n = parseInt(inp.value, 10);
+  if(isNaN(n)) n = 0;
+  const max = which === 'hh' ? 23 : 59;
+  if(n < 0) n = 0; if(n > max) n = max;
+  // Snap minutes to :00/:30 if step="30" is set
+  const step = wrap.getAttribute('data-step');
+  if(which === 'mm' && step === '30'){
+    n = (n >= 30) ? 30 : 0;
+  }
+  inp.value = String(n).padStart(2,'0');
+  _t24Sync(id);
+}
+
+/* Programmatic setter: write a HH:MM string to the picker (and its hidden input).
+   Use this instead of `document.getElementById(id).value = '19:00'` for t24 inputs. */
+function _t24Set(id, value){
+  const wrap = document.querySelector(`.t24[data-t24="${id}"]`);
+  const hidden = document.getElementById(id);
+  const m = (value || '').match(/^(\d{1,2}):(\d{1,2})$/);
+  const hh = m ? String(Math.min(23, Math.max(0, parseInt(m[1])||0))).padStart(2,'0') : '00';
+  const mm = m ? String(Math.min(59, Math.max(0, parseInt(m[2])||0))).padStart(2,'0') : '00';
+  if(hidden) hidden.value = hh+':'+mm;
+  if(wrap){
+    const hhInp = wrap.querySelector('.t24-hh');
+    const mmInp = wrap.querySelector('.t24-mm');
+    if(hhInp) hhInp.value = hh;
+    if(mmInp) mmInp.value = mm;
+  }
+}
+
+/* Mount a t24 picker into a wrapper div (creates the HTML if not yet present, otherwise just sets the value).
+   Used for static modals where we can't inline _t24Html() in HTML. */
+function _t24Mount(id, wrapId, value, onchange){
+  const container = document.getElementById(wrapId);
+  if(!container) return;
+  // If already mounted, just update the value
+  if(container.querySelector(`.t24[data-t24="${id}"]`)){
+    _t24Set(id, value);
+    return;
+  }
+  container.innerHTML = _t24Html(id, value, onchange);
+}
+
 // ═══ TABLE BOOKING SYSTEM ═══
 let currentBookTab = 'today';
 
@@ -9663,8 +9834,9 @@ function openBookingModal(bookId){
   document.getElementById('mBookName').value='';
   document.getElementById('mBookPhone').value='';
   document.getElementById('mBookDate').value=new Date().toISOString().slice(0,10);
-  document.getElementById('mBookTime').value='19:00';
-  document.getElementById('mBookEnd').value='21:00';
+  // Mount 24hr time pickers (idempotent — only injects HTML if wrap is empty)
+  _t24Mount('mBookTime',  'mBookTimeWrap', '19:00', 'updateTimeDisplay()');
+  _t24Mount('mBookEnd',   'mBookEndWrap',  '21:00', 'updateTimeDisplay()');
   document.getElementById('mBookGuests').value='2';
   document.getElementById('mBookNotes').value='';
   document.getElementById('mBookStatus').value='confirmed';
@@ -9686,8 +9858,9 @@ async function editBooking(id){
   document.getElementById('mBookName').value=b.name||'';
   document.getElementById('mBookPhone').value=b.phone||'';
   document.getElementById('mBookDate').value=b.date||'';
-  document.getElementById('mBookTime').value=b.time||'';
-  document.getElementById('mBookEnd').value=b.endTime||'';
+  // Mount 24hr time pickers (idempotent) and set values from booking
+  _t24Mount('mBookTime',  'mBookTimeWrap', b.time||'',    'updateTimeDisplay()');
+  _t24Mount('mBookEnd',   'mBookEndWrap',  b.endTime||'', 'updateTimeDisplay()');
   document.getElementById('mBookGuests').value=b.guests||2;
   document.getElementById('mBookNotes').value=b.notes||'';
   document.getElementById('mBookStatus').value=b.status||'confirmed';
@@ -10972,22 +11145,49 @@ function playSound(){if(!soundOn) return;try{const ac=new(window.AudioContext||w
 function printReceipt(){const c=document.getElementById('receiptContent').innerHTML,pa=document.getElementById('printArea');pa.innerHTML=c;pa.style.display='block';window.print();setTimeout(()=>pa.style.display='none',500);}
 
 
-// ZOOM LOCK
+// ═══ ZOOM LOCK ═══
+// Mobile: blocks pinch-zoom, double-tap-zoom, and gesture-zoom on ALL pages
+// Desktop: blocks Ctrl/Cmd+wheel and Ctrl/Cmd+/-/= keyboard zoom (Ctrl+0 reset still allowed)
+// Browser menu zoom and OS-level zoom cannot be blocked by web pages — that's a user
+// accessibility right and intentional browser behavior.
 (function(){
-  let lastTap=0;
-  document.addEventListener('touchend',function(e){
-    if(!document.getElementById('pg-customer')?.classList.contains('on')) return;
-    const now=Date.now();
-    if(now-lastTap<300) e.preventDefault();
-    lastTap=now;
-  },{passive:false});
-  document.addEventListener('gesturestart',function(e){
-    if(document.getElementById('pg-customer')?.classList.contains('on')) e.preventDefault();
-  },{passive:false});
-  document.addEventListener('touchmove',function(e){
-    if(!document.getElementById('pg-customer')?.classList.contains('on')) return;
-    if(e.touches.length>1) e.preventDefault();
-  },{passive:false});
+  // Mobile: prevent double-tap-zoom across the whole site
+  let lastTap = 0;
+  document.addEventListener('touchend', function(e){
+    const now = Date.now();
+    if(now - lastTap < 300){
+      // Don't prevent default on form fields — they need normal tap behavior
+      const tag = (e.target && e.target.tagName) || '';
+      if(tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT'){
+        e.preventDefault();
+      }
+    }
+    lastTap = now;
+  }, {passive: false});
+
+  // Mobile: block pinch-zoom (Safari iOS gestures)
+  document.addEventListener('gesturestart',  function(e){ e.preventDefault(); }, {passive: false});
+  document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, {passive: false});
+  document.addEventListener('gestureend',    function(e){ e.preventDefault(); }, {passive: false});
+
+  // Mobile: block multi-touch zoom (pinch on Android Chrome)
+  document.addEventListener('touchmove', function(e){
+    if(e.touches && e.touches.length > 1) e.preventDefault();
+  }, {passive: false});
+
+  // Desktop: block Ctrl/Cmd + wheel zoom
+  document.addEventListener('wheel', function(e){
+    if(e.ctrlKey || e.metaKey) e.preventDefault();
+  }, {passive: false});
+
+  // Desktop: block Ctrl/Cmd + (+/-/=) zoom keys. Ctrl+0 (reset) is allowed as accessibility escape.
+  document.addEventListener('keydown', function(e){
+    if(!(e.ctrlKey || e.metaKey)) return;
+    // '+' is shift+'='; also block 'Add' and 'Subtract' on numeric keypad
+    if(e.key === '+' || e.key === '-' || e.key === '=' || e.key === 'Add' || e.key === 'Subtract'){
+      e.preventDefault();
+    }
+  });
 })();
 // START
 setTimeout(function(){
@@ -11110,29 +11310,68 @@ async function loadBkRestaurants(){
     });
     bkState.allRestos = arr;
     if(!arr.length){ list.innerHTML=`<div class="bk-empty">${escapeHtml(_lp('bk_no_restos','No restaurants available right now.'))}</div>`; return; }
-    const tapToBook = _lp('bk_tap_book','Tap to book');
-    // FIX (Bug #4): Use data-id with event delegation instead of inline onclick string
-    // interpolation. This is XSS-safe even if Firebase keys contain quotes/special chars.
-    list.innerHTML = arr.map(r=>{
-      const ic = (typeof r.icon==='string' && r.icon.length<=4) ? r.icon : '🍽️';
-      return `<div class="bk-resto-card" data-id="${escapeHtml(r.id)}">
-        <div class="bk-resto-ic">${escapeHtml(ic)}</div>
-        <div class="bk-resto-info">
-          <div class="bk-resto-name">${escapeHtml(r.name)}</div>
-          <div class="bk-resto-tag">${escapeHtml(r.tag||tapToBook)}</div>
-        </div>
-        <div class="bk-resto-arrow">→</div>
-      </div>`;
-    }).join('');
-    // Attach a single delegated click handler (idempotent — re-binding is safe)
-    list.onclick = function(ev){
-      const card = ev.target.closest('.bk-resto-card');
-      if(card && card.dataset.id) bkPickResto(card.dataset.id);
-    };
+    // Show search bar only when there are 4+ restaurants (not worth it for fewer)
+    const searchWrap = document.getElementById('bkRestoSearchWrap');
+    if(searchWrap) searchWrap.style.display = arr.length >= 4 ? '' : 'none';
+    // Reset search input on fresh load
+    const searchInp = document.getElementById('bkRestoSearch');
+    if(searchInp) searchInp.value = '';
+    if(searchWrap) searchWrap.classList.remove('has-text');
+    _bkRenderRestos(arr);
   } catch(e){
     console.error('bk loadRestos:',e);
     list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_err_load','Could not load restaurants. Please try again.'))}</div>`;
   }
+}
+
+/* Render restaurant cards from a filtered array (used by both initial load and search filter). */
+function _bkRenderRestos(arr){
+  const list = document.getElementById('bkRestoList');
+  if(!list) return;
+  if(!arr.length){
+    list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_no_match_restos','No restaurants match your search.'))}</div>`;
+    return;
+  }
+  const tapToBook = _lp('bk_tap_book','Tap to book');
+  // FIX (Bug #4): Use data-id with event delegation instead of inline onclick string
+  // interpolation. This is XSS-safe even if Firebase keys contain quotes/special chars.
+  list.innerHTML = arr.map(r=>{
+    const ic = (typeof r.icon==='string' && r.icon.length<=4) ? r.icon : '🍽️';
+    return `<div class="bk-resto-card" data-id="${escapeHtml(r.id)}">
+      <div class="bk-resto-ic">${escapeHtml(ic)}</div>
+      <div class="bk-resto-info">
+        <div class="bk-resto-name">${escapeHtml(r.name)}</div>
+        <div class="bk-resto-tag">${escapeHtml(r.tag||tapToBook)}</div>
+      </div>
+      <div class="bk-resto-arrow">→</div>
+    </div>`;
+  }).join('');
+  // Attach a single delegated click handler (idempotent — re-binding is safe)
+  list.onclick = function(ev){
+    const card = ev.target.closest('.bk-resto-card');
+    if(card && card.dataset.id) bkPickResto(card.dataset.id);
+  };
+}
+
+/* Filter restaurants by search query (case-insensitive substring match on name + tag) */
+function _bkFilterRestos(query){
+  const wrap = document.getElementById('bkRestoSearchWrap');
+  const q = (query || '').trim().toLowerCase();
+  if(wrap) wrap.classList.toggle('has-text', q.length > 0);
+  const all = bkState.allRestos || [];
+  if(!q){ _bkRenderRestos(all); return; }
+  const filtered = all.filter(r => {
+    const name = (r.name || '').toLowerCase();
+    const tag  = (r.tag  || '').toLowerCase();
+    return name.indexOf(q) >= 0 || tag.indexOf(q) >= 0;
+  });
+  _bkRenderRestos(filtered);
+}
+
+function _bkClearRestoSearch(){
+  const inp = document.getElementById('bkRestoSearch');
+  if(inp){ inp.value = ''; inp.focus(); }
+  _bkFilterRestos('');
 }
 
 function bkPickResto(id){
@@ -11277,7 +11516,7 @@ function bkPickSlot(s){
 
 function bkParty(delta){
   let n = bkState.party + delta;
-  if(n<1) n=1; if(n>20) n=20;
+  if(n<1) n=1; if(n>30) n=30;
   bkState.party = n;
   document.getElementById('bkPartyNum').textContent = n;
 }
@@ -11508,6 +11747,9 @@ const FP_DEFAULT_SIZES = {
   'table-square': { w: 60,  h: 60  },
   'table-round':  { w: 70,  h: 70  },
   'table-rect':   { w: 120, h: 60  },
+  'table-vip-square': { w: 75,  h: 75  },
+  'table-vip-round':  { w: 85,  h: 85  },
+  'table-vip-rect':   { w: 140, h: 70  },
   'counter':      { w: 200, h: 40  },
   'toilet':       { w: 80,  h: 80  },
   'stage':        { w: 200, h: 80  },
@@ -11516,6 +11758,15 @@ const FP_DEFAULT_SIZES = {
   'wall-block':   { w: 200, h: 12  },
   'wall-line':    { w: 100, h: 0   }  // line uses x1,y1,x2,y2 not w/h
 };
+
+/* Helper: is this kind a VIP table variant? (table-vip-round, table-vip-square, table-vip-rect) */
+function _fpIsVipKind(kind){ return typeof kind === 'string' && kind.indexOf('table-vip-') === 0; }
+/* Helper: is this kind a round-shape table (regular OR VIP)? */
+function _fpIsRoundTable(kind){ return kind === 'table-round' || kind === 'table-vip-round'; }
+/* Helper: is this kind a rect-shape table (regular OR VIP)? */
+function _fpIsRectTable(kind){ return kind === 'table-rect' || kind === 'table-vip-rect'; }
+/* Helper: is this kind a square-shape table (regular OR VIP)? */
+function _fpIsSquareTable(kind){ return kind === 'table-square' || kind === 'table-vip-square'; }
 
 const FP_DEFAULT_LABELS = {
   'counter': 'Bar',
@@ -11861,12 +12112,18 @@ function fpElToSvg(el){
     fill = _fpFixedFill(el.kind);
     stroke = 'rgba(255,255,255,.18)';
   }
-  if(el.kind === 'table-round'){
+  // VIP tables: gold gradient fill + thicker border (visual upgrade in the editor too)
+  const isVip = _fpIsVipKind(el.kind);
+  if(isVip){
+    fill = 'url(#fpVipGradEditor)';
+    stroke = '#f5c976';
+  }
+  if(_fpIsRoundTable(el.kind)){
     const rx = el.w/2, ry = el.h/2;
-    shape = `<ellipse class="fp-el-shape" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+    shape = `<ellipse class="fp-el-shape${isVip?' fp-el-vip':''}" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${isVip?2.5:1.5}"/>`;
   } else {
-    const rx = (el.kind === 'table-square' || el.kind === 'table-rect') ? 6 : 3;
-    shape = `<rect class="fp-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="${rx}" ry="${rx}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+    const rx = (_fpIsSquareTable(el.kind) || _fpIsRectTable(el.kind)) ? 6 : 3;
+    shape = `<rect class="fp-el-shape${isVip?' fp-el-vip':''}" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="${rx}" ry="${rx}" fill="${fill}" stroke="${stroke}" stroke-width="${isVip?2.5:1.5}"/>`;
   }
   // Label / table number
   let textEl = '';
@@ -11876,18 +12133,27 @@ function fpElToSvg(el){
     const lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
     if(lbl) textEl = `<text class="fp-el-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>`;
   }
-  return `<g class="${cls}" data-elid="${el.id}">${shape}${textEl}</g>`;
+  // VIP crown badge: small ⭐ in top-right corner
+  let vipBadge = '';
+  if(isVip){
+    const bx = el.x + el.w - 10;
+    const by = el.y + 10;
+    vipBadge = `<text class="fp-el-vip-crown" x="${bx}" y="${by}">⭐</text>`;
+  }
+  return `<g class="${cls}" data-elid="${el.id}">${shape}${textEl}${vipBadge}</g>`;
 }
 
 function _fpFixedFill(kind){
+  // Unified dark-luxury palette: all charcoal-based with subtle tonal variations
+  // for hierarchy. Tables (gold) remain the visual hero; fixed elements recede.
   switch(kind){
-    case 'counter':    return '#a08560'; // lighter brown — visible on dark
-    case 'toilet':     return '#4a6a8a'; // blue-grey — bathroom feel
-    case 'stage':      return '#5a3a8a'; // purple — theatrical, visible
-    case 'door':       return '#8b5a2b'; // lighter brown — visible
-    case 'kitchen':    return '#7a4a3a'; // warm cooking brown
-    case 'wall-block': return '#5e5e5e'; // medium grey — clearly a wall
-    default:           return '#666';
+    case 'counter':    return '#3a3530'; // warm charcoal — like a wooden bar
+    case 'toilet':     return '#2c3138'; // cool charcoal — restroom feel
+    case 'stage':      return '#3d3128'; // warm dark — theatrical, dignified
+    case 'door':       return '#4a3a28'; // brass-tinged charcoal — entrance
+    case 'kitchen':    return '#332620'; // deepest warm — hidden service area
+    case 'wall-block': return '#2a2a2a'; // neutral graphite — structural
+    default:           return '#2e2e2e';
   }
 }
 
@@ -11946,7 +12212,7 @@ function fpRenderProps(){
   form.style.display = '';
   // Kind label
   document.getElementById('fpPropKindLabel').textContent =
-    el.kind.replace('table-','Table — ').replace('wall-','Wall — ').replace(/-/g,' ');
+    el.kind.replace('table-vip-','⭐ VIP Table — ').replace('table-','Table — ').replace('wall-','Wall — ').replace(/-/g,' ');
   const isTable = el.kind && el.kind.indexOf('table') === 0;
   const isLine = el.kind === 'wall-line';
   const isWallBlock = el.kind === 'wall-block';
@@ -12434,9 +12700,55 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
       <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
     </pattern>
+    <!-- Subtle textured floor: tiny gold dots on dark charcoal — looks like marble flecks -->
+    <pattern id="fpVwFloor" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#0e0c0a"/>
+      <circle cx="8"  cy="12" r="0.7" fill="rgba(200,151,58,.06)"/>
+      <circle cx="28" cy="6"  r="0.5" fill="rgba(200,151,58,.05)"/>
+      <circle cx="34" cy="22" r="0.6" fill="rgba(200,151,58,.07)"/>
+      <circle cx="14" cy="30" r="0.5" fill="rgba(200,151,58,.05)"/>
+      <circle cx="22" cy="36" r="0.6" fill="rgba(200,151,58,.06)"/>
+    </pattern>
+    <!-- Radial vignette: deepens corners for cinematic feel -->
+    <radialGradient id="fpVwVignette" cx="50%" cy="50%" r="65%">
+      <stop offset="0%"   stop-color="rgba(0,0,0,0)"/>
+      <stop offset="70%"  stop-color="rgba(0,0,0,.15)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,.55)"/>
+    </radialGradient>
+    <!-- Refined gold gradient for available tables -->
+    <linearGradient id="fpVwGoldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#e8b659"/>
+      <stop offset="100%" stop-color="#b8852e"/>
+    </linearGradient>
+    <linearGradient id="fpVwVipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5d987"/>
+      <stop offset="50%" stop-color="#e0b455"/>
+      <stop offset="100%" stop-color="#c8973a"/>
+    </linearGradient>
+    <!-- Soft drop shadow for tables — adds depth -->
+    <filter id="fpVwTableShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2.5"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Subtle inner-shadow for fixed elements (recedes them visually) -->
+    <filter id="fpVwFixedInner" x="0" y="0" width="100%" height="100%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1" result="off"/>
+      <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="inner"/>
+      <feColorMatrix in="inner" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge>
+    </filter>
+    <filter id="fpVwVipGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>`;
-  // Background fills only the visible cropped area (not the full canvas)
-  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${_fpEsc(bg)}"/>`;
+  // Floor: textured pattern + vignette overlay for cinematic depth
+  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#fpVwFloor)"/>`;
+  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#fpVwVignette)" pointer-events="none"/>`;
   const fixed = []; const tableEls = []; const walls = [];
   plan.elements.forEach(el => {
     const isTable = el.kind && el.kind.indexOf('table') === 0;
@@ -12486,20 +12798,30 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     if(bookedTableIds && bookedTableIds.has(el.tableId)) stateClass = 'booked';
     else if(lockedTableIds && lockedTableIds.has(el.tableId)) stateClass = 'locked';
     if(selectedTableId === el.tableId) stateClass = 'selected';
+    // VIP detection: explicit kind (table-vip-*) OR linked table has a bookingRequirement set
+    const isVip = _fpIsVipKind(el.kind) || !!(t && t.bookingRequirement && String(t.bookingRequirement).trim());
     let shape;
     let hitArea;
-    if(el.kind === 'table-round'){
+    if(_fpIsRoundTable(el.kind)){
       shape = `<ellipse class="fp-vw-el-shape" cx="${cx}" cy="${cy}" rx="${el.w/2}" ry="${el.h/2}"/>`;
       // Invisible hit area — 30% bigger than visible shape, transparent
       hitArea = `<ellipse class="fp-vw-hit" cx="${cx}" cy="${cy}" rx="${el.w/2 + 18}" ry="${el.h/2 + 18}" fill="transparent"/>`;
     } else {
-      const rx = (el.kind === 'table-square' || el.kind === 'table-rect') ? 6 : 3;
+      const rx = (_fpIsSquareTable(el.kind) || _fpIsRectTable(el.kind)) ? 6 : 3;
       shape = `<rect class="fp-vw-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="${rx}"/>`;
       hitArea = `<rect class="fp-vw-hit" x="${el.x - 18}" y="${el.y - 18}" width="${el.w + 36}" height="${el.h + 36}" rx="${rx}" fill="transparent"/>`;
     }
     const num = t.num || '';
+    // VIP crown badge — top-right corner of the table
+    let vipBadge = '';
+    if(isVip){
+      const bx = el.x + el.w - 8;
+      const by = el.y + 14;
+      vipBadge = `<text class="fp-vw-vip-crown" x="${bx}" y="${by}">⭐</text>`;
+    }
     // hitArea first so visible shape sits on top (but hit area still catches clicks via parent <g>)
-    svgInner += `<g class="fp-vw-table ${stateClass}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text></g>`;
+    const groupCls = `fp-vw-table ${stateClass}${isVip?' vip':''}`;
+    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text>${vipBadge}</g>`;
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
@@ -12703,18 +13025,22 @@ function tiOpen(tableId){
   _tiPendingTableId = tableId;
   // Determine the shape from the floor plan element (so popup icon matches the map)
   let shapeKind = 'square';
+  let isVipTable = false;
   try {
     const plan = bkState._cachedPlan;
     if(plan && plan.elements){
       const elFp = plan.elements.find(e => e.tableId === tableId);
-      if(elFp && elFp.kind === 'table-round') shapeKind = 'round';
-      else if(elFp && elFp.kind === 'table-rect') shapeKind = 'rect';
+      if(elFp){
+        if(_fpIsRoundTable(elFp.kind)) shapeKind = 'round';
+        else if(_fpIsRectTable(elFp.kind)) shapeKind = 'rect';
+        if(_fpIsVipKind(elFp.kind)) isVipTable = true;
+      }
     }
   } catch(e){}
-  // Set shape icon
+  // Set shape icon — add 'vip' class so the popup shape itself shows premium styling
   const shapeEl = document.getElementById('tiShape');
   if(shapeEl){
-    shapeEl.className = 'ti-shape' + (shapeKind === 'round' ? ' round' : shapeKind === 'rect' ? ' rect' : '');
+    shapeEl.className = 'ti-shape' + (shapeKind === 'round' ? ' round' : shapeKind === 'rect' ? ' rect' : '') + (isVipTable ? ' vip' : '');
     shapeEl.textContent = t.num || '';
   }
   // Table number
@@ -13704,9 +14030,9 @@ async function loadOwnerHours(){
         <span style="font-size:12px">${escapeHtml(lblOpen)}</span>
       </label>
       <div id="ohRow-${i}" style="display:${day.open?'flex':'none'};align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap">
-        <input type="time" lang="en-GB" id="ohFrom-${i}" value="${day.from||'11:00'}" step="1800">
+        ${_t24Html('ohFrom-'+i, day.from||'11:00', '', '30')}
         <span class="oh-day-sep">${escapeHtml(lblTo)}</span>
-        <input type="time" lang="en-GB" id="ohTo-${i}" value="${day.to||'22:00'}" step="1800">
+        ${_t24Html('ohTo-'+i, day.to||'22:00', '', '30')}
       </div>
       <div id="ohClosed-${i}" class="oh-closed" style="display:${day.open?'none':'block'};margin-left:auto">${escapeHtml(lblClosed)}</div>
       <!-- v6.3: BOOKING MODE row (only shown when day is open) -->
@@ -13928,8 +14254,8 @@ async function cleanupOldBookings(opts){
         <div class="fg"><label>Number of Guests *</label><input class="fi" type="number" id="mBookGuests" min="1" max="100" value="2"></div>
       </div>
       <div class="form-row">
-        <div class="fg"><label>Arrival Time *</label><input class="fi" type="time" lang="en-GB" id="mBookTime" onchange="updateTimeDisplay()"></div>
-        <div class="fg"><label>End Time / Checkout *</label><input class="fi" type="time" lang="en-GB" id="mBookEnd" onchange="updateTimeDisplay()"></div>
+        <div class="fg"><label>Arrival Time *</label><div id="mBookTimeWrap"></div></div>
+        <div class="fg"><label>End Time / Checkout *</label><div id="mBookEndWrap"></div></div>
       </div>
       <div class="time-range-display" id="timeRangeDisplay">Select arrival and end time</div>
       <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Table &amp; Status</div>
@@ -14078,6 +14404,21 @@ async function cleanupOldBookings(opts){
           </div>
         </div>
         <div class="fp-toolbox-section">
+          <div class="fp-toolbox-h" data-ts="fp_vip_tables">⭐ VIP Tables</div>
+          <div class="fp-tool fp-tool-vip" data-tool="table-vip-square" title="VIP Square table — premium">
+            <div class="fp-tool-ic fp-tool-ic-vip" style="border-radius:4px"></div>
+            <div class="fp-tool-lbl" data-ts="fp_t_vip_square">VIP Square</div>
+          </div>
+          <div class="fp-tool fp-tool-vip" data-tool="table-vip-round" title="VIP Round table — premium">
+            <div class="fp-tool-ic fp-tool-ic-vip" style="border-radius:50%"></div>
+            <div class="fp-tool-lbl" data-ts="fp_t_vip_round">VIP Round</div>
+          </div>
+          <div class="fp-tool fp-tool-vip" data-tool="table-vip-rect" title="VIP Rectangle table — premium">
+            <div class="fp-tool-ic fp-tool-ic-vip" style="border-radius:4px;width:32px;height:14px"></div>
+            <div class="fp-tool-lbl" data-ts="fp_t_vip_rect">VIP Rectangle</div>
+          </div>
+        </div>
+        <div class="fp-toolbox-section">
           <div class="fp-toolbox-h" data-ts="fp_fixed">Fixed Elements</div>
           <div class="fp-tool" data-tool="counter" title="Counter / Bar">
             <div class="fp-tool-ic" style="background:#8a6f4f;width:34px;height:10px"></div>
@@ -14128,6 +14469,11 @@ async function cleanupOldBookings(opts){
               <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
               <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
             </pattern>
+            <linearGradient id="fpVipGradEditor" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e8c779"/>
+              <stop offset="50%" stop-color="#c8973a"/>
+              <stop offset="100%" stop-color="#a07820"/>
+            </linearGradient>
           </defs>
           <rect id="fpCanvasBg" width="1000" height="700" fill="#0f0f0f"/>
           <rect width="1000" height="700" fill="url(#fpGrid)"/>
@@ -14316,6 +14662,13 @@ async function cleanupOldBookings(opts){
       <div class="bk-step on" id="bkStep1">
         <div class="bk-step-h" data-lp="bk_pick_resto">Choose a restaurant</div>
         <div class="bk-step-sub" data-lp="bk_pick_resto_sub">Select where you would like to dine.</div>
+        <div class="bk-resto-search-wrap" id="bkRestoSearchWrap" style="display:none">
+          <span class="bk-resto-search-ic" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <input type="text" class="bk-resto-search" id="bkRestoSearch" placeholder="Search restaurants…" data-lp-ph="bk_search_resto_ph" oninput="_bkFilterRestos(this.value)" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button type="button" class="bk-resto-search-x" id="bkRestoSearchX" onclick="_bkClearRestoSearch()" aria-label="Clear search" style="display:none">×</button>
+        </div>
         <div class="bk-resto-list" id="bkRestoList"><div class="bk-empty" data-lp="bk_loading_restos">Loading restaurants…</div></div>
       </div>
       <!-- STEP 2: PICK DATE -->
@@ -14339,7 +14692,7 @@ async function cleanupOldBookings(opts){
           <div class="bk-party-num" id="bkPartyNum">2</div>
           <button class="bk-party-btn" onclick="bkParty(1)" aria-label="Increase">+</button>
         </div>
-        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px" data-lp="bk_min_max">Minimum 1 · Maximum 20</div>
+        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px" data-lp="bk_min_max">Minimum 1 · Maximum 30</div>
       </div>
       <!-- STEP 5: PICK ZONE + TABLE (v5.4) -->
       <div class="bk-step" id="bkStep5">
