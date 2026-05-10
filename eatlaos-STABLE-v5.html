@@ -1707,10 +1707,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
   body.sb-mobile-open .sb{transform:translateX(0);}
   /* Main no longer has sidebar margin on mobile */
   .staff-main{margin-left:0;}
-  /* Mobile bottom nav still works alongside */
-  .mob-sb{display:block;}
-  body{padding-bottom:70px;}
-  .body-p{padding:14px;padding-bottom:80px;}
+  /* Mobile bottom nav hidden — hamburger sidebar replaces it (no duplication) */
+  .mob-sb{display:none;}
+  body{padding-bottom:0;}
+  .body-p{padding:14px;}
   .topbar{padding:12px 14px;}
   .stats-row.s4{grid-template-columns:1fr 1fr;}
   .stats-row.s3{grid-template-columns:1fr 1fr;}
@@ -2409,6 +2409,59 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-stat-card.stat-booked .bk-stat-num{color:#7fe3a3;}
 .bk-stat-card.stat-pending .bk-stat-num{color:#ffd456;}
 .bk-stat-card.stat-noshow .bk-stat-num{color:#ff7a78;}
+/* Clickable stat card (Booked → opens today's map) */
+.bk-stat-card.stat-clickable{cursor:pointer;}
+.bk-stat-card.stat-clickable:hover{border-color:rgba(74,222,128,.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,222,128,.12);}
+.bk-stat-card.stat-clickable:active{transform:translateY(0);}
+.bk-stat-card.stat-clickable:focus-visible{outline:2px solid #4ade80;outline-offset:2px;}
+
+/* Owner Table Requirement section (Add/Edit Table modals) */
+.ow-tr-section{padding:12px 14px;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:8px;}
+.ow-tr-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--s-text);font-weight:500;}
+.ow-tr-toggle input[type="checkbox"]{flex-shrink:0;width:16px;height:16px;cursor:pointer;accent-color:#c8973a;}
+.ow-tr-body{margin-top:10px;animation:owTrFade .25s ease;}
+@keyframes owTrFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.ow-tr-text{resize:vertical;min-height:60px;font-family:var(--fb);font-size:13px;line-height:1.5;}
+.ow-tr-hint{margin-top:6px;font-size:11px;color:var(--s-muted);font-style:italic;line-height:1.5;}
+
+/* Customer-side: requirement notice in tiOpen popup */
+.ti-req-notice{margin:14px 0 4px;padding:12px 14px;background:linear-gradient(135deg,rgba(200,151,58,.1),rgba(200,151,58,.04));border:1px solid rgba(200,151,58,.3);border-left:3px solid #c8973a;border-radius:8px;text-align:left;}
+.ti-req-label{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#e0b55a;margin-bottom:6px;}
+.ti-req-text{font-size:13.5px;color:rgba(255,255,255,.92);line-height:1.55;font-weight:500;white-space:pre-wrap;word-break:break-word;}
+.bk-stat-cta{margin-top:6px;font-size:10.5px;font-weight:600;color:rgba(74,222,128,.75);letter-spacing:.5px;opacity:0;transform:translateY(2px);transition:all .25s;}
+.bk-stat-card.stat-clickable:hover .bk-stat-cta{opacity:1;transform:translateY(0);}
+@media(max-width:600px){
+  .bk-stat-cta{opacity:1;transform:none;font-size:10px;}
+}
+
+/* Owner Today Map modal — read-only viewer for today's booked tables */
+.ow-tm-shell{max-width:1100px;width:96vw;max-height:92vh;display:flex;flex-direction:column;}
+.ow-tm-body{padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px;flex:1;overflow:hidden;}
+.ow-tm-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.ow-tm-tabs:empty{display:none;}
+.ow-tm-tab{padding:8px 16px;background:transparent;border:1px solid var(--s-border);color:var(--s-muted);font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;transition:all .2s;font-family:var(--fb);}
+.ow-tm-tab:hover{color:var(--s-text);border-color:rgba(255,255,255,.18);}
+.ow-tm-tab.on{color:#0a0a0a;background:linear-gradient(135deg,#c8973a,#e0b55a);border-color:transparent;}
+.ow-tm-stats{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--s-muted);font-family:var(--fb);letter-spacing:.4px;}
+.ow-tm-stats b{color:var(--s-text);font-weight:700;font-size:14px;}
+.ow-tm-stats .ow-tm-stat-bk b{color:#ff7a78;}
+.ow-tm-stats .ow-tm-stat-free b{color:#7fe3a3;}
+.ow-tm-map{flex:1;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:340px;position:relative;}
+.ow-tm-map .fp-viewer-svg{width:100%;height:100%;display:block;}
+.ow-tm-empty{padding:40px 24px;text-align:center;color:var(--s-muted);font-size:13px;line-height:1.7;max-width:380px;}
+.ow-tm-empty-emoji{font-size:36px;margin-bottom:10px;display:block;}
+.ow-tm-legend{display:flex;gap:18px;font-size:11.5px;color:var(--s-muted);font-family:var(--fb);letter-spacing:.4px;justify-content:center;padding-top:4px;border-top:1px solid var(--s-border);margin-top:2px;padding-top:10px;}
+.ow-tm-leg-i{display:inline-flex;align-items:center;gap:7px;}
+.ow-tm-dot{width:11px;height:11px;border-radius:3px;border:1.5px solid;display:inline-block;}
+.ow-tm-dot.ow-tm-free{background:#c8973a;border-color:#f5c976;}
+.ow-tm-dot.ow-tm-bk{background:rgba(220,53,69,.22);border-color:rgba(220,53,69,.5);}
+@media(max-width:600px){
+  .ow-tm-shell{max-width:100vw;width:100vw;max-height:100dvh;height:100dvh;border-radius:0;}
+  .ow-tm-body{padding:10px 12px 12px;}
+  .ow-tm-stats{font-size:11px;gap:10px;}
+  .ow-tm-stats b{font-size:13px;}
+  .ow-tm-map{min-height:280px;}
+}
 .bk-stats-context{grid-column:1/-1;font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-align:center;letter-spacing:.3px;margin-top:2px;}
 @media(max-width:640px){
   .bk-stats-bar{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -3435,7 +3488,7 @@ setTimeout(function(){
               <div class="card-title">Tables &amp; QR Codes</div>
               <div style="display:flex;gap:8px">
                 <button class="btn" onclick="showBookingPanel()" id="btnShowBooking">📅 Bookings</button>
-                <button class="btn btn-gold" onclick="openModal('mOwAddTable')" data-ts="add_table">+ Add Table</button>
+                <button class="btn btn-gold" onclick="_resetAddTableModal();openModal('mOwAddTable')" data-ts="add_table">+ Add Table</button>
               </div>
             </div>
             <!-- BOOKING PANEL -->
@@ -3765,6 +3818,17 @@ setTimeout(function(){
           <option value="__custom__">+ Custom zone…</option>
         </select>
         <input class="fi" id="mTzoneCustom" placeholder="Type your custom zone" style="display:none;margin-top:6px">
+      </div>
+      <!-- Booking requirement (e.g. VIP table — must order 1 bottle) -->
+      <div class="ow-tr-section" style="margin-top:12px">
+        <label class="ow-tr-toggle">
+          <input type="checkbox" id="mTreqOn" onchange="_owTrToggle('mT')">
+          <span>Set booking requirement (e.g. VIP minimum order)</span>
+        </label>
+        <div class="ow-tr-body" id="mTreqBody" style="display:none">
+          <textarea class="fi ow-tr-text" id="mTreqText" maxlength="280" rows="3" placeholder="e.g. VIP table — must pre-order 1 bottle of whiskey"></textarea>
+          <div class="ow-tr-hint">Customers will see this in a popup when they tap this table to book.</div>
+        </div>
       </div>
     </div>
     <div class="modal-f"><button class="btn" onclick="closeModal('mOwAddTable')">Cancel</button><button class="btn btn-gold" onclick="saveOwTable()">Add Table</button></div>
@@ -6122,6 +6186,7 @@ const LP_TRANSLATIONS = {
     ti_seats_range:'Seats {min}–{max} people',
     ti_seats_upto:'Seats up to {n} people',
     ti_fits:'Fits your party of {n}',
+    ti_req_label:'Booking requirement',
     bk_contact:'Your details',
     bk_contact_sub:'You can check your booking status using your phone or code.',
     bk_name:'Full name',
@@ -6284,6 +6349,7 @@ const LP_TRANSLATIONS = {
     ti_seats_range:'ນັ່ງໄດ້ {min}–{max} ຄົນ',
     ti_seats_upto:'ນັ່ງໄດ້ສູງສຸດ {n} ຄົນ',
     ti_fits:'ເໝາະກັບກຸ່ມ {n} ຄົນຂອງທ່ານ',
+    ti_req_label:'ເງື່ອນໄຂການຈອງ',
     bk_contact:'ຂໍ້ມູນຂອງທ່ານ',
     bk_contact_sub:'ທ່ານສາມາດກວດສະຖານະການຈອງໄດ້ໂດຍໃຊ້ເບີໂທ ຫຼື ລະຫັດ.',
     bk_name:'ຊື່ເຕັມ',
@@ -6446,6 +6512,7 @@ const LP_TRANSLATIONS = {
     ti_seats_range:'นั่งได้ {min}–{max} คน',
     ti_seats_upto:'นั่งได้สูงสุด {n} คน',
     ti_fits:'เหมาะกับกลุ่ม {n} คนของคุณ',
+    ti_req_label:'เงื่อนไขการจอง',
     bk_contact:'ข้อมูลของคุณ',
     bk_contact_sub:'คุณสามารถตรวจสอบสถานะการจองได้โดยใช้เบอร์โทรหรือรหัส',
     bk_name:'ชื่อ-นามสกุล',
@@ -6608,6 +6675,7 @@ const LP_TRANSLATIONS = {
     ti_seats_range:'可坐 {min}–{max} 人',
     ti_seats_upto:'最多可坐 {n} 人',
     ti_fits:'适合您 {n} 人的聚会',
+    ti_req_label:'预订要求',
     bk_contact:'您的资料',
     bk_contact_sub:'您可以使用电话号码或预订码查询状态。',
     bk_name:'姓名',
@@ -6770,6 +6838,7 @@ const LP_TRANSLATIONS = {
     ti_seats_range:'{min}–{max}명 좌석',
     ti_seats_upto:'최대 {n}명 좌석',
     ti_fits:'{n}명 일행에 적합',
+    ti_req_label:'예약 조건',
     bk_contact:'연락처 정보',
     bk_contact_sub:'전화번호 또는 예약 코드로 상태를 확인할 수 있습니다.',
     bk_name:'성함',
@@ -9409,11 +9478,42 @@ async function saveOwTable(){
     const custom = (document.getElementById('mTzoneCustom')?.value || '').trim();
     zone = custom || 'Indoor';
   }
+  // Booking requirement (VIP minimum order, etc) — only saved if toggle is on AND text is non-empty
+  const reqOn = !!document.getElementById('mTreqOn')?.checked;
+  const reqText = (document.getElementById('mTreqText')?.value || '').trim();
+  const newTable = {id:'t'+Date.now(),num,seats:maxSeats,minSeats,maxSeats,zone};
+  if(reqOn && reqText){
+    newTable.bookingRequirement = reqText.slice(0, 280); // safety cap
+  }
   // Keep `seats` (= maxSeats) for backward compatibility
-  const sorted=sortTablesArray([...(r?.tables||[]),{id:'t'+Date.now(),num,seats:maxSeats,minSeats,maxSeats,zone}]);
+  const sorted=sortTablesArray([...(r?.tables||[]),newTable]);
   await fbUpdate('restaurants/'+restoId,{tables:sorted});
   closeModal('mOwAddTable');owTables();notifyD('✓ Table added');
 }
+
+/* Toggle the booking-requirement textarea visibility (used by both Add & Edit table modals).
+   prefix is 'mT' for Add, 'mEt' for Edit. */
+function _owTrToggle(prefix){
+  const onAdd = document.getElementById(prefix+'reqOn');
+  const onEdit = document.getElementById(prefix+'ReqOn');
+  const on = (onAdd && onAdd.checked) || (onEdit && onEdit.checked);
+  const body = document.getElementById(prefix+'reqBody') || document.getElementById(prefix+'ReqBody');
+  if(body) body.style.display = on ? '' : 'none';
+}
+
+/* Reset the Add Table modal fields before opening (so previous values don't leak through) */
+function _resetAddTableModal(){
+  const num = document.getElementById('mTnum'); if(num) num.value = '';
+  const minS = document.getElementById('mTminSeats'); if(minS) minS.value = '2';
+  const maxS = document.getElementById('mTseats'); if(maxS) maxS.value = '4';
+  const zone = document.getElementById('mTzone'); if(zone) zone.value = 'Indoor';
+  const zoneCustom = document.getElementById('mTzoneCustom');
+  if(zoneCustom){ zoneCustom.value = ''; zoneCustom.style.display = 'none'; }
+  const reqOn = document.getElementById('mTreqOn'); if(reqOn) reqOn.checked = false;
+  const reqText = document.getElementById('mTreqText'); if(reqText) reqText.value = '';
+  const reqBody = document.getElementById('mTreqBody'); if(reqBody) reqBody.style.display = 'none';
+}
+
 // ═══ TABLE BOOKING SYSTEM ═══
 let currentBookTab = 'today';
 
@@ -9678,6 +9778,14 @@ function openEditTableModal(idx){
         if(zoneCustom){ zoneCustom.style.display=''; zoneCustom.value=z; }
       }
     }
+    // Populate booking requirement (VIP minimum etc)
+    const reqOn = document.getElementById('mEtReqOn');
+    const reqText = document.getElementById('mEtReqText');
+    const reqBody = document.getElementById('mEtReqBody');
+    const hasReq = !!(t.bookingRequirement && t.bookingRequirement.trim());
+    if(reqOn) reqOn.checked = hasReq;
+    if(reqText) reqText.value = hasReq ? t.bookingRequirement : '';
+    if(reqBody) reqBody.style.display = hasReq ? '' : 'none';
     updateTablePreview();
     openModal('mEditTable');
   });
@@ -9752,6 +9860,15 @@ async function saveEditTable(){
   } else {
     // Owner cleared the min field — remove minSeats so it falls back to "up to N"
     delete updated.minSeats;
+  }
+  // Booking requirement (VIP minimum order, etc) — only saved if toggle is on AND text is non-empty
+  const reqOn = !!document.getElementById('mEtReqOn')?.checked;
+  const reqText = (document.getElementById('mEtReqText')?.value || '').trim();
+  if(reqOn && reqText){
+    updated.bookingRequirement = reqText.slice(0, 280); // safety cap
+  } else {
+    // Toggle off OR text empty → remove the requirement entirely
+    delete updated.bookingRequirement;
   }
   tables[idx] = updated;
   const sorted=sortTablesArray(tables);
@@ -12625,6 +12742,19 @@ function tiOpen(tableId){
     const tpl = _lp('ti_fits','Fits your party of {n}');
     fitEl.textContent = tpl.replace('{n}', bkState.party);
   }
+  // Booking requirement (e.g. VIP minimum order) — only show if set
+  const reqNotice = document.getElementById('tiReqNotice');
+  const reqText = document.getElementById('tiReqText');
+  if(reqNotice && reqText){
+    const req = (t.bookingRequirement || '').trim();
+    if(req){
+      reqText.textContent = req;
+      reqNotice.style.display = '';
+    } else {
+      reqNotice.style.display = 'none';
+      reqText.textContent = '';
+    }
+  }
   // Show modal
   const m = document.getElementById('mTableInfo');
   if(m){
@@ -13125,10 +13255,11 @@ function renderBkStats(){
       <div class="bk-stat-num">${totalTables}</div>
       <div class="bk-stat-lbl">${escapeHtml(lblTotal)}</div>
     </div>
-    <div class="bk-stat-card stat-booked">
+    <div class="bk-stat-card stat-booked stat-clickable" onclick="owOpenTodayMap()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();owOpenTodayMap();}" title="View today's booked tables on the map">
       <div class="bk-stat-icon">✅</div>
       <div class="bk-stat-num">${booked}</div>
       <div class="bk-stat-lbl">${escapeHtml(lblBooked)}</div>
+      <div class="bk-stat-cta">🗺️ View map →</div>
     </div>
     <div class="bk-stat-card stat-pending">
       <div class="bk-stat-icon">⏳</div>
@@ -13142,6 +13273,147 @@ function renderBkStats(){
     </div>
     <div class="bk-stats-context">${escapeHtml(contextTxt)}</div>
   `;
+}
+
+/* ─── Owner Today's Map: read-only floor plan viewer with today's booked tables ─── */
+let _owTmState = { areas:{}, tables:[], bookedTableIds:new Set(), activeArea:null, refreshTimer:null };
+
+async function owOpenTodayMap(){
+  if(typeof restoId === 'undefined' || !restoId){ notifyD('⚠ No restaurant loaded'); return; }
+  const map = document.getElementById('owTmMap');
+  const tabs = document.getElementById('owTmTabs');
+  const stats = document.getElementById('owTmStats');
+  if(!map) return;
+  // Show loading state immediately
+  map.innerHTML = `<div class="ow-tm-empty">${escapeHtml(_ts('bk_loading','Loading…'))}</div>`;
+  tabs.innerHTML = '';
+  stats.innerHTML = '';
+  openModal('mOwTodayMap');
+  try {
+    await _owTmFetchAndRender();
+    // Auto-refresh every 30s while modal is open (live updates)
+    if(_owTmState.refreshTimer) clearInterval(_owTmState.refreshTimer);
+    _owTmState.refreshTimer = setInterval(()=>{
+      const modal = document.getElementById('mOwTodayMap');
+      if(!modal || !modal.classList.contains('open')){
+        clearInterval(_owTmState.refreshTimer);
+        _owTmState.refreshTimer = null;
+        return;
+      }
+      _owTmFetchAndRender(true).catch(()=>{});
+    }, 30000);
+  } catch(e){
+    console.error('owOpenTodayMap:', e);
+    map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">⚠️</span>${escapeHtml(_ts('bk_err_load_tables','Could not load tables. Please try again.'))}</div>`;
+  }
+}
+
+async function _owTmFetchAndRender(silent){
+  // Fetch restaurant (for tables + floor plan) and today's bookings in parallel
+  const todayStr = (typeof _bkLocalISO === 'function') ? _bkLocalISO(new Date()) : new Date().toISOString().slice(0,10);
+  const [r, dayBookings] = await Promise.all([
+    fbGet('restaurants/'+restoId),
+    fbGetFiltered('bookings/'+restoId, 'date', todayStr)
+  ]);
+  if(!r){
+    document.getElementById('owTmMap').innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">⚠️</span>Could not load restaurant data.</div>`;
+    return;
+  }
+  const tables = Array.isArray(r.tables) ? r.tables : [];
+  const areas = _fpReadAreas(r);
+  // Compute booked table IDs for today (active bookings only — pending or accepted)
+  const bookedTableIds = new Set();
+  if(dayBookings){
+    Object.values(dayBookings).forEach(b=>{
+      // Defensive date check (in case fbGetFiltered fell back to full fetch)
+      if(b && b.date===todayStr && (b.status==='pending' || b.status==='accepted') && b.tableId){
+        bookedTableIds.add(b.tableId);
+      }
+    });
+  }
+  _owTmState.areas = areas;
+  _owTmState.tables = tables;
+  _owTmState.bookedTableIds = bookedTableIds;
+  // Pick first area if none selected, or keep current if it still exists
+  const areaSlugs = Object.keys(areas);
+  if(!_owTmState.activeArea || !areas[_owTmState.activeArea]){
+    _owTmState.activeArea = areaSlugs[0] || null;
+  }
+  // Update subtitle with restaurant name + today's date + last refresh
+  const sub = document.getElementById('owTmSub');
+  if(sub){
+    const niceDate = _owTmFormatDate(todayStr);
+    const refreshTxt = silent ? ` · ${_owTmRefreshLabel()}` : '';
+    sub.textContent = `${r.name || 'Restaurant'} · ${niceDate}${refreshTxt}`;
+  }
+  _owTmRenderAll();
+}
+
+function _owTmRefreshLabel(){
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  return `Updated ${hh}:${mm}`;
+}
+
+function _owTmFormatDate(iso){
+  try {
+    const [y,m,d] = iso.split('-').map(Number);
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+  } catch(e){ return iso; }
+}
+
+function _owTmRenderAll(){
+  const tabs = document.getElementById('owTmTabs');
+  const stats = document.getElementById('owTmStats');
+  const map = document.getElementById('owTmMap');
+  const areaSlugs = Object.keys(_owTmState.areas);
+  // Render tabs (only if multiple areas)
+  if(areaSlugs.length > 1){
+    tabs.innerHTML = areaSlugs.map(slug=>{
+      const a = _owTmState.areas[slug];
+      const cls = slug === _owTmState.activeArea ? 'on' : '';
+      return `<button class="ow-tm-tab ${cls}" onclick="_owTmPickArea('${escapeHtml(slug)}')">${escapeHtml(a.area || slug)}</button>`;
+    }).join('');
+  } else {
+    tabs.innerHTML = '';
+  }
+  // Render stats (booked count for active area + total today)
+  const activeArea = _owTmState.areas[_owTmState.activeArea];
+  let tablesInArea = [];
+  let bookedInArea = 0;
+  if(activeArea){
+    const tableIdsInArea = new Set();
+    (activeArea.elements || []).forEach(el => {
+      if(el.kind === 'table' && el.tableId) tableIdsInArea.add(el.tableId);
+    });
+    tablesInArea = _owTmState.tables.filter(t => tableIdsInArea.has(t.id));
+    tablesInArea.forEach(t => { if(_owTmState.bookedTableIds.has(t.id)) bookedInArea++; });
+  }
+  const freeInArea = Math.max(0, tablesInArea.length - bookedInArea);
+  stats.innerHTML = `
+    <div class="ow-tm-stat-bk">Booked: <b>${bookedInArea}</b></div>
+    <div class="ow-tm-stat-free">Free: <b>${freeInArea}</b></div>
+    <div>Total tables in area: <b>${tablesInArea.length}</b></div>
+  `;
+  // Render the map SVG using the existing customer-side renderer
+  if(!activeArea || !activeArea.elements || !activeArea.elements.length){
+    map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">🗺️</span>${escapeHtml(_ts('owtm_no_floorplan','No floor plan set up yet. Ask your administrator to design the table map.'))}</div>`;
+    return;
+  }
+  const svg = fpRenderCustomerView(activeArea, _owTmState.tables, _owTmState.bookedTableIds, new Set(), null);
+  if(!svg){
+    map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">🗺️</span>${escapeHtml(_ts('owtm_empty_area','This area has no tables placed on the map.'))}</div>`;
+    return;
+  }
+  map.innerHTML = svg;
+}
+
+function _owTmPickArea(slug){
+  if(!_owTmState.areas[slug]) return;
+  _owTmState.activeArea = slug;
+  _owTmRenderAll();
 }
 
 function renderOwnerBookings(){
@@ -13675,6 +13947,28 @@ async function cleanupOldBookings(opts){
   </div>
 </div>
 
+<!-- OWNER TODAY MAP — read-only floor plan viewer for today's booked tables -->
+<div class="modal-ov" id="mOwTodayMap" onclick="if(event.target===this)closeModal('mOwTodayMap')">
+  <div class="modal-box ow-tm-shell">
+    <div class="modal-h">
+      <div>
+        <div class="modal-title">🗺️ Today's Booked Tables</div>
+        <div class="modal-sub" id="owTmSub">Live view · today only</div>
+      </div>
+      <button class="modal-x" onclick="closeModal('mOwTodayMap')">✕</button>
+    </div>
+    <div class="ow-tm-body">
+      <div class="ow-tm-tabs" id="owTmTabs"></div>
+      <div class="ow-tm-stats" id="owTmStats"></div>
+      <div class="ow-tm-map" id="owTmMap"></div>
+      <div class="ow-tm-legend">
+        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-free"></span>Free</span>
+        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-bk"></span>Booked today</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT TABLE MODAL -->
 <div class="modal-ov" id="mEditTable">
   <div class="modal-box" style="max-width:420px">
@@ -13713,6 +14007,17 @@ async function cleanupOldBookings(opts){
         <div style="font-size:11px;color:var(--s-muted);margin-bottom:8px;letter-spacing:1px">PREVIEW</div>
         <div style="font-family:var(--ff);font-size:32px;font-weight:900;color:var(--s-text)" id="mEtPreviewNum">—</div>
         <div style="font-size:11px;color:var(--s-muted);margin-top:4px;letter-spacing:2px" id="mEtPreviewSeats">— SEATS</div>
+      </div>
+      <!-- Booking requirement (e.g. VIP table — must order 1 bottle) -->
+      <div class="ow-tr-section" style="margin-top:14px">
+        <label class="ow-tr-toggle">
+          <input type="checkbox" id="mEtReqOn" onchange="_owTrToggle('mEt')">
+          <span>Set booking requirement (e.g. VIP minimum order)</span>
+        </label>
+        <div class="ow-tr-body" id="mEtReqBody" style="display:none">
+          <textarea class="fi ow-tr-text" id="mEtReqText" maxlength="280" rows="3" placeholder="e.g. VIP table — must pre-order 1 bottle of whiskey"></textarea>
+          <div class="ow-tr-hint">Customers will see this in a popup when they tap this table to book.</div>
+        </div>
       </div>
     </div>
     <div class="modal-f">
@@ -13949,6 +14254,11 @@ async function cleanupOldBookings(opts){
         <div class="ti-icon" id="tiFitIcon">✓</div>
         <div class="ti-label" id="tiFit">—</div>
       </div>
+    </div>
+    <!-- Booking requirement notice (shown only if the table has one set) -->
+    <div class="ti-req-notice" id="tiReqNotice" style="display:none">
+      <div class="ti-req-label"><span>⭐</span><span data-lp="ti_req_label">Booking requirement</span></div>
+      <div class="ti-req-text" id="tiReqText">—</div>
     </div>
     <div class="ti-actions">
       <button class="ti-btn ti-btn-confirm" id="tiConfirmBtn" onclick="tiConfirm()" data-lp="ti_reserve">Reserve this table →</button>
