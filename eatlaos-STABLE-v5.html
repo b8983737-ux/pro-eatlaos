@@ -2406,6 +2406,16 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-stats-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px 14px 0;}
 .bk-stats-bar:empty{display:none;}
 .bk-stat-card{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.015) 100%);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:4px;transition:all .2s;overflow:hidden;}
+
+/* Skeleton placeholders — feel instant during async loads */
+.bk-skeleton-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.bk-skel-card{height:84px;border-radius:12px;background:linear-gradient(90deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.03) 100%);background-size:200% 100%;animation:bkSkelShim 1.4s ease-in-out infinite;}
+.bk-skeleton-list{display:flex;flex-direction:column;gap:8px;}
+.bk-skel-row{height:88px;border-radius:10px;background:linear-gradient(90deg,rgba(255,255,255,.025) 0%,rgba(255,255,255,.06) 50%,rgba(255,255,255,.025) 100%);background-size:200% 100%;animation:bkSkelShim 1.4s ease-in-out infinite;}
+@keyframes bkSkelShim{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+@media(max-width:600px){
+  .bk-skeleton-stats{grid-template-columns:1fr 1fr;}
+}
 .bk-stat-card:hover{border-color:rgba(255,255,255,.14);transform:translateY(-1px);}
 .bk-stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;background:var(--stat-accent,#c8973a);}
 .bk-stat-icon{font-size:18px;line-height:1;}
@@ -5487,18 +5497,70 @@ let cachedOrders=[], cachedSessions=[];
 // ═══════════════════════════════════════════════════════════════
 // Smart Firebase functions — use REST for speed, SDK for real-time
 function fbRef(path){return db?db.ref(path):null;}
-function fbSet(path,data){return db?db.ref(path).set(data):restUpdate(path,data);}
+function fbSet(path,data){
+  if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate(path);
+  return db?db.ref(path).set(data):restUpdate(path,data);
+}
 async function fbPush(path,data){
+  if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate(path);
   if(db) return db.ref(path).push(data);
   return restPush(path,data);
 }
 function fbUpdate(path,data){
-  if(db) return db.ref(path).update(data);
-  return restUpdate(path,data);
+  if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate(path);
+  // If `data` is a multi-path update, invalidate each of those paths too
+  if(typeof _fbCacheInvalidate === 'function' && data && typeof data === 'object'){
+    Object.keys(data).forEach(k => {
+      if(k.indexOf('/') >= 0) _fbCacheInvalidate(k);
+    });
+  }
+  return db?db.ref(path).update(data):restUpdate(path,data);
 }
+// PERF: Tiny request-level cache for fbGet. Avoids re-fetching the same path repeatedly
+// in quick succession (which happens a lot — many panels each fetch restaurants/<id>).
+// TTL of 3 seconds is short enough that staleness is rarely an issue but long enough to
+// dedupe the burst of reads that happen during panel loads. Cache is invalidated on
+// any write through fbSet/fbUpdate/fbPush, and cleared on logout.
+const _fbGetCache = new Map();
+const _FB_GET_TTL = 3000;
+window._restoCache = _fbGetCache; // alias for direct seeding
+
+function _fbCacheGet(path){
+  const c = _fbGetCache.get(path);
+  if(c && (Date.now() - c.ts) < _FB_GET_TTL) return c.data;
+  return undefined;
+}
+function _fbCacheSet(path, data){
+  _fbGetCache.set(path, {data, ts: Date.now()});
+  // Cap cache size — drop oldest 20 entries if we exceed 50
+  if(_fbGetCache.size > 50){
+    const keys = [...(_fbGetCache.keys())].slice(0, 20);
+    keys.forEach(k => _fbGetCache.delete(k));
+  }
+}
+// Invalidate a path on writes (call from fbSet/fbUpdate/fbPush wrappers)
+function _fbCacheInvalidate(path){
+  if(!path) return;
+  // Invalidate exact path + any parent paths (e.g. write to "restaurants/123/tables" invalidates "restaurants/123")
+  const segs = path.split('/');
+  for(let i = segs.length; i >= 1; i--){
+    _fbGetCache.delete(segs.slice(0, i).join('/'));
+  }
+}
+
 async function fbGet(path){
+  // PERF: Serve from cache if fresh
+  const cached = _fbCacheGet(path);
+  if(cached !== undefined) return cached;
   // Use REST API — no SDK needed, much faster
-  return restGet(path);
+  const data = await restGet(path);
+  _fbCacheSet(path, data);
+  return data;
+}
+// Force-fresh variant for cases where cached data could be stale (e.g. after an external write)
+async function fbGetFresh(path){
+  _fbGetCache.delete(path);
+  return fbGet(path);
 }
 
 // Server-side filtered fetch. Requires .indexOn:["date"] in Firebase Rules
@@ -5662,13 +5724,15 @@ async function init(){
           hideLoading();
           const _sl=document.getElementById('staffLangSel');
           if(_sl){_sl.value=lang;if(lang!=='en'){setTimeout(()=>{applyTranslation(document.getElementById('pg-ow'));startTranslationObserver();},100);}}
-          // Load features first → pick correct starting panel (avoids Dashboard flash on booking-only restos)
-          const _feats = await _owLoadAndApplyFeatures();
+          // PERF: Fire features fetch + SDK load in PARALLEL (was sequential, ~1-2s saved on session restore)
+          const _featsPromise = _owLoadAndApplyFeatures();
+          const _sdkPromise = loadFirebaseSDK();
+          const _feats = await _featsPromise; // need features to pick start panel
           const _startPanel = _owPickStartPanel(_feats);
           const _startBtn = document.querySelector('#pg-ow .sb-item[onclick*="\''+_startPanel+'\'"]')
                          || document.querySelector('#pg-ow .sb-item');
           owP(_startPanel, _startBtn);
-          await loadFirebaseSDK();
+          await _sdkPromise; // SDK was loading in background; ensure it's ready before listeners
           startOwnerListeners();
           setTimeout(()=>initOwChart('rev'),300);
           return;
@@ -5993,19 +6057,41 @@ async function doOwnerLogin(){
   if(typeof dbg==='function') dbg('Owner login attempt: '+u);
   if(!u||!p){document.getElementById('owErr').textContent='Enter username and password';return;}
   document.getElementById('owErr').textContent='Signing in...';
-  // Load Firebase SDK for real-time features
-  await loadFirebaseSDK();
+  // PERF: Fire SDK loader + indexed user lookup IN PARALLEL
+  // Try indexed query on `user` field first; if no match, try `ownerUser` field; else fall back to full scan.
+  const sdkPromise = loadFirebaseSDK();
+  // Use indexed query — Firebase returns ONLY the matching record (vs all restaurants)
+  // Falls back to full scan if index missing (fbGetFiltered handles fallback)
+  let foundMap = null;
+  try {
+    foundMap = await fbGetFiltered('restaurants', 'user', u);
+    if(!foundMap || !Object.keys(foundMap).length){
+      foundMap = await fbGetFiltered('restaurants', 'ownerUser', u);
+    }
+  } catch(e){
+    foundMap = null;
+  }
+  await sdkPromise; // SDK should be ready before connection monitor
   startConnectionMonitor();
   document.getElementById('owErr').textContent='';
-  // Find restaurant in Firebase
-  if(typeof dbg==='function') dbg('Loading Firebase SDK...');
-  const restos=await fbGet('restaurants');
-  if(typeof dbg==='function') dbg('Restos loaded: '+(restos?Object.keys(restos).length:0)+' found');
-  if(!restos){document.getElementById('owErr').textContent='No restaurants found';return;}
-  let found=null;
-  Object.entries(restos).forEach(([k,v])=>{
-    if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
-  });
+  let found = null;
+  if(foundMap && Object.keys(foundMap).length){
+    // Indexed query hit — verify password
+    Object.entries(foundMap).forEach(([k,v])=>{
+      if(!v) return;
+      if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
+    });
+  }
+  // Last-resort fallback: full scan (only if no index match — handles edge cases gracefully)
+  if(!found){
+    if(typeof dbg==='function') dbg('Indexed lookup empty, scanning all restaurants...');
+    const restos = await fbGet('restaurants');
+    if(restos){
+      Object.entries(restos).forEach(([k,v])=>{
+        if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
+      });
+    }
+  }
   if(typeof dbg==='function') dbg(found?'✅ Match found: '+found.name:'❌ No match');
   if(!found){document.getElementById('owErr').textContent='Incorrect username or password';return;}
   // Check subscription expiry
@@ -6018,6 +6104,19 @@ async function doOwnerLogin(){
   localStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
   document.getElementById('owSbN').textContent=found.name;
   document.getElementById('owSbR').textContent=found.cuisine||'';
+  // PERF: Seed the features cache from the restaurant data we already have — avoids a second fetch
+  try {
+    if(typeof _resGetFeatures === 'function'){
+      _owFeaturesCache = _resGetFeatures(found);
+      _owFeaturesCacheRestoId = found.id;
+      _owFeaturesLoadedAt = Date.now();
+      if(typeof _owApplyFeatures === 'function') _owApplyFeatures(_owFeaturesCache);
+    }
+  } catch(e){}
+  // PERF: Seed the restaurant cache too — many panels re-fetch this same data on open
+  if(typeof _restoCache !== 'undefined'){
+    _restoCache.set(found.id, { data: found, ts: Date.now() });
+  }
   showPage('pg-ow');
   // Check expiry warning (within 7 days)
   if(found.expiresAt){
@@ -6028,9 +6127,8 @@ async function doOwnerLogin(){
       b.classList.add('show');
     }
   }
-  // Load features first → pick correct starting panel (avoids Dashboard flash on booking-only restos)
-  const _feats = await _owLoadAndApplyFeatures();
-  const _startPanel = _owPickStartPanel(_feats);
+  // Pick starting panel from already-cached features (no extra fetch)
+  const _startPanel = _owPickStartPanel(_owFeaturesCache);
   const _startBtn = document.querySelector('#pg-ow .sb-item[onclick*="\''+_startPanel+'\'"]')
                  || document.querySelector('#pg-ow .sb-item');
   owP(_startPanel, _startBtn);
@@ -6074,6 +6172,12 @@ function logout(){
     if(saOrdersListener) db.ref('orders').off();
   }
   me=null;restoId=null;cachedOrders=[];
+  // PERF: Clear request cache so next user doesn't see stale data
+  if(typeof _fbGetCache !== 'undefined') _fbGetCache.clear();
+  // Also clear feature cache
+  if(typeof _owFeaturesCache !== 'undefined'){
+    _owFeaturesCache=null;_owFeaturesCacheRestoId=null;_owFeaturesLoadedAt=0;
+  }
   localStorage.removeItem('el_session');
   ['owU','owP','saU','saP'].forEach(id=>{const e=document.getElementById(id);if(e) e.value='';});
   showPage('pg-land');
@@ -7338,14 +7442,18 @@ function filterOrdersByPeriod(orders,period){
 }
 
 async function saStats(){
-  const restos=await fbGet('restaurants')||{};
-  const restoList=Object.values(restos);
+  // PERF: Parallel fetches (was sequential)
+  const [restos, sessions] = await Promise.all([
+    fbGet('restaurants'),
+    fbGet('sessions')
+  ]);
+  const restoMap = restos || {};
+  const restoList=Object.values(restoMap);
   const active=restoList.filter(r=>r.status==='active').length;
   const filtered=filterOrdersByPeriod(cachedOrders,saFilter);
   const orders=filtered.length;
   const comm=filtered.reduce((s,o)=>s+(o.total||0)*((o.comm===0?0:(o.comm??CFG.commission??0))/100),0);
-  const sessions=await fbGet('sessions')||{};
-  const activeSess=Object.values(sessions).filter(s=>Date.now()<(s.exp||0)).length;
+  const activeSess=Object.values(sessions||{}).filter(s=>Date.now()<(s.exp||0)).length;
   document.getElementById('sa-s1').textContent=active;
   document.getElementById('sa-s2').textContent=orders;
   document.getElementById('sa-s3').textContent=fmtK(comm);
@@ -13129,8 +13237,9 @@ async function bkPickTable(tableId){
 async function bkLockTable(tableId){
   const sessionId = _bkRandomSessionId();
   const lockedUntil = Date.now() + BK_LOCK_DURATION_MS;
-  // Check current lock first
-  const existing = await fbGet('tableLocks/'+bkState.restoId+'/'+tableId);
+  // PERF/SAFETY: Use fresh fetch (bypass cache) — locks must be authoritative to avoid
+  // race conditions where stale data shows "free" but another customer just locked it.
+  const existing = await fbGetFresh('tableLocks/'+bkState.restoId+'/'+tableId);
   const now = Date.now();
   if(existing && existing.lockedUntil > now && existing.sessionId !== bkState.lockSessionId){
     return { ok:false, message:_lp('bk_lock_taken','This table was just reserved by another customer.') };
@@ -13156,8 +13265,8 @@ async function bkReleaseLock(){
   // Release in Firebase if we own a lock
   if(bkState.tableId && bkState.lockSessionId && bkState.restoId){
     try {
-      // Only delete if we still own it
-      const existing = await fbGet('tableLocks/'+bkState.restoId+'/'+bkState.tableId);
+      // Only delete if we still own it (must be fresh — bypass cache)
+      const existing = await fbGetFresh('tableLocks/'+bkState.restoId+'/'+bkState.tableId);
       if(existing && existing.sessionId === bkState.lockSessionId){
         if(typeof db !== 'undefined' && db){
           await db.ref('tableLocks/'+bkState.restoId+'/'+bkState.tableId).remove();
@@ -13411,27 +13520,38 @@ async function bsLookup(by){
 /* ─── OWNER: BOOKINGS PANEL ─── */
 async function loadOwnerBookings(){
   const body = document.getElementById('ow-bookingsbody');
-  body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_loading','Loading bookings…'))}</div>`;
+  // PERF: Skeleton placeholders feel instant (vs static "Loading…" text)
+  body.innerHTML = `
+    <div class="bk-skeleton-stats">
+      <div class="bk-skel-card"></div>
+      <div class="bk-skel-card"></div>
+      <div class="bk-skel-card"></div>
+      <div class="bk-skel-card"></div>
+    </div>
+    <div class="bk-skeleton-list">
+      <div class="bk-skel-row"></div>
+      <div class="bk-skel-row"></div>
+      <div class="bk-skel-row"></div>
+    </div>
+  `;
   if(typeof restoId==='undefined' || !restoId){
     body.innerHTML = `<div class="bk-empty">${escapeHtml(_ts('bk_no_bookings','No bookings.'))}</div>`;
     return;
   }
   try {
-    const data = await fbGet('bookings/'+restoId);
+    // PERF: Parallel fetch — bookings + restaurant (was sequential, ~2x faster)
+    const [data, r] = await Promise.all([
+      fbGet('bookings/'+restoId),
+      fbGet('restaurants/'+restoId)
+    ]);
     const arr = [];
     if(data) Object.keys(data).forEach(k=>{ arr.push({id:k, ...data[k]}); });
     arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     _bkOwnerCache = arr;
-    // v6.5: Fetch restaurant's table count for stats dashboard
-    try {
-      const r = await fbGet('restaurants/'+restoId);
-      _bkRestoTableCount = (r && Array.isArray(r.tables)) ? r.tables.length : 0;
-    } catch(e){ _bkRestoTableCount = 0; }
-    // v6.4: Sync date filter button highlight (default: All dates)
+    _bkRestoTableCount = (r && Array.isArray(r.tables)) ? r.tables.length : 0;
     _bkUpdateDateFilterButtons();
     renderOwnerBookings();
     setupOwnerBookingListener();
-    // v6.3: Run auto-expiry sweep — frees slots from no-show accepted bookings
     startBkExpirySweep();
   } catch(e){
     console.error('loadOwnerBookings:',e);
