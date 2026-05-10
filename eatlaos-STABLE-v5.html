@@ -1368,7 +1368,11 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .tcard{background:var(--s-surf2);border:1px solid var(--s-border);text-align:center;position:relative;transition:all .25s;border-radius:8px;overflow:hidden;}
 .tcard:hover{border-color:var(--s-gold);box-shadow:0 4px 16px rgba(0,0,0,.2);}
 .tcard.occ{border-color:var(--s-green);box-shadow:0 0 0 1px var(--s-green);}
+.tcard.walkin{border-color:#60a5fa;box-shadow:0 0 0 1px rgba(96,165,250,.4);}
 .tcard.booked{border-color:#f59e0b;box-shadow:0 0 0 1px #f59e0b;}
+/* Walk-in modal quick-pick chips */
+.wi-quick{font-size:11px;padding:6px 12px;}
+.wi-quick.on{background:rgba(96,165,250,.15);border-color:#60a5fa;color:#60a5fa;}
 .tcard-num{font-family:var(--ff);font-size:30px;font-weight:900;line-height:1;margin-bottom:2px;}
 .tcard-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);}
 .tcard-info{font-size:10px;margin-top:6px;}
@@ -2011,6 +2015,16 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .sl-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--s-muted);font-weight:600;}
 .sl-input{background:var(--s-surf);border:1px solid var(--s-border);color:var(--s-text);padding:14px 16px;font-size:15px;font-family:var(--fb);outline:none;border-radius:8px;transition:border-color .2s;}
 .sl-input:focus{border-color:var(--s-gold);box-shadow:0 0 0 3px rgba(200,151,58,.1);}
+/* Password field with show/hide eye button */
+.sl-pass-wrap{position:relative;}
+.sl-input-pass{padding-right:48px;width:100%;box-sizing:border-box;}
+.sl-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:none;background:transparent;color:var(--s-muted);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .15s;padding:0;}
+.sl-eye:hover{color:var(--s-gold);background:rgba(200,151,58,.08);}
+.sl-eye.on{color:var(--s-gold);}
+/* Remember-me checkbox row */
+.sl-remember{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--s-muted);cursor:pointer;user-select:none;margin-top:2px;}
+.sl-remember input{width:16px;height:16px;cursor:pointer;accent-color:var(--s-gold);margin:0;}
+.sl-remember:hover{color:var(--s-text);}
 .sl-btn{height:52px;background:var(--s-gold);color:#000;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:var(--fb);transition:all .25s;border-radius:8px;letter-spacing:.3px;margin-top:4px;}
 .sl-btn:hover{background:var(--s-gold2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,151,58,.3);}
 .sl-err{color:var(--s-red);font-size:13px;text-align:center;min-height:20px;}
@@ -2371,6 +2385,12 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-sum-vip-req-h{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#e0b455;margin-bottom:6px;}
 .bk-sum-vip-req-text{font-size:13px;color:#fff;line-height:1.5;font-weight:500;white-space:pre-wrap;word-break:break-word;margin-bottom:8px;}
 .bk-sum-vip-req-note{font-size:11px;color:rgba(255,255,255,.7);font-style:italic;line-height:1.4;}
+/* Customer note block — shown on success screen for record */
+.bk-sum-note{margin-top:12px;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;}
+.bk-sum-note-h{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:6px;}
+.bk-sum-note-text{font-size:13px;color:#fff;line-height:1.5;font-weight:500;white-space:pre-wrap;word-break:break-word;}
+/* Success-screen summary — slightly different layout (sits inside .bk-success column flow) */
+.bk-summary-success{margin-top:18px;margin-bottom:18px;text-align:left;}
 .bk-actions{display:flex;gap:10px;}
 .bk-btn{flex:1;height:50px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.2px;}
 .bk-btn-back{background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1);}
@@ -2667,7 +2687,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.booked,.fp-vw-table.locked{opacity:.5;}
 /* Fixed elements — minimal styling, recede slightly */
 .fp-vw-fixed .fp-vw-el-shape{stroke:rgba(255,255,255,.08);stroke-width:1;opacity:.9;}
-.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:26px;font-weight:800;fill:#1a1209;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:32px;font-weight:800;fill:#1a1209;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
 .fp-vw-hit{cursor:pointer;}
 .fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
 .fp-vw-table.selected .fp-vw-tnum{fill:#1a1209;}
@@ -2677,10 +2697,10 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.5);stroke-width:1.5;}
 .fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.7);stroke-width:1.5;}
 .fp-vw-table.vip.selected .fp-vw-el-shape{fill:#fff;stroke:#f59e0b;stroke-width:3;}
-.fp-vw-vip-crown{font-size:16px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
+.fp-vw-vip-crown{font-size:20px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 .fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
 .fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:800;}
-.fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:14px;font-weight:600;fill:rgba(255,255,255,.75);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:.5px;paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:2px;stroke-linejoin:round;}
+.fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:18px;font-weight:700;fill:rgba(255,255,255,.85);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:.4px;paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2.5px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
@@ -3147,10 +3167,17 @@ setTimeout(function(){
             <input class="sl-input" id="owU" placeholder="Enter your username" autocomplete="username" onkeydown="if(event.key==='Enter')doOwnerLogin()">
           </div>
           <div class="sl-field">
-            <label class="sl-label">Password</label>
-            <input class="sl-input" type="password" id="owP" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doOwnerLogin()">
+            <label class="sl-label" data-ts="ow_login_password">Password</label>
+            <div class="sl-pass-wrap">
+              <input class="sl-input sl-input-pass" type="password" id="owP" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doOwnerLogin()">
+              <button type="button" class="sl-eye" id="owEye" onclick="_owTogglePassword()" aria-label="Show password" data-ts="ow_show_pass" title="Show password">👁</button>
+            </div>
           </div>
-          <button class="sl-btn" onclick="doOwnerLogin()">Sign In →</button>
+          <label class="sl-remember">
+            <input type="checkbox" id="owRemember" onchange="_owOnRememberChange(this)">
+            <span data-ts="ow_remember_me">Remember password</span>
+          </label>
+          <button class="sl-btn" onclick="doOwnerLogin()" data-ts="ow_signin">Sign In →</button>
           <div class="sl-err" id="owErr"></div>
         </div>
         <div class="sl-footer">EATLAOS Restaurant Platform · Vientiane, Laos</div>
@@ -4409,6 +4436,11 @@ const STAFF_T={
     owtm_stat_total:'Total tables in area',
     owtm_leg_free:'Free',
     owtm_leg_booked:'Booked',
+    ow_login_password:'Password',
+    ow_signin:'Sign In →',
+    ow_remember_me:'Remember password',
+    ow_show_pass:'Show password',
+    ow_hide_pass:'Hide password',
     // v5.5: Floor plan editor (SA only)
     fp_title:'Floor Plan Editor',
     fp_save:'💾 Save',
@@ -4422,6 +4454,20 @@ const STAFF_T={
     fp_t_vip_square:'VIP Square',
     fp_t_vip_round:'VIP Round',
     fp_t_vip_rect:'VIP Rectangle',
+    wi_title:'Walk-in only',
+    wi_subtitle:'Mark this table as walk-in only for a date range',
+    wi_quick_pick:'Quick pick',
+    wi_today:'Today',
+    wi_tomorrow:'Tomorrow',
+    wi_7days:'Next 7 days',
+    wi_30days:'Next 30 days',
+    wi_from:'From date',
+    wi_until:'Until date',
+    wi_hint:'During this period, customers won\'t be able to book this table online. It stays available for walk-in customers at the restaurant.',
+    wi_currently_locked:'Currently walk-in:',
+    wi_cancel:'Cancel',
+    wi_unlock:'Unlock now',
+    wi_save:'🚶 Save',
     fp_fixed:'Fixed Elements',
     fp_counter:'Counter',
     fp_toilet:'Toilet',
@@ -4562,6 +4608,11 @@ const STAFF_T={
     owtm_stat_total:'ໂຕະທັງໝົດໃນເຂດ',
     owtm_leg_free:'ວ່າງ',
     owtm_leg_booked:'ຖືກຈອງ',
+    ow_login_password:'ລະຫັດຜ່ານ',
+    ow_signin:'ເຂົ້າລະບົບ →',
+    ow_remember_me:'ຈື່ລະຫັດຜ່ານ',
+    ow_show_pass:'ສະແດງລະຫັດຜ່ານ',
+    ow_hide_pass:'ເຊື່ອງລະຫັດຜ່ານ',
     // v5.5: Floor plan editor (SA only)
     fp_title:'ຕົວແກ້ໄຂແຜນຜັງຮ້ານ',
     fp_save:'💾 ບັນທຶກ',
@@ -4575,6 +4626,20 @@ const STAFF_T={
     fp_t_vip_square:'VIP ສີ່ຫຼ່ຽມ',
     fp_t_vip_round:'VIP ມົນ',
     fp_t_vip_rect:'VIP ສີ່ຫຼ່ຽມຍາວ',
+    wi_title:'Walk-in ເທົ່ານັ້ນ',
+    wi_subtitle:'ໝາຍໂຕະນີ້ເປັນ walk-in ສຳລັບຊ່ວງວັນທີ',
+    wi_quick_pick:'ເລືອກໄວ',
+    wi_today:'ມື້ນີ້',
+    wi_tomorrow:'ມື້ອື່ນ',
+    wi_7days:'7 ມື້ຕໍ່ມາ',
+    wi_30days:'30 ມື້ຕໍ່ມາ',
+    wi_from:'ຈາກວັນທີ',
+    wi_until:'ຈົນຮອດວັນທີ',
+    wi_hint:'ໃນຊ່ວງເວລານີ້ ລູກຄ້າຈະບໍ່ສາມາດຈອງໂຕະນີ້ອອນລາຍ. ໂຕະຍັງມີໄວ້ສຳລັບ walk-in ຢູ່ຮ້ານ.',
+    wi_currently_locked:'Walk-in ປະຈຸບັນ:',
+    wi_cancel:'ຍົກເລີກ',
+    wi_unlock:'ປົດລັອກໂລດ',
+    wi_save:'🚶 ບັນທຶກ',
     fp_fixed:'ສິ່ງປະກອບ',
     fp_counter:'ເຄົາເຕີ',
     fp_toilet:'ຫ້ອງນ້ຳ',
@@ -4715,6 +4780,11 @@ const STAFF_T={
     owtm_stat_total:'โต๊ะทั้งหมดในโซน',
     owtm_leg_free:'ว่าง',
     owtm_leg_booked:'จองแล้ว',
+    ow_login_password:'รหัสผ่าน',
+    ow_signin:'เข้าสู่ระบบ →',
+    ow_remember_me:'จดจำรหัสผ่าน',
+    ow_show_pass:'แสดงรหัสผ่าน',
+    ow_hide_pass:'ซ่อนรหัสผ่าน',
     // v5.5: Floor plan editor (SA only)
     fp_title:'ตัวแก้ไขแผนผังร้าน',
     fp_save:'💾 บันทึก',
@@ -4728,6 +4798,20 @@ const STAFF_T={
     fp_t_vip_square:'VIP สี่เหลี่ยม',
     fp_t_vip_round:'VIP กลม',
     fp_t_vip_rect:'VIP สี่เหลี่ยมผืนผ้า',
+    wi_title:'Walk-in เท่านั้น',
+    wi_subtitle:'กำหนดโต๊ะนี้เป็น walk-in สำหรับช่วงวันที่',
+    wi_quick_pick:'เลือกด่วน',
+    wi_today:'วันนี้',
+    wi_tomorrow:'พรุ่งนี้',
+    wi_7days:'7 วันข้างหน้า',
+    wi_30days:'30 วันข้างหน้า',
+    wi_from:'ตั้งแต่วันที่',
+    wi_until:'ถึงวันที่',
+    wi_hint:'ในช่วงเวลานี้ ลูกค้าจะไม่สามารถจองโต๊ะนี้ออนไลน์ได้ โต๊ะยังคงเปิดให้ walk-in ที่ร้าน',
+    wi_currently_locked:'Walk-in ปัจจุบัน:',
+    wi_cancel:'ยกเลิก',
+    wi_unlock:'ปลดล็อกตอนนี้',
+    wi_save:'🚶 บันทึก',
     fp_fixed:'องค์ประกอบคงที่',
     fp_counter:'เคาน์เตอร์',
     fp_toilet:'ห้องน้ำ',
@@ -4868,6 +4952,11 @@ const STAFF_T={
     owtm_stat_total:'区域内桌位总数',
     owtm_leg_free:'空闲',
     owtm_leg_booked:'已预订',
+    ow_login_password:'密码',
+    ow_signin:'登录 →',
+    ow_remember_me:'记住密码',
+    ow_show_pass:'显示密码',
+    ow_hide_pass:'隐藏密码',
     // v5.5: Floor plan editor (SA only)
     fp_title:'平面图编辑器',
     fp_save:'💾 保存',
@@ -4881,6 +4970,20 @@ const STAFF_T={
     fp_t_vip_square:'VIP 方形',
     fp_t_vip_round:'VIP 圆形',
     fp_t_vip_rect:'VIP 长方形',
+    wi_title:'仅限堂食',
+    wi_subtitle:'将此桌位标记为仅限堂食的日期范围',
+    wi_quick_pick:'快速选择',
+    wi_today:'今天',
+    wi_tomorrow:'明天',
+    wi_7days:'未来 7 天',
+    wi_30days:'未来 30 天',
+    wi_from:'起始日期',
+    wi_until:'结束日期',
+    wi_hint:'在此期间内,客户无法在线预订此桌位。此桌位仍可供到店的堂食客人使用。',
+    wi_currently_locked:'当前堂食:',
+    wi_cancel:'取消',
+    wi_unlock:'立即解锁',
+    wi_save:'🚶 保存',
     fp_fixed:'固定元素',
     fp_counter:'柜台',
     fp_toilet:'洗手间',
@@ -5037,6 +5140,11 @@ const STAFF_T={
     owtm_stat_total:'구역 내 전체 테이블',
     owtm_leg_free:'이용 가능',
     owtm_leg_booked:'예약됨',
+    ow_login_password:'비밀번호',
+    ow_signin:'로그인 →',
+    ow_remember_me:'비밀번호 기억',
+    ow_show_pass:'비밀번호 표시',
+    ow_hide_pass:'비밀번호 숨기기',
     // v5.5: Floor plan editor (SA only)
     fp_title:'평면도 편집기',
     fp_save:'💾 저장',
@@ -5050,6 +5158,20 @@ const STAFF_T={
     fp_t_vip_square:'VIP 정사각형',
     fp_t_vip_round:'VIP 원형',
     fp_t_vip_rect:'VIP 직사각형',
+    wi_title:'워크인 전용',
+    wi_subtitle:'이 테이블을 특정 날짜 범위 동안 워크인 전용으로 설정',
+    wi_quick_pick:'빠른 선택',
+    wi_today:'오늘',
+    wi_tomorrow:'내일',
+    wi_7days:'다음 7일',
+    wi_30days:'다음 30일',
+    wi_from:'시작 날짜',
+    wi_until:'종료 날짜',
+    wi_hint:'이 기간에는 고객이 이 테이블을 온라인으로 예약할 수 없습니다. 테이블은 매장 워크인 손님을 위해 유지됩니다.',
+    wi_currently_locked:'현재 워크인:',
+    wi_cancel:'취소',
+    wi_unlock:'지금 잠금 해제',
+    wi_save:'🚶 저장',
     fp_fixed:'고정 요소',
     fp_counter:'카운터',
     fp_toilet:'화장실',
@@ -5695,8 +5817,12 @@ async function init(){
     const p=new URLSearchParams(window.location.search);
     const isCustomer=p.get('qr')==='1';
     // Check saved session FIRST — avoid pg-land flash for logged-in users
+    // SECURITY: session lives in sessionStorage (per-tab). Closing tab = login again.
+    // Banking-style isolation: each tab is independent.
     if(!isCustomer){
-      const _saved=localStorage.getItem('el_session');
+      // One-time cleanup: remove any old localStorage session left over from before this change
+      try { if(localStorage.getItem('el_session')) localStorage.removeItem('el_session'); } catch(e){}
+      const _saved=sessionStorage.getItem('el_session');
       if(!_saved){
         // Check if SA admin URL — show SA login instead of landing
         if(p.get('admin')==='EatLaos2026SecretAdmin'){
@@ -5769,7 +5895,7 @@ async function init(){
       return;
     }
     // ADMIN PATH: check session FIRST (instant, no Firebase needed)
-    const saved=localStorage.getItem('el_session');
+    const saved=sessionStorage.getItem('el_session');
     if(saved){
       try{
         const ss=JSON.parse(saved);
@@ -5802,7 +5928,7 @@ async function init(){
           setTimeout(()=>initOwChart('rev'),300);
           return;
         }
-      }catch(e){localStorage.removeItem('el_session');}
+      }catch(e){sessionStorage.removeItem('el_session');}
     }
     // No session — load Firebase then show login
     dbg('No session — loading Firebase');
@@ -6113,6 +6239,61 @@ function showPage(id){
   if(btn) btn.style.display=id==='pg-customer'?'none':'block';
   var panel=document.getElementById('debugPanel');
   if(panel&&id==='pg-customer') panel.style.display='none';
+  // Owner login: prefill from "remember me" if previously checked
+  if(id === 'pg-owner-login') _owPrefillRemember();
+}
+
+/* ─── Owner login: password show/hide + Remember me ───────────────────
+   Remember me stores both username and password in localStorage so the
+   form auto-fills next visit. Trade-off: convenience vs security.
+   Per-tab session (sessionStorage) still applies — a fresh tab still
+   needs to click "Sign In" even if fields are pre-filled. */
+
+function _owTogglePassword(){
+  const inp = document.getElementById('owP');
+  const btn = document.getElementById('owEye');
+  if(!inp) return;
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    if(btn){ btn.textContent = '🙈'; btn.classList.add('on'); btn.title = _ts('ow_hide_pass','Hide password'); btn.setAttribute('aria-label','Hide password'); }
+  } else {
+    inp.type = 'password';
+    if(btn){ btn.textContent = '👁'; btn.classList.remove('on'); btn.title = _ts('ow_show_pass','Show password'); btn.setAttribute('aria-label','Show password'); }
+  }
+}
+
+function _owPrefillRemember(){
+  try {
+    const raw = localStorage.getItem('el_remember_owner');
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(!data || typeof data !== 'object') return;
+    const uEl = document.getElementById('owU');
+    const pEl = document.getElementById('owP');
+    const cEl = document.getElementById('owRemember');
+    // Only prefill empty fields — don't overwrite what user already typed
+    if(uEl && data.user && !uEl.value) uEl.value = data.user;
+    if(pEl && data.pass && !pEl.value) pEl.value = data.pass;
+    if(cEl) cEl.checked = true;
+  } catch(e){ /* ignore corrupt data */ }
+}
+
+function _owSaveRememberOnLogin(u, p){
+  try {
+    const cEl = document.getElementById('owRemember');
+    if(cEl && cEl.checked){
+      localStorage.setItem('el_remember_owner', JSON.stringify({ user: u, pass: p }));
+    } else {
+      localStorage.removeItem('el_remember_owner');
+    }
+  } catch(e){}
+}
+
+// If user unchecks the box, immediately clear stored credentials (don't wait for next login)
+function _owOnRememberChange(cb){
+  if(cb && !cb.checked){
+    try { localStorage.removeItem('el_remember_owner'); } catch(e){}
+  }
 }
 
 async function doOwnerLogin(){
@@ -6166,7 +6347,11 @@ async function doOwnerLogin(){
   }
   me={name:u,role:'owner',restoId:found.id,restoName:found.name};
   restoId=found.id;
-  localStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
+  sessionStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
+  // Initialize activity timestamp (cross-tab, used by 8h idle timeout)
+  try { localStorage.setItem('el_last_activity', String(Date.now())); } catch(e){}
+  // Save (or clear) "Remember me" credentials based on checkbox state
+  _owSaveRememberOnLogin(u, p);
   document.getElementById('owSbN').textContent=found.name;
   document.getElementById('owSbR').textContent=found.cuisine||'';
   // PERF: Seed the features cache from the restaurant data we already have — avoids a second fetch
@@ -6217,7 +6402,8 @@ async function doSALogin(){
   if(u===SA_USER&&p===SA_PASS){
     if(typeof dbg==='function') dbg('✅ SA login success');
     me={name:'Super Admin',role:'superadmin'};
-    localStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
+    sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
+    try { localStorage.setItem('el_last_activity', String(Date.now())); } catch(e){}
     showPage('pg-sa');
     saP('dashboard',document.querySelector('#pg-sa .sb-item'));
     startSAListeners();
@@ -6236,6 +6422,8 @@ function logout(){
     if(owOrdersListener) db.ref('orders').off();
     if(saOrdersListener) db.ref('orders').off();
   }
+  // Capture role BEFORE clearing me — used to pick the correct destination
+  const wasRole = me?.role || null;
   me=null;restoId=null;cachedOrders=[];
   // PERF: Clear request cache so next user doesn't see stale data
   if(typeof _fbGetCache !== 'undefined') _fbGetCache.clear();
@@ -6243,10 +6431,98 @@ function logout(){
   if(typeof _owFeaturesCache !== 'undefined'){
     _owFeaturesCache=null;_owFeaturesCacheRestoId=null;_owFeaturesLoadedAt=0;
   }
-  localStorage.removeItem('el_session');
+  // SECURITY: clear per-tab session, activity timestamp, AND broadcast logout to other tabs
+  sessionStorage.removeItem('el_session');
+  try { localStorage.removeItem('el_last_activity'); } catch(e){}
+  try {
+    // Cross-tab logout sync — other tabs listening via 'storage' event will logout too
+    localStorage.setItem('el_logout_broadcast', String(Date.now()));
+    // Clean up the broadcast key shortly after — it has served its purpose
+    setTimeout(() => { try { localStorage.removeItem('el_logout_broadcast'); } catch(e){} }, 1000);
+  } catch(e){}
   ['owU','owP','saU','saP'].forEach(id=>{const e=document.getElementById(id);if(e) e.value='';});
-  showPage('pg-land');
+  // Role-aware redirect
+  if(wasRole === 'superadmin'){
+    // SA stays on SA login page (preserves admin URL token, ready to re-login)
+    showPage('pg-sa-login');
+  } else {
+    // Owner (or unknown) → clean landing
+    showPage('pg-land');
+  }
 }
+
+/* ─── Session security: 8h idle timeout + cross-tab logout sync ─────── */
+const _SESSION_IDLE_MS = 8 * 60 * 60 * 1000; // 8 hours
+let _idleCheckInterval = null;
+
+// Refresh activity timestamp on user interaction (cross-tab via localStorage)
+function _refreshActivity(){
+  if(!sessionStorage.getItem('el_session')) return; // not logged in, no-op
+  try { localStorage.setItem('el_last_activity', String(Date.now())); } catch(e){}
+}
+
+function _checkIdleTimeout(){
+  if(!sessionStorage.getItem('el_session')) return;
+  let last;
+  try { last = parseInt(localStorage.getItem('el_last_activity') || '0', 10); } catch(e){ last = 0; }
+  if(!last){
+    // No activity timestamp yet — set one now so we don't wrongly trigger on first load
+    try { localStorage.setItem('el_last_activity', String(Date.now())); } catch(e){}
+    return;
+  }
+  if(Date.now() - last > _SESSION_IDLE_MS){
+    // Idle too long — force logout
+    try { alert('Your session has expired due to inactivity. Please log in again.'); } catch(e){}
+    if(typeof logout === 'function') logout();
+  }
+}
+
+function _initSessionSecurity(){
+  // Cross-tab logout: when ANY tab logs out, other tabs see the broadcast and logout too
+  window.addEventListener('storage', function(e){
+    if(e.key === 'el_logout_broadcast' && e.newValue){
+      // Another tab logged out — drop our session and redirect
+      if(sessionStorage.getItem('el_session')){
+        sessionStorage.removeItem('el_session');
+        // Don't call logout() (would re-broadcast) — just clean up state and redirect
+        if(typeof db !== 'undefined' && db){
+          try { if(typeof owOrdersListener !== 'undefined' && owOrdersListener) db.ref('orders').off(); } catch(_){}
+          try { if(typeof saOrdersListener !== 'undefined' && saOrdersListener) db.ref('orders').off(); } catch(_){}
+        }
+        me = null; restoId = null;
+        if(typeof cachedOrders !== 'undefined') cachedOrders = [];
+        if(typeof _fbGetCache !== 'undefined') _fbGetCache.clear();
+        if(typeof showPage === 'function') showPage('pg-land');
+      }
+    }
+  });
+
+  // Idle timer — check every 60 seconds (cheap)
+  if(_idleCheckInterval) clearInterval(_idleCheckInterval);
+  _idleCheckInterval = setInterval(_checkIdleTimeout, 60 * 1000);
+
+  // Refresh activity on real user interaction (throttled to 1× per 30s — cheap)
+  let _lastRefreshMs = 0;
+  const _onActivity = function(){
+    const now = Date.now();
+    if(now - _lastRefreshMs < 30000) return;
+    _lastRefreshMs = now;
+    _refreshActivity();
+  };
+  ['click','keydown','touchstart','focus'].forEach(ev => {
+    window.addEventListener(ev, _onActivity, { passive: true });
+  });
+}
+
+// Wire up session security once at load
+if(typeof window !== 'undefined'){
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', _initSessionSecurity);
+  } else {
+    _initSessionSecurity();
+  }
+}
+/* ─── End session security ──────────────────────────────────────────── */
 
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE LISTENERS (REAL-TIME)
@@ -6390,6 +6666,8 @@ const LP_TRANSLATIONS = {
     bk_summary_table:'Table',
     bk_vip_req_summary:'VIP table requirement',
     bk_vip_req_note:'By submitting, you agree to this requirement.',
+    bk_vip_req_note_success:'You have agreed to this requirement.',
+    bk_summary_note:'Your special request',
     bk_err_pick_table:'Please select a table.',
     bk_err_load_tables:'Could not load tables. Please try again.',
     bk_lock_taken:'This table was just reserved by another customer.',
@@ -6476,6 +6754,7 @@ const LP_TRANSLATIONS = {
     bk_err_phone:'Please enter a valid phone number.',
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'Sorry, online booking is not available at this restaurant.',
+    bk_err_walkin:'Sorry, this table is no longer available for online booking on the selected date. Please pick another table.',
     qr_err_disabled:'Sorry, QR ordering is not available at this restaurant.',
     bk_err_submit:'Could not submit booking. Please try again.',
     bk_err_load:'Could not load restaurants. Please try again.',
@@ -6557,6 +6836,8 @@ const LP_TRANSLATIONS = {
     bk_summary_table:'ໂຕະ',
     bk_vip_req_summary:'ເງື່ອນໄຂໂຕະ VIP',
     bk_vip_req_note:'ໂດຍການສົ່ງ, ທ່ານຍອມຮັບເງື່ອນໄຂນີ້.',
+    bk_vip_req_note_success:'ທ່ານໄດ້ຍອມຮັບເງື່ອນໄຂນີ້ແລ້ວ.',
+    bk_summary_note:'ຄຳຮ້ອງຂໍພິເສດຂອງທ່ານ',
     bk_err_pick_table:'ກະລຸນາເລືອກໂຕະ.',
     bk_err_load_tables:'ບໍ່ສາມາດໂຫຼດໂຕະ. ກະລຸນາລອງໃໝ່.',
     bk_lock_taken:'ໂຕະນີ້ຫາກໍ່ຖືກຈອງໂດຍລູກຄ້າອື່ນ.',
@@ -6643,6 +6924,7 @@ const LP_TRANSLATIONS = {
     bk_err_phone:'ກະລຸນາໃສ່ເບີໂທທີ່ຖືກຕ້ອງ.',
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ຈອງອອນລາຍ.',
+    bk_err_walkin:'ຂໍອະໄພ, ໂຕະນີ້ບໍ່ສາມາດຈອງອອນລາຍສຳລັບວັນທີນີ້ໄດ້ແລ້ວ. ກະລຸນາເລືອກໂຕະອື່ນ.',
     qr_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ສັ່ງດ້ວຍ QR.',
     bk_err_submit:'ບໍ່ສາມາດສົ່ງການຈອງໄດ້. ກະລຸນາລອງໃໝ່.',
     bk_err_load:'ບໍ່ສາມາດໂຫຼດຮ້ານອາຫານ. ກະລຸນາລອງໃໝ່.',
@@ -6724,6 +7006,8 @@ const LP_TRANSLATIONS = {
     bk_summary_table:'โต๊ะ',
     bk_vip_req_summary:'เงื่อนไขโต๊ะ VIP',
     bk_vip_req_note:'การส่งคำขอนี้ ถือว่าคุณยอมรับเงื่อนไขนี้',
+    bk_vip_req_note_success:'คุณได้ยอมรับเงื่อนไขนี้แล้ว',
+    bk_summary_note:'คำขอพิเศษของคุณ',
     bk_err_pick_table:'กรุณาเลือกโต๊ะ',
     bk_err_load_tables:'ไม่สามารถโหลดโต๊ะได้ กรุณาลองอีกครั้ง',
     bk_lock_taken:'โต๊ะนี้ถูกจองโดยลูกค้าอื่นแล้ว',
@@ -6810,6 +7094,7 @@ const LP_TRANSLATIONS = {
     bk_err_phone:'กรุณากรอกเบอร์โทรที่ถูกต้อง',
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้จองออนไลน์',
+    bk_err_walkin:'ขออภัย โต๊ะนี้ไม่เปิดให้จองออนไลน์ในวันที่เลือก กรุณาเลือกโต๊ะอื่น',
     qr_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้สั่งด้วย QR',
     bk_err_submit:'ไม่สามารถส่งการจองได้ กรุณาลองใหม่',
     bk_err_load:'ไม่สามารถโหลดร้านอาหาร กรุณาลองใหม่',
@@ -6891,6 +7176,8 @@ const LP_TRANSLATIONS = {
     bk_summary_table:'桌位',
     bk_vip_req_summary:'VIP 桌位要求',
     bk_vip_req_note:'提交即表示您同意此要求。',
+    bk_vip_req_note_success:'您已同意此要求。',
+    bk_summary_note:'您的特别要求',
     bk_err_pick_table:'请选择一张桌位。',
     bk_err_load_tables:'无法加载桌位，请重试。',
     bk_lock_taken:'此桌位刚被其他客户预订。',
@@ -6977,6 +7264,7 @@ const LP_TRANSLATIONS = {
     bk_err_phone:'请输入有效的电话号码。',
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'抱歉，此餐厅暂不支持在线预订。',
+    bk_err_walkin:'抱歉，此桌位在所选日期不再支持在线预订。请选择其他桌位。',
     qr_err_disabled:'抱歉，此餐厅暂不支持扫码点餐。',
     bk_err_submit:'无法提交预订，请重试。',
     bk_err_load:'无法加载餐厅，请重试。',
@@ -7058,6 +7346,8 @@ const LP_TRANSLATIONS = {
     bk_summary_table:'테이블',
     bk_vip_req_summary:'VIP 테이블 요구사항',
     bk_vip_req_note:'제출하시면 이 요구사항에 동의하는 것으로 간주됩니다.',
+    bk_vip_req_note_success:'이 요구사항에 동의하셨습니다.',
+    bk_summary_note:'특별 요청 사항',
     bk_err_pick_table:'테이블을 선택해 주세요.',
     bk_err_load_tables:'테이블을 불러올 수 없습니다. 다시 시도해주세요.',
     bk_lock_taken:'이 테이블은 방금 다른 고객이 예약했습니다.',
@@ -7144,6 +7434,7 @@ const LP_TRANSLATIONS = {
     bk_err_phone:'유효한 전화번호를 입력해주세요.',
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'죄송합니다. 이 레스토랑은 온라인 예약을 지원하지 않습니다.',
+    bk_err_walkin:'죄송합니다. 이 테이블은 선택하신 날짜에 더 이상 온라인 예약을 받지 않습니다. 다른 테이블을 선택해 주세요.',
     qr_err_disabled:'죄송합니다. 이 레스토랑은 QR 주문을 지원하지 않습니다.',
     bk_err_submit:'예약을 신청할 수 없습니다. 다시 시도해주세요.',
     bk_err_load:'레스토랑을 불러올 수 없습니다. 다시 시도해주세요.',
@@ -9219,6 +9510,18 @@ async function owTables(){
   const cardsHTML=tableData.length?tableData.map(({t,i,activeSess,sessOrders,sessTotal})=>{
     const isOcc=!!activeSess;
     const sessKey=activeSess?activeSess[0]:null;
+    // Walk-in detection: table is currently in walk-in mode if walkInUntil is set and not yet expired
+    const nowMs = Date.now();
+    const isWalkIn = !!(t.walkInUntil && nowMs < t.walkInUntil && nowMs >= (t.walkInFrom || 0));
+    let walkInLabel = '';
+    if(isWalkIn){
+      try {
+        const fromD = new Date(t.walkInFrom || nowMs);
+        const toD = new Date(t.walkInUntil);
+        const fmt = (d) => d.toISOString().slice(0,10);
+        walkInLabel = fmt(fromD) === fmt(toD) ? fmt(fromD) : `${fmt(fromD)} → ${fmt(toD)}`;
+      } catch(e){ walkInLabel = ''; }
+    }
     // Timer remaining
     let timeLeft='';
     if(activeSess){
@@ -9230,19 +9533,20 @@ async function owTables(){
       }
     }
     return`
-    <div class="tcard ${isOcc?'occ':''}" style="border-radius:8px;overflow:hidden;padding:0">
+    <div class="tcard ${isOcc?'occ':''}${isWalkIn?' walkin':''}" style="border-radius:8px;overflow:hidden;padding:0">
       <!-- Card header with status color -->
-      <div style="padding:12px 14px 10px;background:${isOcc?'rgba(29,185,84,.08)':'rgba(255,255,255,.02)'};border-bottom:1px solid ${isOcc?'rgba(29,185,84,.2)':'var(--s-border)'}">
+      <div style="padding:12px 14px 10px;background:${isOcc?'rgba(29,185,84,.08)':isWalkIn?'rgba(96,165,250,.08)':'rgba(255,255,255,.02)'};border-bottom:1px solid ${isOcc?'rgba(29,185,84,.2)':isWalkIn?'rgba(96,165,250,.25)':'var(--s-border)'}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div class="tcard-num" style="font-size:26px;margin-bottom:2px">${t.num}</div>
             <div class="tcard-lbl">${(t.minSeats && t.maxSeats && t.minSeats !== t.maxSeats) ? `${t.minSeats}-${t.maxSeats}` : (t.maxSeats||t.seats||0)} seats${t.zone?` · <span style="color:var(--s-gold)">${escapeHtml(t.zone)}</span>`:''}</div>
           </div>
           <div style="text-align:right">
-            <div style="font-size:10px;font-weight:700;color:${isOcc?'var(--s-green)':'var(--s-muted)'};letter-spacing:.5px">
-              ${isOcc?'🟢 OCCUPIED':'⚪ FREE'}
+            <div style="font-size:10px;font-weight:700;color:${isOcc?'var(--s-green)':isWalkIn?'#60a5fa':'var(--s-muted)'};letter-spacing:.5px">
+              ${isOcc?'🟢 OCCUPIED':isWalkIn?'🚶 WALK-IN':'⚪ FREE'}
             </div>
             ${isOcc&&timeLeft?`<div style="font-size:9px;color:var(--s-muted);margin-top:2px">⏱ ${timeLeft}</div>`:''}
+            ${isWalkIn&&walkInLabel?`<div style="font-size:9px;color:#60a5fa;margin-top:2px">${escapeHtml(walkInLabel)}</div>`:''}
           </div>
         </div>
       </div>
@@ -9257,6 +9561,10 @@ async function owTables(){
             <div style="font-size:10px;color:var(--s-muted)">Bill Total</div>
             <div style="font-size:12px;font-weight:900;font-family:var(--ff);color:var(--s-gold)">${fmtK(sessTotal)}</div>
           </div>
+        `:isWalkIn?`
+          <div style="font-size:10px;color:#60a5fa;margin-bottom:8px;text-align:center;font-weight:600">
+            🚶 Walk-in only — not bookable online during this period
+          </div>
         `:`
           <div style="font-size:10px;color:var(--s-muted2);margin-bottom:8px;text-align:center">
             ${(()=>{const bk=getTableBooking(t.id,bookings,todayStr);return bk?'<span style=\"color:#f59e0b;font-weight:600\">📅 Booked: '+bk.name+' at '+bk.time+'</span>':'Ready to seat guests';})()}
@@ -9265,6 +9573,7 @@ async function owTables(){
         <div class="tcard-acts">
           <button class="btn btn-sm btn-gold" onclick="showQR('${restoId}','${t.id}','${t.num}')" style="flex:1">📱 QR</button>
           ${isOcc?`<button class="btn btn-sm" onclick="owP('bills',null)" style="color:var(--s-green);border-color:var(--s-green)">🧾 Bill</button>`:''}
+          <button class="btn btn-sm" onclick="openWalkInTableModal(${i})" title="${isWalkIn?'Edit walk-in period':'Mark as walk-in'}" style="${isWalkIn?'color:#60a5fa;border-color:#60a5fa':''}">🚶</button>
           <button class="btn btn-sm" onclick="openEditTableModal(${i})" title="Edit">✏️</button>
           <button class="btn btn-sm btn-red" onclick="delOwTable(${i})">✕</button>
         </div>
@@ -10169,6 +10478,115 @@ function updateTablePreview(){
   if(pN) pN.textContent=num;
   if(pS) pS.textContent=seats+' SEATS';
 }
+
+/* ─── Walk-In Table feature ───────────────────────────────────────────
+   Owner marks a table as walk-in (not bookable online) for a date range.
+   Stored as walkInFrom + walkInUntil (ms timestamps) on the table object.
+   Customer-side filter: if customer's booking date falls in the range,
+   the table is hidden from booking (still visible on map as walk-in). */
+
+function _wiLocalISO(d){
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+function _wiDateAtMidnight(iso){
+  // Returns ms timestamp at LOCAL midnight for an ISO date (yyyy-mm-dd)
+  if(!iso) return 0;
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Date(y, m-1, d, 0, 0, 0, 0).getTime();
+}
+function _wiDateAtEndOfDay(iso){
+  if(!iso) return 0;
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Date(y, m-1, d, 23, 59, 59, 999).getTime();
+}
+
+function openWalkInTableModal(idx){
+  fbGet('restaurants/'+restoId).then(r=>{
+    const t = (r?.tables || [])[idx];
+    if(!t){ notifyD('⚠ Table not found'); return; }
+    document.getElementById('mWiTableIdx').value = idx;
+    document.getElementById('mWiTableName').textContent = (t.num || '—') + (t.zone ? ' · ' + t.zone : '');
+
+    // If currently walk-in, show the "Currently locked" banner + populate fields with current range
+    const now = Date.now();
+    const isCurrentlyWi = !!(t.walkInUntil && now < t.walkInUntil && now >= (t.walkInFrom || 0));
+    const curBlock = document.getElementById('mWiCurrent');
+    const unlockBtn = document.getElementById('mWiUnlockBtn');
+    if(isCurrentlyWi){
+      const fromIso = _wiLocalISO(new Date(t.walkInFrom || now));
+      const untilIso = _wiLocalISO(new Date(t.walkInUntil));
+      document.getElementById('mWiCurrentRange').textContent = fromIso === untilIso ? fromIso : `${fromIso} → ${untilIso}`;
+      curBlock.style.display = '';
+      unlockBtn.style.display = '';
+      document.getElementById('mWiFrom').value = fromIso;
+      document.getElementById('mWiUntil').value = untilIso;
+    } else {
+      curBlock.style.display = 'none';
+      unlockBtn.style.display = 'none';
+      // Default to today
+      const todayIso = _wiLocalISO(new Date());
+      document.getElementById('mWiFrom').value = todayIso;
+      document.getElementById('mWiUntil').value = todayIso;
+    }
+    _wiClearQuickPick();
+    openModal('mWalkInTable');
+  });
+}
+
+function _wiQuickPick(days){
+  const today = new Date();
+  const from = _wiLocalISO(today);
+  const until = new Date(today);
+  until.setDate(until.getDate() + days);
+  const untilIso = _wiLocalISO(until);
+  document.getElementById('mWiFrom').value = from;
+  document.getElementById('mWiUntil').value = untilIso;
+  // Highlight the active chip
+  document.querySelectorAll('.wi-quick').forEach(b => b.classList.remove('on'));
+  const active = document.querySelector(`.wi-quick[data-days="${days}"]`);
+  if(active) active.classList.add('on');
+}
+
+function _wiClearQuickPick(){
+  document.querySelectorAll('.wi-quick').forEach(b => b.classList.remove('on'));
+}
+
+async function saveWalkInTable(unlock){
+  const idx = parseInt(document.getElementById('mWiTableIdx').value);
+  if(isNaN(idx) || idx < 0){ notifyD('⚠ Invalid table'); return; }
+  const r = await fbGet('restaurants/'+restoId);
+  const tables = [...(r?.tables || [])];
+  if(!tables[idx]){ notifyD('⚠ Table not found'); return; }
+  if(unlock){
+    // Remove walk-in fields
+    tables[idx] = { ...tables[idx] };
+    delete tables[idx].walkInFrom;
+    delete tables[idx].walkInUntil;
+  } else {
+    const fromIso = document.getElementById('mWiFrom').value;
+    const untilIso = document.getElementById('mWiUntil').value;
+    if(!fromIso || !untilIso){ notifyD('⚠ Please pick both from and until dates'); return; }
+    if(_wiDateAtMidnight(untilIso) < _wiDateAtMidnight(fromIso)){
+      notifyD('⚠ "Until" date must be on or after "from" date');
+      return;
+    }
+    tables[idx] = {
+      ...tables[idx],
+      walkInFrom: _wiDateAtMidnight(fromIso),
+      walkInUntil: _wiDateAtEndOfDay(untilIso)
+    };
+  }
+  await fbUpdate('restaurants/'+restoId, { tables });
+  closeModal('mWalkInTable');
+  notifyD(unlock ? '✓ Table unlocked — bookable again' : '✓ Walk-in period saved');
+  if(typeof owTables === 'function') owTables();
+}
+
+/* ─── End walk-in feature ───────────────────────────────────────────── */
+
 async function saveEditTable(){
   const idx=parseInt(document.getElementById('mEtIdx').value);
   const num=document.getElementById('mEtNum').value.trim();
@@ -12981,10 +13399,17 @@ async function bkLoadTables(){
     const tables = (r && r.tables) ? r.tables : [];
     // Filter tables that have enough seats for the party size
     // v5.9: Filter by both min and max seats. If table has no minSeats, only check max.
+    // Also filter out tables that are walk-in only for the customer's chosen booking date.
+    const bookingDateMs = _wiDateAtMidnight(bkState.date);
     const partyOK = tables.filter(t => {
       const max = t.maxSeats || t.seats || 0;
       const min = t.minSeats || 1;
-      return bkState.party >= min && bkState.party <= max;
+      if(!(bkState.party >= min && bkState.party <= max)) return false;
+      // Walk-in check: if booking date falls in [walkInFrom, walkInUntil], hide this table
+      if(t.walkInFrom && t.walkInUntil && bookingDateMs >= t.walkInFrom && bookingDateMs <= t.walkInUntil){
+        return false;
+      }
+      return true;
     });
     if(!partyOK.length){
       grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_no_tables_party','No tables fit your party size. Try fewer guests.'))}</div>`;
@@ -13399,7 +13824,10 @@ window.addEventListener('beforeunload', () => {
 });
 
 
-function renderBkSummary(){
+// Internal helper: builds summary HTML used by Step 6 (pre-submit) and Step 7 (post-submit).
+// Optional `opts.note` shows the customer's typed special request (used on success only).
+function _bkBuildSummaryHtml(opts){
+  opts = opts || {};
   const d = new Date(bkState.date+'T00:00:00');
   const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
   const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
@@ -13410,20 +13838,21 @@ function renderBkSummary(){
     dateStr = `${_lpDow(d.getDay(),false)}, ${d.getDate()} ${_lpMonth(d.getMonth(),false)} ${d.getFullYear()}`;
   }
   const lblResto = _lp('bk_summary_resto','Restaurant');
-  const lblDate = _lp('bk_summary_date','Date');
-  const lblTime = _lp('bk_summary_time','Time');
-  const lblPpl = _lp('bk_summary_people','Guests');
+  const lblDate  = _lp('bk_summary_date','Date');
+  const lblTime  = _lp('bk_summary_time','Time');
+  const lblPpl   = _lp('bk_summary_people','Guests');
   const lblTable = _lp('bk_summary_table','Table');
-  // v5.4: Show table info if customer picked one
   const tableRow = bkState.tableId ? `<div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTable)}</span><span class="bk-sum-val">${escapeHtml(bkState.tableNum||'')} · ${escapeHtml(bkState.tableZone||'')}</span></div>` : '';
-  // VIP booking requirement — shown to customer one final time before submit so they commit knowingly
+  // VIP booking requirement
   let vipReqBlock = '';
   if(bkState.tableId){
     const linked = (bkState.tables || []).find(x => x && x.id === bkState.tableId);
     const req = linked && linked.bookingRequirement ? String(linked.bookingRequirement).trim() : '';
     if(req){
       const lblVipReq = _lp('bk_vip_req_summary','VIP table requirement');
-      const lblVipNote = _lp('bk_vip_req_note','By submitting, you agree to this requirement.');
+      const lblVipNote = opts.successMode
+        ? _lp('bk_vip_req_note_success','You have agreed to this requirement.')
+        : _lp('bk_vip_req_note','By submitting, you agree to this requirement.');
       vipReqBlock = `<div class="bk-sum-vip-req">
         <div class="bk-sum-vip-req-h">⭐ ${escapeHtml(lblVipReq)}</div>
         <div class="bk-sum-vip-req-text">${escapeHtml(req)}</div>
@@ -13431,13 +13860,34 @@ function renderBkSummary(){
       </div>`;
     }
   }
-  document.getElementById('bkSummary').innerHTML = `
+  // Customer note — only shown on success (Step 6 has the textarea right below)
+  let noteBlock = '';
+  if(opts.note && String(opts.note).trim()){
+    const lblNote = _lp('bk_summary_note','Your special request');
+    noteBlock = `<div class="bk-sum-note">
+      <div class="bk-sum-note-h">📝 ${escapeHtml(lblNote)}</div>
+      <div class="bk-sum-note-text">${escapeHtml(String(opts.note).trim())}</div>
+    </div>`;
+  }
+  return `
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblResto)}</span><span class="bk-sum-val">${escapeHtml(bkState.restoName||'')}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblDate)}</span><span class="bk-sum-val">${escapeHtml(dateStr)}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTime)}</span><span class="bk-sum-val">${escapeHtml(bkState.slot||'')}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblPpl)}</span><span class="bk-sum-val">${bkState.party}</span></div>
     ${tableRow}
-    ${vipReqBlock}`;
+    ${vipReqBlock}
+    ${noteBlock}`;
+}
+
+function renderBkSummary(){
+  document.getElementById('bkSummary').innerHTML = _bkBuildSummaryHtml({});
+}
+
+// Renders the post-submit summary on Step 7 — customer can screenshot for their record.
+function renderBkSuccessSummary(note){
+  const el = document.getElementById('bkSuccessSummary');
+  if(!el) return;
+  el.innerHTML = _bkBuildSummaryHtml({ successMode: true, note: note || '' });
 }
 
 function genBookingCode(){
@@ -13466,6 +13916,18 @@ async function submitCustBooking(){
       closeModal('mCustBooking');
       return;
     }
+    // Defense-in-depth — verify the picked table didn't become walk-in while customer was filling form
+    if(bkState.tableId && restoCheck && Array.isArray(restoCheck.tables)){
+      const linked = restoCheck.tables.find(t => t && t.id === bkState.tableId);
+      if(linked && linked.walkInFrom && linked.walkInUntil){
+        const bookingDateMs = _wiDateAtMidnight(bkState.date);
+        if(bookingDateMs >= linked.walkInFrom && bookingDateMs <= linked.walkInUntil){
+          btn.disabled = false; btn.textContent = _lp('bk_step_continue','Continue →');
+          alert(_lp('bk_err_walkin','Sorry, this table is no longer available for online booking on the selected date. Please pick another table.'));
+          return;
+        }
+      }
+    }
     const code = genBookingCode();
     const booking = {
       restoId: bkState.restoId,
@@ -13488,6 +13950,8 @@ async function submitCustBooking(){
     // v5.4: Release table lock now that booking is saved
     bkReleaseLock();
     document.getElementById('bkSuccessCode').textContent = code;
+    // Populate the success-screen summary so customer has a record they can screenshot
+    renderBkSuccessSummary(note);
     bkGoStep(7);
   } catch(e){
     console.error('submitCustBooking:',e);
@@ -13721,7 +14185,16 @@ function renderBkStats(){
     ? _bkOwnerCache.filter(b => b.date === _bkOwnerDateFilter)
     : _bkOwnerCache;
   const totalTables = _bkRestoTableCount || 0;
-  const booked  = scope.filter(b => b.status === 'accepted').length;
+  // FIX: "Booked" now counts UNIQUE TABLES with any active booking (pending or accepted),
+  // matching the map's logic exactly. Previously counted accepted-bookings, so 2 bookings
+  // for the same table inflated the number while the map (correctly) showed 1.
+  const bookedTableIds = new Set();
+  scope.forEach(b => {
+    if(b && b.tableId && (b.status === 'pending' || b.status === 'accepted')){
+      bookedTableIds.add(b.tableId);
+    }
+  });
+  const booked = bookedTableIds.size;
   const pending = scope.filter(b => b.status === 'pending').length;
   const noShow  = scope.filter(b => b.status === 'expired').length;
   // Translation labels
@@ -14543,6 +15016,52 @@ async function cleanupOldBookings(opts){
   </div>
 </div>
 
+<!-- WALK-IN TABLE MODAL — owner marks table as walk-in only for a date range -->
+<div class="modal-ov" id="mWalkInTable">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-h">
+      <div>
+        <div class="modal-title">🚶 <span data-ts="wi_title">Walk-in only</span></div>
+        <div class="modal-sub" data-ts="wi_subtitle">Mark this table as walk-in only for a date range</div>
+      </div>
+      <button class="modal-x" onclick="closeModal('mWalkInTable')">✕</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="mWiTableIdx">
+      <div id="mWiTableInfo" style="padding:12px 14px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.2);border-radius:8px;margin-bottom:14px;font-size:13px;color:#fff">
+        <span style="color:#60a5fa;font-weight:700">Table:</span> <span id="mWiTableName">—</span>
+      </div>
+      <div id="mWiCurrent" style="display:none;padding:12px 14px;background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.25);border-radius:8px;margin-bottom:14px;font-size:13px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fbbf24;margin-bottom:4px" data-ts="wi_currently_locked">Currently walk-in:</div>
+        <div id="mWiCurrentRange" style="color:#fff;font-weight:600">—</div>
+      </div>
+      <div class="fg" style="margin-bottom:14px">
+        <label data-ts="wi_quick_pick">Quick pick</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+          <button type="button" class="btn btn-sm wi-quick" data-days="0" onclick="_wiQuickPick(0)" data-ts="wi_today">Today</button>
+          <button type="button" class="btn btn-sm wi-quick" data-days="1" onclick="_wiQuickPick(1)" data-ts="wi_tomorrow">Tomorrow</button>
+          <button type="button" class="btn btn-sm wi-quick" data-days="7" onclick="_wiQuickPick(7)" data-ts="wi_7days">Next 7 days</button>
+          <button type="button" class="btn btn-sm wi-quick" data-days="30" onclick="_wiQuickPick(30)" data-ts="wi_30days">Next 30 days</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label data-ts="wi_from">From date</label>
+          <input class="fi" type="date" id="mWiFrom" oninput="_wiClearQuickPick()">
+        </div>
+        <div class="fg"><label data-ts="wi_until">Until date</label>
+          <input class="fi" type="date" id="mWiUntil" oninput="_wiClearQuickPick()">
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--s-muted);line-height:1.5" data-ts="wi_hint">During this period, customers won't be able to book this table online. It stays available for walk-in customers at the restaurant.</div>
+    </div>
+    <div class="modal-f">
+      <button class="btn" onclick="closeModal('mWalkInTable')" data-ts="wi_cancel">Cancel</button>
+      <button class="btn btn-red" id="mWiUnlockBtn" onclick="saveWalkInTable(true)" style="display:none" data-ts="wi_unlock">Unlock now</button>
+      <button class="btn btn-gold" onclick="saveWalkInTable(false)" data-ts="wi_save">🚶 Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════════════════════════════════════════════════════════════════ -->
 <!-- v5.5 FLOOR PLAN EDITOR — SA only                                 -->
 <!-- ════════════════════════════════════════════════════════════════ -->
@@ -14918,6 +15437,8 @@ async function cleanupOldBookings(opts){
             <div class="bk-code-val" id="bkSuccessCode">——————</div>
             <div class="bk-code-hint" data-lp="bk_code_hint">Save this code, or use your phone number to check status later.</div>
           </div>
+          <!-- Full booking record — populated at submit time. Customer can screenshot this. -->
+          <div class="bk-summary bk-summary-success" id="bkSuccessSummary"></div>
           <button class="bk-btn bk-btn-next" style="width:100%" onclick="closeModal('mCustBooking');setTimeout(()=>openModal('mCustBookingStatus'),200)" data-lp="bk_check_status">Check Status</button>
           <button class="bk-link" style="margin-top:14px" onclick="closeModal('mCustBooking')" data-lp="bk_close">Close</button>
         </div>
