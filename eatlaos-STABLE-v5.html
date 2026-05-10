@@ -2222,12 +2222,17 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
   align-items:center;
   justify-content:center;
   min-height:300px;
-  background:radial-gradient(ellipse at center, #15110c 0%, #0a0805 100%);
-  border:1px solid rgba(200,151,58,.18);
-  border-radius:14px;
+  background:#06080d;
+  border:1px solid rgba(125,211,252,.18);
+  border-radius:8px;
   padding:8px;
   overflow:hidden;
-  box-shadow:inset 0 0 60px rgba(0,0,0,.6),0 4px 24px rgba(0,0,0,.5);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4),inset 0 0 0 1px rgba(125,211,252,.06),0 8px 32px rgba(0,0,0,.6);
+  position:relative;
+}
+.bk-table-grid.fp-mode .fp-viewer-wrap::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(125,211,252,.4) 50%,transparent 100%);
 }
 .bk-table-grid.fp-mode .fp-viewer-svg{
   width:100%;
@@ -2639,50 +2644,51 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 }
 
 /* Customer-side floor plan viewer */
-.fp-viewer-wrap{background:radial-gradient(ellipse at center,#15110c 0%,#0a0805 100%);border:1px solid rgba(200,151,58,.15);border-radius:12px;padding:8px;margin-bottom:14px;overflow:hidden;box-shadow:inset 0 0 40px rgba(0,0,0,.5);}
+.fp-viewer-wrap{background:#06080d;border:1px solid rgba(125,211,252,.18);border-radius:8px;padding:8px;margin-bottom:14px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.4),inset 0 0 0 1px rgba(125,211,252,.06);position:relative;}
+.fp-viewer-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(125,211,252,.4) 50%,transparent 100%);}
 .fp-viewer-svg{width:100%;height:auto;display:block;max-height:60vh;}
 .fp-vw-el-shape{transition:filter .25s,opacity .25s;}
 .fp-vw-table{cursor:pointer;}
-/* Available table — refined gold gradient + soft drop-shadow + gentle pulse */
-.fp-vw-table.available .fp-vw-el-shape{fill:url(#fpVwGoldGrad);stroke:#f5c976;stroke-width:2.5;filter:url(#fpVwTableShadow);animation:fpPulse 2.4s ease-in-out infinite;}
+/* Available table — high-tech cyan accent, crisp geometric, gentle pulse */
+.fp-vw-table.available .fp-vw-el-shape{fill:url(#fpVwTechGrad);stroke:#bae6fd;stroke-width:1.5;filter:url(#fpVwTableShadow);animation:fpPulse 2.4s ease-in-out infinite;}
 @keyframes fpPulse{
-  0%,100%{filter:url(#fpVwTableShadow) drop-shadow(0 0 4px rgba(200,151,58,.35));}
-  50%{filter:url(#fpVwTableShadow) drop-shadow(0 0 10px rgba(245,201,118,.7));}
+  0%,100%{filter:url(#fpVwTableShadow) drop-shadow(0 0 4px rgba(125,211,252,.4));}
+  50%{filter:url(#fpVwTableShadow) drop-shadow(0 0 10px rgba(125,211,252,.85));}
 }
-.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(180,90,90,.18);stroke:rgba(220,53,69,.4);stroke-width:1.5;filter:none;}
-.fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.18);stroke:rgba(255,193,7,.45);stroke-width:1.5;filter:none;}
-.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3.5;filter:drop-shadow(0 0 18px rgba(200,151,58,1));animation:none;}
+.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(180,90,90,.15);stroke:rgba(248,113,113,.35);stroke-width:1;filter:none;}
+.fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.15);stroke:rgba(251,191,36,.4);stroke-width:1;filter:none;}
+.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#7dd3fc;stroke-width:2.5;filter:drop-shadow(0 0 16px rgba(125,211,252,1));animation:none;}
 .fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
 .fp-vw-table.booked,.fp-vw-table.locked{opacity:.55;}
-/* Fixed elements (Kitchen, Bar, WC, Stage, Door) — recede with subtle border + slight desaturation */
-.fp-vw-fixed .fp-vw-el-shape{stroke:rgba(255,255,255,.06);stroke-width:1;opacity:.88;}
-.fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:28px;font-weight:900;fill:#1a1209;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
+/* Fixed elements (Kitchen, Bar, WC, Stage, Door) — recede with subtle border */
+.fp-vw-fixed .fp-vw-el-shape{stroke:rgba(125,211,252,.1);stroke-width:1;opacity:.85;}
+.fp-vw-tnum{font-family:'JetBrains Mono','Fira Code','Courier New',monospace;font-size:24px;font-weight:700;fill:#0c1424;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:0;}
 .fp-vw-hit{cursor:pointer;}
 .fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
-.fp-vw-table.selected .fp-vw-tnum{fill:#000;}
+.fp-vw-table.selected .fp-vw-tnum{fill:#0c1424;}
 .fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.45);}
-/* VIP TABLES — premium gold border + crown badge + slow shimmer glow */
-.fp-vw-table.vip.available .fp-vw-el-shape{fill:url(#fpVwVipGrad);stroke:#fff8dc;stroke-width:5;animation:fpVipShimmer 2.4s ease-in-out infinite;}
-.fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(200,151,58,.18);stroke:rgba(245,201,118,.5);stroke-width:2;animation:none;}
-.fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(200,151,58,.18);stroke:rgba(255,193,7,.7);stroke-width:2;animation:none;}
-.fp-vw-table.vip.selected .fp-vw-el-shape{fill:#fff;stroke:#e0b455;stroke-width:5;filter:drop-shadow(0 0 20px rgba(245,201,118,1));animation:none;}
+/* VIP TABLES — amber accent (sole warm color, signaling premium amid the cool tech palette) */
+.fp-vw-table.vip.available .fp-vw-el-shape{fill:url(#fpVwVipGrad);stroke:#fef3c7;stroke-width:2;animation:fpVipShimmer 2.4s ease-in-out infinite;}
+.fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(245,158,11,.18);stroke:rgba(251,191,36,.5);stroke-width:1.5;animation:none;}
+.fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(245,158,11,.18);stroke:rgba(251,191,36,.7);stroke-width:1.5;animation:none;}
+.fp-vw-table.vip.selected .fp-vw-el-shape{fill:#fff;stroke:#fbbf24;stroke-width:3;filter:drop-shadow(0 0 18px rgba(251,191,36,1));animation:none;}
 @keyframes fpVipShimmer{
-  0%,100%{filter:drop-shadow(0 0 10px rgba(245,201,118,.7));}
-  50%{filter:drop-shadow(0 0 20px rgba(255,233,150,1)) drop-shadow(0 0 8px rgba(255,255,255,.4));}
+  0%,100%{filter:url(#fpVwTableShadow) drop-shadow(0 0 6px rgba(251,191,36,.5));}
+  50%{filter:url(#fpVwTableShadow) drop-shadow(0 0 14px rgba(254,243,199,.8));}
 }
-.fp-vw-vip-crown{font-size:18px;text-anchor:middle;dominant-baseline:central;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7));}
+.fp-vw-vip-crown{font-size:16px;text-anchor:middle;dominant-baseline:central;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7));}
 .fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
-.fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:900;}
-.fp-vw-label{font-family:var(--fb,'Inter','Plus Jakarta Sans',sans-serif);font-size:14px;font-weight:600;fill:rgba(220,200,170,.72);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:1.2px;text-transform:uppercase;paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:2px;stroke-linejoin:round;}
-.fp-vw-legend{display:flex;justify-content:center;gap:22px;font-size:14px;font-weight:700;color:rgba(255,255,255,.85);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:14px 18px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);}
+.fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:700;}
+.fp-vw-label{font-family:'JetBrains Mono','Fira Code','Courier New',monospace;font-size:11px;font-weight:600;fill:rgba(125,211,252,.65);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:2px;text-transform:uppercase;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:2px;stroke-linejoin:round;}
+.fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);margin-top:12px;flex-wrap:wrap;letter-spacing:1.5px;text-transform:uppercase;flex-shrink:0;padding:10px 16px;background:rgba(125,211,252,.04);border-radius:6px;border:1px solid rgba(125,211,252,.08);font-family:'JetBrains Mono','Fira Code','Courier New',monospace;}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
-.bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
-.bk-area-tab{padding:9px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;}
-.bk-area-tab:hover{background:rgba(255,255,255,.07);color:#fff;}
-.bk-area-tab.on{background:rgba(200,151,58,.18);border-color:#c8973a;color:#c8973a;box-shadow:0 0 0 1px rgba(200,151,58,.2);}
+.bk-area-tabs{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;padding:4px;background:rgba(125,211,252,.04);border:1px solid rgba(125,211,252,.08);border-radius:8px;}
+.bk-area-tab{padding:8px 18px;background:transparent;border:1px solid transparent;color:rgba(255,255,255,.55);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono','Fira Code','Courier New',monospace;letter-spacing:1.2px;text-transform:uppercase;transition:all .15s;}
+.bk-area-tab:hover{background:rgba(125,211,252,.06);color:rgba(255,255,255,.85);}
+.bk-area-tab.on{background:rgba(125,211,252,.12);border-color:rgba(125,211,252,.4);color:#7dd3fc;box-shadow:0 0 12px rgba(125,211,252,.15);}
 .bkm-shell.fp-fullscreen .fp-vw-legend{margin-top:6px;}
-.fp-vw-legend span{display:inline-flex;align-items:center;gap:8px;}
-.fp-vw-legend i{width:14px;height:14px;border-radius:50%;display:inline-block;}
+.fp-vw-legend span{display:inline-flex;align-items:center;gap:6px;}
+.fp-vw-legend i{width:10px;height:10px;border-radius:2px;display:inline-block;border:1px solid rgba(255,255,255,.15);}
 
 /* ═══ v5.9: TABLE INFO POPUP (centered modal over map) ═══ */
 .ti-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
@@ -11310,9 +11316,9 @@ async function loadBkRestaurants(){
     });
     bkState.allRestos = arr;
     if(!arr.length){ list.innerHTML=`<div class="bk-empty">${escapeHtml(_lp('bk_no_restos','No restaurants available right now.'))}</div>`; return; }
-    // Show search bar only when there are 4+ restaurants (not worth it for fewer)
+    // Always show search bar — looks more professional, scales with growth
     const searchWrap = document.getElementById('bkRestoSearchWrap');
-    if(searchWrap) searchWrap.style.display = arr.length >= 4 ? '' : 'none';
+    if(searchWrap) searchWrap.style.display = '';
     // Reset search input on fresh load
     const searchInp = document.getElementById('bkRestoSearch');
     if(searchInp) searchInp.value = '';
@@ -12144,16 +12150,16 @@ function fpElToSvg(el){
 }
 
 function _fpFixedFill(kind){
-  // Unified dark-luxury palette: all charcoal-based with subtle tonal variations
-  // for hierarchy. Tables (gold) remain the visual hero; fixed elements recede.
+  // High-tech mission-control palette: cool slate tones that recede,
+  // letting cyan tables (and amber VIP) pop. Inspired by Tesla/SpaceX UIs.
   switch(kind){
-    case 'counter':    return '#3a3530'; // warm charcoal — like a wooden bar
-    case 'toilet':     return '#2c3138'; // cool charcoal — restroom feel
-    case 'stage':      return '#3d3128'; // warm dark — theatrical, dignified
-    case 'door':       return '#4a3a28'; // brass-tinged charcoal — entrance
-    case 'kitchen':    return '#332620'; // deepest warm — hidden service area
-    case 'wall-block': return '#2a2a2a'; // neutral graphite — structural
-    default:           return '#2e2e2e';
+    case 'counter':    return '#1e293b'; // slate — bar/counter
+    case 'toilet':     return '#1a2332'; // deeper slate — restroom
+    case 'stage':      return '#1f2937'; // gunmetal — stage
+    case 'door':       return '#252e3e'; // brushed steel — entry
+    case 'kitchen':    return '#161e2c'; // deepest slate — service area
+    case 'wall-block': return '#0f172a'; // navy-black — structural
+    default:           return '#1e293b';
   }
 }
 
@@ -12700,55 +12706,48 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
       <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
     </pattern>
-    <!-- Subtle textured floor: tiny gold dots on dark charcoal — looks like marble flecks -->
-    <pattern id="fpVwFloor" width="40" height="40" patternUnits="userSpaceOnUse">
-      <rect width="40" height="40" fill="#0e0c0a"/>
-      <circle cx="8"  cy="12" r="0.7" fill="rgba(200,151,58,.06)"/>
-      <circle cx="28" cy="6"  r="0.5" fill="rgba(200,151,58,.05)"/>
-      <circle cx="34" cy="22" r="0.6" fill="rgba(200,151,58,.07)"/>
-      <circle cx="14" cy="30" r="0.5" fill="rgba(200,151,58,.05)"/>
-      <circle cx="22" cy="36" r="0.6" fill="rgba(200,151,58,.06)"/>
+    <!-- Technical blueprint grid (NASA mission control aesthetic) -->
+    <pattern id="fpVwGrid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <rect width="50" height="50" fill="#06080d"/>
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(120,180,255,.04)" stroke-width="0.5"/>
     </pattern>
-    <!-- Radial vignette: deepens corners for cinematic feel -->
-    <radialGradient id="fpVwVignette" cx="50%" cy="50%" r="65%">
-      <stop offset="0%"   stop-color="rgba(0,0,0,0)"/>
-      <stop offset="70%"  stop-color="rgba(0,0,0,.15)"/>
-      <stop offset="100%" stop-color="rgba(0,0,0,.55)"/>
-    </radialGradient>
-    <!-- Refined gold gradient for available tables -->
-    <linearGradient id="fpVwGoldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%"   stop-color="#e8b659"/>
-      <stop offset="100%" stop-color="#b8852e"/>
+    <pattern id="fpVwGridMajor" width="200" height="200" patternUnits="userSpaceOnUse">
+      <rect width="200" height="200" fill="transparent"/>
+      <path d="M 200 0 L 0 0 0 200" fill="none" stroke="rgba(120,180,255,.08)" stroke-width="1"/>
+    </pattern>
+    <!-- Crisp cyan gradient for available tables — high-tech accent, not warm gold -->
+    <linearGradient id="fpVwTechGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#0284c7"/>
     </linearGradient>
+    <!-- VIP keeps its amber/gold (refined) — VIP is the only place gold belongs -->
     <linearGradient id="fpVwVipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f5d987"/>
-      <stop offset="50%" stop-color="#e0b455"/>
-      <stop offset="100%" stop-color="#c8973a"/>
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
     </linearGradient>
-    <!-- Soft drop shadow for tables — adds depth -->
-    <filter id="fpVwTableShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="2.5"/>
-      <feOffset dx="0" dy="2" result="offsetblur"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <!-- Subtle inner-shadow for fixed elements (recedes them visually) -->
-    <filter id="fpVwFixedInner" x="0" y="0" width="100%" height="100%">
+    <!-- Tight drop shadow — geometric, not soft -->
+    <filter id="fpVwTableShadow" x="-15%" y="-15%" width="130%" height="130%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
-      <feOffset dx="0" dy="1" result="off"/>
-      <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="inner"/>
-      <feColorMatrix in="inner" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"/>
-      <feComposite in2="SourceGraphic" operator="in"/>
-      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge>
+      <feOffset dx="0" dy="2" result="off"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.7"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
     <filter id="fpVwVipGlow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="3" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>`;
-  // Floor: textured pattern + vignette overlay for cinematic depth
-  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#fpVwFloor)"/>`;
-  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#fpVwVignette)" pointer-events="none"/>`;
+  // Floor: blueprint grid (fine + major lines) — high-tech mission-control feel
+  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#fpVwGrid)"/>`;
+  svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#fpVwGridMajor)" pointer-events="none"/>`;
+  // Corner brackets — HUD targeting reticle aesthetic
+  const _br = 18; // bracket arm length
+  const _bs = 'stroke="rgba(125,211,252,.45)" stroke-width="1.5" fill="none"';
+  svgInner += `<path d="M${vbX} ${vbY+_br} L${vbX} ${vbY} L${vbX+_br} ${vbY}" ${_bs}/>`;
+  svgInner += `<path d="M${vbX+vbW-_br} ${vbY} L${vbX+vbW} ${vbY} L${vbX+vbW} ${vbY+_br}" ${_bs}/>`;
+  svgInner += `<path d="M${vbX+vbW} ${vbY+vbH-_br} L${vbX+vbW} ${vbY+vbH} L${vbX+vbW-_br} ${vbY+vbH}" ${_bs}/>`;
+  svgInner += `<path d="M${vbX+_br} ${vbY+vbH} L${vbX} ${vbY+vbH} L${vbX} ${vbY+vbH-_br}" ${_bs}/>`;
   const fixed = []; const tableEls = []; const walls = [];
   plan.elements.forEach(el => {
     const isTable = el.kind && el.kind.indexOf('table') === 0;
@@ -12932,9 +12931,9 @@ async function bkLoadTables(){
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
       grid.innerHTML = tabsHtml + wrapHtml + `
         <div class="fp-vw-legend">
-          <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
-          <span><i style="background:rgba(220,53,69,.4)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
-          <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
+          <span><i style="background:#7dd3fc;border-color:#bae6fd"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
+          <span><i style="background:rgba(248,113,113,.4);border-color:rgba(248,113,113,.6)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
+          <span><i style="background:rgba(251,191,36,.35);border-color:rgba(251,191,36,.6)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
       `;
       // Wire up area tab clicks
@@ -14662,7 +14661,7 @@ async function cleanupOldBookings(opts){
       <div class="bk-step on" id="bkStep1">
         <div class="bk-step-h" data-lp="bk_pick_resto">Choose a restaurant</div>
         <div class="bk-step-sub" data-lp="bk_pick_resto_sub">Select where you would like to dine.</div>
-        <div class="bk-resto-search-wrap" id="bkRestoSearchWrap" style="display:none">
+        <div class="bk-resto-search-wrap" id="bkRestoSearchWrap">
           <span class="bk-resto-search-ic" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </span>
