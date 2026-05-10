@@ -1216,9 +1216,23 @@ select.fi{cursor:pointer;}
 .expiry-banner.show{display:block;}
 
 /* ═══ STAFF SHELL ═══ */
-.staff-wrap{display:grid;grid-template-columns:220px 1fr;min-height:100vh;width:100%;}
-.sb{background:var(--s-surf);border-right:1px solid var(--s-border);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+.staff-wrap{display:block;min-height:100vh;width:100%;}
+.sb{background:var(--s-surf);border-right:1px solid var(--s-border);position:fixed;top:0;left:0;width:220px;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:80;transition:transform .3s cubic-bezier(.16,1,.3,1);}
 .sb::-webkit-scrollbar{width:0;}
+/* When the sidebar is collapsed (desktop), it slides off-screen and main expands */
+body.sb-collapsed .sb{transform:translateX(-220px);}
+body.sb-collapsed .staff-main{margin-left:0;}
+.staff-main{margin-left:220px;background:var(--s-bg);height:100vh;display:flex;flex-direction:column;overflow:hidden;transition:margin-left .3s cubic-bezier(.16,1,.3,1);}
+.topbar{flex-shrink:0;background:var(--s-surf);border-bottom:1px solid var(--s-border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;z-index:50;gap:10px;flex-wrap:wrap;position:sticky;top:0;}
+/* Sidebar collapse toggle button (left side of topbar) */
+.sb-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:transparent;border:1px solid var(--s-border);border-radius:6px;cursor:pointer;color:var(--s-muted);transition:all .2s;flex-shrink:0;}
+.sb-toggle:hover{color:var(--s-gold);border-color:var(--s-gold);background:var(--s-gold-bg);}
+.sb-toggle svg{transition:transform .25s cubic-bezier(.16,1,.3,1);}
+body.sb-collapsed .sb-toggle svg{transform:rotate(180deg);}
+.topbar-l{display:flex;align-items:center;gap:14px;flex:1;min-width:0;}
+/* Mobile overlay for sidebar */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:79;opacity:0;transition:opacity .25s;}
+body.sb-mobile-open .sb-overlay{display:block;opacity:1;}
 .sb-brand{padding:20px;border-bottom:1px solid var(--s-border);}
 .sb-logo{font-family:var(--ff);font-size:22px;font-weight:900;letter-spacing:-0.5px;}
 .sb-logo em{color:var(--s-gold);font-style:italic;}
@@ -1240,11 +1254,9 @@ select.fi{cursor:pointer;}
 .btn-logout{margin-left:auto;background:none;border:1px solid var(--s-border);color:var(--s-muted);padding:4px 9px;cursor:pointer;font-size:10px;transition:all .2s;}
 .btn-logout:hover{border-color:var(--s-red);color:var(--s-red);}
 
-.staff-main{background:var(--s-bg);min-height:100vh;}
-.topbar{background:var(--s-surf);border-bottom:1px solid var(--s-border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;gap:10px;flex-wrap:wrap;}
 .topbar-title{font-family:var(--ff);font-size:19px;font-weight:700;}
 .topbar-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.body-p{padding:22px 24px;}
+.body-p{padding:22px 24px;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
 .panel{display:none;}
 .panel.on{display:block;animation:fadeUp .4s ease;}
 
@@ -1689,7 +1701,22 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .mob-sb-ico{font-size:16px;}
 
 @media(max-width:900px){.sl-wrap{grid-template-columns:1fr;}.sl-left{min-height:auto;padding:28px 24px;}.sl-right{padding:28px 24px;}}
-@media(max-width:768px){.staff-wrap{grid-template-columns:1fr;}.sb{display:none;}.mob-sb{display:block;}body{padding-bottom:70px;}.body-p{padding:14px;}.topbar{padding:12px 14px;}.stats-row.s4{grid-template-columns:1fr 1fr;}.stats-row.s3{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}.tbl-grid{padding:12px;}}
+@media(max-width:768px){
+  /* Sidebar hidden by default on mobile, slides in when toggled */
+  .sb{transform:translateX(-220px);box-shadow:8px 0 32px rgba(0,0,0,.5);}
+  body.sb-mobile-open .sb{transform:translateX(0);}
+  /* Main no longer has sidebar margin on mobile */
+  .staff-main{margin-left:0;}
+  /* Mobile bottom nav still works alongside */
+  .mob-sb{display:block;}
+  body{padding-bottom:70px;}
+  .body-p{padding:14px;padding-bottom:80px;}
+  .topbar{padding:12px 14px;}
+  .stats-row.s4{grid-template-columns:1fr 1fr;}
+  .stats-row.s3{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .tbl-grid{padding:12px;}
+}
 @media(max-width:480px){.land-logo{font-size:72px;}.stats-row.s4,.stats-row.s3{grid-template-columns:1fr;}.c-menu-grid{grid-template-columns:1fr;}}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--s-border);}
 
@@ -3061,6 +3088,7 @@ setTimeout(function(){
 <!-- SUPER ADMIN -->
 <div id="pg-sa" class="page">
   <div class="expiry-banner" id="saExpiryBanner"></div>
+  <div class="sb-overlay" onclick="closeMobileSidebar()"></div>
   <div class="staff-wrap">
     <aside class="sb">
       <div class="sb-brand"><div class="sb-logo">EAT<em>LAOS</em></div><div class="sb-badge badge-sa">👑 Super Admin</div></div>
@@ -3080,7 +3108,7 @@ setTimeout(function(){
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">👑</div><div><div class="sb-un">Super Admin</div><div class="sb-ur">Platform Owner</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
     </aside>
     <main class="staff-main">
-      <div class="topbar"><div class="topbar-title" id="saTbar" data-ts="dashboard">Dashboard</div><div class="topbar-r"><select id="saLangSel" onchange="setSALang(this.value)" style="background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-muted);padding:5px 8px;font-size:11px;border-radius:4px;cursor:pointer"><option value="en">🇬🇧 EN</option><option value="lo">🇱🇦 ລາວ</option><option value="th">🇹🇭 ไทย</option><option value="zh">🇨🇳 中文</option><option value="ko">🇰🇷 한국어</option></select><button class="btn btn-gold" onclick="resetRestoModal();openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
+      <div class="topbar"><div class="topbar-l"><button class="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><div class="topbar-title" id="saTbar" data-ts="dashboard">Dashboard</div></div><div class="topbar-r"><select id="saLangSel" onchange="setSALang(this.value)" style="background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-muted);padding:5px 8px;font-size:11px;border-radius:4px;cursor:pointer"><option value="en">🇬🇧 EN</option><option value="lo">🇱🇦 ລາວ</option><option value="th">🇹🇭 ไทย</option><option value="zh">🇨🇳 中文</option><option value="ko">🇰🇷 한국어</option></select><button class="btn btn-gold" onclick="resetRestoModal();openModal('mAddResto')">+ Add Restaurant</button><button class="btn" id="saSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="sa-dashboard">
           <div style="display:flex;justify-content:flex-end;gap:5px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
@@ -3268,6 +3296,7 @@ setTimeout(function(){
 <!-- OWNER -->
 <div id="pg-ow" class="page">
   <div class="expiry-banner" id="owExpiryBanner"></div>
+  <div class="sb-overlay" onclick="closeMobileSidebar()"></div>
   <div class="staff-wrap">
     <aside class="sb">
       <div class="sb-brand"><div class="sb-logo">EAT<em>LAOS</em></div><div class="sb-badge badge-ow">🏪 Owner</div></div>
@@ -3286,7 +3315,7 @@ setTimeout(function(){
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">🏪</div><div><div class="sb-un" id="owSbN">Owner</div><div class="sb-ur" id="owSbR">Restaurant</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
     </aside>
     <main class="staff-main">
-      <div class="topbar"><div class="topbar-title" id="owTbar">Dashboard</div><div class="topbar-r"><select id="staffLangSel" onchange="setStaffLang(this.value)" style="background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-muted);padding:5px 8px;font-size:11px;border-radius:4px;cursor:pointer"><option value="en">🇬🇧 EN</option><option value="lo">🇱🇦 ລາວ</option><option value="th">🇹🇭 ไทย</option><option value="zh">🇨🇳 中文</option><option value="ko">🇰🇷 한국어</option></select><div class="firebase-status"><div class="fb-dot" id="owFbDot"></div><span id="owFbTxt">Connecting...</span></div><button class="btn" id="owSound" onclick="toggleSound()">🔔 ON</button></div></div>
+      <div class="topbar"><div class="topbar-l"><button class="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><div class="topbar-title" id="owTbar">Dashboard</div></div><div class="topbar-r"><select id="staffLangSel" onchange="setStaffLang(this.value)" style="background:var(--s-surf3);border:1px solid var(--s-border);color:var(--s-muted);padding:5px 8px;font-size:11px;border-radius:4px;cursor:pointer"><option value="en">🇬🇧 EN</option><option value="lo">🇱🇦 ລາວ</option><option value="th">🇹🇭 ไทย</option><option value="zh">🇨🇳 中文</option><option value="ko">🇰🇷 한국어</option></select><div class="firebase-status"><div class="fb-dot" id="owFbDot"></div><span id="owFbTxt">Connecting...</span></div><button class="btn" id="owSound" onclick="toggleSound()">🔔 ON</button></div></div>
       <div class="body-p">
         <div class="panel on" id="ow-dashboard">
           <!-- Filter buttons -->
@@ -10790,6 +10819,38 @@ function notifyD(txt){
 }
 function notifyC(txt,success=false){const id=success?'notifS':'notifC',txtId=success?'notifSTxt':'notifCTxt';const el=document.getElementById(id);document.getElementById(txtId).textContent=txt;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
 function toggleSound(){soundOn=!soundOn;['saSound','owSound'].forEach(id=>{const e=document.getElementById(id);if(e) e.textContent=soundOn?'🔔 ON':'🔕 OFF';});notifyD(soundOn?'🔔 Sound on':'🔕 Sound off');}
+
+/* ── Sidebar toggle (desktop collapse OR mobile slide-in) ── */
+function toggleSidebar(){
+  const isMobile = window.matchMedia('(max-width:768px)').matches;
+  if(isMobile){
+    document.body.classList.toggle('sb-mobile-open');
+  } else {
+    document.body.classList.toggle('sb-collapsed');
+    try { localStorage.setItem('el_sb_collapsed', document.body.classList.contains('sb-collapsed') ? '1' : '0'); } catch(e){}
+  }
+}
+function closeMobileSidebar(){
+  document.body.classList.remove('sb-mobile-open');
+}
+/* Restore desktop collapsed state on load; auto-close mobile sidebar when navigating */
+(function(){
+  try { if(localStorage.getItem('el_sb_collapsed') === '1') document.body.classList.add('sb-collapsed'); } catch(e){}
+  // Close mobile sidebar after any sb-item click (so navigation feels right)
+  document.addEventListener('click', (e)=>{
+    if(!document.body.classList.contains('sb-mobile-open')) return;
+    const btn = e.target.closest('.sb-item');
+    if(btn) closeMobileSidebar();
+  }, true);
+  // Close mobile sidebar on Escape
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && document.body.classList.contains('sb-mobile-open')) closeMobileSidebar();
+  });
+  // Reset mobile-open state on resize to desktop (avoid stuck state)
+  window.addEventListener('resize', ()=>{
+    if(!window.matchMedia('(max-width:768px)').matches) closeMobileSidebar();
+  });
+})();
 function playSound(){if(!soundOn) return;try{const ac=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0,ac.currentTime+i*.15);g.gain.linearRampToValueAtTime(.2,ac.currentTime+i*.15+.06);g.gain.linearRampToValueAtTime(0,ac.currentTime+i*.15+.28);o.start(ac.currentTime+i*.15);o.stop(ac.currentTime+i*.15+.32);});}catch(e){}}
 function printReceipt(){const c=document.getElementById('receiptContent').innerHTML,pa=document.getElementById('printArea');pa.innerHTML=c;pa.style.display='block';window.print();setTimeout(()=>pa.style.display='none',500);}
 
