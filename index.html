@@ -4069,29 +4069,131 @@ const _k3=[115,57,86,68,107,101,72,119,45,115,78,51,56];
 const API_KEY=String.fromCharCode(..._k1,..._k2,..._k3);
 
 // REST API functions — no SDK, works instantly for customers
-async function restGet(path){
-  const r=await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY);
-  return r.ok?r.json():null;
-}
-async function restPush(path,data){
-  try{
-    const r=await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(data)
-    });
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    return{key:j.name};
-  }catch(e){
-    console.warn('restPush failed:',path,e.message);
-    return null;
+/* ─── Network safety: timeout + retry on Firebase REST calls ──────────
+   Slow Lao internet → Firebase asia-southeast1 can take 3-5s.
+   Without this, fetch can hang indefinitely → user stuck on "Loading..."
+   Adds: 10s GET timeout, 15s write timeout, 1 retry on transient errors,
+   slow-request console diagnostic for paths taking >3s. */
+
+const _NET_GET_TIMEOUT_MS = 10000;
+const _NET_WRITE_TIMEOUT_MS = 15000;
+const _NET_SLOW_THRESHOLD_MS = 3000;
+
+// Wrapper around fetch that adds AbortController-based timeout.
+// Returns the Response. Throws on timeout or network error.
+async function _fetchWithTimeout(url, opts, timeoutMs){
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), timeoutMs || _NET_GET_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...(opts || {}), signal: ctrl.signal });
+  } finally {
+    clearTimeout(id);
   }
 }
+
+// Determine if an error/response is worth retrying once.
+// Retry on: AbortError (timeout), TypeError (network drop), 5xx server errors.
+// Don't retry: 4xx (auth/permission/bad-data — retrying won't help).
+function _isRetryable(err, response){
+  if(err){
+    if(err.name === 'AbortError') return true;
+    if(err.name === 'TypeError') return true; // browser network failure
+    return false;
+  }
+  if(response && response.status >= 500 && response.status < 600) return true;
+  return false;
+}
+
+async function restGet(path){
+  const t0 = Date.now();
+  let lastErr = null;
+  for(let attempt = 0; attempt < 2; attempt++){
+    try {
+      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json?auth='+API_KEY, null, _NET_GET_TIMEOUT_MS);
+      if(!r.ok){
+        if(_isRetryable(null, r) && attempt === 0){
+          await new Promise(res => setTimeout(res, 800));
+          continue;
+        }
+        return null;
+      }
+      const dt = Date.now() - t0;
+      if(dt > _NET_SLOW_THRESHOLD_MS) console.warn('[FB SLOW]', dt+'ms', 'GET', path);
+      return r.json();
+    } catch(e){
+      lastErr = e;
+      if(_isRetryable(e, null) && attempt === 0){
+        await new Promise(res => setTimeout(res, 800));
+        continue;
+      }
+      console.warn('[FB FAIL]', 'GET', path, e.name, e.message);
+      return null;
+    }
+  }
+  if(lastErr) console.warn('[FB FAIL]', 'GET', path, lastErr.name, lastErr.message);
+  return null;
+}
+
+async function restPush(path,data){
+  const t0 = Date.now();
+  for(let attempt = 0; attempt < 2; attempt++){
+    try {
+      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json?auth='+API_KEY, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+      }, _NET_WRITE_TIMEOUT_MS);
+      if(!r.ok){
+        if(_isRetryable(null, r) && attempt === 0){
+          await new Promise(res => setTimeout(res, 800));
+          continue;
+        }
+        throw new Error('HTTP '+r.status);
+      }
+      const j = await r.json();
+      const dt = Date.now() - t0;
+      if(dt > _NET_SLOW_THRESHOLD_MS) console.warn('[FB SLOW]', dt+'ms', 'POST', path);
+      return { key: j.name };
+    } catch(e){
+      if(_isRetryable(e, null) && attempt === 0){
+        await new Promise(res => setTimeout(res, 800));
+        continue;
+      }
+      console.warn('restPush failed:', path, e.message);
+      return null;
+    }
+  }
+  return null;
+}
+
 async function restUpdate(path,data){
-  await fetch(DB_URL+'/'+path+'.json?auth='+API_KEY,{
-    method:'PATCH',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(data)
-  });
+  const t0 = Date.now();
+  for(let attempt = 0; attempt < 2; attempt++){
+    try {
+      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json?auth='+API_KEY, {
+        method:'PATCH', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+      }, _NET_WRITE_TIMEOUT_MS);
+      if(!r.ok){
+        if(_isRetryable(null, r) && attempt === 0){
+          await new Promise(res => setTimeout(res, 800));
+          continue;
+        }
+        // Don't throw — preserve original "silent fail" contract for restUpdate
+        console.warn('[FB FAIL]', 'PATCH', path, 'HTTP '+r.status);
+        return;
+      }
+      const dt = Date.now() - t0;
+      if(dt > _NET_SLOW_THRESHOLD_MS) console.warn('[FB SLOW]', dt+'ms', 'PATCH', path);
+      return;
+    } catch(e){
+      if(_isRetryable(e, null) && attempt === 0){
+        await new Promise(res => setTimeout(res, 800));
+        continue;
+      }
+      console.warn('[FB FAIL]', 'PATCH', path, e.name, e.message);
+      return;
+    }
+  }
 }
 
 // Firebase SDK loader — only for admin/owner
@@ -5709,7 +5811,10 @@ function fbUpdate(path,data){
 // dedupe the burst of reads that happen during panel loads. Cache is invalidated on
 // any write through fbSet/fbUpdate/fbPush, and cleared on logout.
 const _fbGetCache = new Map();
-const _FB_GET_TTL = 3000;
+// 30s TTL: rapid panel switching uses cache (zero Firebase calls).
+// Writes invalidate cache immediately, so users see their own changes instantly.
+// Cross-tab/cross-device changes can be up to 30s stale — acceptable for restaurant ops.
+const _FB_GET_TTL = 30000;
 window._restoCache = _fbGetCache; // alias for direct seeding
 
 function _fbCacheGet(path){
@@ -5754,15 +5859,19 @@ async function fbGetFresh(path){
 // (e.g. "bookings": { "$rid": { ".indexOn": ["date"] } }) for best performance.
 // Falls back to full fetch automatically if the index is missing.
 async function fbGetFiltered(path, orderBy, equalTo){
+  const t0 = Date.now();
   try {
     const url = DB_URL+'/'+path+'.json?auth='+API_KEY
               +'&orderBy='+encodeURIComponent(JSON.stringify(orderBy))
               +'&equalTo='+encodeURIComponent(JSON.stringify(equalTo));
-    const r = await fetch(url);
+    const r = await _fetchWithTimeout(url, null, _NET_GET_TIMEOUT_MS);
     if(!r.ok) throw new Error('HTTP '+r.status);
+    const dt = Date.now() - t0;
+    if(dt > _NET_SLOW_THRESHOLD_MS) console.warn('[FB SLOW]', dt+'ms', 'FILTER', path, orderBy+'='+equalTo);
     return r.json();
   } catch(e){
-    console.warn('fbGetFiltered fallback:', path, e.message);
+    console.warn('fbGetFiltered fallback:', path, e.name, e.message);
+    // Fallback to full fetch (which has its own timeout/retry)
     return restGet(path);
   }
 }
@@ -6329,17 +6438,27 @@ async function doOwnerLogin(){
     });
   }
   // Last-resort fallback: full scan (only if no index match — handles edge cases gracefully)
+  let networkOk = (foundMap !== null); // indexed query at least responded
   if(!found){
     if(typeof dbg==='function') dbg('Indexed lookup empty, scanning all restaurants...');
     const restos = await fbGet('restaurants');
     if(restos){
+      networkOk = true;
       Object.entries(restos).forEach(([k,v])=>{
         if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
       });
+    } else if(restos === null && foundMap === null){
+      // Both calls returned null → likely network failure, not wrong credentials
+      networkOk = false;
     }
   }
   if(typeof dbg==='function') dbg(found?'✅ Match found: '+found.name:'❌ No match');
-  if(!found){document.getElementById('owErr').textContent='Incorrect username or password';return;}
+  if(!found){
+    document.getElementById('owErr').textContent = networkOk
+      ? 'Incorrect username or password'
+      : 'Could not connect — check your internet and try again';
+    return;
+  }
   // Check subscription expiry
   if(found.expiresAt && Date.now()>found.expiresAt){
     document.getElementById('owErr').textContent='Your access has expired. Contact the platform administrator.';
@@ -6363,9 +6482,10 @@ async function doOwnerLogin(){
       if(typeof _owApplyFeatures === 'function') _owApplyFeatures(_owFeaturesCache);
     }
   } catch(e){}
-  // PERF: Seed the restaurant cache too — many panels re-fetch this same data on open
-  if(typeof _restoCache !== 'undefined'){
-    _restoCache.set(found.id, { data: found, ts: Date.now() });
+  // PERF: Seed the restaurant cache too — many panels re-fetch this same data on open.
+  // Cache key must match how fbGet looks it up: full path 'restaurants/<id>', not just id.
+  if(typeof _fbGetCache !== 'undefined'){
+    _fbGetCache.set('restaurants/'+found.id, { data: found, ts: Date.now() });
   }
   showPage('pg-ow');
   // Check expiry warning (within 7 days)
@@ -6755,6 +6875,7 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'Sorry, online booking is not available at this restaurant.',
     bk_err_walkin:'Sorry, this table is no longer available for online booking on the selected date. Please pick another table.',
+    modal_confirm_close:'Discard changes? Your progress will be lost.',
     qr_err_disabled:'Sorry, QR ordering is not available at this restaurant.',
     bk_err_submit:'Could not submit booking. Please try again.',
     bk_err_load:'Could not load restaurants. Please try again.',
@@ -6925,6 +7046,7 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ຈອງອອນລາຍ.',
     bk_err_walkin:'ຂໍອະໄພ, ໂຕະນີ້ບໍ່ສາມາດຈອງອອນລາຍສຳລັບວັນທີນີ້ໄດ້ແລ້ວ. ກະລຸນາເລືອກໂຕະອື່ນ.',
+    modal_confirm_close:'ຍົກເລີກການປ່ຽນແປງບໍ? ຄວາມຄືບໜ້າຂອງທ່ານຈະຫາຍໄປ.',
     qr_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ສັ່ງດ້ວຍ QR.',
     bk_err_submit:'ບໍ່ສາມາດສົ່ງການຈອງໄດ້. ກະລຸນາລອງໃໝ່.',
     bk_err_load:'ບໍ່ສາມາດໂຫຼດຮ້ານອາຫານ. ກະລຸນາລອງໃໝ່.',
@@ -7095,6 +7217,7 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้จองออนไลน์',
     bk_err_walkin:'ขออภัย โต๊ะนี้ไม่เปิดให้จองออนไลน์ในวันที่เลือก กรุณาเลือกโต๊ะอื่น',
+    modal_confirm_close:'ยกเลิกการเปลี่ยนแปลง? ข้อมูลที่กรอกจะหายไป',
     qr_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้สั่งด้วย QR',
     bk_err_submit:'ไม่สามารถส่งการจองได้ กรุณาลองใหม่',
     bk_err_load:'ไม่สามารถโหลดร้านอาหาร กรุณาลองใหม่',
@@ -7265,6 +7388,7 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'抱歉，此餐厅暂不支持在线预订。',
     bk_err_walkin:'抱歉，此桌位在所选日期不再支持在线预订。请选择其他桌位。',
+    modal_confirm_close:'放弃更改？您的进度将会丢失。',
     qr_err_disabled:'抱歉，此餐厅暂不支持扫码点餐。',
     bk_err_submit:'无法提交预订，请重试。',
     bk_err_load:'无法加载餐厅，请重试。',
@@ -7435,6 +7559,7 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'죄송합니다. 이 레스토랑은 온라인 예약을 지원하지 않습니다.',
     bk_err_walkin:'죄송합니다. 이 테이블은 선택하신 날짜에 더 이상 온라인 예약을 받지 않습니다. 다른 테이블을 선택해 주세요.',
+    modal_confirm_close:'변경 사항을 취소하시겠습니까? 입력하신 내용이 사라집니다.',
     qr_err_disabled:'죄송합니다. 이 레스토랑은 QR 주문을 지원하지 않습니다.',
     bk_err_submit:'예약을 신청할 수 없습니다. 다시 시도해주세요.',
     bk_err_load:'레스토랑을 불러올 수 없습니다. 다시 시도해주세요.',
@@ -7739,13 +7864,14 @@ function saP(panel,btn){
   document.getElementById('sa-'+panel).classList.add('on');
   document.querySelectorAll('#pg-sa .sb-item').forEach(n=>n.classList.remove('on'));
   if(btn) btn.classList.add('on');
-  const t={dashboard:'Dashboard',revenue:'Revenue',restaurants:'Restaurants',orders:'All Orders',sessions:'Sessions',settings:'Settings'};
+  const t={dashboard:'Dashboard',revenue:'Revenue',restaurants:'Restaurants',orders:'All Orders',sessions:'Sessions',contacts:'Contact Requests',settings:'Settings'};
   document.getElementById('saTbar').textContent=t[panel]||panel;
   if(panel==='dashboard'){saStats();saRecentOrders();setTimeout(()=>initSACharts(),100);}
   if(panel==='revenue') saRevenue();
   if(panel==='restaurants') loadAndRenderRestos();
   if(panel==='orders') saOrders();
   if(panel==='sessions') loadSessions();
+  if(panel==='contacts') loadContactRequests();
   if(panel==='settings') loadSettingsUI();
 }
 
@@ -8712,6 +8838,8 @@ async function delResto(id){
   if(!confirm('Delete this restaurant? This cannot be undone.')) return;
   if(db) await db.ref('restaurants/'+id).remove();
   else await fetch(DB_URL+'/restaurants/'+id+'.json',{method:'DELETE'});
+  // Invalidate cache so deletion is reflected in next fetches (no stale data)
+  if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('restaurants/'+id);
   notifyD('🗑 Restaurant deleted');
   loadAndRenderRestos();
 }
@@ -11688,6 +11816,25 @@ function mkSel(fbKey,cur){return`<select onchange="updStatus('${fbKey}',this.val
 function openModal(id){const el=document.getElementById(id);if(!el)return;el.classList.add('open');if(lang!=='en')applyTranslation(el);}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
+/* Smart backdrop-close: if the modal has unsaved user input/progress (`dirty=true`),
+   shows a confirm dialog before closing. Otherwise closes instantly.
+   - dirtyCheck: function or boolean — true means user has unsaved work
+   - onClose: optional cleanup callback (e.g. release table lock)
+   Returns true if modal was closed, false if user said "stay". */
+function _modalBackdropClose(modalId, dirtyCheck, onClose){
+  let dirty = false;
+  try { dirty = typeof dirtyCheck === 'function' ? !!dirtyCheck() : !!dirtyCheck; } catch(e){ dirty = false; }
+  if(dirty){
+    const msg = (typeof _lp === 'function')
+      ? _lp('modal_confirm_close','Discard changes? Your progress will be lost.')
+      : 'Discard changes? Your progress will be lost.';
+    if(!confirm(msg)) return false;
+  }
+  if(typeof onClose === 'function'){ try { onClose(); } catch(e){} }
+  closeModal(modalId);
+  return true;
+}
+
 let ntD,ntC;
 function notifyD(txt){
   const el=document.getElementById('notifD');
@@ -13775,6 +13922,8 @@ async function bkReleaseLock(){
           // REST fallback: DELETE
           await fetch(DB_URL+'/tableLocks/'+bkState.restoId+'/'+bkState.tableId+'.json?auth='+API_KEY, { method:'DELETE' });
         }
+        // Defensive: clear cache entry so any non-fresh reader sees the deletion
+        if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('tableLocks/'+bkState.restoId+'/'+bkState.tableId);
       }
     } catch(e){ console.warn('lock release failed (non-fatal):', e); }
   }
@@ -14874,6 +15023,8 @@ async function cleanupOldBookings(opts){
         if(!dryRun){
           try {
             await db.ref('bookings/'+restoId+'/'+bookingId).remove();
+            // Invalidate cache for parent path so list views are accurate
+            if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('bookings/'+restoId+'/'+bookingId);
             totalDeleted++;
           } catch(e){
             console.error(`[Booking Cleanup] Failed to delete ${restoId}/${bookingId}:`, e.message);
@@ -15224,7 +15375,7 @@ async function cleanupOldBookings(opts){
 </div>
 
 <!-- v6.6: Add Area picker (small modal nested in SA editor) -->
-<div id="mFpAddArea" class="modal-ov fp-aa-modal" onclick="if(event.target===this)fpCloseAddAreaModal()">
+<div id="mFpAddArea" class="modal-ov fp-aa-modal" onclick="if(event.target===this)_modalBackdropClose('mFpAddArea',function(){const el=document.getElementById('fpAreaCustomInput');return el&&el.value&&el.value.trim();},function(){if(typeof fpCloseAddAreaModal==='function')fpCloseAddAreaModal();});">
   <div class="fp-aa-shell">
     <button class="fp-aa-x" onclick="fpCloseAddAreaModal()" aria-label="Close">×</button>
     <div class="fp-aa-title" data-ts="fp_aa_title">Add a new area</div>
@@ -15323,7 +15474,7 @@ async function cleanupOldBookings(opts){
 </div>
 
 <!-- ── CONTACT MODAL ── -->
-<div id="mContact" class="modal-ov" onclick="if(event.target===this)closeModal('mContact')">
+<div id="mContact" class="modal-ov" onclick="if(event.target===this)_modalBackdropClose('mContact',function(){const f=['cName','cResto','cPhone','cMsg'];return f.some(id=>{const el=document.getElementById(id);return el&&el.value&&el.value.trim();});});">
   <div style="background:#111;border:1px solid rgba(200,151,58,.2);border-radius:16px;padding:40px;max-width:480px;width:100%;position:relative;animation:fadeUp .3s ease;">
     <button onclick="closeModal('mContact')" style="position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;line-height:1;">×</button>
     <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c8973a;font-weight:700;margin-bottom:12px">Contact Us</div>
@@ -15355,7 +15506,7 @@ async function cleanupOldBookings(opts){
 <!-- ════════════════════════════════════════════ -->
 <!-- v4 BOOKING SYSTEM — Customer Booking Modal -->
 <!-- ════════════════════════════════════════════ -->
-<div id="mCustBooking" class="modal-ov" onclick="if(event.target===this){bkReleaseLock();closeModal('mCustBooking')}">
+<div id="mCustBooking" class="modal-ov" onclick="if(event.target===this){_modalBackdropClose('mCustBooking',function(){return bkState&&bkState.step>1&&bkState.step<7;},bkReleaseLock);}">
   <div class="bkm-shell">
     <!-- Progress bar at top -->
     <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
@@ -15364,7 +15515,7 @@ async function cleanupOldBookings(opts){
         <div class="bkm-eyebrow" data-lp="bk_eyebrow">Book a Table</div>
         <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 6</div>
       </div>
-      <button class="bkm-x" onclick="bkReleaseLock();closeModal('mCustBooking')" aria-label="Close">×</button>
+      <button class="bkm-x" onclick="_modalBackdropClose('mCustBooking',function(){return bkState&&bkState.step>1&&bkState.step<7;},bkReleaseLock);" aria-label="Close">×</button>
     </div>
     <div class="bk-modal-body">
       <!-- STEP 1: PICK RESTAURANT -->
@@ -15459,7 +15610,7 @@ async function cleanupOldBookings(opts){
 <!-- ════════════════════════════════════════════ -->
 <!-- v4 BOOKING SYSTEM — Customer Status Check    -->
 <!-- ════════════════════════════════════════════ -->
-<div id="mCustBookingStatus" class="modal-ov" onclick="if(event.target===this)closeModal('mCustBookingStatus')">
+<div id="mCustBookingStatus" class="modal-ov" onclick="if(event.target===this)_modalBackdropClose('mCustBookingStatus',function(){const f=['bsPhone','bsCode'];return f.some(id=>{const el=document.getElementById(id);return el&&el.value&&el.value.trim();});});">
   <div class="bkm-shell" style="max-width:480px">
     <div class="bkm-head">
       <div>
