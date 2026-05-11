@@ -96,13 +96,16 @@ button,input,select,textarea{font-family:var(--fb);}
 .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
 .theme-card{border:2px solid var(--s-border);cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);border-radius:8px;overflow:hidden;position:relative;}
 .theme-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.5);}
-.theme-card.selected{border-color:var(--s-gold);box-shadow:0 0 0 3px var(--s-gold),0 12px 32px rgba(0,0,0,.5);}
+.theme-card.selected{border-color:var(--s-gold);box-shadow:0 0 0 4px var(--s-gold),0 16px 36px rgba(200,151,58,.45),0 0 0 1px rgba(0,0,0,.4) inset;transform:translateY(-2px) scale(1.03);}
 .theme-card-hero{height:56px;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;overflow:hidden;}
 .theme-card-body{padding:5px 7px;background:rgba(0,0,0,.6);}
 .theme-card-name{font-size:10px;font-weight:700;color:#fff;margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .theme-card-desc{font-size:8px;color:rgba(255,255,255,.4);line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
-.theme-card-check{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--s-gold);color:#000;font-size:11px;font-weight:900;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(200,151,58,.5);}
+.theme-card-check{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:var(--s-gold);color:#000;font-size:13px;font-weight:900;display:none;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.6),0 0 0 2px #fff;z-index:2;}
 .theme-card.selected .theme-card-check{display:flex;}
+.theme-card.selected .theme-card-body{background:rgba(200,151,58,.92);}
+.theme-card.selected .theme-card-name{color:#000;}
+.theme-card.selected .theme-card-desc{color:rgba(0,0,0,.7);}
 
 /* ── THEME PARTICLE LAYER (injected by JS) ── */
 #theme-particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
@@ -2504,6 +2507,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .ow-tm-stats b{color:var(--s-text);font-weight:700;font-size:14px;}
 .ow-tm-stats .ow-tm-stat-bk b{color:#ff7a78;}
 .ow-tm-stats .ow-tm-stat-free b{color:#7fe3a3;}
+.ow-tm-stats .ow-tm-stat-walkin b{color:#60a5fa;}
 .ow-tm-map{flex:1;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:340px;position:relative;}
 .ow-tm-map .fp-viewer-svg{width:100%;height:100%;display:block;}
 .ow-tm-empty{padding:40px 24px;text-align:center;color:var(--s-muted);font-size:13px;line-height:1.7;max-width:380px;}
@@ -2513,6 +2517,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .ow-tm-dot{width:11px;height:11px;border-radius:3px;border:1.5px solid;display:inline-block;}
 .ow-tm-dot.ow-tm-free{background:#c8973a;border-color:#f5c976;}
 .ow-tm-dot.ow-tm-bk{background:rgba(220,53,69,.22);border-color:rgba(220,53,69,.5);}
+.ow-tm-dot.ow-tm-walkin{background:rgba(96,165,250,.22);border-color:rgba(96,165,250,.7);border-style:dashed;}
 @media(max-width:600px){
   .ow-tm-shell{max-width:100vw;width:100vw;max-height:100dvh;height:100dvh;border-radius:0;}
   .ow-tm-body{padding:10px 12px 12px;}
@@ -2698,17 +2703,17 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.selected .fp-vw-tnum{fill:#1a1209;}
 .fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.45);}
 .fp-vw-table.walkin .fp-vw-tnum{fill:rgba(255,255,255,.7);}
-.fp-vw-walkin-badge{font-size:20px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
+.fp-vw-walkin-badge{font-size:26px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 /* VIP — keeps amber state color + crown badge (functional indicator), no animations */
 .fp-vw-table.vip.available .fp-vw-el-shape{fill:#f59e0b;stroke:#fef3c7;stroke-width:2;}
 .fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.5);stroke-width:1.5;}
 .fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.7);stroke-width:1.5;}
 .fp-vw-table.vip.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
 .fp-vw-table.vip.selected .fp-vw-el-shape{fill:#fff;stroke:#f59e0b;stroke-width:3;}
-.fp-vw-vip-crown{font-size:20px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
+.fp-vw-vip-crown{font-size:26px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 .fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
 .fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:800;}
-.fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:18px;font-weight:700;fill:rgba(255,255,255,.85);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:.4px;paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2.5px;stroke-linejoin:round;}
+.fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:24px;font-weight:700;fill:rgba(255,255,255,.9);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:.4px;paint-order:stroke;stroke:rgba(0,0,0,.65);stroke-width:3px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
@@ -4520,6 +4525,10 @@ const STAFF_T={
     bk_expired:'Expired',
     bk_checkin:'✓ Customer arrived',
     bk_arrived:'✓ Customer arrived',
+    bk_noshow_btn:'✗ Didn\'t come',
+    bk_noshow_confirm:'Mark this customer as no-show? The table will be freed.',
+    bk_noshow_done:'✗ Marked as no-show — table freed',
+    bk_err_noshow:'Could not mark as no-show. Please try again.',
     bk_err_checkin:'Could not check in customer.',
     bk_mode_label:'Booking slots:',
     bk_mode_auto:'Auto every 30 min',
@@ -4543,9 +4552,11 @@ const STAFF_T={
     owtm_title:'Booked Tables',
     owtm_stat_booked:'Booked',
     owtm_stat_free:'Free',
+    owtm_stat_walkin:'Walk-in',
     owtm_stat_total:'Total tables in area',
     owtm_leg_free:'Free',
     owtm_leg_booked:'Booked',
+    owtm_leg_walkin:'Walk-in',
     ow_login_password:'Password',
     ow_signin:'Sign In →',
     ow_remember_me:'Remember password',
@@ -4692,6 +4703,10 @@ const STAFF_T={
     bk_expired:'ໝົດເວລາ',
     bk_checkin:'✓ ລູກຄ້າມາແລ້ວ',
     bk_arrived:'✓ ລູກຄ້າມາແລ້ວ',
+    bk_noshow_btn:'✗ ບໍ່ມາ',
+    bk_noshow_confirm:'ໝາຍລູກຄ້ານີ້ວ່າບໍ່ມາ? ໂຕະຈະຖືກປ່ອຍວ່າງ.',
+    bk_noshow_done:'✗ ໝາຍວ່າບໍ່ມາແລ້ວ — ໂຕະວ່າງແລ້ວ',
+    bk_err_noshow:'ບໍ່ສາມາດໝາຍວ່າບໍ່ມາໄດ້. ກະລຸນາລອງໃໝ່.',
     bk_err_checkin:'ບໍ່ສາມາດເຊັກອິນໄດ້.',
     bk_mode_label:'ຊ່ວງເວລາຈອງ:',
     bk_mode_auto:'ອັດຕະໂນມັດທຸກ 30 ນາທີ',
@@ -4715,9 +4730,11 @@ const STAFF_T={
     owtm_title:'ໂຕະທີ່ຖືກຈອງ',
     owtm_stat_booked:'ຖືກຈອງ',
     owtm_stat_free:'ວ່າງ',
+    owtm_stat_walkin:'Walk-in',
     owtm_stat_total:'ໂຕະທັງໝົດໃນເຂດ',
     owtm_leg_free:'ວ່າງ',
     owtm_leg_booked:'ຖືກຈອງ',
+    owtm_leg_walkin:'Walk-in',
     ow_login_password:'ລະຫັດຜ່ານ',
     ow_signin:'ເຂົ້າລະບົບ →',
     ow_remember_me:'ຈື່ລະຫັດຜ່ານ',
@@ -4864,6 +4881,10 @@ const STAFF_T={
     bk_expired:'หมดเวลา',
     bk_checkin:'✓ ลูกค้ามาแล้ว',
     bk_arrived:'✓ ลูกค้ามาแล้ว',
+    bk_noshow_btn:'✗ ไม่มา',
+    bk_noshow_confirm:'ทำเครื่องหมายลูกค้าว่าไม่มา? โต๊ะจะถูกปลดให้ว่าง',
+    bk_noshow_done:'✗ ทำเครื่องหมายว่าไม่มาแล้ว — โต๊ะว่างแล้ว',
+    bk_err_noshow:'ไม่สามารถทำเครื่องหมายว่าไม่มาได้ กรุณาลองใหม่',
     bk_err_checkin:'ไม่สามารถเช็คอินได้',
     bk_mode_label:'ช่วงเวลาจอง:',
     bk_mode_auto:'อัตโนมัติทุก 30 นาที',
@@ -4887,9 +4908,11 @@ const STAFF_T={
     owtm_title:'โต๊ะที่จอง',
     owtm_stat_booked:'จองแล้ว',
     owtm_stat_free:'ว่าง',
+    owtm_stat_walkin:'Walk-in',
     owtm_stat_total:'โต๊ะทั้งหมดในโซน',
     owtm_leg_free:'ว่าง',
     owtm_leg_booked:'จองแล้ว',
+    owtm_leg_walkin:'Walk-in',
     ow_login_password:'รหัสผ่าน',
     ow_signin:'เข้าสู่ระบบ →',
     ow_remember_me:'จดจำรหัสผ่าน',
@@ -5036,6 +5059,10 @@ const STAFF_T={
     bk_expired:'已过期',
     bk_checkin:'✓ 客人已到达',
     bk_arrived:'✓ 客人已到达',
+    bk_noshow_btn:'✗ 未到',
+    bk_noshow_confirm:'标记此客人为未到？桌位将被释放。',
+    bk_noshow_done:'✗ 已标记为未到 — 桌位已释放',
+    bk_err_noshow:'无法标记为未到，请重试。',
     bk_err_checkin:'无法标记为已到达。',
     bk_mode_label:'预订时段:',
     bk_mode_auto:'每30分钟自动生成',
@@ -5059,9 +5086,11 @@ const STAFF_T={
     owtm_title:'已预订桌位',
     owtm_stat_booked:'已预订',
     owtm_stat_free:'空闲',
+    owtm_stat_walkin:'堂食',
     owtm_stat_total:'区域内桌位总数',
     owtm_leg_free:'空闲',
     owtm_leg_booked:'已预订',
+    owtm_leg_walkin:'堂食',
     ow_login_password:'密码',
     ow_signin:'登录 →',
     ow_remember_me:'记住密码',
@@ -5224,6 +5253,10 @@ const STAFF_T={
     bk_expired:'만료됨',
     bk_checkin:'✓ 고객 도착',
     bk_arrived:'✓ 고객 도착',
+    bk_noshow_btn:'✗ 미방문',
+    bk_noshow_confirm:'이 고객을 노쇼로 표시하시겠습니까? 테이블이 해제됩니다.',
+    bk_noshow_done:'✗ 노쇼로 표시됨 — 테이블 해제됨',
+    bk_err_noshow:'노쇼로 표시할 수 없습니다. 다시 시도해 주세요.',
     bk_err_checkin:'고객 도착 처리에 실패했습니다.',
     bk_mode_label:'예약 시간대:',
     bk_mode_auto:'30분마다 자동',
@@ -5247,9 +5280,11 @@ const STAFF_T={
     owtm_title:'예약된 테이블',
     owtm_stat_booked:'예약됨',
     owtm_stat_free:'이용 가능',
+    owtm_stat_walkin:'워크인',
     owtm_stat_total:'구역 내 전체 테이블',
     owtm_leg_free:'이용 가능',
     owtm_leg_booked:'예약됨',
+    owtm_leg_walkin:'워크인',
     ow_login_password:'비밀번호',
     ow_signin:'로그인 →',
     ow_remember_me:'비밀번호 기억',
@@ -14509,9 +14544,19 @@ async function _owTmFetchAndRender(silent){
       }
     });
   }
+  // Compute walk-in table IDs for the chosen date (tables locked for walk-in only)
+  const walkInTableIds = new Set();
+  const targetMidnightMs = (typeof _wiDateAtMidnight === 'function') ? _wiDateAtMidnight(targetDate) : new Date(targetDate+'T00:00:00').getTime();
+  tables.forEach(t => {
+    if(t && t.id && t.walkInFrom && t.walkInUntil
+       && targetMidnightMs >= t.walkInFrom && targetMidnightMs <= t.walkInUntil){
+      walkInTableIds.add(t.id);
+    }
+  });
   _owTmState.areas = areas;
   _owTmState.tables = tables;
   _owTmState.bookedTableIds = bookedTableIds;
+  _owTmState.walkInTableIds = walkInTableIds;
   // Pick first area if none selected, or keep current if it still exists
   const areaSlugs = Object.keys(areas);
   if(!_owTmState.activeArea || !areas[_owTmState.activeArea]){
@@ -14564,6 +14609,7 @@ function _owTmRenderAll(){
   const activeArea = _owTmState.areas[_owTmState.activeArea];
   let tablesInArea = [];
   let bookedInArea = 0;
+  let walkInInArea = 0;
   if(activeArea){
     const tableIdsInArea = new Set();
     (activeArea.elements || []).forEach(el => {
@@ -14572,16 +14618,25 @@ function _owTmRenderAll(){
       if(el.kind && el.kind.indexOf('table') === 0 && el.tableId) tableIdsInArea.add(el.tableId);
     });
     tablesInArea = _owTmState.tables.filter(t => tableIdsInArea.has(t.id));
-    tablesInArea.forEach(t => { if(_owTmState.bookedTableIds.has(t.id)) bookedInArea++; });
+    tablesInArea.forEach(t => {
+      if(_owTmState.bookedTableIds.has(t.id)) bookedInArea++;
+      else if(_owTmState.walkInTableIds && _owTmState.walkInTableIds.has(t.id)) walkInInArea++;
+    });
   }
-  const freeInArea = Math.max(0, tablesInArea.length - bookedInArea);
+  const freeInArea = Math.max(0, tablesInArea.length - bookedInArea - walkInInArea);
   // FIX: Translate stat labels (was hardcoded English)
   const lblBk = _ts('owtm_stat_booked','Booked');
   const lblFree = _ts('owtm_stat_free','Free');
+  const lblWalkIn = _ts('owtm_stat_walkin','Walk-in');
   const lblTotal = _ts('owtm_stat_total','Total tables in area');
+  // Only show walk-in count if there are any (keeps the bar clean when no walk-ins)
+  const walkInChunk = walkInInArea > 0
+    ? `<div class="ow-tm-stat-walkin">${escapeHtml(lblWalkIn)}: <b>${walkInInArea}</b></div>`
+    : '';
   stats.innerHTML = `
     <div class="ow-tm-stat-bk">${escapeHtml(lblBk)}: <b>${bookedInArea}</b></div>
     <div class="ow-tm-stat-free">${escapeHtml(lblFree)}: <b>${freeInArea}</b></div>
+    ${walkInChunk}
     <div>${escapeHtml(lblTotal)}: <b>${tablesInArea.length}</b></div>
   `;
   // Render the map SVG using the existing customer-side renderer
@@ -14589,7 +14644,7 @@ function _owTmRenderAll(){
     map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">🗺️</span>${escapeHtml(_ts('owtm_no_floorplan','No floor plan set up yet. Ask your administrator to design the table map.'))}</div>`;
     return;
   }
-  const svg = fpRenderCustomerView(activeArea, _owTmState.tables, _owTmState.bookedTableIds, new Set(), null);
+  const svg = fpRenderCustomerView(activeArea, _owTmState.tables, _owTmState.bookedTableIds, new Set(), null, _owTmState.walkInTableIds);
   if(!svg){
     map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">🗺️</span>${escapeHtml(_ts('owtm_empty_area','This area has no tables placed on the map.'))}</div>`;
     return;
@@ -14665,8 +14720,10 @@ function renderOwnerBookings(){
     } else if(b.status==='accepted' && !b.checkedIn){
       // v6.3: Check-in button for accepted bookings (avoids auto-expiry)
       const lblCheckIn = _ts('bk_checkin','✓ Customer arrived');
+      const lblNoShow = _ts('bk_noshow_btn','✗ Didn\'t come');
       actions = `<div class="ob-card-actions">
         <button class="btn btn-sm" data-bk-action="checkin" data-bk-id="${escapeHtml(b.id)}" style="background:#1976d2;color:#fff;border-color:#1976d2">${escapeHtml(lblCheckIn)}</button>
+        <button class="btn btn-sm" data-bk-action="noshow" data-bk-id="${escapeHtml(b.id)}" style="background:rgba(220,53,69,.12);color:#ff7a78;border-color:rgba(220,53,69,.4)">${escapeHtml(lblNoShow)}</button>
       </div>`;
     } else if(b.status==='accepted' && b.checkedIn){
       // Already checked in — show subtle confirmation
@@ -14713,6 +14770,7 @@ function renderOwnerBookings(){
     if(action==='accept') acceptOwnerBooking(id);
     else if(action==='reject') rejectOwnerBooking(id);
     else if(action==='checkin') checkInOwnerBooking(id);
+    else if(action==='noshow') noShowOwnerBooking(id);
   };
   const pendingCount = _bkOwnerCache.filter(b=>b.status==='pending').length;
   const badge = document.getElementById('owBookBadge');
@@ -14748,6 +14806,24 @@ async function checkInOwnerBooking(id){
     loadOwnerBookings();
     if(typeof notifyD === 'function') notifyD('✓ Marked as arrived');
   } catch(e){ console.error('checkInOwnerBooking:', e); alert(_ts('bk_err_checkin','Could not check in customer.')); }
+}
+
+/* Owner marks an accepted booking as no-show (customer didn't come).
+   Uses status='expired' (same as auto-sweep) so the table frees up,
+   stats counters update, and the booking moves out of the accepted tab. */
+async function noShowOwnerBooking(id){
+  const confirmMsg = _ts('bk_noshow_confirm','Mark this customer as no-show? The table will be freed.');
+  if(!confirm(confirmMsg)) return;
+  try {
+    await fbSet('bookings/'+restoId+'/'+id+'/status', 'expired');
+    await fbSet('bookings/'+restoId+'/'+id+'/expiredAt', Date.now());
+    await fbSet('bookings/'+restoId+'/'+id+'/noShow', true);
+    loadOwnerBookings();
+    if(typeof notifyD === 'function') notifyD(_ts('bk_noshow_done','✗ Marked as no-show — table freed'));
+  } catch(e){
+    console.error('noShowOwnerBooking:', e);
+    alert(_ts('bk_err_noshow','Could not mark as no-show. Please try again.'));
+  }
 }
 
 /* v6.3: Auto-expiry sweep
@@ -15165,6 +15241,7 @@ async function cleanupOldBookings(opts){
       <div class="ow-tm-legend">
         <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-free"></span><span data-ts="owtm_leg_free">Free</span></span>
         <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-bk"></span><span data-ts="owtm_leg_booked">Booked</span></span>
+        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-walkin"></span><span data-ts="owtm_leg_walkin">Walk-in</span></span>
       </div>
     </div>
   </div>
