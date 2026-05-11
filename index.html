@@ -2541,12 +2541,15 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-table-card.selected{background:rgba(200,151,58,.15);border-color:#c8973a;box-shadow:0 0 0 3px rgba(200,151,58,.12);}
 .bk-table-card.booked{background:rgba(220,53,69,.06);border-color:rgba(220,53,69,.25);cursor:not-allowed;opacity:.7;}
 .bk-table-card.locked{background:rgba(255,193,7,.06);border-color:rgba(255,193,7,.3);cursor:not-allowed;opacity:.7;}
+.bk-table-card.walkin{background:rgba(96,165,250,.06);border-color:rgba(96,165,250,.45);border-style:dashed;cursor:help;opacity:.88;}
 .bk-table-num{font-family:var(--ff,inherit);font-size:20px;font-weight:900;color:#fff;letter-spacing:-.5px;}
 .bk-table-card.booked .bk-table-num,.bk-table-card.locked .bk-table-num{color:rgba(255,255,255,.55);}
 .bk-table-cap{font-size:10px;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.5px;}
 .bk-table-status{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:6px;}
 .bk-table-card.booked .bk-table-status{color:rgba(220,53,69,.85);}
 .bk-table-card.locked .bk-table-status{color:rgba(255,193,7,.9);}
+.bk-table-card.walkin .bk-table-status{color:rgba(96,165,250,.95);font-weight:700;}
+.bk-table-card.walkin .bk-table-num{color:rgba(255,255,255,.7);}
 
 /* ═══ v5.5 FLOOR PLAN EDITOR & VIEWER ═══ */
 .fp-modal{display:none;}
@@ -2682,9 +2685,11 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.available .fp-vw-el-shape{fill:#c8973a;stroke:#f5c976;stroke-width:1.5;}
 .fp-vw-table.booked .fp-vw-el-shape{fill:rgba(180,90,90,.2);stroke:rgba(248,113,113,.4);stroke-width:1;}
 .fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.2);stroke:rgba(251,191,36,.5);stroke-width:1;}
+.fp-vw-table.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
 .fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3;}
 .fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
 .fp-vw-table.booked,.fp-vw-table.locked{opacity:.5;}
+.fp-vw-table.walkin{opacity:.85;cursor:help;}
 /* Fixed elements — minimal styling, recede slightly */
 .fp-vw-fixed .fp-vw-el-shape{stroke:rgba(255,255,255,.08);stroke-width:1;opacity:.9;}
 .fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:32px;font-weight:800;fill:#1a1209;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
@@ -2692,10 +2697,13 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
 .fp-vw-table.selected .fp-vw-tnum{fill:#1a1209;}
 .fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.45);}
+.fp-vw-table.walkin .fp-vw-tnum{fill:rgba(255,255,255,.7);}
+.fp-vw-walkin-badge{font-size:20px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 /* VIP — keeps amber state color + crown badge (functional indicator), no animations */
 .fp-vw-table.vip.available .fp-vw-el-shape{fill:#f59e0b;stroke:#fef3c7;stroke-width:2;}
 .fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.5);stroke-width:1.5;}
 .fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.7);stroke-width:1.5;}
+.fp-vw-table.vip.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
 .fp-vw-table.vip.selected .fp-vw-el-shape{fill:#fff;stroke:#f59e0b;stroke-width:3;}
 .fp-vw-vip-crown{font-size:20px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 .fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
@@ -6875,6 +6883,8 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'Sorry, online booking is not available at this restaurant.',
     bk_err_walkin:'Sorry, this table is no longer available for online booking on the selected date. Please pick another table.',
+    bk_walkin_only:'This table is reserved for walk-in customers on this date.\nPlease visit the restaurant directly, or pick another table.',
+    bk_walkin_badge:'Walk-in only',
     modal_confirm_close:'Discard changes? Your progress will be lost.',
     qr_err_disabled:'Sorry, QR ordering is not available at this restaurant.',
     bk_err_submit:'Could not submit booking. Please try again.',
@@ -7046,6 +7056,8 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ຈອງອອນລາຍ.',
     bk_err_walkin:'ຂໍອະໄພ, ໂຕະນີ້ບໍ່ສາມາດຈອງອອນລາຍສຳລັບວັນທີນີ້ໄດ້ແລ້ວ. ກະລຸນາເລືອກໂຕະອື່ນ.',
+    bk_walkin_only:'ໂຕະນີ້ສະຫງວນໄວ້ສຳລັບລູກຄ້າ walk-in ໃນວັນທີນີ້.\nກະລຸນາໄປຮ້ານໂດຍກົງ ຫຼື ເລືອກໂຕະອື່ນ.',
+    bk_walkin_badge:'Walk-in ເທົ່ານັ້ນ',
     modal_confirm_close:'ຍົກເລີກການປ່ຽນແປງບໍ? ຄວາມຄືບໜ້າຂອງທ່ານຈະຫາຍໄປ.',
     qr_err_disabled:'ຂໍອະໄພ, ຮ້ານອາຫານນີ້ບໍ່ເປີດໃຫ້ສັ່ງດ້ວຍ QR.',
     bk_err_submit:'ບໍ່ສາມາດສົ່ງການຈອງໄດ້. ກະລຸນາລອງໃໝ່.',
@@ -7217,6 +7229,8 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้จองออนไลน์',
     bk_err_walkin:'ขออภัย โต๊ะนี้ไม่เปิดให้จองออนไลน์ในวันที่เลือก กรุณาเลือกโต๊ะอื่น',
+    bk_walkin_only:'โต๊ะนี้สงวนไว้สำหรับลูกค้า walk-in ในวันที่เลือก\nกรุณามาที่ร้านโดยตรง หรือเลือกโต๊ะอื่น',
+    bk_walkin_badge:'Walk-in เท่านั้น',
     modal_confirm_close:'ยกเลิกการเปลี่ยนแปลง? ข้อมูลที่กรอกจะหายไป',
     qr_err_disabled:'ขออภัย ร้านนี้ไม่เปิดให้สั่งด้วย QR',
     bk_err_submit:'ไม่สามารถส่งการจองได้ กรุณาลองใหม่',
@@ -7388,6 +7402,8 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'抱歉，此餐厅暂不支持在线预订。',
     bk_err_walkin:'抱歉，此桌位在所选日期不再支持在线预订。请选择其他桌位。',
+    bk_walkin_only:'此桌位在该日期仅供堂食客人使用。\n请直接到店，或选择其他桌位。',
+    bk_walkin_badge:'仅限堂食',
     modal_confirm_close:'放弃更改？您的进度将会丢失。',
     qr_err_disabled:'抱歉，此餐厅暂不支持扫码点餐。',
     bk_err_submit:'无法提交预订，请重试。',
@@ -7559,6 +7575,8 @@ const LP_TRANSLATIONS = {
     // v6.8: Feature licensing — disabled-feature messages
     bk_err_disabled:'죄송합니다. 이 레스토랑은 온라인 예약을 지원하지 않습니다.',
     bk_err_walkin:'죄송합니다. 이 테이블은 선택하신 날짜에 더 이상 온라인 예약을 받지 않습니다. 다른 테이블을 선택해 주세요.',
+    bk_walkin_only:'이 테이블은 해당 날짜에 워크인 손님 전용입니다.\n매장에 직접 방문하시거나 다른 테이블을 선택해 주세요.',
+    bk_walkin_badge:'워크인 전용',
     modal_confirm_close:'변경 사항을 취소하시겠습니까? 입력하신 내용이 사라집니다.',
     qr_err_disabled:'죄송합니다. 이 레스토랑은 QR 주문을 지원하지 않습니다.',
     bk_err_submit:'예약을 신청할 수 없습니다. 다시 시도해주세요.',
@@ -13407,7 +13425,7 @@ function _fpStartResize(e, dir){
 }
 
 /* ─── Customer-side viewer ─── */
-function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId){
+function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId, walkInTableIds){
   if(!plan || !plan.elements || !plan.elements.length) return null;
   const W = plan.width  || 1000;
   const H = plan.height || 700;
@@ -13499,8 +13517,10 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     if(!t) return;
     const cx = el.x + el.w/2, cy = el.y + el.h/2;
     let stateClass = 'available';
+    const isWalkIn = !!(walkInTableIds && walkInTableIds.has(el.tableId));
     if(bookedTableIds && bookedTableIds.has(el.tableId)) stateClass = 'booked';
     else if(lockedTableIds && lockedTableIds.has(el.tableId)) stateClass = 'locked';
+    else if(isWalkIn) stateClass = 'walkin';
     if(selectedTableId === el.tableId) stateClass = 'selected';
     // VIP detection: explicit kind (table-vip-*) OR linked table has a bookingRequirement set
     const isVip = _fpIsVipKind(el.kind) || !!(t && t.bookingRequirement && String(t.bookingRequirement).trim());
@@ -13523,9 +13543,16 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       const by = el.y + 14;
       vipBadge = `<text class="fp-vw-vip-crown" x="${bx}" y="${by}">⭐</text>`;
     }
+    // Walk-in badge — top-left corner so it doesn't conflict with VIP crown
+    let walkInBadge = '';
+    if(isWalkIn){
+      const wx = el.x + 8;
+      const wy = el.y + 14;
+      walkInBadge = `<text class="fp-vw-walkin-badge" x="${wx}" y="${wy}">🚶</text>`;
+    }
     // hitArea first so visible shape sits on top (but hit area still catches clicks via parent <g>)
-    const groupCls = `fp-vw-table ${stateClass}${isVip?' vip':''}`;
-    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text>${vipBadge}</g>`;
+    const groupCls = `fp-vw-table ${stateClass}${isVip?' vip':''}${isWalkIn?' walkin':''}`;
+    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
@@ -13556,15 +13583,17 @@ async function bkLoadTables(){
     const tables = (r && r.tables) ? r.tables : [];
     // Filter tables that have enough seats for the party size
     // v5.9: Filter by both min and max seats. If table has no minSeats, only check max.
-    // Also filter out tables that are walk-in only for the customer's chosen booking date.
+    // Walk-in tables are KEPT in the list (so they show on the map) but tracked separately
+    // — the renderer will show them visually as walk-in-only and the click handler will block selection.
     const bookingDateMs = _wiDateAtMidnight(bkState.date);
+    const walkInTableIds = new Set();
     const partyOK = tables.filter(t => {
       const max = t.maxSeats || t.seats || 0;
       const min = t.minSeats || 1;
       if(!(bkState.party >= min && bkState.party <= max)) return false;
-      // Walk-in check: if booking date falls in [walkInFrom, walkInUntil], hide this table
+      // Walk-in check: if booking date falls in [walkInFrom, walkInUntil], mark it
       if(t.walkInFrom && t.walkInUntil && bookingDateMs >= t.walkInFrom && bookingDateMs <= t.walkInUntil){
-        return false;
+        walkInTableIds.add(t.id);
       }
       return true;
     });
@@ -13573,6 +13602,14 @@ async function bkLoadTables(){
       return;
     }
     bkState.tables = partyOK;
+    bkState.walkInTableIds = walkInTableIds;
+    // If user previously picked a table that's now walk-in for the new date, deselect it
+    if(bkState.tableId && walkInTableIds.has(bkState.tableId)){
+      await bkReleaseLock();
+      bkState.tableId = null;
+      bkState.tableNum = null;
+      bkState.tableZone = null;
+    }
     // Mark tables already booked for this date+slot.
     // (date check is defensive — if fbGetFiltered fell back to full fetch, it still works)
     const allBookings = dayBookings || {};
@@ -13698,17 +13735,21 @@ async function bkLoadTables(){
     const tablesInZone = zonesMap[_bkSelectedZone] || [];
     const lblBooked = _lp('bk_table_booked','Booked');
     const lblLocked = _lp('bk_table_locked_by_other','Reserved');
+    const lblWalkIn = _lp('bk_walkin_badge','Walk-in only');
     const lblSeats = _lp('bk_table_seats','seats');
+    const walkInSet = bkState.walkInTableIds || new Set();
     grid.innerHTML = tablesInZone.map(t => {
       const isBooked = bookedTableIds.has(t.id);
       const isLocked = lockedTableIds.has(t.id);
+      const isWalkIn = walkInSet.has(t.id);
       const isSelected = bkState.tableId === t.id;
       let cls = 'bk-table-card';
       let status = '';
       if(isBooked){ cls += ' booked'; status = `<div class="bk-table-status">${escapeHtml(lblBooked)}</div>`; }
       else if(isLocked){ cls += ' locked'; status = `<div class="bk-table-status">${escapeHtml(lblLocked)}</div>`; }
+      else if(isWalkIn){ cls += ' walkin'; status = `<div class="bk-table-status">🚶 ${escapeHtml(lblWalkIn)}</div>`; }
       else if(isSelected){ cls += ' selected'; }
-      const clickAttr = (isBooked || isLocked) ? '' : `data-tid="${escapeHtml(t.id)}"`;
+      const clickAttr = (isBooked || isLocked || isWalkIn) ? '' : `data-tid="${escapeHtml(t.id)}"`;
       return `<div class="${cls}" ${clickAttr}>
         <div class="bk-table-num">${escapeHtml(t.num||'')}</div>
         <div class="bk-table-cap">${t.seats||0} ${escapeHtml(lblSeats)}</div>
@@ -13844,7 +13885,7 @@ function _bkRenderActiveAreaMap(replaceOnly){
   const viewerBooked = new Set([...(bkState._bookedTableIds||[]), ...tooSmall]);
   // Cache plan for tiOpen popup (so it knows shape)
   bkState._cachedPlan = area;
-  const svg = fpRenderCustomerView(area, bkState.tables, viewerBooked, bkState._lockedTableIds, bkState.tableId);
+  const svg = fpRenderCustomerView(area, bkState.tables, viewerBooked, bkState._lockedTableIds, bkState.tableId, bkState.walkInTableIds);
   const wrapHtml = `<div class="fp-viewer-wrap">${svg}</div>`;
   if(replaceOnly){
     const oldWrap = grid.querySelector('.fp-viewer-wrap');
@@ -13865,6 +13906,11 @@ function _bkWireMapClicks(){
     const tEl = ev.target.closest('.fp-vw-table');
     if(!tEl) return;
     if(tEl.classList.contains('booked') || tEl.classList.contains('locked')) return;
+    if(tEl.classList.contains('walkin')){
+      // Walk-in table — show friendly alert, no selection
+      alert(_lp('bk_walkin_only','This table is reserved for walk-in customers on this date.\nPlease visit the restaurant directly, or pick another table.'));
+      return;
+    }
     const tid = tEl.dataset.tid;
     if(tid) tiOpen(tid);
   };
@@ -13873,6 +13919,11 @@ function _bkWireMapClicks(){
 async function bkPickTable(tableId){
   const t = (bkState.tables||[]).find(x => x.id === tableId);
   if(!t) return;
+  // Defensive: refuse to pick a walk-in table (even if UI failed to block it)
+  if(bkState.walkInTableIds && bkState.walkInTableIds.has(tableId)){
+    alert(_lp('bk_walkin_only','This table is reserved for walk-in customers on this date.\nPlease visit the restaurant directly, or pick another table.'));
+    return;
+  }
   // Release any existing lock first (if customer picks a different table)
   if(bkState.tableId && bkState.tableId !== tableId){
     await bkReleaseLock();
