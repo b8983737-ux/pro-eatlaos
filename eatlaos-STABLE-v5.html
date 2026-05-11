@@ -2461,8 +2461,12 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 /* Clickable stat card (Booked → opens today's map) */
 .bk-stat-card.stat-clickable{cursor:pointer;}
 .bk-stat-card.stat-clickable:hover{border-color:rgba(74,222,128,.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,222,128,.12);}
+.bk-stat-card.stat-pending.stat-clickable:hover{border-color:rgba(255,193,7,.5);box-shadow:0 8px 24px rgba(255,193,7,.15);}
+.bk-stat-card.stat-noshow.stat-clickable:hover{border-color:rgba(239,83,80,.5);box-shadow:0 8px 24px rgba(239,83,80,.15);}
 .bk-stat-card.stat-clickable:active{transform:translateY(0);}
 .bk-stat-card.stat-clickable:focus-visible{outline:2px solid #4ade80;outline-offset:2px;}
+.bk-stat-card.stat-pending.stat-clickable:focus-visible{outline-color:#ffc107;}
+.bk-stat-card.stat-noshow.stat-clickable:focus-visible{outline-color:#ef5350;}
 
 /* Owner Table Requirement section (Add/Edit Table modals) */
 .ow-tr-section{padding:12px 14px;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:8px;}
@@ -3666,6 +3670,7 @@ setTimeout(function(){
                 <button class="btn btn-sm btn-gold" id="bkFBtn-pending" onclick="setBookingFilter('pending',this)" data-ts="bk_pending">Pending</button>
                 <button class="btn btn-sm" id="bkFBtn-accepted" onclick="setBookingFilter('accepted',this)" data-ts="bk_accepted">Accepted</button>
                 <button class="btn btn-sm" id="bkFBtn-rejected" onclick="setBookingFilter('rejected',this)" data-ts="bk_rejected">Rejected</button>
+                <button class="btn btn-sm" id="bkFBtn-expired" onclick="setBookingFilter('expired',this)" data-ts="bk_noshow_tab">No-show</button>
                 <button class="btn btn-sm" id="bkFBtn-all" onclick="setBookingFilter('all',this)" data-ts="bk_all">All</button>
               </div>
             </div>
@@ -4549,6 +4554,10 @@ const STAFF_T={
     bk_view_map_title_today:'View booked tables on the map (today)',
     bk_view_map_title_date:'View booked tables on the map for {date}',
     bk_view_map_cta:'🗺️ View map →',
+    bk_view_list_cta:'📋 View list →',
+    bk_view_pending_title:'See all pending bookings (respects active date filter)',
+    bk_view_noshow_title:'See all no-show bookings (respects active date filter)',
+    bk_noshow_tab:'No-show',
     owtm_title:'Booked Tables',
     owtm_stat_booked:'Booked',
     owtm_stat_free:'Free',
@@ -4727,6 +4736,10 @@ const STAFF_T={
     bk_view_map_title_today:'ເບິ່ງໂຕະທີ່ຖືກຈອງໃນແຜນທີ່ (ມື້ນີ້)',
     bk_view_map_title_date:'ເບິ່ງໂຕະທີ່ຖືກຈອງໃນແຜນທີ່ ສຳລັບ {date}',
     bk_view_map_cta:'🗺️ ເບິ່ງແຜນທີ່ →',
+    bk_view_list_cta:'📋 ເບິ່ງລາຍການ →',
+    bk_view_pending_title:'ເບິ່ງການຈອງທີ່ລໍຖ້າທັງໝົດ (ໃຊ້ຕົວກອງວັນທີ່ປັດຈຸບັນ)',
+    bk_view_noshow_title:'ເບິ່ງການຈອງທີ່ບໍ່ມາທັງໝົດ (ໃຊ້ຕົວກອງວັນທີ່ປັດຈຸບັນ)',
+    bk_noshow_tab:'ບໍ່ມາ',
     owtm_title:'ໂຕະທີ່ຖືກຈອງ',
     owtm_stat_booked:'ຖືກຈອງ',
     owtm_stat_free:'ວ່າງ',
@@ -4905,6 +4918,10 @@ const STAFF_T={
     bk_view_map_title_today:'ดูโต๊ะที่จองในแผนที่ (วันนี้)',
     bk_view_map_title_date:'ดูโต๊ะที่จองในแผนที่สำหรับ {date}',
     bk_view_map_cta:'🗺️ ดูแผนที่ →',
+    bk_view_list_cta:'📋 ดูรายการ →',
+    bk_view_pending_title:'ดูการจองที่รอทั้งหมด (ใช้ตัวกรองวันที่ปัจจุบัน)',
+    bk_view_noshow_title:'ดูการจองที่ไม่มาทั้งหมด (ใช้ตัวกรองวันที่ปัจจุบัน)',
+    bk_noshow_tab:'ไม่มา',
     owtm_title:'โต๊ะที่จอง',
     owtm_stat_booked:'จองแล้ว',
     owtm_stat_free:'ว่าง',
@@ -5083,6 +5100,10 @@ const STAFF_T={
     bk_view_map_title_today:'在地图上查看已预订的桌位（今日）',
     bk_view_map_title_date:'查看 {date} 已预订的桌位地图',
     bk_view_map_cta:'🗺️ 查看地图 →',
+    bk_view_list_cta:'📋 查看列表 →',
+    bk_view_pending_title:'查看所有待确认预订（遵循当前日期筛选）',
+    bk_view_noshow_title:'查看所有未到预订（遵循当前日期筛选）',
+    bk_noshow_tab:'未到',
     owtm_title:'已预订桌位',
     owtm_stat_booked:'已预订',
     owtm_stat_free:'空闲',
@@ -5277,6 +5298,10 @@ const STAFF_T={
     bk_view_map_title_today:'지도에서 예약된 테이블 보기 (오늘)',
     bk_view_map_title_date:'{date}의 예약된 테이블 지도 보기',
     bk_view_map_cta:'🗺️ 지도 보기 →',
+    bk_view_list_cta:'📋 목록 보기 →',
+    bk_view_pending_title:'대기 중인 예약 모두 보기 (현재 날짜 필터 적용)',
+    bk_view_noshow_title:'노쇼 예약 모두 보기 (현재 날짜 필터 적용)',
+    bk_noshow_tab:'노쇼',
     owtm_title:'예약된 테이블',
     owtm_stat_booked:'예약됨',
     owtm_stat_free:'이용 가능',
@@ -14459,6 +14484,14 @@ function renderBkStats(){
     ? lblViewMapTitleDate.replace('{date}', _bkOwnerDateFilter)
     : lblViewMapTitleToday;
   const lblViewMapCta = _ts('bk_view_map_cta','🗺️ View map →');
+  const lblViewListCta = _ts('bk_view_list_cta','📋 View list →');
+  // Card click attrs — only clickable if there's something to see (count > 0)
+  const pendingClick = pending > 0
+    ? `class="bk-stat-card stat-pending stat-clickable" onclick="_bkJumpToFilter('pending')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();_bkJumpToFilter('pending');}" title="${escapeHtml(_ts('bk_view_pending_title','See all pending bookings'))}"`
+    : `class="bk-stat-card stat-pending"`;
+  const noShowClick = noShow > 0
+    ? `class="bk-stat-card stat-noshow stat-clickable" onclick="_bkJumpToFilter('expired')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();_bkJumpToFilter('expired');}" title="${escapeHtml(_ts('bk_view_noshow_title','See all no-show bookings'))}"`
+    : `class="bk-stat-card stat-noshow"`;
   bar.innerHTML = `
     <div class="bk-stat-card stat-total">
       <div class="bk-stat-icon">🪑</div>
@@ -14471,18 +14504,36 @@ function renderBkStats(){
       <div class="bk-stat-lbl">${escapeHtml(lblBooked)}</div>
       <div class="bk-stat-cta">${escapeHtml(lblViewMapCta)}</div>
     </div>
-    <div class="bk-stat-card stat-pending">
+    <div ${pendingClick}>
       <div class="bk-stat-icon">⏳</div>
       <div class="bk-stat-num">${pending}</div>
       <div class="bk-stat-lbl">${escapeHtml(lblPending)}</div>
+      ${pending > 0 ? `<div class="bk-stat-cta">${escapeHtml(lblViewListCta)}</div>` : ''}
     </div>
-    <div class="bk-stat-card stat-noshow">
+    <div ${noShowClick}>
       <div class="bk-stat-icon">⚠️</div>
       <div class="bk-stat-num">${noShow}</div>
       <div class="bk-stat-lbl">${escapeHtml(lblNoShow)}</div>
+      ${noShow > 0 ? `<div class="bk-stat-cta">${escapeHtml(lblViewListCta)}</div>` : ''}
     </div>
     <div class="bk-stats-context">${escapeHtml(contextTxt)}</div>
   `;
+}
+
+/* Click handler for Pending and No-show stat cards: switch the booking filter tab
+   and scroll the list into view. Reuses the existing date filter (if any). */
+function _bkJumpToFilter(status){
+  if(!status) return;
+  // Update the filter state + highlight the matching tab
+  if(typeof setBookingFilter === 'function'){
+    const btn = document.getElementById('bkFBtn-'+status);
+    setBookingFilter(status, btn);
+  }
+  // Scroll the booking list into view smoothly
+  const body = document.getElementById('ow-bookingsbody');
+  if(body && typeof body.scrollIntoView === 'function'){
+    try { body.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e) { body.scrollIntoView(); }
+  }
 }
 
 /* ─── Owner Today's Map: read-only floor plan viewer with today's booked tables ─── */
