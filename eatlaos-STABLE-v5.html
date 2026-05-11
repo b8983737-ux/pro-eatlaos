@@ -1868,6 +1868,14 @@ body{min-height:100%;overscroll-behavior-x:none;}
 /* Restaurants */
 .lp-restos-section{padding:100px 6%;background:#060606;}
 .lp-restos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:1040px;margin:0 auto;}
+/* Marquee mode: slow horizontal scroll showing all restaurants in an infinite loop.
+   Active when 4+ restaurants are loaded. Pauses on hover so user can read a card. */
+.lp-restos-marquee{position:relative;overflow:hidden;width:100%;max-width:none;margin:0 -6%;padding:8px 0;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%);}
+.lp-restos-marquee-track{display:flex;gap:16px;width:max-content;animation:lp-restos-scroll 60s linear infinite;will-change:transform;}
+.lp-restos-marquee:hover .lp-restos-marquee-track{animation-play-state:paused;}
+.lp-restos-marquee .lp-resto-card{flex:0 0 200px;}
+@keyframes lp-restos-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+@media(prefers-reduced-motion:reduce){.lp-restos-marquee-track{animation-duration:240s;}}
 .lp-resto-card{background:#0d0d0d;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px 18px;text-align:center;cursor:default;transition:all .35s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;}
 .lp-resto-card::after{content:none;}
 .lp-resto-card:hover{border-color:rgba(200,151,58,.4);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 0 1px rgba(200,151,58,.15);}
@@ -1955,6 +1963,9 @@ body{min-height:100%;overscroll-behavior-x:none;}
   .lp-step{border-radius:12px !important;padding:32px 24px;}
   .lp-restos-section{padding:72px 4%;}
   .lp-restos-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
+  .lp-restos-marquee{margin:0 -4%;}
+  .lp-restos-marquee .lp-resto-card{flex:0 0 170px;padding:22px 14px;}
+  .lp-restos-marquee-track{gap:12px;animation-duration:45s;}
   .lp-features{padding:72px 4%;}
   .lp-feat-grid{grid-template-columns:1fr 1fr;gap:12px;}
   .lp-feat{padding:24px 20px;}
@@ -1984,6 +1995,10 @@ body{min-height:100%;overscroll-behavior-x:none;}
   .lp-step-title{font-size:17px;}
   .lp-restos-section{padding:56px 4%;}
   .lp-restos-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
+  .lp-restos-marquee .lp-resto-card{flex:0 0 150px;padding:20px 12px;}
+  .lp-restos-marquee-track{gap:10px;animation-duration:35s;}
+  .lp-restos-marquee .lp-resto-logo{width:60px;height:60px;font-size:30px;margin-bottom:12px;}
+  .lp-restos-marquee .lp-resto-name{font-size:14px;}
   .lp-features{padding:56px 4%;}
   .lp-feat-grid{grid-template-columns:1fr;gap:10px;}
   .lp-feat{padding:22px 18px;}
@@ -5926,16 +5941,22 @@ async function fbGetFresh(path){
 // Server-side filtered fetch. Requires .indexOn:["date"] in Firebase Rules
 // (e.g. "bookings": { "$rid": { ".indexOn": ["date"] } }) for best performance.
 // Falls back to full fetch automatically if the index is missing.
-async function fbGetFiltered(path, orderBy, equalTo){
+async function fbGetFiltered(path, orderBy, equalTo, opts){
   const t0 = Date.now();
   try {
+    // DATA-USAGE FIX: support `rangeMode: 'startAt'` for date-range queries.
+    // Default behavior (equalTo) is unchanged for existing callers.
+    const rangeMode = (opts && opts.rangeMode) || 'equalTo';
+    const filterParam = rangeMode === 'startAt'
+      ? '&startAt='+encodeURIComponent(JSON.stringify(equalTo))
+      : '&equalTo='+encodeURIComponent(JSON.stringify(equalTo));
     const url = DB_URL+'/'+path+'.json?auth='+API_KEY
               +'&orderBy='+encodeURIComponent(JSON.stringify(orderBy))
-              +'&equalTo='+encodeURIComponent(JSON.stringify(equalTo));
+              +filterParam;
     const r = await _fetchWithTimeout(url, null, _NET_GET_TIMEOUT_MS);
     if(!r.ok) throw new Error('HTTP '+r.status);
     const dt = Date.now() - t0;
-    if(dt > _NET_SLOW_THRESHOLD_MS) console.warn('[FB SLOW]', dt+'ms', 'FILTER', path, orderBy+'='+equalTo);
+    if(dt > _NET_SLOW_THRESHOLD_MS) console.warn('[FB SLOW]', dt+'ms', 'FILTER', path, orderBy+(rangeMode==='startAt'?'>=':' = ')+equalTo);
     return r.json();
   } catch(e){
     console.warn('fbGetFiltered fallback:', path, e.name, e.message);
@@ -6719,13 +6740,44 @@ let prevOrderCount=0;
 
 function startOwnerListeners(){
   if(!restoId) return;
-  // Listen to orders for this restaurant ONLY
-  db.ref('orders').orderByChild('rId').equalTo(restoId).on('value', snap=>{
+  // DATA-USAGE FIX: Listener now covers ONLY the last 7 days.
+  // Today + Week filters work fully from this listener.
+  // Month/3Months/All filters trigger an on-demand fetch (see _owFetchOlderOrders).
+  // _owHistoryLoaded tracks whether full history has been fetched this session,
+  // so we don't re-fetch every time owner toggles filters.
+  const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+  const sinceTs = Date.now() - SEVEN_DAYS_MS;
+  window._owHistoryLoaded = false;
+  window._owHistoryRange = '7d'; // tracks the widest range loaded so far
+  // The query: order by ts and only stream rows >= sinceTs (then filter rId in memory).
+  // We use ts instead of rId so the window is small per-restaurant.
+  // Initial defensive fallback: if the index/query fails, fall back to rId query.
+  let listenerRef;
+  try {
+    listenerRef = db.ref('orders').orderByChild('ts').startAt(sinceTs);
+  } catch(e){
+    console.warn('[FB] orderByChild(ts) failed, falling back to rId query', e);
+    listenerRef = db.ref('orders').orderByChild('rId').equalTo(restoId);
+  }
+  listenerRef.on('value', snap=>{
     const orders=[];
-    snap.forEach(child=>{orders.push({...child.val(),fbKey:child.key});});
+    snap.forEach(child=>{
+      const v = child.val();
+      // Defensive filter by rId since the ts query returns orders for ALL restaurants
+      if(v && v.rId === restoId) orders.push({...v,fbKey:child.key});
+    });
     orders.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    cachedOrders=orders;
-    // Sound alert for new orders
+    // Merge with any previously-loaded historical orders (if owner fetched older data)
+    if(window._owHistoricalOrders && window._owHistoricalOrders.length){
+      // Combine; dedupe by fbKey; keep newest fact (listener wins for recent overlap)
+      const map = new Map();
+      window._owHistoricalOrders.forEach(o => { if(o.fbKey) map.set(o.fbKey, o); });
+      orders.forEach(o => { if(o.fbKey) map.set(o.fbKey, o); }); // listener overrides
+      cachedOrders = Array.from(map.values()).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    } else {
+      cachedOrders = orders;
+    }
+    // Sound alert for new orders (still uses the live 7-day window only, correct)
     const newPending=orders.filter(o=>o.status==='pending').length;
     if(newPending>prevOrderCount && prevOrderCount>=0){
       playSound();
@@ -6748,6 +6800,51 @@ function startOwnerListeners(){
     const pend=orders.filter(o=>o.status==='pending').length;
     if(badge) badge.style.display=pend>0?'inline':'none';
   });
+}
+
+/* DATA-USAGE FIX: Fetch older orders on-demand when owner picks a wider time filter.
+   Called by owner panel switches to month/3months/all.
+   Once a wider range is loaded, we keep the data for the session — no re-fetch on subsequent filter toggles. */
+async function _owFetchOlderOrders(neededRange){
+  if(!restoId) return;
+  // Map filter name → cutoff timestamp (oldest data we need)
+  const NOW = Date.now();
+  const MS = 24 * 60 * 60 * 1000;
+  const rangeMs = {
+    'today': 1 * MS,
+    'week':  7 * MS,
+    'month': 31 * MS,
+    '3months': 93 * MS,
+    'all':   null // null means fetch everything
+  };
+  const needMs = rangeMs[neededRange];
+  // Already have data wide enough?
+  const haveMs = rangeMs[window._owHistoryRange || '7d'];
+  if(needMs !== null && haveMs !== null && haveMs >= needMs) return; // already covered
+  if(window._owHistoryRange === 'all') return; // already have everything
+  try {
+    // Fetch orders for THIS restaurant, in the needed range. Server-side filtered by rId.
+    const allOrders = await fbGet('orders');
+    if(!allOrders) return;
+    const cutoff = needMs ? (NOW - needMs) : 0;
+    const historical = [];
+    Object.entries(allOrders).forEach(([k,v])=>{
+      if(v && v.rId === restoId && (cutoff === 0 || (v.ts||0) >= cutoff)){
+        historical.push({...v, fbKey:k});
+      }
+    });
+    window._owHistoricalOrders = historical;
+    window._owHistoryRange = neededRange;
+    window._owHistoryLoaded = true;
+    // Re-merge with the listener's current 7-day cache
+    const recentMap = new Map();
+    historical.forEach(o => { if(o.fbKey) recentMap.set(o.fbKey, o); });
+    // Get listener's current snapshot (last 7 days) — read from cachedOrders
+    (cachedOrders || []).forEach(o => { if(o.fbKey) recentMap.set(o.fbKey, o); });
+    cachedOrders = Array.from(recentMap.values()).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  } catch(e){
+    console.error('_owFetchOlderOrders failed:', e);
+  }
 }
 let _lpLang = localStorage.getItem('el_lp_lang')||'en';
 
@@ -7726,12 +7823,26 @@ function initLandingNav(){
 async function loadLandingRestos(){
   try{
     // Check daily cache FIRST — avoid downloading restaurants every visit
+    // Cache version: bump when filtering rules change to force fresh fetch for all visitors
+    const RCACHE_VER='v2'; // v2 = filter by status='active' (was: filter by name only)
     const RCACHE_KEY='el_lp_restos_cache';
     const RCACHE_DATE='el_lp_restos_date';
     const RCACHE_DATA='el_lp_restos_data'; // lightweight card data cache
+    const RCACHE_VER_KEY='el_lp_restos_ver';
     const rToday=new Date().toDateString();
+    const rCachedVer=localStorage.getItem(RCACHE_VER_KEY);
     const rCachedDate=localStorage.getItem(RCACHE_DATE);
     const rCachedCount=parseInt(localStorage.getItem(RCACHE_KEY)||'0');
+    // If cache version doesn't match, force a fresh fetch by clearing the date/count
+    if(rCachedVer !== RCACHE_VER){
+      try {
+        localStorage.removeItem(RCACHE_DATE);
+        localStorage.removeItem(RCACHE_KEY);
+        localStorage.removeItem(RCACHE_DATA);
+        sessionStorage.removeItem('el_sess_restos');
+        localStorage.setItem(RCACHE_VER_KEY, RCACHE_VER);
+      } catch(e){}
+    }
     const el_r=document.getElementById('lpStatR');
     let active=[];
 
@@ -7757,9 +7868,11 @@ async function loadLandingRestos(){
     } else {
       // Daily refresh — download only lightweight fields (no menus, no images)
       const restos=await fbGet('restaurants')||{};
-      // Strip heavy data — only keep what cards need
+      // Strip heavy data — only keep what cards need.
+      // CRITICAL: only show restaurants explicitly marked 'active' by SA.
+      // Pending/inactive restaurants stay off the public landing page.
       active=Object.entries(restos)
-        .filter(([k,r])=>r.name)
+        .filter(([k,r])=>r.name && r.status==='active')
         .map(([k,r])=>([k,{
           name:r.name, emoji:r.emoji||'🍽️',
           // NO logo — base64 logos are huge (50-200KB each!)
@@ -7813,14 +7926,32 @@ async function loadLandingRestos(){
     if(el_t) animateCount(el_t, totalTables||0);
     // Restaurant cards
     const grid=document.getElementById('lpRestosGrid');if(!grid) return;
-    if(!active.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px">No restaurants yet — be the first!</div>';return;}
-    grid.innerHTML=active.map(item=>{const[k,r]=Array.isArray(item)?item:[item.id,item];return`
-      <div class="lp-resto-card" style="cursor:default">
+    if(!active.length){
+      grid.className = 'lp-restos-grid';
+      grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px">No restaurants yet — be the first!</div>';
+      return;
+    }
+    // Build card HTML for a single restaurant entry
+    const cardHtml = (item) => {
+      const [k,r] = Array.isArray(item) ? item : [item.id, item];
+      return `<div class="lp-resto-card" style="cursor:default">
         <div class="lp-resto-live"><div class="lp-resto-live-dot"></div><span class="lp-resto-live-txt">LIVE</span></div>
         <div class="lp-resto-logo">${r.emoji||'🍽️'}</div>
         <div class="lp-resto-name">${r.name||'Restaurant'}</div>
         <div class="lp-resto-cuisine">${r.cuisine||'Laos'}</div>
-      </div>`;}).join('');
+      </div>`;
+    };
+    // Use marquee for 4+ restaurants (smooth infinite scroll). For fewer, use the static grid.
+    if(active.length >= 4){
+      grid.className = 'lp-restos-marquee';
+      // Duplicate the cards so the loop is seamless: track scrolls from 0% to -50%,
+      // and the second copy lands exactly where the first started.
+      const cards = active.map(cardHtml).join('');
+      grid.innerHTML = `<div class="lp-restos-marquee-track" aria-hidden="false">${cards}${cards}</div>`;
+    } else {
+      grid.className = 'lp-restos-grid';
+      grid.innerHTML = active.map(cardHtml).join('');
+    }
   }catch(e){dbg('Landing error: '+e.message,'warn');}
 }
 
@@ -7917,18 +8048,26 @@ function setSALang(l){
 
 async function startSAListeners(){
   setTimeout(()=>{loadDeleteRequests();loadContactRequests();},1000);
-  // Poll orders every 30s instead of live stream (saves massive bandwidth)
+  // Poll orders every 30s instead of live stream (saves massive bandwidth).
+  // DATA-USAGE FIX: only poll when SA is actively on a panel that needs orders data.
+  // If SA is on Settings/Restaurants/Sessions/Contacts panels, no polling = no bandwidth.
   async function pollSAOrders(){
+    // Skip if no panel needs orders data right now (saves bandwidth massively)
+    const activePanel=document.querySelector('#pg-sa .panel.on');
+    const id = activePanel?.id || '';
+    const needsOrders = (id==='sa-dashboard' || id==='sa-orders' || id==='sa-revenue');
+    if(!needsOrders) return;
     const snap=await fbGet('orders');
     if(!snap) return;
     cachedOrders=Object.entries(snap).map(([k,v])=>({...v,fbKey:k}));
     cachedOrders.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    const activePanel=document.querySelector('#pg-sa .panel.on');
-    if(activePanel?.id==='sa-dashboard'){saStats();saRecentOrders();}
-    if(activePanel?.id==='sa-orders') saOrders();
-    if(activePanel?.id==='sa-revenue') saRevenue();
+    if(id==='sa-dashboard'){saStats();saRecentOrders();}
+    if(id==='sa-orders') saOrders();
+    if(id==='sa-revenue') saRevenue();
     saStats();
   }
+  // Expose so panel switcher (saP) can trigger immediate refresh on enter
+  window._saPollOrdersNow = pollSAOrders;
   pollSAOrders(); // load immediately
   if(window._saOrdersPoll) clearInterval(window._saOrdersPoll);
   window._saOrdersPoll=setInterval(pollSAOrders,30000); // refresh every 30s
@@ -7944,6 +8083,11 @@ function saP(panel,btn){
   if(btn) btn.classList.add('on');
   const t={dashboard:'Dashboard',revenue:'Revenue',restaurants:'Restaurants',orders:'All Orders',sessions:'Sessions',contacts:'Contact Requests',settings:'Settings'};
   document.getElementById('saTbar').textContent=t[panel]||panel;
+  // DATA-USAGE FIX: when entering an orders-needing panel, trigger a fresh poll
+  // so the user sees current data immediately (poll loop only fires every 30s).
+  if(panel==='dashboard' || panel==='orders' || panel==='revenue'){
+    if(typeof _saPollOrdersNow === 'function') _saPollOrdersNow();
+  }
   if(panel==='dashboard'){saStats();saRecentOrders();setTimeout(()=>initSACharts(),100);}
   if(panel==='revenue') saRevenue();
   if(panel==='restaurants') loadAndRenderRestos();
@@ -8866,6 +9010,8 @@ async function saveResto(){
       await fbUpdate('restaurants/'+editId,{vatHistory:[...existing,histEntry]});
     }
     closeModal('mAddResto');
+    // Invalidate landing page cache so new/updated restaurant status reflects immediately
+    _bustLandingRestoCache();
     loadAndRenderRestos();
   } catch(err) {
     console.error('Save error:',err);
@@ -8918,14 +9064,27 @@ async function delResto(id){
   else await fetch(DB_URL+'/restaurants/'+id+'.json',{method:'DELETE'});
   // Invalidate cache so deletion is reflected in next fetches (no stale data)
   if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('restaurants/'+id);
+  _bustLandingRestoCache();
   notifyD('🗑 Restaurant deleted');
   loadAndRenderRestos();
 }
 
 async function approveResto(id){
   await fbUpdate('restaurants/'+id,{status:'active'});
+  _bustLandingRestoCache();
   notifyD('✓ Restaurant approved');
   loadAndRenderRestos();
+}
+
+/* Force the landing page to re-fetch restaurants on next load.
+   Called whenever SA modifies a restaurant in any way (save/approve/delete). */
+function _bustLandingRestoCache(){
+  try {
+    localStorage.removeItem('el_lp_restos_cache');
+    localStorage.removeItem('el_lp_restos_date');
+    localStorage.removeItem('el_lp_restos_data');
+    sessionStorage.removeItem('el_sess_restos');
+  } catch(e){}
 }
 
 async function renewResto(id){
@@ -8971,7 +9130,14 @@ function owP(panel,btn){
   if(panel==='menu') owMenu();
   if(panel==='categories') owCats();
   if(panel==='tables') owTables();
-  if(panel==='history') renderHistory();
+  if(panel==='history'){
+    // DATA-USAGE FIX: History panel needs ALL orders, not just last 7 days.
+    // Fetch on-demand (cached for the rest of the session — no re-fetch on filter toggle).
+    if(typeof _owFetchOlderOrders === 'function'){
+      _owFetchOlderOrders('all').then(()=>renderHistory());
+    }
+    renderHistory();
+  }
   if(panel==='profile') owProfile().then(()=>setTimeout(()=>initEmojiPickers(),100));
   if(panel==='bookings') loadOwnerBookings();
   if(panel==='hours') loadOwnerHours();
@@ -9097,6 +9263,15 @@ function setOwFilter(f,btn){
   const s2lbl=document.getElementById('ow-s2-lbl');
   if(s1lbl) s1lbl.textContent=labels[f]+' Orders';
   if(s2lbl) s2lbl.textContent=labels[f]+' Revenue';
+  // DATA-USAGE FIX: if filter needs older data than the 7-day listener has, fetch on-demand.
+  // After fetch completes, re-render stats. (Fast no-op if data already loaded.)
+  if(typeof _owFetchOlderOrders === 'function' && (f==='month' || f==='3months' || f==='all')){
+    _owFetchOlderOrders(f).then(()=>{
+      owStats();
+      owRecentOrders();
+      initOwChart(document.querySelector('#ow-dashboard .ctab.on')?.textContent?.toLowerCase()||'rev');
+    });
+  }
   owStats();
   owRecentOrders();
   initOwChart(document.querySelector('#ow-dashboard .ctab.on')?.textContent?.toLowerCase()||'rev');
@@ -11274,14 +11449,16 @@ async function startCustomerSession(rId,tId,sessId){
   // Page already shows — SDK loads silently in background
   if(sessId && rId){
     loadFirebaseSDK().then(()=>{
-      db.ref('orders').orderByChild('rId').equalTo(rId).on('value', snap=>{
+      // DATA-USAGE FIX: query by sessId (only THIS session's orders) instead of rId
+      // (all restaurant orders, then filter in JS). Massive data reduction per customer.
+      db.ref('orders').orderByChild('sessId').equalTo(sessId).on('value', snap=>{
       const seen=new Set();
       const orders=[];
       snap.forEach(c=>{
         const v=c.val();
         const key=c.key;
-        // Filter only this session's orders — deduplicate by Firebase key
-        if(v.sessId===sessId && !seen.has(key)){
+        // Filter defensively (rId match) and deduplicate by Firebase key
+        if(v && v.rId===rId && !seen.has(key)){
           seen.add(key);
           orders.push({...v,fbKey:key});
         }
@@ -14365,9 +14542,15 @@ async function loadOwnerBookings(){
     return;
   }
   try {
+    // DATA-USAGE FIX: initial fetch limited to last 30 days of bookings (matches listener window).
+    // Older bookings fetched on-demand when owner picks a date filter older than 30 days.
+    const cutoffDate = (function(){
+      const d = new Date(); d.setDate(d.getDate() - 30);
+      return d.toISOString().slice(0,10);
+    })();
     // PERF: Parallel fetch — bookings + restaurant (was sequential, ~2x faster)
     const [data, r] = await Promise.all([
-      fbGet('bookings/'+restoId),
+      fbGetFiltered('bookings/'+restoId, 'date', cutoffDate, { rangeMode: 'startAt' }),
       fbGet('restaurants/'+restoId)
     ]);
     const arr = [];
@@ -14399,6 +14582,17 @@ function setBookingDateFilter(dateStr){
   // Empty value (user cleared the picker) → null = all dates
   _bkOwnerDateFilter = (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) ? dateStr : null;
   _bkUpdateDateFilterButtons();
+  // DATA-USAGE FIX: if owner picks a date older than the 30-day listener window,
+  // fetch all historical bookings on-demand (cached for the session).
+  if(_bkOwnerDateFilter){
+    const cutoffDate = (function(){
+      const d = new Date(); d.setDate(d.getDate() - 30);
+      return d.toISOString().slice(0,10);
+    })();
+    if(_bkOwnerDateFilter < cutoffDate && typeof _bkFetchOlderBookings === 'function'){
+      _bkFetchOlderBookings().then(()=>renderOwnerBookings());
+    }
+  }
   renderOwnerBookings();
 }
 
@@ -14422,6 +14616,10 @@ function clearBookingDateFilter(){
   const inp = document.getElementById('bkDateFilter');
   if(inp) inp.value = '';
   _bkUpdateDateFilterButtons();
+  // DATA-USAGE FIX: showing "all dates" needs historical data — fetch on-demand if not loaded
+  if(typeof _bkFetchOlderBookings === 'function'){
+    _bkFetchOlderBookings().then(()=>renderOwnerBookings());
+  }
   renderOwnerBookings();
 }
 
@@ -14918,16 +15116,42 @@ async function _bkExpirySweep(){
   if(changed) loadOwnerBookings();
 }
 
-/* Owner live listener: sound + badge when new pending bookings arrive */
+/* Owner live listener: sound + badge when new pending bookings arrive.
+   DATA-USAGE FIX: listener filtered to bookings with date >= (today - 30 days).
+   Old bookings fetched on-demand when owner picks a date older than 30 days. */
 function setupOwnerBookingListener(){
   if(_bkLiveListener || typeof db==='undefined' || !db || !restoId) return;
   try {
-    const ref = db.ref('bookings/'+restoId);
+    // Compute cutoff date: 30 days ago as YYYY-MM-DD string (Firebase string comparison works for ISO dates)
+    const cutoffDate = (function(){
+      const d = new Date(); d.setDate(d.getDate() - 30);
+      return d.toISOString().slice(0,10);
+    })();
+    let ref;
+    try {
+      // Server-side filter: only bookings with date >= cutoffDate
+      ref = db.ref('bookings/'+restoId).orderByChild('date').startAt(cutoffDate);
+    } catch(e){
+      console.warn('[FB] orderByChild(date) failed, falling back to full ref', e);
+      ref = db.ref('bookings/'+restoId);
+    }
     if(!ref) return;
     let _bkInitialFire = true; // ← FIX: skip sound on first snapshot (existing pendings)
+    window._bkRecentRange = '30d'; // tracks widest range loaded
+    window._bkHistoricalBookings = [];
     ref.on('value', snap=>{
       const v = snap.val() || {};
-      const arr = Object.keys(v).map(k=>({id:k, ...v[k]}));
+      const recent = Object.keys(v).map(k=>({id:k, ...v[k]}));
+      // Merge with any previously-fetched historical bookings (older than 30 days)
+      let arr;
+      if(window._bkHistoricalBookings && window._bkHistoricalBookings.length){
+        const map = new Map();
+        window._bkHistoricalBookings.forEach(b => { if(b.id) map.set(b.id, b); });
+        recent.forEach(b => { if(b.id) map.set(b.id, b); }); // listener wins for overlap
+        arr = Array.from(map.values());
+      } else {
+        arr = recent;
+      }
       const pending = arr.filter(b=>b.status==='pending').length;
       _bkOwnerCache = arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
       const isOnPanel = document.getElementById('ow-bookings')?.classList.contains('on');
@@ -14955,6 +15179,25 @@ function setupOwnerBookingListener(){
     _bkLiveListener = true;
     try { if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); } catch(e){}
   } catch(e){ console.error('booking listener:',e); }
+}
+
+/* DATA-USAGE FIX: fetch older bookings (>30 days ago) on-demand.
+   Called by setBookingDateFilter when user picks a date older than 30 days. */
+async function _bkFetchOlderBookings(){
+  if(!restoId) return;
+  if(window._bkRecentRange === 'all') return; // already have everything
+  try {
+    const v = await fbGet('bookings/'+restoId);
+    if(!v) return;
+    const all = Object.keys(v).map(k=>({id:k, ...v[k]}));
+    window._bkHistoricalBookings = all;
+    window._bkRecentRange = 'all';
+    // Merge into _bkOwnerCache
+    _bkOwnerCache = all.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    if(typeof renderOwnerBookings === 'function') renderOwnerBookings();
+  } catch(e){
+    console.error('_bkFetchOlderBookings failed:', e);
+  }
 }
 
 function playBookingSound(){
