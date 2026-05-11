@@ -2736,9 +2736,15 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
-.bk-area-tab{padding:9px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;}
+.bk-area-tab{padding:9px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
 .bk-area-tab:hover{background:rgba(255,255,255,.07);color:#fff;}
 .bk-area-tab.on{background:rgba(200,151,58,.18);border-color:#c8973a;color:#c8973a;}
+/* Green "free tables" pill badge — used on owner map tabs, customer floor-plan area tabs, and customer zone tabs */
+.fp-free-badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 7px;background:rgba(34,197,94,.18);color:#4ade80;border:1px solid rgba(74,222,128,.35);border-radius:11px;font-size:11px;font-weight:800;letter-spacing:.2px;line-height:1;box-shadow:0 0 0 1px rgba(0,0,0,.15) inset;}
+.bk-area-tab.on .fp-free-badge{background:rgba(34,197,94,.25);}
+.ow-tm-tab .fp-free-badge{margin-left:6px;}
+.ow-tm-tab.on .fp-free-badge{background:rgba(34,197,94,.3);border-color:rgba(74,222,128,.5);color:#0a3018;}
+.bk-zone-tab .fp-free-badge{margin-left:5px;}
 .bkm-shell.fp-fullscreen .fp-vw-legend{margin-top:6px;}
 .fp-vw-legend span{display:inline-flex;align-items:center;gap:8px;}
 .fp-vw-legend i{width:12px;height:12px;border-radius:50%;display:inline-block;}
@@ -13900,6 +13906,25 @@ async function bkLoadTables(){
       // Build area tabs (only when more than one area)
       let tabsHtml = '';
       if(usableAreaSlugs.length > 1){
+        // Compute free tables PER area for the badge.
+        // "Free" = party-size-OK, not booked, not locked, not walk-in.
+        const _freeInArea = (slug) => {
+          const a = allAreas[slug];
+          if(!a || !a.elements) return 0;
+          const idsInArea = new Set();
+          a.elements.forEach(el => {
+            if(el.kind && el.kind.indexOf('table') === 0 && el.tableId) idsInArea.add(el.tableId);
+          });
+          let free = 0;
+          partyOK.forEach(t => {
+            if(!idsInArea.has(t.id)) return;
+            if(bookedTableIds.has(t.id)) return;
+            if(lockedTableIds.has(t.id)) return;
+            if(walkInTableIds.has(t.id)) return;
+            free++;
+          });
+          return free;
+        };
         tabsHtml = `<div class="bk-area-tabs">${usableAreaSlugs.map(slug => {
           const a = allAreas[slug];
           // Translate standard areas
@@ -13908,7 +13933,9 @@ async function bkLoadTables(){
           const t = _lp(stdLabelKey, '');
           if(t && t !== stdLabelKey) label = t;
           const cls = (slug === bkState._activeArea) ? 'bk-area-tab on' : 'bk-area-tab';
-          return `<button class="${cls}" data-area="${escapeHtml(slug)}">${escapeHtml(label)}</button>`;
+          const free = _freeInArea(slug);
+          const badge = free > 0 ? `<span class="fp-free-badge" title="${free} ${escapeHtml(_lp('bk_legend_available','Available'))}">${free}</span>` : '';
+          return `<button class="${cls}" data-area="${escapeHtml(slug)}">${escapeHtml(label)}${badge}</button>`;
         }).join('')}</div>`;
       }
       // Initial render
@@ -13956,11 +13983,23 @@ async function bkLoadTables(){
     });
     const zoneNames = Object.keys(zonesMap).sort();
     if(!_bkSelectedZone || !zonesMap[_bkSelectedZone]) _bkSelectedZone = zoneNames[0];
-    // Build zone tabs
+    // Build zone tabs with green free-count badge per zone
+    // "Free" in this view: not booked, not locked, not walk-in
     tabs.innerHTML = zoneNames.map(z => {
       const cls = (z === _bkSelectedZone) ? 'bk-zone-tab on' : 'bk-zone-tab';
-      const count = zonesMap[z].length;
-      return `<button class="${cls}" data-zone="${escapeHtml(z)}">${escapeHtml(z)} <span style="opacity:.6">(${count})</span></button>`;
+      const zoneTbls = zonesMap[z] || [];
+      let free = 0;
+      const _booked = bookedTableIds || new Set();
+      const _locked = lockedTableIds || new Set();
+      const _wi = walkInTableIds || new Set();
+      zoneTbls.forEach(t => {
+        if(_booked.has(t.id)) return;
+        if(_locked.has(t.id)) return;
+        if(_wi.has(t.id)) return;
+        free++;
+      });
+      const badge = free > 0 ? `<span class="fp-free-badge">${free}</span>` : '';
+      return `<button class="${cls}" data-zone="${escapeHtml(z)}">${escapeHtml(z)}${badge}</button>`;
     }).join('');
     tabs.onclick = function(ev){
       const btn = ev.target.closest('button[data-zone]');
@@ -14844,12 +14883,32 @@ function _owTmRenderAll(){
   const stats = document.getElementById('owTmStats');
   const map = document.getElementById('owTmMap');
   const areaSlugs = Object.keys(_owTmState.areas);
+  // Helper: compute the number of FREE tables in a given area (not booked, not walk-in).
+  // Used to render the green "X free" badge on each area tab.
+  const _freeInArea = (slug) => {
+    const a = _owTmState.areas[slug];
+    if(!a || !a.elements) return 0;
+    const tableIdsInArea = new Set();
+    a.elements.forEach(el => {
+      if(el.kind && el.kind.indexOf('table') === 0 && el.tableId) tableIdsInArea.add(el.tableId);
+    });
+    let free = 0;
+    _owTmState.tables.forEach(t => {
+      if(!tableIdsInArea.has(t.id)) return;
+      if(_owTmState.bookedTableIds.has(t.id)) return;
+      if(_owTmState.walkInTableIds && _owTmState.walkInTableIds.has(t.id)) return;
+      free++;
+    });
+    return free;
+  };
   // Render tabs (only if multiple areas)
   if(areaSlugs.length > 1){
     tabs.innerHTML = areaSlugs.map(slug=>{
       const a = _owTmState.areas[slug];
       const cls = slug === _owTmState.activeArea ? 'on' : '';
-      return `<button class="ow-tm-tab ${cls}" onclick="_owTmPickArea('${escapeHtml(slug)}')">${escapeHtml(a.area || slug)}</button>`;
+      const free = _freeInArea(slug);
+      const badge = free > 0 ? `<span class="fp-free-badge" title="${free} ${escapeHtml(_ts('owtm_stat_free','Free'))}">${free}</span>` : '';
+      return `<button class="ow-tm-tab ${cls}" onclick="_owTmPickArea('${escapeHtml(slug)}')">${escapeHtml(a.area || slug)}${badge}</button>`;
     }).join('');
   } else {
     tabs.innerHTML = '';
