@@ -9733,6 +9733,7 @@ let currentEPTarget=null; // which picker is open
 // RESTAURANT THEME SYSTEM
 // ═══════════════════════════════════════════════════════════════
 const THEMES = [
+  {id:'classic',   name:'Classic',           desc:'🍽️ Clean · Elegant · Timeless',          hero:'linear-gradient(135deg,#faf6f1,#ede5d8)', accent:'#c8973a', icon:'🍽️'},
   {id:'cny',       name:'Chinese New Year', desc:'🎊 Red+Gold · Dragons · Firecrackers',  hero:'linear-gradient(135deg,#1a0000,#cc0000)', accent:'#ffd700', icon:'🧧', particles:'cny'},
   {id:'halloween', name:'Halloween Night',  desc:'🎃 Spooky · Pumpkins · Purple magic',   hero:'linear-gradient(135deg,#0a0005,#2a0040)', accent:'#ff8c00', icon:'🎃', particles:'halloween'},
   {id:'christmas', name:'Christmas Magic',  desc:'🎄 Snow · Green+Red · Festive lights',  hero:'linear-gradient(135deg,#0d1f0d,#1a3a1a)', accent:'#cc0000', icon:'🎄', particles:'christmas'},
@@ -9772,13 +9773,22 @@ function initThemePicker(){
 
 function selectTheme(themeId, save=true){
   document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
-  const card=document.getElementById('tc-'+themeId);
+  // Bug fix: if themeId doesn't match any card (e.g. legacy 'classic' value),
+  // pre-select the first theme visually so the picker isn't empty.
+  // Note: only the visual is fallback-ed; the hidden input keeps the original
+  // value until SA actually clicks a card (save=true). This way restaurants
+  // with theme:'classic' don't get accidentally overwritten on modal open.
+  let visualId = themeId;
+  if(!document.getElementById('tc-'+visualId) && Array.isArray(THEMES) && THEMES.length){
+    visualId = THEMES[0].id;
+  }
+  const card=document.getElementById('tc-'+visualId);
   if(card) card.classList.add('selected');
   if(save){
     const inp=document.getElementById('mRtheme');
     if(inp) inp.value=themeId;
   }
-  const t=THEMES.find(x=>x.id===themeId);
+  const t=THEMES.find(x=>x.id===visualId);
   const lbl=document.getElementById('themeSelectedName');
   if(lbl&&t) lbl.textContent=t.icon+' '+t.name+' — '+t.desc;
 }
