@@ -2711,6 +2711,24 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.2);stroke:rgba(251,191,36,.5);stroke-width:1;}
 .fp-vw-table.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
 .fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3;}
+/* Subtle "breathing" halo on AVAILABLE tables — soft white glow that fades in/out every 3s.
+   GPU-accelerated via SVG filter; paused on hover & when selected to keep UI calm during interaction.
+   VIP tables get a warm cream-tinted halo to harmonize with their amber base. */
+@keyframes fp-vw-available-pulse{
+  0%,100%{filter:drop-shadow(0 0 0 rgba(255,255,255,0));}
+  50%{filter:drop-shadow(0 0 6px rgba(255,255,255,.35));}
+}
+@keyframes fp-vw-available-pulse-warm{
+  0%,100%{filter:drop-shadow(0 0 0 rgba(255,238,200,0));}
+  50%{filter:drop-shadow(0 0 7px rgba(255,238,200,.45));}
+}
+.fp-vw-table.available:not(.selected) .fp-vw-el-shape{animation:fp-vw-available-pulse 5s ease-in-out infinite;}
+.fp-vw-table.vip.available:not(.selected) .fp-vw-el-shape{animation:fp-vw-available-pulse-warm 5s ease-in-out infinite;}
+.fp-vw-table:hover .fp-vw-el-shape{animation-play-state:paused;}
+@media(prefers-reduced-motion:reduce){
+  .fp-vw-table.available:not(.selected) .fp-vw-el-shape,
+  .fp-vw-table.vip.available:not(.selected) .fp-vw-el-shape{animation:none;}
+}
 .fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
 .fp-vw-table.booked,.fp-vw-table.locked{opacity:.5;}
 .fp-vw-table.walkin{opacity:.85;cursor:help;}
