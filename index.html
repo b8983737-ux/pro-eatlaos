@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1777371648 --><!-- EATLAOS BUILD v1777266252 -->
+<!DOCTYPE html><!-- BUILD:1778489133 --><!-- EATLAOS v5 FINAL · BUILD 1778489133 · LOCKED -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -4266,10 +4266,15 @@ function loadFirebaseSDK(){
       const s2=document.createElement('script');
       s2.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js';
       s2.onload=()=>{
-        if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        db=firebase.database();
-        fbSDKLoaded=true;
-        resolve();
+        const s3=document.createElement('script');
+        s3.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js';
+        s3.onload=()=>{
+          if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+          db=firebase.database();
+          fbSDKLoaded=true;
+          resolve();
+        };
+        document.head.appendChild(s3);
       };
       document.head.appendChild(s2);
     };
@@ -6009,7 +6014,7 @@ function startConnectionMonitor(){
 // ═══════════════════════════════════════════════════════════════
 // PLATFORM CONFIG (Firebase)
 // ═══════════════════════════════════════════════════════════════
-let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
+let CFG={commission:15,sessHours:2,name:'EATLAOS'};
 
 let _cfgLoaded=false;
 async function loadCFG(){
@@ -6627,15 +6632,31 @@ async function doSALogin(){
   document.getElementById('saErr').textContent='Signing in...';
   await loadFirebaseSDK();
   startConnectionMonitor();
-  document.getElementById('saErr').textContent='';
-  // Hardcoded credentials — not stored in Firebase
-  const SA_USER='superadmin@SouB';
-  const SA_PASS='6699@BillS';
   if(typeof dbg==='function') dbg('SA checking: '+u);
-  if(u===SA_USER&&p===SA_PASS){
+
+  // Accept either an email or the legacy username (auto-maps to admin email)
+  const email = (u.includes('@') && u.includes('.')) ? u : 'superadmin@eatlaos.com';
+
+  try {
+    // Step 1: Verify password against Firebase Auth (encrypted on Google servers)
+    const result = await firebase.auth().signInWithEmailAndPassword(email, p);
+    const uid = result.user.uid;
+
+    // Step 2: Verify this UID is registered as an admin in the database
+    const adminSnap = await firebase.database().ref('admins/' + uid).once('value');
+    if(!adminSnap.val()){
+      await firebase.auth().signOut();
+      if(typeof dbg==='function') dbg('❌ SA login failed - not in admins list','err');
+      document.getElementById('saErr').textContent='Access denied.';
+      setTimeout(()=>document.getElementById('saErr').textContent='',3000);
+      return;
+    }
+
+    // Step 3: Success — preserve full original post-login flow
     if(typeof dbg==='function') dbg('✅ SA login success');
-    me={name:'Super Admin',role:'superadmin'};
-    sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
+    document.getElementById('saErr').textContent='';
+    me={name:'Super Admin',role:'superadmin',uid:uid};
+    sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin',uid:uid}));
     try { localStorage.setItem('el_last_activity', String(Date.now())); } catch(e){}
     showPage('pg-sa');
     saP('dashboard',document.querySelector('#pg-sa .sb-item'));
@@ -6643,14 +6664,28 @@ async function doSALogin(){
     setTimeout(()=>initSACharts(),300);
     // Auto-migrate all restaurants on SA login
     migrateAllRestaurants().catch(e=>console.log('Migration:',e));
-  } else {
-    if(typeof dbg==='function') dbg('❌ SA login failed - wrong credentials','err');
-    document.getElementById('saErr').textContent='Access denied.';
-    setTimeout(()=>document.getElementById('saErr').textContent='',3000);
+  } catch(err){
+    if(typeof dbg==='function') dbg('❌ SA login failed - '+(err.code||err.message),'err');
+    let msg='Access denied.';
+    if(err.code==='auth/wrong-password' || err.code==='auth/user-not-found' || err.code==='auth/invalid-credential' || err.code==='auth/invalid-login-credentials'){
+      msg='Incorrect username or password.';
+    } else if(err.code==='auth/too-many-requests'){
+      msg='Too many failed attempts. Try again later.';
+    } else if(err.code==='auth/network-request-failed'){
+      msg='Network error. Check your internet connection.';
+    }
+    document.getElementById('saErr').textContent=msg;
+    setTimeout(()=>document.getElementById('saErr').textContent='',4000);
   }
 }
 
 function logout(){
+  // Sign out from Firebase Auth (clears SA session on Google servers)
+  try {
+    if(typeof firebase !== 'undefined' && firebase.auth && firebase.apps.length && firebase.auth().currentUser){
+      firebase.auth().signOut().catch(e => console.warn('Signout error:', e));
+    }
+  } catch(e){ console.warn('Auth signout skipped:', e); }
   if(db){
     if(owOrdersListener) db.ref('orders').off();
     if(saOrdersListener) db.ref('orders').off();
