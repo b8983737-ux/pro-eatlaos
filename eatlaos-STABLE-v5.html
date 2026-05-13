@@ -6634,12 +6634,17 @@ async function doSALogin(){
   startConnectionMonitor();
   if(typeof dbg==='function') dbg('SA checking: '+u);
 
-  // Accept either an email or the legacy username (auto-maps to admin email)
-  const email = (u.includes('@') && u.includes('.')) ? u : 'superadmin@eatlaos.com';
+  // Require a valid email format - no auto-mapping from legacy usernames
+  if(!u.includes('@') || !u.includes('.')){
+    if(typeof dbg==='function') dbg('❌ SA login failed - invalid email format','err');
+    document.getElementById('saErr').textContent='Incorrect username or password.';
+    setTimeout(()=>document.getElementById('saErr').textContent='',3000);
+    return;
+  }
 
   try {
     // Step 1: Verify password against Firebase Auth (encrypted on Google servers)
-    const result = await firebase.auth().signInWithEmailAndPassword(email, p);
+    const result = await firebase.auth().signInWithEmailAndPassword(u, p);
     const uid = result.user.uid;
 
     // Step 2: Verify this UID is registered as an admin in the database
