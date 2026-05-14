@@ -6344,6 +6344,17 @@ function restoreSA(){
 // AUTO CLEANUP — runs silently, deletes data older than 4 months
 // ═══════════════════════════════════════════════════════════════
 async function autoCleanOldData(){
+  // SAFETY: Only run if authenticated as admin (rules block unauth writes → would spam 401 errors)
+  try {
+    if(typeof firebase === 'undefined' || !firebase.auth || !firebase.apps.length) return;
+    const user = firebase.auth().currentUser;
+    if(!user) return; // No auth → skip silently
+    const adminSnap = await firebase.database().ref('admins/'+user.uid).once('value');
+    if(!adminSnap.val()) return; // Not admin → skip silently
+  } catch(e){
+    return; // Any error → skip silently
+  }
+
   const FOUR_MONTHS=12*30*24*60*60*1000; // 12 months (1 year) in ms
   const SEVEN_DAYS=7*24*60*60*1000;     // 7 days in ms
   const cutoff1y=Date.now()-FOUR_MONTHS;
@@ -6351,8 +6362,8 @@ async function autoCleanOldData(){
   let deletedOrders=0, deletedSessions=0;
 
   try{
-    // Clean old ORDERS (older than 4 months)
-    const orders=await restGet('orders');
+    // Clean old ORDERS (older than 4 months) — use Firebase SDK so we have auth
+    const orders=await fbGet('orders');
     if(orders){
       const deletes={};
       Object.entries(orders).forEach(([k,o])=>{
@@ -6362,18 +6373,14 @@ async function autoCleanOldData(){
         }
       });
       if(Object.keys(deletes).length>0){
-        // Delete in batches using REST PATCH with null values
-        await fetch(DB_URL+'/.json',{
-          method:'PATCH',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(deletes)
-        });
+        // Use Firebase SDK update (carries auth) instead of fetch (no auth)
+        try { await firebase.database().ref().update(deletes); } catch(e){ /* skip */ }
         console.log('🗑 Auto-cleaned '+deletedOrders+' orders older than 1 year');
       }
     }
 
     // Clean expired SESSIONS (older than 7 days)
-    const sessions=await restGet('sessions');
+    const sessions=await fbGet('sessions');
     if(sessions){
       const deletes={};
       Object.entries(sessions).forEach(([k,s])=>{
@@ -6383,17 +6390,13 @@ async function autoCleanOldData(){
         }
       });
       if(Object.keys(deletes).length>0){
-        await fetch(DB_URL+'/.json',{
-          method:'PATCH',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(deletes)
-        });
+        try { await firebase.database().ref().update(deletes); } catch(e){ /* skip */ }
         console.log('🗑 Auto-cleaned '+deletedSessions+' expired sessions');
       }
     }
 
     // Clean old CONTACT REQUESTS (v4 addition — older than 90 days)
-    const contacts=await restGet('contactRequests');
+    const contacts=await fbGet('contactRequests');
     let deletedContacts=0;
     if(contacts){
       const cutoff90d=Date.now()-(90*24*60*60*1000);
@@ -6405,11 +6408,7 @@ async function autoCleanOldData(){
         }
       });
       if(Object.keys(cDels).length>0){
-        await fetch(DB_URL+'/.json',{
-          method:'PATCH',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(cDels)
-        });
+        try { await firebase.database().ref().update(cDels); } catch(e){ /* skip */ }
       }
     }
 
@@ -9729,13 +9728,24 @@ async function editResto(id){
 
 async function delResto(id){
   if(!confirm('Delete this restaurant? This cannot be undone.')) return;
-  if(db) await db.ref('restaurants/'+id).remove();
-  else await fetch(DB_URL+'/restaurants/'+id+'.json',{method:'DELETE'});
-  // Invalidate cache so deletion is reflected in next fetches (no stale data)
-  if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('restaurants/'+id);
-  _bustLandingRestoCache();
-  notifyD('🗑 Restaurant deleted');
-  loadAndRenderRestos();
+  try {
+    // Ensure SDK is loaded so we have authenticated context
+    if(typeof loadFirebaseSDK === 'function') await loadFirebaseSDK();
+    if(db){
+      await db.ref('restaurants/'+id).remove();
+    } else {
+      // Fallback: use firebase.database() directly with auth
+      await firebase.database().ref('restaurants/'+id).remove();
+    }
+    // Invalidate cache so deletion is reflected in next fetches (no stale data)
+    if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('restaurants/'+id);
+    _bustLandingRestoCache();
+    notifyD('🗑 Restaurant deleted');
+    loadAndRenderRestos(true); // force refresh from server
+  } catch(err){
+    console.error('Delete restaurant failed:', err);
+    notifyD('❌ Could not delete: '+(err.message||'Permission denied'));
+  }
 }
 
 async function approveResto(id){
