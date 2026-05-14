@@ -3296,6 +3296,7 @@ setTimeout(function(){
         <button class="sb-item" onclick="saP('revenue',this)"><span class="sb-ico">💰</span>Revenue</button>
         <div class="sb-sec">Management</div>
         <button class="sb-item" onclick="saP('restaurants',this)"><span class="sb-ico">🏪</span>Restaurants<span class="sb-num" id="pendNum" style="display:none">!</span></button>
+        <button class="sb-item" onclick="saP('invites',this)"><span class="sb-ico">🎟️</span>Invitations</button>
         <button class="sb-item" onclick="saP('orders',this)"><span class="sb-ico">🧾</span>All Orders</button>
         <button class="sb-item" onclick="saP('sessions',this)"><span class="sb-ico">📱</span>Active Sessions</button>
         <div class="sb-sec">System</div>
@@ -3393,6 +3394,24 @@ setTimeout(function(){
             </div>
             <div id="saRestoPgCtrl" style="padding:8px 16px;border-bottom:1px solid var(--s-border);display:flex;align-items:center;gap:8px"></div>
             <div class="tbl-wrap"><table><thead><tr><th>Restaurant</th><th>Owner</th><th>Commission</th><th>Theme</th><th>Access Expires</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody id="sa-restotbl"></tbody></table></div></div>
+        </div>
+        <div class="panel" id="sa-invites">
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <div class="card-title">🎟️ Restaurant Invitations</div>
+                <div style="font-size:11px;color:var(--s-muted);margin-top:2px">Generate invitation codes for restaurant owners to self-signup</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <button class="btn btn-sm" onclick="loadInvitesList()">↻ Refresh</button>
+                <button class="btn btn-gold" onclick="genInviteCode()">+ Generate Code</button>
+              </div>
+            </div>
+            <div style="padding:12px 16px;background:var(--s-surf3);border-bottom:1px solid var(--s-border);font-size:12px;color:var(--s-muted)">
+              💡 <b>How it works:</b> Generate a code → Send it to restaurant owner (WhatsApp/email) → Owner visits eatlaos.com/signup and enters code → Account created → You see new restaurant here. Codes expire after 7 days.
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Note</th><th>Created</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead><tbody id="sa-invites-tbl"><tr><td colspan="6" style="text-align:center;color:var(--s-muted);padding:20px">Click "Generate Code" to create your first invitation</td></tr></tbody></table></div>
+          </div>
         </div>
         <div class="panel" id="sa-orders">
           <div class="card">
@@ -8145,7 +8164,7 @@ function saP(panel,btn){
   document.getElementById('sa-'+panel).classList.add('on');
   document.querySelectorAll('#pg-sa .sb-item').forEach(n=>n.classList.remove('on'));
   if(btn) btn.classList.add('on');
-  const t={dashboard:'Dashboard',revenue:'Revenue',restaurants:'Restaurants',orders:'All Orders',sessions:'Sessions',contacts:'Contact Requests',settings:'Settings'};
+  const t={dashboard:'Dashboard',revenue:'Revenue',restaurants:'Restaurants',invites:'Invitations',orders:'All Orders',sessions:'Sessions',contacts:'Contact Requests',settings:'Settings'};
   document.getElementById('saTbar').textContent=t[panel]||panel;
   // DATA-USAGE FIX: when entering an orders-needing panel, trigger a fresh poll
   // so the user sees current data immediately (poll loop only fires every 30s).
@@ -8155,6 +8174,7 @@ function saP(panel,btn){
   if(panel==='dashboard'){saStats();saRecentOrders();setTimeout(()=>initSACharts(),100);}
   if(panel==='revenue') saRevenue();
   if(panel==='restaurants') loadAndRenderRestos();
+  if(panel==='invites') loadInvitesList();
   if(panel==='orders') saOrders();
   if(panel==='sessions') loadSessions();
   if(panel==='contacts') loadContactRequests();
@@ -8466,15 +8486,17 @@ function renderRestoTable(){
         ${(()=>{const t=THEMES.find(x=>x.id===(r.theme||'classic'));return t?`<div style="display:flex;align-items:center;gap:5px"><div style="width:16px;height:16px;border-radius:50%;background:${t.accent};flex-shrink:0"></div><span style="font-size:11px">${t.icon} ${t.name}</span></div>`:'—';})()}
       </td>
       <td style="font-size:11px">${expTxt}</td>
-      <td><span class="tag ${r.status==='active'?'tg':r.status==='pending'?'to':'tr'}">${r.status}</span></td>
+      <td><span class="tag ${r.status==='active'?'tg':r.status==='suspended'?'tr':r.status==='pending'?'to':'tr'}">${r.status}</span></td>
       <td>${cnt}</td>
       <td><div class="btn-acts">
         <button class="btn btn-sm" onclick="editResto('${k}')">Edit</button>
         <button class="btn btn-sm" onclick="previewRestoTheme('${k}')" style="border-color:var(--s-blue);color:var(--s-blue)">👁 Theme</button>
         <button class="btn btn-sm" onclick="fpOpen('${k}')" style="border-color:#c8973a;color:#c8973a">📐 Layout</button>
         <button class="btn btn-sm" onclick="rfOpen('${k}')" style="border-color:#ffc107;color:#ffc107">🔐 Features</button>
-        <button class="btn btn-sm btn-red" onclick="delResto('${k}')">Del</button>
+        ${r.status==='active'?`<button class="btn btn-sm" onclick="suspendResto('${k}')" style="border-color:var(--s-red);color:var(--s-red)">🔴 Suspend</button>`:''}
+        ${r.status==='suspended'?`<button class="btn btn-sm btn-green" onclick="activateResto('${k}')">🟢 Activate</button>`:''}
         ${r.status==='pending'?`<button class="btn btn-sm btn-green" onclick="approveResto('${k}')">✓ Approve</button>`:''}
+        <button class="btn btn-sm btn-red" onclick="delResto('${k}')">Del</button>
         <button class="btn btn-sm" onclick="renewResto('${k}')">🔄 Renew</button>
       </div></td>
     </tr>`;
@@ -9158,6 +9180,207 @@ async function renewResto(id){
   await fbUpdate('restaurants/'+id,{expiresAt:expiry});
   notifyD('✓ Access renewed: '+getExpiryLabel(expiry));
   loadAndRenderRestos();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SA SECURITY: Re-authentication for sensitive actions
+   ═══════════════════════════════════════════════════════════════
+   Before performing destructive actions (suspend, delete, generate
+   invite codes), require SA to re-enter their password. This protects
+   against unauthorized actions if SA leaves browser open.
+*/
+async function _saReAuth(actionLabel){
+  if(!firebase.auth().currentUser){
+    notifyD('⚠ Session expired. Please login again.');
+    return false;
+  }
+  const pwd = prompt('🔐 Confirm SA password to '+actionLabel+':');
+  if(!pwd) return false;
+  try {
+    const email = firebase.auth().currentUser.email;
+    // Use a SECONDARY app instance so we don't disturb the current session
+    let secApp;
+    try {
+      secApp = firebase.app('_reauth');
+    } catch(e) {
+      secApp = firebase.initializeApp(firebaseConfig, '_reauth');
+    }
+    await secApp.auth().signInWithEmailAndPassword(email, pwd);
+    await secApp.auth().signOut(); // immediately sign out the secondary
+    return true;
+  } catch(err){
+    notifyD('❌ Wrong password. Action cancelled.');
+    return false;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SUSPEND / ACTIVATE RESTAURANT
+   ═══════════════════════════════════════════════════════════════
+   Status values:
+   - 'active'    : normal operating
+   - 'pending'   : awaiting SA approval (legacy)
+   - 'suspended' : SA-suspended, owner cannot login until reactivated
+*/
+async function suspendResto(id){
+  if(!await _saReAuth('suspend restaurant')) return;
+  const reason = prompt('Reason for suspension (optional):','');
+  await fbUpdate('restaurants/'+id, {
+    status: 'suspended',
+    suspendedAt: Date.now(),
+    suspendedReason: reason || ''
+  });
+  _bustLandingRestoCache();
+  notifyD('🔴 Restaurant suspended');
+  loadAndRenderRestos();
+}
+
+async function activateResto(id){
+  if(!await _saReAuth('activate restaurant')) return;
+  await fbUpdate('restaurants/'+id, {
+    status: 'active',
+    suspendedAt: null,
+    suspendedReason: null
+  });
+  _bustLandingRestoCache();
+  notifyD('🟢 Restaurant activated');
+  loadAndRenderRestos();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INVITATION CODE SYSTEM
+   ═══════════════════════════════════════════════════════════════
+   SA generates EATLAOS-XXXX-XXXX codes that owners use to self-signup.
+   Codes expire 7 days after creation.
+   One code = one signup. Used codes cannot be reused.
+*/
+function _genInviteCodeStr(){
+  // Generate format EATLAOS-XXXX-XXXX (random alphanumeric, no confusing chars)
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no I, L, O, 0, 1 (confusing)
+  const seg = ()=>{
+    let s=''; for(let i=0;i<4;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+    return s;
+  };
+  return 'EATLAOS-'+seg()+'-'+seg();
+}
+
+async function genInviteCode(){
+  if(!await _saReAuth('generate invitation code')) return;
+  const note = prompt('Note for this invitation (e.g., restaurant name or owner name):','');
+  // Don't require note, but help SA remember what the code was for
+  
+  const code = _genInviteCodeStr();
+  const now = Date.now();
+  const expiresAt = now + (7 * 86400000); // 7 days
+  
+  const codeData = {
+    createdBy: firebase.auth().currentUser?.uid || 'unknown',
+    createdByEmail: firebase.auth().currentUser?.email || 'unknown',
+    createdAt: now,
+    expiresAt: expiresAt,
+    used: false,
+    usedBy: null,
+    usedAt: null,
+    note: note || ''
+  };
+  
+  try {
+    await firebase.database().ref('invitationCodes/'+code).set(codeData);
+    // Show the code in a copy-friendly modal
+    const msg = '✓ Invitation code created!\n\n'+
+                'CODE: '+code+'\n\n'+
+                'Expires: '+new Date(expiresAt).toLocaleString()+'\n\n'+
+                'Send this code to the restaurant owner.\n'+
+                'They will use it at the signup page.';
+    alert(msg);
+    // Copy to clipboard if possible
+    try {
+      await navigator.clipboard.writeText(code);
+      notifyD('✓ Code copied to clipboard: '+code);
+    } catch(e){
+      notifyD('✓ Code created: '+code);
+    }
+    loadInvitesList();
+  } catch(err){
+    notifyD('❌ Failed to create code: '+(err.message||err));
+  }
+}
+
+async function loadInvitesList(){
+  const tbody = document.getElementById('sa-invites-tbl');
+  if(!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--s-muted);padding:20px">Loading...</td></tr>';
+  
+  try {
+    const snap = await firebase.database().ref('invitationCodes').once('value');
+    const codes = snap.val() || {};
+    const entries = Object.entries(codes);
+    
+    if(entries.length === 0){
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--s-muted);padding:20px">No invitation codes yet. Click "Generate Code" to create one.</td></tr>';
+      return;
+    }
+    
+    // Sort: unused first, then by createdAt desc
+    entries.sort((a,b)=>{
+      if(a[1].used !== b[1].used) return a[1].used ? 1 : -1;
+      return (b[1].createdAt||0) - (a[1].createdAt||0);
+    });
+    
+    const now = Date.now();
+    tbody.innerHTML = entries.map(([code, c])=>{
+      const expired = (c.expiresAt||0) < now;
+      let statusBadge, statusColor;
+      if(c.used){
+        statusBadge = '✓ USED';
+        statusColor = 'var(--s-muted)';
+      } else if(expired){
+        statusBadge = '⏰ EXPIRED';
+        statusColor = 'var(--s-red)';
+      } else {
+        statusBadge = '🟢 ACTIVE';
+        statusColor = 'var(--s-green)';
+      }
+      const createdStr = new Date(c.createdAt||0).toLocaleDateString();
+      const expiresStr = new Date(c.expiresAt||0).toLocaleDateString();
+      const noteEsc = (c.note||'').replace(/[<>&"]/g, ch=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[ch]));
+      return `<tr>
+        <td style="font-family:monospace;font-weight:700;color:var(--s-gold)">${code}</td>
+        <td>${noteEsc||'—'}</td>
+        <td style="font-size:11px;color:var(--s-muted)">${createdStr}</td>
+        <td style="font-size:11px;color:var(--s-muted)">${expiresStr}</td>
+        <td><span style="font-size:11px;font-weight:700;color:${statusColor}">${statusBadge}</span></td>
+        <td><div class="btn-acts">
+          ${!c.used && !expired ? `<button class="btn btn-sm" onclick="copyInviteCode('${code}')">📋 Copy</button>` : ''}
+          ${!c.used ? `<button class="btn btn-sm btn-red" onclick="deleteInviteCode('${code}')">🗑 Delete</button>` : ''}
+        </div></td>
+      </tr>`;
+    }).join('');
+  } catch(err){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--s-red);padding:20px">Error loading codes: '+(err.message||err)+'</td></tr>';
+  }
+}
+
+async function copyInviteCode(code){
+  try {
+    await navigator.clipboard.writeText(code);
+    notifyD('✓ Copied: '+code);
+  } catch(e){
+    // Fallback: show in prompt for manual copy
+    prompt('Copy this code:', code);
+  }
+}
+
+async function deleteInviteCode(code){
+  if(!confirm('Delete invitation code '+code+'?\n\nThis cannot be undone.')) return;
+  if(!await _saReAuth('delete invitation code')) return;
+  try {
+    await firebase.database().ref('invitationCodes/'+code).remove();
+    notifyD('🗑 Code deleted');
+    loadInvitesList();
+  } catch(err){
+    notifyD('❌ Failed to delete: '+(err.message||err));
+  }
 }
 
 // Logo
