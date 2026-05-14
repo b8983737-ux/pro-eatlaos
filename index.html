@@ -3142,8 +3142,11 @@ setTimeout(function(){
       <h3 class="lp-b2b-title" data-lp="b2b_title">Run a restaurant?<br>Join EATLAOS.</h3>
       <p class="lp-b2b-sub" data-lp="b2b_sub">List your restaurant, accept online bookings, and manage live orders — all in one place.</p>
       <div class="lp-b2b-actions">
-        <button class="lp-b2b-primary" onclick="openModal('mContact')" data-lp="b2b_get_started">Get Started Free →</button>
+        <button class="lp-b2b-primary" onclick="showPage('pg-owner-signup');resetSignupForm()" data-lp="b2b_get_started">Sign Up with Code →</button>
         <button class="lp-b2b-ghost" onclick="showPage('pg-owner-login')" data-lp="b2b_login">Owner Login</button>
+      </div>
+      <div style="margin-top:14px;font-size:13px;color:var(--s-muted);text-align:center;opacity:.8">
+        Need an invitation code? <span style="color:var(--s-gold);cursor:pointer;text-decoration:underline" onclick="openModal('mContact')">Contact us →</span>
       </div>
     </div>
   </div>
@@ -6284,6 +6287,27 @@ async function init(){
     }
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
       showPage('pg-sa-login');
+    } else if(p.get('signup')){
+      // ── Direct signup link support ──
+      // eatlaos.com/?signup=true → opens signup page
+      // eatlaos.com/?signup=EATLAOS-K7M4-2P9X → opens with code pre-filled
+      const codeParam = p.get('signup');
+      showPage('pg-owner-signup');
+      setTimeout(()=>{
+        resetSignupForm();
+        // Pre-fill code if it's a valid format (not just 'true' or '1')
+        if(codeParam && codeParam !== 'true' && codeParam !== '1'){
+          const upperCode = codeParam.toUpperCase();
+          if(/^EATLAOS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(upperCode)){
+            const codeEl = document.getElementById('suCode');
+            if(codeEl){
+              codeEl.value = upperCode;
+              codeEl.readOnly = true; // prevent editing if pre-filled from link
+              codeEl.style.background = 'rgba(200,151,58,0.1)';
+            }
+          }
+        }
+      }, 100);
     } else {
       showPage('pg-land');
     }
@@ -6669,35 +6693,53 @@ function _owOnRememberChange(cb){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   OWNER SUSPEND WATCHER
+   OWNER SUSPEND WATCHER + EXPIRY WATCHER
    ═══════════════════════════════════════════════════════════════
    Listens to this owner's restaurant in real-time. If SA changes
-   status to 'suspended' while owner is logged in, automatically
-   kicks them out with a clear message.
+   status to 'suspended' OR subscription expires while owner is
+   logged in, automatically kicks them out with a clear message.
    
-   This is the "real-time enforcement" of suspend — owner can't keep
-   working just because they're already logged in.
+   This is the "real-time enforcement" — owner can't keep working
+   just because they're already logged in.
 */
 let _owSuspendWatcherRef = null;
+let _owExpiryWatcherTimer = null;
+
 function _owStartSuspendWatcher(restoId){
   // Clean up any previous watcher
   _owStopSuspendWatcher();
   if(!restoId || !db) return;
   try {
-    _owSuspendWatcherRef = db.ref('restaurants/'+restoId+'/status');
+    // Watch full restaurant record so we can react to status AND expiresAt changes
+    _owSuspendWatcherRef = db.ref('restaurants/'+restoId);
     _owSuspendWatcherRef.on('value', snap => {
-      const status = snap.val();
-      if(status === 'suspended'){
-        // SA just suspended this restaurant — kick the owner out immediately
+      const restoData = snap.val();
+      if(!restoData) return;
+      // Check: suspended?
+      if(restoData.status === 'suspended'){
         _owStopSuspendWatcher();
+        _owStopExpiryWatcher();
         try {
           alert('🔴 Your account has been suspended by the platform administrator. You will be logged out. Please contact support.');
         } catch(e){}
-        // Force logout
         if(typeof logout === 'function') logout();
         else { sessionStorage.clear(); window.location.reload(); }
+        return;
+      }
+      // Check: expired?
+      if(restoData.expiresAt && Date.now() > restoData.expiresAt){
+        _owStopSuspendWatcher();
+        _owStopExpiryWatcher();
+        try {
+          alert('⏰ Your subscription has expired. You will be logged out. Please contact the platform administrator to renew.');
+        } catch(e){}
+        if(typeof logout === 'function') logout();
+        else { sessionStorage.clear(); window.location.reload(); }
+        return;
       }
     });
+    // Also set up a timer-based expiry check (in case data doesn't change but time passes)
+    _owStartExpiryWatcher(restoId);
   } catch(e){
     console.warn('Suspend watcher setup failed (non-fatal):', e.message);
   }
@@ -6710,6 +6752,37 @@ function _owStopSuspendWatcher(){
       _owSuspendWatcherRef = null;
     }
   } catch(e){}
+  _owStopExpiryWatcher();
+}
+
+function _owStartExpiryWatcher(restoId){
+  _owStopExpiryWatcher();
+  // Check expiry every 60 seconds (catches expiry passing without DB change)
+  _owExpiryWatcherTimer = setInterval(async ()=>{
+    try {
+      if(!restoId || !db) return;
+      const snap = await db.ref('restaurants/'+restoId+'/expiresAt').once('value');
+      const expiresAt = snap.val();
+      if(expiresAt && Date.now() > expiresAt){
+        clearInterval(_owExpiryWatcherTimer);
+        _owStopSuspendWatcher();
+        try {
+          alert('⏰ Your subscription has expired. You will be logged out. Please contact the platform administrator to renew.');
+        } catch(e){}
+        if(typeof logout === 'function') logout();
+        else { sessionStorage.clear(); window.location.reload(); }
+      }
+    } catch(e){
+      // Network issue — silently skip this check
+    }
+  }, 60000); // every 60 seconds
+}
+
+function _owStopExpiryWatcher(){
+  if(_owExpiryWatcherTimer){
+    clearInterval(_owExpiryWatcherTimer);
+    _owExpiryWatcherTimer = null;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -6796,28 +6869,20 @@ async function doOwnerSignup(){
   btn.disabled = true;
   btn.textContent = 'Creating your account...';
 
+  // Track resources we create so we can clean up on failure
+  let createdAuthUser = null;
+  let secApp = null;
+  let newRestoId = null;
+
   try {
     await loadFirebaseSDK();
 
-    // ── STEP 1: Validate invitation code ──
-    const codeSnap = await firebase.database().ref('invitationCodes/'+code).once('value');
-    const codeData = codeSnap.val();
-    if(!codeData){
-      throw new Error('Invalid invitation code. Please check and try again.');
-    }
-    if(codeData.used){
-      throw new Error('This invitation code has already been used.');
-    }
-    if(codeData.expiresAt && Date.now() > codeData.expiresAt){
-      throw new Error('This invitation code has expired. Please request a new one.');
-    }
-
-    // ── STEP 2: Create Firebase Auth account ──
-    // Use a SECONDARY app instance so we don't disturb any existing auth state
-    let secApp;
+    // ── STEP 1: Use SECONDARY app instance so we don't disturb any existing auth ──
     try { secApp = firebase.app('_signup'); }
     catch(e){ secApp = firebase.initializeApp(firebaseConfig, '_signup'); }
 
+    // ── STEP 2: Create Firebase Auth account FIRST ──
+    // (We need to be authenticated to read invitationCodes, per Firebase Rules)
     let authResult;
     try {
       authResult = await secApp.auth().createUserWithEmailAndPassword(email, pass);
@@ -6831,9 +6896,23 @@ async function doOwnerSignup(){
       }
       throw new Error('Could not create account: '+(authErr.message||'unknown error'));
     }
-    const newUid = authResult.user.uid;
+    createdAuthUser = authResult.user;
+    const newUid = createdAuthUser.uid;
 
-    // ── STEP 3: Create restaurant record (NO plaintext password!) ──
+    // ── STEP 3: Now authenticated, validate invitation code ──
+    const codeSnap = await secApp.database().ref('invitationCodes/'+code).once('value');
+    const codeData = codeSnap.val();
+    if(!codeData){
+      throw new Error('Invalid invitation code. Please check and try again.');
+    }
+    if(codeData.used){
+      throw new Error('This invitation code has already been used.');
+    }
+    if(codeData.expiresAt && Date.now() > codeData.expiresAt){
+      throw new Error('This invitation code has expired. Please request a new one.');
+    }
+
+    // ── STEP 4: Create restaurant record (NO plaintext password!) ──
     // Match SA's "Add Restaurant" so new restaurant has ALL features working:
     // bookings, menu setup, opening hours, default categories, theme, etc.
     const now = Date.now();
@@ -6873,13 +6952,11 @@ async function doOwnerSignup(){
       _signupVersion: 'phase2'    // marker so we know this owner is fully on Firebase Auth
     };
 
-    // Push new restaurant record
+    // Push new restaurant record (Firebase Rules verify code is valid + unused)
     const newRestoRef = await secApp.database().ref('restaurants').push(newRestoData);
-    const newRestoId = newRestoRef.key;
+    newRestoId = newRestoRef.key;
 
-    // ── STEP 4: Seed default opening hours (so bookings work immediately) ──
-    // Matches SA "Add Restaurant" flow — defaults are Mon-Sun 11:00-22:00.
-    // Owner sees "needs review" banner until they save real hours.
+    // ── STEP 5: Seed default opening hours (so bookings work immediately) ──
     try {
       await secApp.database().ref('restoHours/'+newRestoId).set({
         needsReview: true,
@@ -6934,6 +7011,21 @@ async function doOwnerSignup(){
     btn.disabled = false;
     btn.textContent = 'Create Restaurant Account →';
     _suShowErr('❌ '+err.message);
+    // ── CLEANUP on failure ──
+    // If we created an Auth user but the rest failed, delete the Auth user
+    // so they can try again (otherwise "email already in use" error blocks retry)
+    if(createdAuthUser && !newRestoId){
+      try {
+        await createdAuthUser.delete();
+        console.log('Cleaned up partial Auth user after signup failure');
+      } catch(e){
+        console.warn('Auth cleanup failed (user may need to wait before retry):', e.message);
+      }
+    }
+    // Sign out from secondary app
+    if(secApp){
+      try { await secApp.auth().signOut(); } catch(e){}
+    }
   }
 }
 
@@ -6956,8 +7048,10 @@ async function doOwnerLogin(){
   // ═══════════════════════════════════════════════════════════════
   // If input looks like an email, try Firebase Auth first
   if(u.includes('@') && u.includes('.')){
+    // Normalize to lowercase for consistent lookup (matches signup storage)
+    const emailLower = u.toLowerCase();
     try {
-      const result = await firebase.auth().signInWithEmailAndPassword(u, p);
+      const result = await firebase.auth().signInWithEmailAndPassword(emailLower, p);
       const uid = result.user.uid;
       if(typeof dbg==='function') dbg('✅ Firebase Auth login successful, looking up restaurant...');
       // Find the restaurant linked to this UID
@@ -7116,7 +7210,8 @@ async function doSALogin(){
 
   try {
     // Step 1: Verify password against Firebase Auth (encrypted on Google servers)
-    const result = await firebase.auth().signInWithEmailAndPassword(u, p);
+    // Normalize email to lowercase for consistent matching
+    const result = await firebase.auth().signInWithEmailAndPassword(u.toLowerCase(), p);
     const uid = result.user.uid;
 
     // Step 2: Verify this UID is registered as an admin in the database
@@ -8891,6 +8986,14 @@ async function loadAndRenderRestos(forceRefresh=false){
         status:r.status,expiresAt:r.expiresAt,theme:r.theme,
         cuisine:r.cuisine,emoji:r.emoji,comm:r.comm,vat:r.vat,
         createdAt:r.createdAt,slug:r.slug,
+        addr:r.addr,                              // Small text, safe to cache
+        logo:r.logo,                              // Base64 logo — already in DB shallow get
+        // Phase 2 fields — needed for Migrate Auth button visibility logic
+        ownerUid:r.ownerUid,
+        ownerEmail:r.ownerEmail,
+        _signupVersion:r._signupVersion,
+        // Truthy markers for "has plaintext password" check (don't store actual passwords)
+        _hasLegacyPass: !!(r.pass || r.ownerPass),
         _menuCount:(r.menu||[]).length,
         _tableCount:(r.tables||[]).length
       };
@@ -8932,7 +9035,29 @@ function renderRestoTable(){
     const cnt=cachedOrders.filter(o=>o.rId===k).length;
     const now=Date.now();
     const exp=r.expiresAt;
-    const expTxt=!exp?'Lifetime':(exp<now?`<span style="color:var(--s-red)">EXPIRED</span>`:`${Math.ceil((exp-now)/86400000)}d left`);
+    // Enhanced expiry display: red EXPIRED, yellow warning if <7 days
+    const daysLeft = exp ? Math.ceil((exp - now) / 86400000) : null;
+    const isExpired = exp && exp < now;
+    const expTxt = !exp
+      ? 'Lifetime'
+      : isExpired
+        ? `<span style="color:var(--s-red);font-weight:700">⏰ EXPIRED</span>`
+        : daysLeft <= 7
+          ? `<span style="color:#ff9800;font-weight:700">⚠ ${daysLeft}d left</span>`
+          : daysLeft <= 30
+            ? `<span style="color:#ffc107">${daysLeft}d left</span>`
+            : `${daysLeft}d left`;
+    // Effective status: if expired and status is still 'active', visually treat as expired
+    const effectiveStatus = (isExpired && r.status === 'active') ? 'expired' : r.status;
+    const statusBadge = effectiveStatus === 'expired'
+      ? '<span class="tag tr">⏰ expired</span>'
+      : effectiveStatus === 'active'
+        ? '<span class="tag tg">active</span>'
+        : effectiveStatus === 'suspended'
+          ? '<span class="tag tr">🔴 suspended</span>'
+          : effectiveStatus === 'pending'
+            ? '<span class="tag to">pending</span>'
+            : `<span class="tag tr">${effectiveStatus}</span>`;
     return`<tr>
       <td><div style="display:flex;align-items:center;gap:8px">${r.logo?`<img src="${r.logo}" style="width:28px;height:28px;border-radius:4px;object-fit:cover">`:''}<div><div class="td-main">${r.emoji||'🍽️'} ${r.name}</div><div class="td-sub">${r.addr||''}</div></div></div></td>
       <td>${r.user||r.ownerUser||''}</td>
@@ -8941,19 +9066,21 @@ function renderRestoTable(){
         ${(()=>{const t=THEMES.find(x=>x.id===(r.theme||'classic'));return t?`<div style="display:flex;align-items:center;gap:5px"><div style="width:16px;height:16px;border-radius:50%;background:${t.accent};flex-shrink:0"></div><span style="font-size:11px">${t.icon} ${t.name}</span></div>`:'—';})()}
       </td>
       <td style="font-size:11px">${expTxt}</td>
-      <td><span class="tag ${r.status==='active'?'tg':r.status==='suspended'?'tr':r.status==='pending'?'to':'tr'}">${r.status}</span></td>
+      <td>${statusBadge}</td>
       <td>${cnt}</td>
       <td><div class="btn-acts">
         <button class="btn btn-sm" onclick="editResto('${k}')">Edit</button>
         <button class="btn btn-sm" onclick="previewRestoTheme('${k}')" style="border-color:var(--s-blue);color:var(--s-blue)">👁 Theme</button>
         <button class="btn btn-sm" onclick="fpOpen('${k}')" style="border-color:#c8973a;color:#c8973a">📐 Layout</button>
         <button class="btn btn-sm" onclick="rfOpen('${k}')" style="border-color:#ffc107;color:#ffc107">🔐 Features</button>
-        ${!r.ownerUid && r._signupVersion !== 'phase2' && (r.pass || r.ownerPass) ? `<button class="btn btn-sm" onclick="migrateExistingOwner('${k}')" style="border-color:#9c27b0;color:#9c27b0;font-weight:700">🔄 Migrate Auth</button>` : ''}
-        ${r.status==='active'?`<button class="btn btn-sm" onclick="suspendResto('${k}')" style="border-color:var(--s-red);color:var(--s-red)">🔴 Suspend</button>`:''}
+        ${!r.ownerUid && r._signupVersion !== 'phase2' && r._hasLegacyPass ? `<button class="btn btn-sm" onclick="migrateExistingOwner('${k}')" style="border-color:#9c27b0;color:#9c27b0;font-weight:700">🔄 Migrate Auth</button>` : ''}
+        ${r.ownerUid && r.ownerEmail ? `<button class="btn btn-sm" onclick="sendOwnerPasswordReset('${k}')" style="border-color:#03a9f4;color:#03a9f4">📧 Reset Pass</button>` : ''}
+        ${r.status==='active' && !isExpired ?`<button class="btn btn-sm" onclick="suspendResto('${k}')" style="border-color:var(--s-red);color:var(--s-red)">🔴 Suspend</button>`:''}
         ${r.status==='suspended'?`<button class="btn btn-sm btn-green" onclick="activateResto('${k}')">🟢 Activate</button>`:''}
         ${r.status==='pending'?`<button class="btn btn-sm btn-green" onclick="approveResto('${k}')">✓ Approve</button>`:''}
+        ${isExpired ?`<button class="btn btn-sm btn-green" onclick="renewResto('${k}')" style="font-weight:700">🔄 Renew Now!</button>`:''}
         <button class="btn btn-sm btn-red" onclick="delResto('${k}')">Del</button>
-        <button class="btn btn-sm" onclick="renewResto('${k}')">🔄 Renew</button>
+        ${!isExpired ? `<button class="btn btn-sm" onclick="renewResto('${k}')">🔄 Renew</button>` : ''}
       </div></td>
     </tr>`;
   }).join('')||nd(7);
@@ -9742,17 +9869,21 @@ async function genInviteCode(){
   
   try {
     await firebase.database().ref('invitationCodes/'+code).set(codeData);
-    // Show the code in a copy-friendly modal
+    // ── Build one-click signup link for the owner ──
+    const signupLink = window.location.origin + '/?signup=' + code;
+    // Show the code + share link in a copy-friendly modal
     const msg = '✓ Invitation code created!\n\n'+
                 'CODE: '+code+'\n\n'+
+                '🔗 ONE-CLICK SIGNUP LINK:\n'+
+                signupLink+'\n\n'+
                 'Expires: '+new Date(expiresAt).toLocaleString()+'\n\n'+
-                'Send this code to the restaurant owner.\n'+
-                'They will use it at the signup page.';
+                'Send the link to the restaurant owner via WhatsApp/email.\n'+
+                'When they open it, the code is auto-filled — they just enter their info!';
     alert(msg);
-    // Copy to clipboard if possible
+    // Copy SIGNUP LINK to clipboard (more useful than just the code)
     try {
-      await navigator.clipboard.writeText(code);
-      notifyD('✓ Code copied to clipboard: '+code);
+      await navigator.clipboard.writeText(signupLink);
+      notifyD('✓ Signup link copied! Send via WhatsApp/email to owner.');
     } catch(e){
       notifyD('✓ Code created: '+code);
     }
@@ -9818,12 +9949,22 @@ async function loadInvitesList(){
 }
 
 async function copyInviteCode(code){
+  // Build the one-click signup link
+  const signupLink = window.location.origin + '/?signup=' + code;
+  // Ask SA: code only or full link?
+  const useFullLink = confirm(
+    'What would you like to copy?\n\n' +
+    'OK = One-click signup LINK (recommended — send via WhatsApp/email)\n' +
+    'Cancel = Just the CODE (owner types it manually)\n\n' +
+    'Link: '+signupLink+'\n' +
+    'Code: '+code
+  );
+  const textToCopy = useFullLink ? signupLink : code;
   try {
-    await navigator.clipboard.writeText(code);
-    notifyD('✓ Copied: '+code);
+    await navigator.clipboard.writeText(textToCopy);
+    notifyD('✓ Copied: '+(useFullLink ? 'signup link' : code));
   } catch(e){
-    // Fallback: show in prompt for manual copy
-    prompt('Copy this code:', code);
+    prompt('Copy this:', textToCopy);
   }
 }
 
@@ -9853,6 +9994,57 @@ async function deleteInviteCode(code){
    After all 3 owners migrated, plaintext passwords are completely
    gone from the database.
 */
+/* ═══════════════════════════════════════════════════════════════
+   SA: SEND OWNER PASSWORD RESET EMAIL
+   ═══════════════════════════════════════════════════════════════
+   Professional pattern (used by Stripe, Slack, etc.):
+   SA cannot SEE owner passwords, but CAN trigger a "forgot password"
+   email so the owner can reset their own password.
+   
+   Firebase sends the email automatically — owner gets a link, sets
+   new password, done. SA never knows the new password.
+*/
+async function sendOwnerPasswordReset(restoId){
+  if(!await _saReAuth('send password reset email')) return;
+  const restos = await fbGet('restaurants') || {};
+  const resto = restos[restoId];
+  if(!resto){
+    notifyD('❌ Restaurant not found');
+    return;
+  }
+  const email = resto.ownerEmail || resto.user;
+  if(!email || !email.includes('@')){
+    notifyD('❌ No valid email on file for this owner');
+    return;
+  }
+  if(!confirm('Send password reset email to:\n\n'+email+'\n\nOwner will receive a link to set a new password. They use it themselves — you will NOT know the new password (more secure).')){
+    return;
+  }
+  try {
+    // Use main firebase.auth() — sendPasswordResetEmail doesn't require user login
+    await firebase.auth().sendPasswordResetEmail(email);
+    notifyD('📧 Reset email sent to '+email);
+    alert('✅ Password reset email sent!\n\n'+
+          'Owner: '+(resto.name||'')+'\n'+
+          'Email: '+email+'\n\n'+
+          'Tell the owner to check their inbox (and spam folder) for a link from Firebase.\n'+
+          'They click the link → set new password → done.\n\n'+
+          'You do NOT know their new password — this is more secure.');
+  } catch(err){
+    let msg = 'Failed to send reset email';
+    if(err.code === 'auth/user-not-found'){
+      msg = 'No Firebase Auth account found for this email. Owner may not be migrated yet.';
+    } else if(err.code === 'auth/invalid-email'){
+      msg = 'Invalid email format on file.';
+    } else if(err.code === 'auth/too-many-requests'){
+      msg = 'Too many requests. Wait a few minutes before trying again.';
+    } else if(err.message){
+      msg = err.message;
+    }
+    notifyD('❌ '+msg);
+  }
+}
+
 async function migrateExistingOwner(restoId){
   const restos = await fbGet('restaurants') || {};
   const resto = restos[restoId];
@@ -9862,7 +10054,7 @@ async function migrateExistingOwner(restoId){
   }
 
   // Check: is this already migrated?
-  if(resto.ownerUid || resto._signupVersion === 'phase2'){
+  if(resto.ownerUid || resto._signupVersion === 'phase2' || resto._signupVersion === 'phase2-migrated'){
     notifyD('ℹ️ This restaurant is already migrated to Firebase Auth');
     return;
   }
