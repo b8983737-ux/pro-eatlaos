@@ -2564,29 +2564,7 @@ function setFbStatus(connected, isOwner=false){
   const dot=document.getElementById(isOwner?'owFbDot':'globalFbDot');
   const txt=document.getElementById(isOwner?'owFbTxt':'globalFbTxt');
   if(dot) {dot.className='fb-dot'+(connected?' connected':'');}
-  if(txt) txt.textContent=connected?'Live 🟢':'Reconnecting...';
-}
-
-// Monitor connection — only after SDK loads
-function startConnectionMonitor(){
-  if(!db) return;
-  db.ref('.info/connected').on('value', snap=>{
-    const connected=snap.val()===true;
-    setFbStatus(connected, true);
-    setFbStatus(connected, false);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// PLATFORM CONFIG (Firebase)
-// ═══════════════════════════════════════════════════════════════
-let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
-
-async function loadCFG(){
-  const v=await fbGet('cfg');
-  if(v) CFG={...CFG,...v};
-  // Ensure SA password exists
-  if(!v?.saPass) await fbSet('cfg/saPass','6699@BillS');
+  if(txt) txt.textC
 }
 
 async function saveCFG(){
@@ -2842,25 +2820,6 @@ async function doOwnerLogin(){
   setTimeout(()=>initOwChart('rev'),300);
 }
 
-async function doSALogin(){
-  const u=document.getElementById('saU').value.trim();
-  const p=document.getElementById('saP').value;
-  document.getElementById('saErr').textContent='';
-  if(!u||!p){document.getElementById('saErr').textContent='Enter credentials';return;}
-  document.getElementById('saErr').textContent='Signing in...';
-  await loadFirebaseSDK();
-  startConnectionMonitor();
-  document.getElementById('saErr').textContent='';
-  // Hardcoded credentials — not stored in Firebase
-  const SA_USER='superadmin@SouB';
-  const SA_PASS='6699@BillS';
-  if(u===SA_USER&&p===SA_PASS){
-    me={name:'Super Admin',role:'superadmin'};
-    localStorage.setItem('el_session',JSON.stringify({role:'superadmin'}));
-    showPage('pg-sa');
-    saP('dashboard',document.querySelector('#pg-sa .sb-item'));
-    startSAListeners();
-    setTimeout(()=>initSACharts(),300);
   } else {
     document.getElementById('saErr').textContent='Access denied.';
     setTimeout(()=>document.getElementById('saErr').textContent='',3000);
