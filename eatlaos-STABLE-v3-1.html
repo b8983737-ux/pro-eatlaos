@@ -3536,10 +3536,7 @@ function startConnectionMonitor(){
   });
 }
 
-// ═══════════════════════════════════════════════════════════════
-// PLATFORM CONFIG (Firebase)
-// ═══════════════════════════════════════════════════════════════
-let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
+
 
 let _cfgLoaded=false;
 async function loadCFG(){
@@ -3956,15 +3953,7 @@ async function doSALogin(){
   const u=document.getElementById('saU').value.trim();
   const p=document.getElementById('saP').value;
   document.getElementById('saErr').textContent='';
-  if(!u||!p){document.getElementById('saErr').textContent='Enter credentials';return;}
-  document.getElementById('saErr').textContent='Signing in...';
-  await loadFirebaseSDK();
-  startConnectionMonitor();
-  document.getElementById('saErr').textContent='';
-  // Hardcoded credentials — not stored in Firebase
-  const SA_USER='superadmin@SouB';
-  const SA_PASS='6699@BillS';
-  if(typeof dbg==='function') dbg('SA checking: '+u);
+  if('SA checking: '+u);
   if(u===SA_USER&&p===SA_PASS){
     if(typeof dbg==='function') dbg('✅ SA login success');
     me={name:'Super Admin',role:'superadmin'};
