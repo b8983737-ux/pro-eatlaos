@@ -3435,14 +3435,10 @@ function startConnectionMonitor(){
 
 // ═══════════════════════════════════════════════════════════════
 // PLATFORM CONFIG (Firebase)
-// ═══════════════════════════════════════════════════════════════
-let CFG={commission:15,sessHours:2,name:'EATLAOS',saPass:'6699@BillS'};
+// ═════════════════════════════════════════════
 
-async function loadCFG(){
-  const v=await fbGet('cfg');
-  if(v) CFG={...CFG,...v};
-  // Ensure SA password exists
-  if(!v?.saPass) await fbSet('cfg/saPass','6699@BillS');
+  
+ 
 }
 
 async function saveCFG(){
@@ -3839,9 +3835,7 @@ async function doSALogin(){
   await loadFirebaseSDK();
   startConnectionMonitor();
   document.getElementById('saErr').textContent='';
-  // Hardcoded credentials — not stored in Firebase
-  const SA_USER='superadmin@SouB';
-  const SA_PASS='6699@BillS';
+ 
   if(typeof dbg==='function') dbg('SA checking: '+u);
   if(u===SA_USER&&p===SA_PASS){
     if(typeof dbg==='function') dbg('✅ SA login success');
