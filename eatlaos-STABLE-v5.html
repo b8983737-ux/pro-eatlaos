@@ -6306,6 +6306,35 @@ async function autoCleanOldData(){
 }
 
 async function migrateAllRestaurants(){
+  // SAFETY: Only run if Firebase Auth is fully ready and user is an admin.
+  // Without this check, migration tries to write before auth → 401 Unauthorized errors.
+  try {
+    if(typeof firebase === 'undefined' || !firebase.auth || !firebase.apps.length){
+      return; // Firebase not ready yet
+    }
+    const user = firebase.auth().currentUser;
+    if(!user){
+      // Wait up to 3 seconds for auth state to be ready
+      const ready = await new Promise(resolve => {
+        const timeout = setTimeout(()=>resolve(false), 3000);
+        const unsub = firebase.auth().onAuthStateChanged(u=>{
+          clearTimeout(timeout);
+          unsub();
+          resolve(!!u);
+        });
+      });
+      if(!ready) return; // No auth, skip migration silently
+    }
+    // Verify the user is actually an admin (only admins can write to restaurants/)
+    const currentUser = firebase.auth().currentUser;
+    if(!currentUser) return;
+    const adminSnap = await firebase.database().ref('admins/' + currentUser.uid).once('value');
+    if(!adminSnap.val()) return; // Not an admin, skip migration silently
+  } catch(e){
+    console.log('Migration skipped (auth check failed):', e.message);
+    return;
+  }
+
   const restos = await fbGet('restaurants');
   if(!restos) return;
 
@@ -6394,8 +6423,13 @@ async function migrateAllRestaurants(){
 
     // Only update if there's something to fix
     if(Object.keys(updates).length > 0){
-      await fbUpdate('restaurants/'+id, updates);
-      console.log('Migrated restaurant "'+r.name+'": added', Object.keys(updates).join(', '));
+      try {
+        await fbUpdate('restaurants/'+id, updates);
+        console.log('Migrated restaurant "'+r.name+'": added', Object.keys(updates).join(', '));
+      } catch(e){
+        // Silently skip — migration is a nice-to-have, not critical.
+        // Firebase Rules may block this in some auth states; that's OK.
+      }
     }
   }
 }
@@ -6686,8 +6720,8 @@ async function doSALogin(){
     saP('dashboard',document.querySelector('#pg-sa .sb-item'));
     startSAListeners();
     setTimeout(()=>initSACharts(),300);
-    // Auto-migrate all restaurants on SA login
-    migrateAllRestaurants().catch(e=>console.log('Migration:',e));
+    // Auto-migrate all restaurants on SA login (delay to let auth fully propagate, prevents 401s)
+    setTimeout(()=>migrateAllRestaurants().catch(e=>console.log('Migration:',e.message||e)), 1500);
   } catch(err){
     if(typeof dbg==='function') dbg('❌ SA login failed - '+(err.code||err.message),'err');
     let msg='Access denied.';
