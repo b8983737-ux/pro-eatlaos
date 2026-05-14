@@ -3235,6 +3235,96 @@ setTimeout(function(){
           </label>
           <button class="sl-btn" onclick="doOwnerLogin()" data-ts="ow_signin">Sign In →</button>
           <div class="sl-err" id="owErr"></div>
+          <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--s-border);text-align:center;font-size:13px;color:var(--s-muted)">
+            New restaurant?
+            <button type="button" onclick="showPage('pg-owner-signup');resetSignupForm()" style="background:none;border:none;color:var(--s-gold);font-weight:600;cursor:pointer;padding:0;margin-left:6px;text-decoration:underline">Sign up with invitation code →</button>
+          </div>
+        </div>
+        <div class="sl-footer">EATLAOS Restaurant Platform · Vientiane, Laos</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     OWNER SIGNUP PAGE - Phase 2
+     New restaurant owners use invitation code to self-register
+     Code from SA → Firebase Auth account → Restaurant created (no plaintext)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="pg-owner-signup" class="page">
+  <div class="sl-lines"></div>
+  <div class="sl-wrap">
+    <div class="sl-left">
+      <button class="sl-back" onclick="showPage('pg-owner-login')">← Back to login</button>
+      <div class="sl-brand">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
+          <svg width="56" height="56" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="44" cy="44" r="40" fill="none" stroke="#c8973a" stroke-width="2.5"/>
+            <circle cx="44" cy="44" r="34" fill="none" stroke="#c8973a" stroke-width="0.8" opacity=".3"/>
+            <circle cx="44" cy="4"  r="3.5" fill="#c8973a"/>
+            <circle cx="84" cy="44" r="3.5" fill="#c8973a"/>
+            <circle cx="44" cy="84" r="3.5" fill="#c8973a"/>
+            <circle cx="4"  cy="44" r="3.5" fill="#c8973a"/>
+            <line x1="16" y1="44" x2="72" y2="44" stroke="#c8973a" stroke-width="1" opacity=".5"/>
+            <text x="44" y="38" font-family="system-ui" font-size="17" font-weight="900" fill="#ffffff" text-anchor="middle">EAT</text>
+            <text x="44" y="59" font-family="system-ui" font-size="17" font-weight="900" fill="#c8973a" text-anchor="middle">LAOS</text>
+          </svg>
+          <div class="sl-logo">EAT<em>LAOS</em></div>
+        </div>
+        <span class="sl-sub">Join EATLAOS</span>
+      </div>
+      <div class="sl-features">
+        <div class="sl-feat"><span>🎟️</span><div><b>Invitation Required</b><p>Get a code from EATLAOS administrator first</p></div></div>
+        <div class="sl-feat"><span>🔐</span><div><b>Secure Sign-up</b><p>Your password is encrypted on Google's servers</p></div></div>
+        <div class="sl-feat"><span>🚀</span><div><b>Instant Activation</b><p>Start accepting orders immediately</p></div></div>
+      </div>
+      <div class="sl-info">
+        <div class="sl-info-lbl">Don't have a code?</div>
+        <div class="sl-info-txt">Contact EATLAOS to request an invitation. We'll send you a code to sign up.</div>
+      </div>
+    </div>
+    <div class="sl-right">
+      <div class="sl-form-wrap">
+        <div class="sl-form-header">
+          <div class="sl-form-logo">EAT<em>LAOS</em></div>
+          <div class="sl-title">Create your restaurant</div>
+          <div class="sl-subtitle">Use your invitation code to get started</div>
+        </div>
+        <div class="sl-form">
+          <div class="sl-field">
+            <label class="sl-label">Invitation Code <span style="color:var(--s-red)">*</span></label>
+            <input class="sl-input" id="suCode" placeholder="EATLAOS-XXXX-XXXX" autocomplete="off" style="text-transform:uppercase;font-family:monospace;font-weight:600;letter-spacing:1px">
+          </div>
+          <div class="sl-field">
+            <label class="sl-label">Restaurant Name <span style="color:var(--s-red)">*</span></label>
+            <input class="sl-input" id="suRestoName" placeholder="My Restaurant" autocomplete="organization">
+          </div>
+          <div class="sl-field">
+            <label class="sl-label">Owner Email <span style="color:var(--s-red)">*</span></label>
+            <input class="sl-input" type="email" id="suEmail" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="sl-field">
+            <label class="sl-label">Phone Number <span style="color:var(--s-red)">*</span></label>
+            <input class="sl-input" type="tel" id="suPhone" placeholder="+856 20 1234 5678" autocomplete="tel">
+          </div>
+          <div class="sl-field">
+            <label class="sl-label">Password <span style="color:var(--s-red)">*</span></label>
+            <div class="sl-pass-wrap">
+              <input class="sl-input sl-input-pass" type="password" id="suPass" placeholder="Min 8 characters" autocomplete="new-password">
+              <button type="button" class="sl-eye" onclick="_suTogglePass('suPass',this)" aria-label="Show password">👁</button>
+            </div>
+            <div style="font-size:11px;color:var(--s-muted);margin-top:6px">Use a strong password — at least 8 characters</div>
+          </div>
+          <div class="sl-field">
+            <label class="sl-label">Confirm Password <span style="color:var(--s-red)">*</span></label>
+            <div class="sl-pass-wrap">
+              <input class="sl-input sl-input-pass" type="password" id="suPass2" placeholder="Re-enter password" autocomplete="new-password">
+              <button type="button" class="sl-eye" onclick="_suTogglePass('suPass2',this)" aria-label="Show password">👁</button>
+            </div>
+          </div>
+          <button class="sl-btn" id="suBtn" onclick="doOwnerSignup()">Create Restaurant Account →</button>
+          <div class="sl-err" id="suErr"></div>
+          <div id="suSuccess" style="display:none;margin-top:14px;padding:14px;background:rgba(29,185,84,0.1);border:1px solid var(--s-green);border-radius:8px;color:var(--s-green);text-align:center"></div>
         </div>
         <div class="sl-footer">EATLAOS Restaurant Platform · Vientiane, Laos</div>
       </div>
@@ -6622,53 +6712,324 @@ function _owStopSuspendWatcher(){
   } catch(e){}
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   OWNER SIGNUP — Public Self-Registration with Invitation Code
+   ═══════════════════════════════════════════════════════════════
+   Flow:
+   1. SA generates EATLAOS-XXXX-XXXX code (Phase 1, done)
+   2. SA sends code to new restaurant owner
+   3. Owner visits signup page, enters code + their info
+   4. System validates code (exists, not expired, not used)
+   5. Firebase Auth account created with owner's email + password
+   6. Restaurant record created with ownerUid (NO plaintext password!)
+   7. Code marked used
+   8. Owner automatically logged in
+*/
+
+function resetSignupForm(){
+  ['suCode','suRestoName','suEmail','suPhone','suPass','suPass2'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  const err = document.getElementById('suErr');
+  const ok = document.getElementById('suSuccess');
+  if(err) err.textContent = '';
+  if(ok){ ok.style.display = 'none'; ok.textContent = ''; }
+  const btn = document.getElementById('suBtn');
+  if(btn){ btn.disabled = false; btn.textContent = 'Create Restaurant Account →'; }
+}
+
+function _suTogglePass(inputId, btn){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  if(input.type === 'password'){
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+function _suShowErr(msg){
+  const err = document.getElementById('suErr');
+  if(err){
+    err.textContent = msg;
+    err.style.color = 'var(--s-red)';
+  }
+}
+
+async function doOwnerSignup(){
+  const code = document.getElementById('suCode').value.trim().toUpperCase();
+  const restoName = document.getElementById('suRestoName').value.trim();
+  const email = document.getElementById('suEmail').value.trim().toLowerCase();
+  const phone = document.getElementById('suPhone').value.trim();
+  const pass = document.getElementById('suPass').value;
+  const pass2 = document.getElementById('suPass2').value;
+  const errEl = document.getElementById('suErr');
+  const okEl = document.getElementById('suSuccess');
+  const btn = document.getElementById('suBtn');
+
+  // Reset state
+  errEl.textContent = '';
+  okEl.style.display = 'none';
+
+  // ── INPUT VALIDATION ──
+  if(!code) return _suShowErr('Invitation code is required');
+  if(!/^EATLAOS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code))
+    return _suShowErr('Invalid code format. Expected: EATLAOS-XXXX-XXXX');
+  if(!restoName) return _suShowErr('Restaurant name is required');
+  if(restoName.length < 2 || restoName.length > 80)
+    return _suShowErr('Restaurant name must be 2–80 characters');
+  if(!email) return _suShowErr('Email is required');
+  if(!email.includes('@') || !email.includes('.'))
+    return _suShowErr('Please enter a valid email address');
+  if(!phone) return _suShowErr('Phone number is required');
+  if(phone.length < 6 || phone.length > 25)
+    return _suShowErr('Please enter a valid phone number');
+  if(!pass) return _suShowErr('Password is required');
+  if(pass.length < 8)
+    return _suShowErr('Password must be at least 8 characters');
+  if(pass !== pass2)
+    return _suShowErr('Passwords do not match');
+
+  btn.disabled = true;
+  btn.textContent = 'Creating your account...';
+
+  try {
+    await loadFirebaseSDK();
+
+    // ── STEP 1: Validate invitation code ──
+    const codeSnap = await firebase.database().ref('invitationCodes/'+code).once('value');
+    const codeData = codeSnap.val();
+    if(!codeData){
+      throw new Error('Invalid invitation code. Please check and try again.');
+    }
+    if(codeData.used){
+      throw new Error('This invitation code has already been used.');
+    }
+    if(codeData.expiresAt && Date.now() > codeData.expiresAt){
+      throw new Error('This invitation code has expired. Please request a new one.');
+    }
+
+    // ── STEP 2: Create Firebase Auth account ──
+    // Use a SECONDARY app instance so we don't disturb any existing auth state
+    let secApp;
+    try { secApp = firebase.app('_signup'); }
+    catch(e){ secApp = firebase.initializeApp(firebaseConfig, '_signup'); }
+
+    let authResult;
+    try {
+      authResult = await secApp.auth().createUserWithEmailAndPassword(email, pass);
+    } catch(authErr){
+      if(authErr.code === 'auth/email-already-in-use'){
+        throw new Error('This email is already registered. Use Sign In instead.');
+      } else if(authErr.code === 'auth/weak-password'){
+        throw new Error('Password is too weak. Use a stronger password.');
+      } else if(authErr.code === 'auth/invalid-email'){
+        throw new Error('Please enter a valid email address.');
+      }
+      throw new Error('Could not create account: '+(authErr.message||'unknown error'));
+    }
+    const newUid = authResult.user.uid;
+
+    // ── STEP 3: Create restaurant record (NO plaintext password!) ──
+    // Match SA's "Add Restaurant" so new restaurant has ALL features working:
+    // bookings, menu setup, opening hours, default categories, theme, etc.
+    const now = Date.now();
+    const oneYearMs = 365 * 86400000;
+    const slug = restoName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    const newRestoData = {
+      name: restoName,
+      ownerUid: newUid,            // ← UID instead of password!
+      ownerEmail: email,
+      ownerPhone: phone,
+      user: email,                 // username = email (for compatibility with existing login flow)
+      // pass: NOT STORED — Firebase Auth handles it
+      status: 'active',
+      comm: 15,                    // default 15% commission
+      vat: 0,                      // VAT 0% by default — owner can change
+      prep: 15,                    // 15 min prep time default
+      cuisine: '',
+      addr: '',                    // owner fills in via Edit
+      logo: '',
+      slug: slug,
+      emoji: '🍽️',
+      theme: 'classic',
+      // Default categories so menu setup works out-of-box (matches SA "Add Restaurant")
+      cats: [
+        {id:'c1', name:'Main Course', icon:'🍽️'},
+        {id:'c2', name:'Starters',    icon:'🥗'},
+        {id:'c3', name:'Drinks',      icon:'🥤'},
+        {id:'c4', name:'Desserts',    icon:'🍰'}
+      ],
+      menu: [],
+      tables: [],
+      bookings: {},                // empty bookings object (so booking listeners don't break)
+      createdAt: now,
+      updatedAt: now,
+      expiresAt: now + oneYearMs,
+      invitationCode: code,
+      _signupVersion: 'phase2'    // marker so we know this owner is fully on Firebase Auth
+    };
+
+    // Push new restaurant record
+    const newRestoRef = await secApp.database().ref('restaurants').push(newRestoData);
+    const newRestoId = newRestoRef.key;
+
+    // ── STEP 4: Seed default opening hours (so bookings work immediately) ──
+    // Matches SA "Add Restaurant" flow — defaults are Mon-Sun 11:00-22:00.
+    // Owner sees "needs review" banner until they save real hours.
+    try {
+      await secApp.database().ref('restoHours/'+newRestoId).set({
+        needsReview: true,
+        0: { open:true, from:'11:00', to:'22:00' },
+        1: { open:true, from:'11:00', to:'22:00' },
+        2: { open:true, from:'11:00', to:'22:00' },
+        3: { open:true, from:'11:00', to:'22:00' },
+        4: { open:true, from:'11:00', to:'22:00' },
+        5: { open:true, from:'11:00', to:'22:00' },
+        6: { open:true, from:'11:00', to:'22:00' }
+      });
+    } catch(e){
+      console.warn('Default hours seed failed (non-fatal):', e.message);
+      // Not fatal — owner can set hours manually
+    }
+
+    // ── STEP 5: Mark invitation code as used ──
+    await secApp.database().ref('invitationCodes/'+code).update({
+      used: true,
+      usedBy: newUid,
+      usedByEmail: email,
+      usedAt: now,
+      restoId: newRestoId
+    });
+
+    // Sign out from the secondary app so it doesn't interfere with main session
+    await secApp.auth().signOut();
+
+    // ── STEP 5: Success! Show message + auto-redirect to login ──
+    okEl.textContent = '🎉 Account created! Redirecting to login...';
+    okEl.style.display = 'block';
+    btn.textContent = 'Success!';
+
+    setTimeout(()=>{
+      // Pre-fill login form so owner doesn't have to type again
+      const owU = document.getElementById('owU');
+      const owP = document.getElementById('owP');
+      if(owU) owU.value = email;
+      if(owP) owP.value = ''; // never pre-fill password
+      showPage('pg-owner-login');
+      // Show helpful message on login page
+      const owErr = document.getElementById('owErr');
+      if(owErr){
+        owErr.style.color = 'var(--s-green)';
+        owErr.textContent = '✓ Account created! Enter your password to sign in.';
+        setTimeout(()=>{ owErr.textContent = ''; owErr.style.color = ''; }, 8000);
+      }
+      resetSignupForm();
+    }, 2000);
+
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = 'Create Restaurant Account →';
+    _suShowErr('❌ '+err.message);
+  }
+}
+
 async function doOwnerLogin(){
   const u=document.getElementById('owU').value.trim();
   const p=document.getElementById('owP').value;
   document.getElementById('owErr').textContent='';
   if(typeof dbg==='function') dbg('Owner login attempt: '+u);
-  if(!u||!p){document.getElementById('owErr').textContent='Enter username and password';return;}
+  if(!u||!p){document.getElementById('owErr').textContent='Enter username or email and password';return;}
   document.getElementById('owErr').textContent='Signing in...';
-  // PERF: Fire SDK loader + indexed user lookup IN PARALLEL
-  // Try indexed query on `user` field first; if no match, try `ownerUser` field; else fall back to full scan.
-  const sdkPromise = loadFirebaseSDK();
-  // Use indexed query — Firebase returns ONLY the matching record (vs all restaurants)
-  // Falls back to full scan if index missing (fbGetFiltered handles fallback)
-  let foundMap = null;
-  try {
-    foundMap = await fbGetFiltered('restaurants', 'user', u);
-    if(!foundMap || !Object.keys(foundMap).length){
-      foundMap = await fbGetFiltered('restaurants', 'ownerUser', u);
-    }
-  } catch(e){
-    foundMap = null;
-  }
-  await sdkPromise; // SDK should be ready before connection monitor
+  await loadFirebaseSDK();
   startConnectionMonitor();
   document.getElementById('owErr').textContent='';
+
   let found = null;
-  if(foundMap && Object.keys(foundMap).length){
-    // Indexed query hit — verify password
-    Object.entries(foundMap).forEach(([k,v])=>{
-      if(!v) return;
-      if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
-    });
-  }
-  // Last-resort fallback: full scan (only if no index match — handles edge cases gracefully)
-  let networkOk = (foundMap !== null); // indexed query at least responded
-  if(!found){
-    if(typeof dbg==='function') dbg('Indexed lookup empty, scanning all restaurants...');
-    const restos = await fbGet('restaurants');
-    if(restos){
-      networkOk = true;
-      Object.entries(restos).forEach(([k,v])=>{
-        if((v.user===u||v.ownerUser===u)&&(v.pass===p||v.ownerPass===p)) found={...v,id:k};
-      });
-    } else if(restos === null && foundMap === null){
-      // Both calls returned null → likely network failure, not wrong credentials
-      networkOk = false;
+  let networkOk = true;
+
+  // ═══════════════════════════════════════════════════════════════
+  // PATH 1: Firebase Auth (new owners from Phase 2 signup)
+  // ═══════════════════════════════════════════════════════════════
+  // If input looks like an email, try Firebase Auth first
+  if(u.includes('@') && u.includes('.')){
+    try {
+      const result = await firebase.auth().signInWithEmailAndPassword(u, p);
+      const uid = result.user.uid;
+      if(typeof dbg==='function') dbg('✅ Firebase Auth login successful, looking up restaurant...');
+      // Find the restaurant linked to this UID
+      const restosMap = await fbGetFiltered('restaurants', 'ownerUid', uid);
+      if(restosMap && Object.keys(restosMap).length){
+        const [restoKey, restoData] = Object.entries(restosMap)[0];
+        found = {...restoData, id: restoKey};
+      } else {
+        // Auth succeeded but no restaurant found — shouldn't happen, but handle gracefully
+        // Could be: SA hasn't created restaurant yet, or restaurant was deleted
+        try { await firebase.auth().signOut(); } catch(e){}
+        document.getElementById('owErr').textContent = 'No restaurant linked to this account. Contact administrator.';
+        return;
+      }
+    } catch(authErr){
+      // Firebase Auth rejected — could be: wrong password, OR email is actually a legacy username
+      if(authErr.code === 'auth/wrong-password' || authErr.code === 'auth/invalid-credential' || authErr.code === 'auth/invalid-login-credentials'){
+        // Real wrong password — but ONLY for Firebase Auth users. Fall through to legacy check in case this is actually a legacy username that happens to look like an email.
+        if(typeof dbg==='function') dbg('Firebase Auth rejected, trying legacy lookup...');
+      } else if(authErr.code === 'auth/user-not-found'){
+        if(typeof dbg==='function') dbg('Email not in Firebase Auth, trying legacy lookup...');
+      } else if(authErr.code === 'auth/too-many-requests'){
+        document.getElementById('owErr').textContent = 'Too many failed attempts. Try again later.';
+        return;
+      } else if(authErr.code === 'auth/network-request-failed'){
+        document.getElementById('owErr').textContent = 'Network error. Check your internet connection.';
+        return;
+      }
+      // For any other case, continue to legacy fallback
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════
+  // PATH 2: Legacy plaintext lookup (existing 3 owners pre-Phase 2)
+  // ═══════════════════════════════════════════════════════════════
+  // Only run this if Firebase Auth didn't already find a match
+  if(!found){
+    let foundMap = null;
+    try {
+      foundMap = await fbGetFiltered('restaurants', 'user', u);
+      if(!foundMap || !Object.keys(foundMap).length){
+        foundMap = await fbGetFiltered('restaurants', 'ownerUser', u);
+      }
+    } catch(e){
+      foundMap = null;
+    }
+    if(foundMap && Object.keys(foundMap).length){
+      Object.entries(foundMap).forEach(([k,v])=>{
+        if(!v) return;
+        // Skip restaurants that have already been migrated to Firebase Auth (no plaintext fallback)
+        if(v._signupVersion === 'phase2' || v.ownerUid) return;
+        if((v.user===u||v.ownerUser===u) && (v.pass===p||v.ownerPass===p)) found={...v,id:k};
+      });
+    }
+    // Last-resort fallback: full scan
+    networkOk = (foundMap !== null);
+    if(!found){
+      if(typeof dbg==='function') dbg('Indexed lookup empty, scanning all restaurants...');
+      const restos = await fbGet('restaurants');
+      if(restos){
+        networkOk = true;
+        Object.entries(restos).forEach(([k,v])=>{
+          // Skip restaurants migrated to Firebase Auth
+          if(v._signupVersion === 'phase2' || v.ownerUid) return;
+          if((v.user===u||v.ownerUser===u) && (v.pass===p||v.ownerPass===p)) found={...v,id:k};
+        });
+      } else if(restos === null && foundMap === null){
+        networkOk = false;
+      }
+    }
+  }
+
   if(typeof dbg==='function') dbg(found?'✅ Match found: '+found.name:'❌ No match');
   if(!found){
     document.getElementById('owErr').textContent = networkOk
@@ -8587,6 +8948,7 @@ function renderRestoTable(){
         <button class="btn btn-sm" onclick="previewRestoTheme('${k}')" style="border-color:var(--s-blue);color:var(--s-blue)">👁 Theme</button>
         <button class="btn btn-sm" onclick="fpOpen('${k}')" style="border-color:#c8973a;color:#c8973a">📐 Layout</button>
         <button class="btn btn-sm" onclick="rfOpen('${k}')" style="border-color:#ffc107;color:#ffc107">🔐 Features</button>
+        ${!r.ownerUid && r._signupVersion !== 'phase2' && (r.pass || r.ownerPass) ? `<button class="btn btn-sm" onclick="migrateExistingOwner('${k}')" style="border-color:#9c27b0;color:#9c27b0;font-weight:700">🔄 Migrate Auth</button>` : ''}
         ${r.status==='active'?`<button class="btn btn-sm" onclick="suspendResto('${k}')" style="border-color:var(--s-red);color:var(--s-red)">🔴 Suspend</button>`:''}
         ${r.status==='suspended'?`<button class="btn btn-sm btn-green" onclick="activateResto('${k}')">🟢 Activate</button>`:''}
         ${r.status==='pending'?`<button class="btn btn-sm btn-green" onclick="approveResto('${k}')">✓ Approve</button>`:''}
@@ -9474,6 +9836,121 @@ async function deleteInviteCode(code){
     loadInvitesList();
   } catch(err){
     notifyD('❌ Failed to delete: '+(err.message||err));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SA: MIGRATE EXISTING OWNER TO FIREBASE AUTH
+   ═══════════════════════════════════════════════════════════════
+   For the 3 existing restaurants that have plaintext passwords in DB.
+   SA enters the owner's real email → System creates Firebase Auth
+   account using the existing plaintext password → links UID to
+   restaurant → removes plaintext password from DB.
+   
+   Owner continues to login with SAME password — they don't know
+   anything changed. ZERO disruption. Silent professional migration.
+   
+   After all 3 owners migrated, plaintext passwords are completely
+   gone from the database.
+*/
+async function migrateExistingOwner(restoId){
+  const restos = await fbGet('restaurants') || {};
+  const resto = restos[restoId];
+  if(!resto){
+    notifyD('❌ Restaurant not found');
+    return;
+  }
+
+  // Check: is this already migrated?
+  if(resto.ownerUid || resto._signupVersion === 'phase2'){
+    notifyD('ℹ️ This restaurant is already migrated to Firebase Auth');
+    return;
+  }
+
+  // Check: does it have a plaintext password to migrate?
+  const currentPass = resto.pass || resto.ownerPass;
+  if(!currentPass){
+    notifyD('❌ No plaintext password found to migrate');
+    return;
+  }
+
+  // Re-authenticate SA for this sensitive operation
+  if(!await _saReAuth('migrate owner to Firebase Auth')) return;
+
+  // Get owner email from SA
+  const currentUser = resto.user || resto.ownerUser || '';
+  const promptMsg = 'Migrate "'+resto.name+'" owner to Firebase Auth\n\n' +
+    'Current username: '+currentUser+'\n' +
+    'Current password: (keeping the same one)\n\n' +
+    'Enter owner\'s REAL EMAIL address (this becomes their new login):';
+  const email = prompt(promptMsg, currentUser.includes('@') ? currentUser : '');
+  if(!email) return;
+  if(!email.includes('@') || !email.includes('.')){
+    notifyD('❌ Invalid email format. Migration cancelled.');
+    return;
+  }
+
+  notifyD('⏳ Migrating '+resto.name+'... please wait');
+
+  try {
+    // Use SECONDARY app instance (don't disturb SA's current session)
+    let secApp;
+    try { secApp = firebase.app('_migrate'); }
+    catch(e){ secApp = firebase.initializeApp(firebaseConfig, '_migrate'); }
+
+    // Step 1: Create Firebase Auth account with existing password
+    let authResult;
+    try {
+      authResult = await secApp.auth().createUserWithEmailAndPassword(email, currentPass);
+    } catch(authErr){
+      if(authErr.code === 'auth/email-already-in-use'){
+        // Email already in Firebase Auth — try to sign in to verify it's our user
+        try {
+          authResult = await secApp.auth().signInWithEmailAndPassword(email, currentPass);
+          notifyD('ℹ️ Email already in Firebase Auth, linking existing account');
+        } catch(signInErr){
+          throw new Error('Email already used in Firebase Auth with different password. Cannot migrate. Email: '+email);
+        }
+      } else if(authErr.code === 'auth/weak-password'){
+        throw new Error('Existing password is too weak for Firebase Auth (less than 6 chars). Owner must set a stronger password manually.');
+      } else if(authErr.code === 'auth/invalid-email'){
+        throw new Error('Invalid email format');
+      } else {
+        throw new Error(authErr.message || 'Could not create Firebase Auth account');
+      }
+    }
+    const newUid = authResult.user.uid;
+
+    // Step 2: Update restaurant — add ownerUid + ownerEmail, REMOVE plaintext password
+    await firebase.database().ref('restaurants/'+restoId).update({
+      ownerUid: newUid,
+      ownerEmail: email,
+      user: email,           // sync user field to email for consistent login
+      pass: null,            // ← REMOVE plaintext password
+      ownerPass: null,       // ← REMOVE legacy password field too
+      _signupVersion: 'phase2-migrated',
+      _migratedAt: Date.now(),
+      updatedAt: Date.now()
+    });
+
+    // Step 3: Sign out from secondary app
+    await secApp.auth().signOut();
+
+    notifyD('✅ '+resto.name+' migrated! Owner can now login with email: '+email+' and same password as before.');
+    setTimeout(()=>{
+      alert('🎉 MIGRATION SUCCESS!\n\n' +
+        'Restaurant: '+resto.name+'\n' +
+        'New login email: '+email+'\n' +
+        'Password: (unchanged - same as before)\n\n' +
+        'Please tell the owner their new login email.\n' +
+        'Their password is the same as before.\n\n' +
+        'Plaintext password REMOVED from database. ✅');
+    }, 500);
+
+    loadAndRenderRestos();
+  } catch(err){
+    notifyD('❌ Migration failed: '+(err.message||err));
+    console.error('Owner migration error:', err);
   }
 }
 
