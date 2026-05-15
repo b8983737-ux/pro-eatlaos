@@ -1724,6 +1724,57 @@ tr:hover td{background:rgba(255,255,255,.015);}
   .form-row{grid-template-columns:1fr;}
   .tbl-grid{padding:12px;}
 }
+
+/* ═══ SA PANEL MOBILE IMPROVEMENTS (SA only, doesn't affect owner/customer) ═══ */
+@media(max-width:768px){
+  /* Topbar: better wrap behavior, more readable */
+  #pg-sa .topbar{padding:10px 12px;gap:8px;}
+  #pg-sa .topbar-l{gap:8px;flex:1 1 100%;min-width:0;}
+  #pg-sa .topbar-title{font-size:16px;}
+  #pg-sa .topbar-r{flex:1 1 100%;gap:6px;justify-content:flex-end;flex-wrap:wrap;}
+  #pg-sa .topbar-r .btn{padding:8px 12px;font-size:12px;min-height:38px;}
+  #pg-sa .topbar-r .btn-gold{padding:8px 14px;font-weight:700;}
+  /* Tables: keep horizontal scroll smooth on phone */
+  #pg-sa .tbl-wrap{margin:0 -14px;padding:0 14px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #pg-sa .tbl-wrap table{min-width:760px;}
+  #pg-sa th{padding:8px 10px;font-size:9px;}
+  #pg-sa td{padding:10px 10px;font-size:12px;}
+  /* Action buttons: bigger touch targets in tables */
+  #pg-sa .btn-acts{gap:4px;}
+  #pg-sa .btn-acts .btn-sm{padding:6px 10px;font-size:11px;min-height:32px;}
+  /* Cards: less padding on mobile */
+  #pg-sa .card{padding:14px;border-radius:8px;}
+  #pg-sa .card-h{flex-wrap:wrap;gap:10px;}
+  /* Form fields: bigger to tap easily */
+  #pg-sa .fi,#pg-sa .fs,#pg-sa input.fi,#pg-sa select.fs,#pg-sa textarea.fi{
+    font-size:16px; /* prevents iOS zoom on focus */
+    padding:10px 12px;
+    min-height:44px;
+  }
+  /* Filter buttons: stack better */
+  #pg-sa [id^="saFBtn-"]{padding:8px 12px;font-size:12px;}
+  /* Dashboard stat cards on phone: 2 columns instead of 4 */
+  #pg-sa .stats-row.s4{grid-template-columns:repeat(2,1fr);gap:10px;}
+  #pg-sa .stat-card{padding:12px;}
+  #pg-sa .stat-num{font-size:20px;}
+  #pg-sa .stat-lbl{font-size:9px;}
+  /* Modal: fit better on phone */
+  #pg-sa .modal{padding:10px;}
+  #pg-sa .modal-content,.modal-content{max-width:96vw;max-height:92vh;padding:18px;}
+  /* Charts: shorter on mobile */
+  #pg-sa .chart-wrap{height:180px;}
+  /* Period filter row in dashboard */
+  #pg-sa .panel.on > div:first-child{gap:4px;}
+}
+
+/* Even smaller phones (iPhone SE etc) */
+@media(max-width:480px){
+  #pg-sa .topbar-r{justify-content:space-between;}
+  #pg-sa .topbar-r .btn-gold{flex:1;text-align:center;}
+  #pg-sa .stats-row.s4{grid-template-columns:1fr 1fr;}
+  /* Hamburger should be visible and tappable */
+  #pg-sa .sb-toggle{width:42px;height:42px;}
+}
 @media(max-width:480px){.land-logo{font-size:72px;}.stats-row.s4,.stats-row.s3{grid-template-columns:1fr;}.c-menu-grid{grid-template-columns:1fr;}}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--s-border);}
 
