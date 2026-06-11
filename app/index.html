@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5: stamp ownerUid on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.2: SA-driven legacy owner auth migration on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6386,6 +6386,30 @@ async function migrateAllRestaurants(){
     }
 
     // Only update if there's something to fix
+    // [authsafe-B5.2] SA-driven AUTH migration: upgrade legacy plaintext owners to Firebase Auth
+    // HERE, where the SA holds admin rights. The owner's own migrate-on-login cannot write ownerUid
+    // (they're not signed into Firebase yet) and the tenant-isolation rules correctly deny it — a
+    // chicken-and-egg. As admin we create the owner's Firebase account from the plaintext still in
+    // the DB, stamp ownerUid, and delete the plaintext. One-time per owner.
+    if(r.authMigrated !== true){
+      const _plain = (r.pass !== undefined ? r.pass : (r.ownerPass !== undefined ? r.ownerPass : null));
+      const _uname = (r.user || r.ownerUser || '').trim();
+      if(_plain && _uname){
+        try {
+          const _ouid = await _authCreateOwner(_uname, _plain);
+          updates.authMigrated = true; updates.ownerUid = _ouid || null; updates.pass = null; updates.ownerPass = null;
+          console.log('🔐 Auth-migrated owner (SA):', _uname);
+        } catch(e){
+          if(e && e.code === 'auth/email-already-in-use'){
+            let _ouid = null;
+            try { const _c = await _ownerCreatorAuth().signInWithEmailAndPassword(_ownerEmail(_uname), _plain); _ouid = _c.user && _c.user.uid; await _ownerCreatorAuth().signOut(); } catch(_){}
+            updates.authMigrated = true; updates.ownerUid = _ouid || null; updates.pass = null; updates.ownerPass = null;
+            console.log('🔐 Auth-migrated owner (SA, account existed):', _uname);
+          }
+          // else (e.g. password <6 chars): leave as legacy; SA can reset the password to migrate.
+        }
+      }
+    }
     if(Object.keys(updates).length > 0){
       await fbUpdate('restaurants/'+id, updates);
       console.log('Migrated restaurant "'+r.name+'": added', Object.keys(updates).join(', '));
@@ -6813,13 +6837,11 @@ function startOwnerListeners(){
   // The query: order by ts and only stream rows >= sinceTs (then filter rId in memory).
   // We use ts instead of rId so the window is small per-restaurant.
   // Initial defensive fallback: if the index/query fails, fall back to rId query.
-  let listenerRef;
-  try {
-    listenerRef = db.ref('orders').orderByChild('ts').startAt(sinceTs);
-  } catch(e){
-    console.warn('[FB] orderByChild(ts) failed, falling back to rId query', e);
-    listenerRef = db.ref('orders').orderByChild('rId').equalTo(restoId);
-  }
+  // [authsafe-B5.1] Tenant-isolation rules permit an owner to read orders ONLY via an rId query
+  // scoped to their own restaurant. The old ts-window query streamed orders across ALL restaurants
+  // and is now (correctly) denied — leaving the owner screen empty and printBill with no data.
+  // Querying by rId returns only this restaurant's orders and satisfies the rules.
+  let listenerRef = db.ref('orders').orderByChild('rId').equalTo(restoId);
   listenerRef.on('value', snap=>{
     const orders=[];
     snap.forEach(child=>{
