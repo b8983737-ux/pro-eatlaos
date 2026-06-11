@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.2: SA-driven legacy owner auth migration on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.3: live-session guard on restore (fixes save denied) on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -4281,7 +4281,7 @@ function loadFirebaseSDK(){
         s3.onload=()=>{
           if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
           db=firebase.database();
-          try { fbAuth=firebase.auth(); } catch(e){ console.warn('Auth init failed:', e && e.message); }
+          try { fbAuth=firebase.auth(); try{ fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(_){ } } catch(e){ console.warn('Auth init failed:', e && e.message); }
           fbSDKLoaded=true;
           resolve();
         };
@@ -6141,6 +6141,14 @@ async function init(){
         if(ss.role==='superadmin'&&p.get('admin')==='EatLaos2026SecretAdmin'){
           me=ss;
           await loadFirebaseSDK();
+          // [authsafe-B5.3] A restored SA panel must have a LIVE Firebase session, or the security rules
+          // deny every save (reads are public, so the panel still opens — that's the silent-fail trap).
+          // Wait for Firebase to restore auth; if the session lapsed, send SA to login for a live session.
+          try { await new Promise(r=>{ const un=fbAuth.onAuthStateChanged(()=>{ un(); r(); }); }); } catch(_){}
+          if(!fbAuth || !fbAuth.currentUser){
+            sessionStorage.removeItem('el_session'); me=null;
+            hideLoading(); showPage('pg-sa-login'); return;
+          }
           restoreSA();
           hideLoading();
           return;
@@ -6163,6 +6171,13 @@ async function init(){
                          || document.querySelector('#pg-ow .sb-item');
           owP(_startPanel, _startBtn);
           await _sdkPromise; // SDK was loading in background; ensure it's ready before listeners
+          // [authsafe-B5.3] Owner saves need a LIVE Firebase session. If it lapsed on restore, re-login
+          // (gives a live token) instead of leaving a panel that silently can't save.
+          try { await new Promise(r=>{ const un=fbAuth.onAuthStateChanged(()=>{ un(); r(); }); }); } catch(_){}
+          if(!fbAuth || !fbAuth.currentUser){
+            sessionStorage.removeItem('el_session'); me=null; restoId=null;
+            showPage('pg-owner-login'); return;
+          }
           startOwnerListeners();
           setTimeout(()=>initOwChart('rev'),300);
           return;
