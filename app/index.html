@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.3: live-session guard on restore (fixes save denied) on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.4: real table number on orders on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11549,7 +11549,10 @@ async function startCustomerSession(rId,tId,sessId){
   }
   if(!r){showPage('pg-land');return;}
   // Set session state
-  qrSess={id:sessId,rId,tId,tNum:sess?.tNum||tId,exp:sess?.exp||(Date.now()+7200000),rName:r.name};
+  // [authsafe-B5.4] Show the real table NUMBER (e.g. "2"), not the internal table id. Resolve it from
+  // the restaurant's own table list by matching tId — works even when the session record is missing.
+  const _tbl=(r.tables||[]).find(t=>String(t.id)===String(tId));
+  qrSess={id:sessId,rId,tId,tNum:(sess&&sess.tNum)||(_tbl&&_tbl.num)||tId,exp:sess?.exp||(Date.now()+7200000),rName:r.name};
   cart=[];
   // Increment scan count — track how many people scanned this QR
   if(sessId){
