@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781064200 --><!-- EATLAOS v5 · BUILD 1781064200 · authsafe-B3: REST calls send real user token (works with locked security rules) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B4: stamp ownerUid on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6520,12 +6520,15 @@ async function _ownerVerifyPassword(rec, username, password){
 async function _migrateOwnerOnLogin(rec, username, password){
   if(!rec || rec.authMigrated===true) return;
   try {
-    await _authCreateOwner(rec.user||username, password);
-    await fbUpdate('restaurants/'+rec.id, { authMigrated:true, pass:null, ownerPass:null });
+    const uid = await _authCreateOwner(rec.user||username, password);
+    await fbUpdate('restaurants/'+rec.id, { authMigrated:true, ownerUid:uid||null, pass:null, ownerPass:null });
     if(typeof dbg==='function') dbg('🔐 Owner upgraded to Firebase Auth: '+(rec.user||username));
   } catch(e){
     if(e && e.code==='auth/email-already-in-use'){
-      try { await fbUpdate('restaurants/'+rec.id, { authMigrated:true, pass:null, ownerPass:null }); } catch(_){}
+      // Account already exists — sign in via the secondary app just to capture the uid, then mark migrated.
+      let uid=null;
+      try { const c=await _ownerCreatorAuth().signInWithEmailAndPassword(_ownerEmail(rec.user||username), password); uid=c.user&&c.user.uid; await _ownerCreatorAuth().signOut(); } catch(_){}
+      try { await fbUpdate('restaurants/'+rec.id, { authMigrated:true, ownerUid:uid||null, pass:null, ownerPass:null }); } catch(_){}
     }
     // Any other error → non-fatal; owner stays legacy and we retry on their next login.
   }
@@ -6583,6 +6586,10 @@ async function doOwnerLogin(){
   if(cand && await _ownerVerifyPassword(cand, u, p)) found = cand;
   // Migrate-on-login: transparently upgrade a legacy owner to Firebase Auth (background, non-blocking)
   if(found && found.authMigrated!==true){ _migrateOwnerOnLogin(found, u, p); }
+  // Backfill ownerUid for owners migrated before this field existed (needed for tenant-isolation rules)
+  else if(found && found.authMigrated===true && !found.ownerUid){
+    try { const _uid=fbAuth && fbAuth.currentUser && fbAuth.currentUser.uid; if(_uid){ fbUpdate('restaurants/'+found.id,{ownerUid:_uid}).catch(()=>{}); found.ownerUid=_uid; } } catch(_){}
+  }
   if(typeof dbg==='function') dbg(found?'✅ Match found: '+found.name:'❌ No match');
   if(!found){
     document.getElementById('owErr').textContent = networkOk
@@ -9004,8 +9011,8 @@ async function saveResto(){
         } else {
           // Legacy owner → upgrade to Firebase Auth now, using the new password
           try {
-            await _authCreateOwner((data.user||'').trim(), pw);
-            data.authMigrated=true; data.pass=null; data.ownerPass=null;
+            const _ouid=await _authCreateOwner((data.user||'').trim(), pw);
+            data.authMigrated=true; data.ownerUid=_ouid||null; data.pass=null; data.ownerPass=null;
           } catch(e){
             if(e && e.code==='auth/email-already-in-use'){ data.authMigrated=true; data.pass=null; data.ownerPass=null; }
             else { notifyD('⚠ Could not set password: '+((e&&e.message)||'error')); return; }
@@ -9019,8 +9026,8 @@ async function saveResto(){
       if(!pw){notifyD('⚠ Please set a password for the owner');return;}
       if(pw.length<6){notifyD('⚠ Password must be at least 6 characters');return;}
       try {
-        await _authCreateOwner((data.user||'').trim(), pw);
-        data.authMigrated=true; // password lives only in Firebase Auth
+        const _ouid=await _authCreateOwner((data.user||'').trim(), pw);
+        data.authMigrated=true; data.ownerUid=_ouid||null; // password lives only in Firebase Auth
       } catch(e){
         if(e && e.code==='auth/email-already-in-use'){ notifyD('⚠ That owner username is already taken'); return; }
         notifyD('⚠ Could not create owner login: '+((e&&e.message)||'error')); return;
