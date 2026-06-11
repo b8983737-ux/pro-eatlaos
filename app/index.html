@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781063000 --><!-- EATLAOS v5 · BUILD 1781063000 · authsafe-B2: anonymous auth for customers (rules-hardening step A) -->
+<!DOCTYPE html><!-- BUILD:1781064200 --><!-- EATLAOS v5 · BUILD 1781064200 · authsafe-B3: REST calls send real user token (works with locked security rules) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -4163,12 +4163,20 @@ function _isRetryable(err, response){
   return false;
 }
 
+// Returns "?auth=<id-token>" for whoever is signed in (SA / owner / anonymous customer),
+// or "" if nobody is signed in. This makes every REST request authenticated so the
+// security rules can verify WHO is making it. Replaces the old (invalid) ?auth=API_KEY.
+async function _authQ(){
+  try { if(fbAuth && fbAuth.currentUser){ return '?auth=' + (await fbAuth.currentUser.getIdToken()); } } catch(e){}
+  return '';
+}
+
 async function restGet(path){
   const t0 = Date.now();
   let lastErr = null;
   for(let attempt = 0; attempt < 2; attempt++){
     try {
-      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json?auth='+API_KEY, null, _NET_GET_TIMEOUT_MS);
+      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json'+(await _authQ()), null, _NET_GET_TIMEOUT_MS);
       if(!r.ok){
         if(_isRetryable(null, r) && attempt === 0){
           await new Promise(res => setTimeout(res, 800));
@@ -4197,7 +4205,7 @@ async function restPush(path,data){
   const t0 = Date.now();
   for(let attempt = 0; attempt < 2; attempt++){
     try {
-      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json?auth='+API_KEY, {
+      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json'+(await _authQ()), {
         method:'POST', headers:{'Content-Type':'application/json'},
         body:JSON.stringify(data)
       }, _NET_WRITE_TIMEOUT_MS);
@@ -4228,7 +4236,7 @@ async function restUpdate(path,data){
   const t0 = Date.now();
   for(let attempt = 0; attempt < 2; attempt++){
     try {
-      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json?auth='+API_KEY, {
+      const r = await _fetchWithTimeout(DB_URL+'/'+path+'.json'+(await _authQ()), {
         method:'PATCH', headers:{'Content-Type':'application/json'},
         body:JSON.stringify(data)
       }, _NET_WRITE_TIMEOUT_MS);
@@ -5983,9 +5991,9 @@ async function fbGetFiltered(path, orderBy, equalTo, opts){
     const filterParam = rangeMode === 'startAt'
       ? '&startAt='+encodeURIComponent(JSON.stringify(equalTo))
       : '&equalTo='+encodeURIComponent(JSON.stringify(equalTo));
-    const url = DB_URL+'/'+path+'.json?auth='+API_KEY
-              +'&orderBy='+encodeURIComponent(JSON.stringify(orderBy))
-              +filterParam;
+    const authQ=(await _authQ()).replace(/^\?/,'&'); // '&auth=<token>' or ''
+    const url = DB_URL+'/'+path+'.json?orderBy='+encodeURIComponent(JSON.stringify(orderBy))
+              +filterParam+authQ;
     const r = await _fetchWithTimeout(url, null, _NET_GET_TIMEOUT_MS);
     if(!r.ok) throw new Error('HTTP '+r.status);
     const dt = Date.now() - t0;
@@ -14341,7 +14349,7 @@ async function bkReleaseLock(){
           await db.ref('tableLocks/'+bkState.restoId+'/'+bkState.tableId).remove();
         } else {
           // REST fallback: DELETE
-          await fetch(DB_URL+'/tableLocks/'+bkState.restoId+'/'+bkState.tableId+'.json?auth='+API_KEY, { method:'DELETE' });
+          await fetch(DB_URL+'/tableLocks/'+bkState.restoId+'/'+bkState.tableId+'.json'+(await _authQ()), { method:'DELETE' });
         }
         // Defensive: clear cache entry so any non-fresh reader sees the deletion
         if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('tableLocks/'+bkState.restoId+'/'+bkState.tableId);
@@ -14385,7 +14393,7 @@ function _bkStartLockCountdown(){
 // Release lock on tab close / navigation
 window.addEventListener('beforeunload', () => {
   if(bkState && bkState.tableId && bkState.lockSessionId && bkState.restoId){
-    const url = DB_URL + '/tableLocks/' + bkState.restoId + '/' + bkState.tableId + '.json?auth=' + API_KEY;
+    const url = DB_URL + '/tableLocks/' + bkState.restoId + '/' + bkState.tableId + '.json';
     try {
       // Best effort: delete via fetch with keepalive (most browsers)
       fetch(url, { method:'DELETE', keepalive:true }).catch(()=>{});
