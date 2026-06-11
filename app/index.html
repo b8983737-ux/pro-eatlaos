@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.4: real table number on orders on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.5: reliable customer bill (local order tracking) on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11634,6 +11634,9 @@ function updateOrderBadge(count){
 }
 
 let customerCachedOrders=[];
+// [authsafe-B5.5] Orders this customer placed on this device — bridges the gap when there's no
+// session-bound realtime listener, so the bill always reflects what they ordered.
+let myPlacedOrders=[];
 
 function setupCustomerUI(r,sess){
   // Save theme to localStorage for instant next load
@@ -12062,6 +12065,12 @@ async function placeOrder(){
     };
     await ensureAnonAuth();
     await fbPush('orders',order);
+    // [authsafe-B5.5] Track locally so the customer's bill shows immediately and reliably, even when
+    // the QR carries no session id (so the realtime sessId listener can't attach). Deduped by order id.
+    if(typeof myPlacedOrders!=='undefined'){
+      if(!myPlacedOrders.some(o=>o.id===order.id)) myPlacedOrders.unshift({...order});
+      if(typeof renderCustOrders==='function') renderCustOrders();
+    }
     // Show success screen (Firebase listener will update customerCachedOrders automatically)
     // Do NOT add to local cache here — Firebase listener handles it, avoids duplicates
     document.getElementById('osTot').textContent=fmtK(tot);
@@ -12133,7 +12142,11 @@ let custVatRate=0; // loaded from restaurant data
 
 function renderCustOrders(){
   const el=document.getElementById('cOrdersList');
-  const orders=customerCachedOrders;
+  // [authsafe-B5.5] Show the union of realtime orders and locally-placed ones (dedup by id) so the
+  // bill always reflects what this customer ordered — even without a session-bound listener.
+  const orders=[...customerCachedOrders];
+  myPlacedOrders.forEach(o=>{ if(!orders.some(x=>x.id===o.id)) orders.push(o); });
+  orders.sort((a,b)=>(b.ts||0)-(a.ts||0));
   if(!orders.length){
     el.innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--c-muted)">
       <div style="font-size:52px;opacity:.3;margin-bottom:14px">📋</div>
