@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B4: stamp ownerUid on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5: stamp ownerUid on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6885,7 +6885,9 @@ async function _owFetchOlderOrders(neededRange){
   if(window._owHistoryRange === 'all') return; // already have everything
   try {
     // Fetch orders for THIS restaurant, in the needed range. Server-side filtered by rId.
-    const allOrders = await fbGet('orders');
+    // [authsafe-B5] Tenant isolation: query ONLY this restaurant's orders (server-side rId filter),
+    // never download the whole /orders table. Requires orders .indexOn 'rId' (already present).
+    const allOrders = await fbGetFiltered('orders', 'rId', restoId);
     if(!allOrders) return;
     const cutoff = needMs ? (NOW - needMs) : 0;
     const historical = [];
@@ -14602,9 +14604,15 @@ async function bsLookup(by){
     }
     const phoneQ = (by==='phone') ? document.getElementById('bsPhone').value : '';
     const codeQ  = (by==='code')  ? document.getElementById('bsCode').value.trim().toUpperCase() : '';
-    // Fetch all restaurants' bookings in parallel (1 round-trip wall time, not N)
+    // [authsafe-B5] Tenant isolation: QUERY each restaurant's bookings by the exact phone/code the
+    // customer typed (server-side filter) instead of downloading the whole list and filtering here.
+    // The customer's browser now only ever receives bookings that match their own phone/code.
+    // Requires bookings .indexOn 'phone' and 'code'.
     const allRestoBookings = await Promise.all(
-      restoIds.map(rId => fbGet('bookings/'+rId).catch(()=>null))
+      restoIds.map(rId => (by==='code'
+        ? fbGetFiltered('bookings/'+rId, 'code', codeQ)
+        : fbGetFiltered('bookings/'+rId, 'phone', phoneQ)
+      ).catch(()=>null))
     );
     allRestoBookings.forEach(restoBookings => {
       if(!restoBookings) return;
