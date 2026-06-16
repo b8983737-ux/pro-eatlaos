@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.5: reliable customer bill (local order tracking) on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.7: dev-only debug panel + ownerEmail on save on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2876,7 +2876,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 <body>
 
 <!-- DEBUG PANEL - owner/SA only, hidden from customers -->
-<div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:12px;height:12px;border-radius:50%;background:rgba(200,151,58,.7);cursor:pointer;display:block;" title="Debug"></div>
+<div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:12px;height:12px;border-radius:50%;background:rgba(200,151,58,.7);cursor:pointer;display:none;" title="Debug"></div>
 <div id="debugPanel" style="display:none;position:fixed;bottom:20px;left:10px;z-index:99999;background:rgba(0,0,0,.95);color:#0f0;font-family:monospace;font-size:11px;padding:12px;border:1px solid #333;max-width:340px;border-radius:6px;max-height:60vh;overflow-y:auto;">
   <div style="display:flex;justify-content:space-between;margin-bottom:8px">
     <span style="color:#ffd700;font-weight:bold">⚙ EATLAOS DEBUG</span>
@@ -6323,6 +6323,12 @@ async function migrateAllRestaurants(){
   for(const [id, r] of Object.entries(restos)){
     const updates = {};
 
+    // [authsafe-B5.6] Stamp the owner's synthetic email so the security rules can verify ownership
+    // reliably — robust against Firebase uid changes and username casing. Derived from the username,
+    // so no password is needed and the SA (admin) can (re)stamp it for every restaurant.
+    const _un=(r.user||r.ownerUser||'').trim();
+    if(_un){ const _oe=_ownerEmail(_un); if(r.ownerEmail!==_oe) updates.ownerEmail=_oe; }
+
     // ── Fields every restaurant must have ──
 
     // createdAt — when restaurant was created
@@ -6455,11 +6461,13 @@ function showPage(id){
     const flexPages=['pg-land','pg-owner-login','pg-sa-login','pg-ow','pg-sa','pg-customer'];
     el.style.display=flexPages.includes(id)?'flex':'block';
   }
-  // Debug btn: visible on all admin pages, hidden on QR customer page
+  // [authsafe-B5.7] Debug panel is DEV-ONLY now: shows only with ?debug=1 in the URL, and never on
+  // the customer page. Keeps the internal-log tool available to you without exposing it in production.
   var btn=document.getElementById('debugBtn');
-  if(btn) btn.style.display=id==='pg-customer'?'none':'block';
+  var _devDbg=false; try{ _devDbg=new URLSearchParams(location.search).get('debug')==='1'; }catch(_){}
+  if(btn) btn.style.display=(_devDbg && id!=='pg-customer')?'block':'none';
   var panel=document.getElementById('debugPanel');
-  if(panel&&id==='pg-customer') panel.style.display='none';
+  if(panel && (!_devDbg || id==='pg-customer')) panel.style.display='none';
   // Owner login: prefill from "remember me" if previously checked
   if(id === 'pg-owner-login') _owPrefillRemember();
 }
@@ -9037,6 +9045,9 @@ async function saveResto(){
   // Validate
   if(!data.name){notifyD('⚠ Restaurant name is required');return;}
   if(!data.user){notifyD('⚠ Owner username is required');return;}
+  // [authsafe-B5.7] Stamp ownerEmail so the new/edited owner can edit their own restaurant immediately
+  // (security rules verify ownership by this email — robust against Firebase uid changes).
+  data.ownerEmail=_ownerEmail(data.user);
   const pw=document.getElementById('mRpass').value;
   try {
     if(id){
