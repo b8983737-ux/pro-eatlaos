@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.7: dev-only debug panel + ownerEmail on save on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B5.8: restaurant cover photo + location + font fields (front-page foundation) on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -3896,6 +3896,34 @@ setTimeout(function(){
             <button type="button" class="btn btn-sm btn-red" onclick="clearLogo()" style="width:100%">✕ Remove</button>
           </div>
         </div>
+      </div>
+      <!-- [front-page-fields] Cover photo / Location / Font — additive, for the restaurant's public page -->
+      <div class="fg">
+        <label>Cover Photo (optional) — <span style="color:var(--s-muted);font-size:9px;font-weight:400">big banner on the restaurant's page</span></label>
+        <div style="margin-top:6px">
+          <div id="coverPreview" style="width:100%;height:120px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--s-muted);border-radius:6px;overflow:hidden;background-size:cover;background-position:center">No cover photo</div>
+          <input type="file" id="mRcoverFile" accept="image/*" style="display:none" onchange="previewCover(this)">
+          <input type="hidden" id="mRcoverData">
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button type="button" class="btn" onclick="document.getElementById('mRcoverFile').click()" style="flex:1">📷 Upload Cover</button>
+            <button type="button" class="btn btn-sm btn-red" onclick="clearCover()">✕ Remove</button>
+          </div>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Location — <span style="color:var(--s-muted);font-size:9px;font-weight:400">paste a Google Maps link or "lat, lng"</span></label>
+        <input class="fi" id="mRmapInput" placeholder="https://maps.google.com/... or 16.5569, 104.7506" oninput="parseRestoLocation(this.value)">
+        <input type="hidden" id="mRlat"><input type="hidden" id="mRlng">
+        <div id="mRlocStatus" style="margin-top:6px;font-size:11px;color:var(--s-muted)">No location set</div>
+      </div>
+      <div class="fg">
+        <label>Page Font — <span style="color:var(--s-muted);font-size:9px;font-weight:400">typography for the restaurant's page</span></label>
+        <select class="fi" id="mRfont" style="max-width:260px">
+          <option value="default">Default (clean sans-serif)</option>
+          <option value="elegant">Elegant (serif)</option>
+          <option value="modern">Modern (geometric)</option>
+          <option value="rounded">Friendly (rounded)</option>
+        </select>
       </div>
       <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
       <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px">
@@ -8935,6 +8963,13 @@ function resetRestoModal(){
   selectTheme('classic',false);
   document.getElementById('mRlogoData').value='';
   document.getElementById('logoPreview').textContent='🍽️';
+  // [front-page-fields] clear cover / location / font
+  document.getElementById('mRcoverData').value='';
+  const _cp=document.getElementById('coverPreview'); if(_cp){_cp.style.backgroundImage='';_cp.textContent='No cover photo';}
+  document.getElementById('mRlat').value=''; document.getElementById('mRlng').value='';
+  document.getElementById('mRmapInput').value='';
+  const _ls2=document.getElementById('mRlocStatus'); if(_ls2)_ls2.textContent='No location set';
+  const _f=document.getElementById('mRfont'); if(_f)_f.value='default';
   // Reset emoji picker
   document.getElementById('mRemoji').value='🍽️';
   const prev=document.getElementById('mRemojiPreview');
@@ -9039,6 +9074,10 @@ async function saveResto(){
     status:document.getElementById('mRstatus').value,
     prep:parseInt(document.getElementById('mRprep').value)||15,
     theme:document.getElementById('mRtheme').value||'classic',
+    cover:document.getElementById('mRcoverData').value||'',
+    lat:(parseFloat(document.getElementById('mRlat').value)||null),
+    lng:(parseFloat(document.getElementById('mRlng').value)||null),
+    font:document.getElementById('mRfont').value||'default',
     expiresAt:newExpiry,
     updatedAt:Date.now()
   };
@@ -9187,6 +9226,16 @@ async function editResto(id){
   const prev=document.getElementById('logoPreview');
   if(r.logo) prev.innerHTML=`<img src="${r.logo}" style="width:100%;height:100%;object-fit:cover">`;
   else prev.textContent=r.emoji||'🍽️';
+  // [front-page-fields] cover / location / font
+  document.getElementById('mRcoverData').value=r.cover||'';
+  const cprev=document.getElementById('coverPreview');
+  if(cprev){ if(r.cover){ cprev.style.backgroundImage=`url(${r.cover})`; cprev.textContent=''; } else { cprev.style.backgroundImage=''; cprev.textContent='No cover photo'; } }
+  document.getElementById('mRlat').value=(r.lat!=null)?r.lat:'';
+  document.getElementById('mRlng').value=(r.lng!=null)?r.lng:'';
+  document.getElementById('mRmapInput').value=(r.lat!=null&&r.lng!=null)?(r.lat+', '+r.lng):'';
+  const _ls=document.getElementById('mRlocStatus');
+  if(_ls) _ls.textContent=(r.lat!=null&&r.lng!=null)?('📍 '+(+r.lat).toFixed(5)+', '+(+r.lng).toFixed(5)):'No location set';
+  document.getElementById('mRfont').value=r.font||'default';
   const expLabel=r.expiresAt?getExpiryLabel(r.expiresAt):'Lifetime';
   document.getElementById('mRexpiryDisplay').textContent='Current: '+expLabel;
   openModal('mAddResto');
@@ -9246,6 +9295,63 @@ function clearLogo(){
   document.getElementById('mRlogoData').value='';
   document.getElementById('logoPreview').textContent=document.getElementById('mRemoji').value||'🍽️';
   const fi=document.getElementById('mRlogoFile');if(fi) fi.value='';
+}
+
+// [front-page-fields] Reusable client-side image compressor → returns a JPEG data URL.
+// Resizes down to maxW so big phone photos become light (HD-looking, small). No server needed.
+function _compressImg(file, maxW, quality){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width, h=img.height;
+        if(w>maxW){ h=Math.round(h*maxW/w); w=maxW; }
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        try{ resolve(c.toDataURL('image/jpeg', quality)); }catch(err){ reject(err); }
+      };
+      img.onerror=reject; img.src=e.target.result;
+    };
+    reader.onerror=reject; reader.readAsDataURL(file);
+  });
+}
+async function previewCover(input){
+  if(!input.files||!input.files[0]) return;
+  const file=input.files[0];
+  if(file.size>10*1024*1024){notifyD('⚠ Max 10MB');return;}
+  try{
+    const data=await _compressImg(file, 1280, 0.82); // cover banner: ~1280px wide
+    document.getElementById('mRcoverData').value=data;
+    const cp=document.getElementById('coverPreview');
+    cp.style.backgroundImage=`url(${data})`; cp.textContent='';
+  }catch(_){ notifyD('⚠ Could not process image'); }
+}
+function clearCover(){
+  document.getElementById('mRcoverData').value='';
+  const cp=document.getElementById('coverPreview'); if(cp){cp.style.backgroundImage='';cp.textContent='No cover photo';}
+  const fi=document.getElementById('mRcoverFile'); if(fi) fi.value='';
+}
+// [front-page-fields] Parse a Google Maps link (or "lat, lng") into coordinates for the map pin.
+function parseRestoLocation(val){
+  val=(val||'').trim();
+  let m=val.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)
+       ||val.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/)
+       ||val.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/)
+       ||val.match(/^(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)$/);
+  const st=document.getElementById('mRlocStatus');
+  if(m){
+    const lat=parseFloat(m[1]), lng=parseFloat(m[2]);
+    if(Math.abs(lat)<=90 && Math.abs(lng)<=180){
+      document.getElementById('mRlat').value=lat;
+      document.getElementById('mRlng').value=lng;
+      if(st) st.innerHTML='📍 '+lat.toFixed(5)+', '+lng.toFixed(5)+' <span style="color:var(--s-green)">✓</span>';
+      return;
+    }
+  }
+  document.getElementById('mRlat').value='';
+  document.getElementById('mRlng').value='';
+  if(st) st.textContent = val ? '⚠ Could not read location — paste a full Maps link or "lat, lng"' : 'No location set';
 }
 
 // ═══════════════════════════════════════════════════════════════
