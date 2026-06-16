@@ -1147,6 +1147,11 @@ button,input,select,textarea{font-family:var(--fb);}
 .page{display:none!important;}
 .page.on{display:block!important;}
 #pg-land.on,#pg-owner-login.on,#pg-sa-login.on{display:flex!important;}
+/* [landing-fix] First-tap reliability: iOS Safari ignores the first tap on a click handler
+   that lacks cursor:pointer / touch-action. This makes every CTA fire on the FIRST tap and
+   removes the 300ms tap delay. */
+button,a,[onclick],.lp-sb-btn,.lp-nav-btn,.lp-cta-secondary,.lp-cta-primary,.lp-b2b-primary,.lp-b2b-ghost{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+[onclick]{cursor:pointer;}
 #pg-ow.on,#pg-sa.on{display:block!important;width:100%;min-height:100vh;}
 #pg-customer.on{display:flex!important;flex-direction:column;min-height:100vh;}
 
@@ -1813,7 +1818,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
 
 /* === STICKY BOOKING BAR (Apple-luxury, docks below nav) === */
 /* Larger, more prominent — booking is the primary call-to-action */
-.lp-stickybar{position:fixed;top:72px;left:0;right:0;z-index:190;display:flex;justify-content:center;pointer-events:none;transition:top .35s cubic-bezier(.16,1,.3,1),opacity .35s ease;padding:0 16px;}
+.lp-stickybar{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:190;display:flex;justify-content:center;max-width:calc(100% - 32px);transition:top .35s cubic-bezier(.16,1,.3,1),opacity .35s ease;}
 .lp-stickybar-inner{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(8,8,8,.78);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(200,151,58,.22);border-radius:999px;box-shadow:0 14px 50px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.05) inset;margin-top:18px;animation:sbFade .5s cubic-bezier(.16,1,.3,1) both;animation-delay:.15s;}
 @keyframes sbFade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .lp-sb-label{display:flex;align-items:center;gap:9px;padding:0 16px 0 12px;font-family:var(--fb);font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:1.2px;border-right:1px solid rgba(255,255,255,.09);text-transform:uppercase;}
@@ -1828,7 +1833,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
 .lp-stickybar.compact .lp-sb-label{display:none;}
 .lp-stickybar.compact .lp-sb-btn{height:44px;padding:0 22px;font-size:13.5px;}
 @media (max-width:780px){
-  .lp-stickybar{top:64px;padding:0 12px;}
+  .lp-stickybar{top:64px;width:calc(100% - 24px);max-width:540px;}
   .lp-stickybar-inner{margin:12px 0 0;padding:9px;gap:8px;width:100%;max-width:520px;border-radius:16px;}
   .lp-sb-label{display:none;}
   .lp-sb-btn{flex:1;height:50px;padding:0 14px;font-size:14px;justify-content:center;font-weight:700;}
@@ -1836,7 +1841,7 @@ body{min-height:100%;overscroll-behavior-x:none;}
   .lp-stickybar.compact .lp-sb-btn{height:44px;font-size:13px;}
 }
 @media (max-width:420px){
-  .lp-stickybar{padding:0 10px;}
+  .lp-stickybar{width:calc(100% - 20px);}
   .lp-stickybar-inner{padding:8px;gap:7px;}
   .lp-sb-btn{font-size:13px;padding:0 10px;gap:6px;height:48px;}
 }
@@ -2921,7 +2926,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
     <div class="lp-stickybar-inner">
       <span class="lp-sb-label" data-lp="sb_label">RESERVE</span>
       <button class="lp-sb-btn lp-sb-primary" onclick="openCustBookingModal()" data-lp="sb_book">📅 Book a Table</button>
-      <button class="lp-sb-btn lp-sb-ghost" onclick="openModal('mCustBookingStatus')" data-lp="sb_check">Check My Booking</button>
+      <button class="lp-sb-btn lp-sb-ghost" onclick="location.href='/app/'" data-lp="sb_check">Check My Booking</button>
     </div>
   </div>
 
