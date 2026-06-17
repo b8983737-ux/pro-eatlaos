@@ -6151,6 +6151,15 @@ async function init(){
       if(typeof hideLoading==='function') hideLoading();
       return;
     }
+    // [clean-split-fix] Public booking actions handed off from the landing — open the modal, no redirect
+    if((p.get('book')==='1' || p.get('checkbooking')==='1') && !isCustomer){
+      if(typeof hideLoading==='function') hideLoading();
+      if(typeof showPage==='function') showPage('pg-customer');
+      if(typeof loadFirebaseSDK==='function'){ try{ loadFirebaseSDK().catch(()=>{}); }catch(_){} }
+      var _ckb=p.get('checkbooking')==='1';
+      setTimeout(function(){ try{ if(_ckb){ if(typeof openModal==='function') openModal('mCustBookingStatus'); } else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); } }catch(_){} }, 120);
+      return;
+    }
     // Check saved session FIRST — avoid pg-land flash for logged-in users
     // SECURITY: session lives in sessionStorage (per-tab). Closing tab = login again.
     // Banking-style isolation: each tab is independent.
