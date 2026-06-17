@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.0: clean landing/app split — app redirects to / and never renders its own landing on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2: booking PII moved out of public record into isolated mbookings (+SA migration) on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -3797,6 +3797,27 @@ setTimeout(function(){
 
 <!-- CUSTOMER -->
 <!-- [resto-front-page] customer-facing restaurant page (filled by renderRestoPage) -->
+<!-- [book-host] clean branded backdrop shown behind the booking modal when arriving via ?book / ?checkbooking -->
+<style>
+#pg-bookhost{position:fixed;inset:0;background:radial-gradient(125% 120% at 50% -10%,#2a1d10 0%,#16110b 46%,#0c0906 100%);overflow:hidden}
+#pg-bookhost.on{display:flex!important;align-items:center;justify-content:center}
+#pg-bookhost .bh-glow{position:absolute;top:-18%;left:50%;width:680px;height:680px;transform:translateX(-50%);background:radial-gradient(circle,rgba(200,151,58,.18),transparent 62%);pointer-events:none}
+#pg-bookhost .bh-glow.b{top:auto;bottom:-26%;left:16%;width:440px;height:440px;background:radial-gradient(circle,rgba(200,151,58,.10),transparent 65%)}
+#pg-bookhost .bh-in{position:relative;z-index:1;text-align:center;padding:24px}
+#pg-bookhost .bh-logo{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:clamp(44px,8vw,76px);letter-spacing:-1.5px;color:#f4ecdd;line-height:1}
+#pg-bookhost .bh-logo span{color:#c8973a}
+#pg-bookhost .bh-rule{width:46px;height:2px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#c8973a,transparent)}
+#pg-bookhost .bh-tag{margin-top:18px;font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(244,236,221,.42)}
+</style>
+<div id="pg-bookhost" class="page">
+  <div class="bh-glow"></div>
+  <div class="bh-glow b"></div>
+  <div class="bh-in">
+    <div class="bh-logo">EAT<span>LAOS</span></div>
+    <div class="bh-rule"></div>
+    <div class="bh-tag">Reserve Your Table</div>
+  </div>
+</div>
 <div id="pg-resto" class="page"></div>
 <div id="rfpLb" onclick="rfpCloseLb(event)"><div class="lbx" onclick="rfpCloseLb(event,true)">✕</div><div class="lbi" id="rfpLbImg"></div><div class="lbc"><div class="n" id="rfpLbName"></div><div class="p" id="rfpLbPrice"></div></div></div>
 
@@ -6154,7 +6175,7 @@ async function init(){
     // [clean-split-fix] Public booking actions handed off from the landing — open the modal, no redirect
     if((p.get('book')==='1' || p.get('checkbooking')==='1') && !isCustomer){
       if(typeof hideLoading==='function') hideLoading();
-      if(typeof showPage==='function') showPage('pg-customer');
+      if(typeof showPage==='function') showPage('pg-bookhost');
       if(typeof loadFirebaseSDK==='function'){ try{ loadFirebaseSDK().catch(()=>{}); }catch(_){} }
       var _ckb=p.get('checkbooking')==='1';
       setTimeout(function(){ try{ if(_ckb){ if(typeof openModal==='function') openModal('mCustBookingStatus'); } else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); } }catch(_){} }, 120);
@@ -6423,6 +6444,16 @@ async function migrateAllRestaurants(){
     // so no password is needed and the SA (admin) can (re)stamp it for every restaurant.
     const _un=(r.user||r.ownerUser||'').trim();
     if(_un){ const _oe=_ownerEmail(_un); if(r.ownerEmail!==_oe) updates.ownerEmail=_oe; }
+
+    // [pii-fix] One-time: move legacy manual reservations OUT of the publicly-readable restaurant
+    // record (restaurants/{id}/bookings exposed customer name+phone) into the access-controlled
+    // mbookings/{id} node, then delete the public copy. Runs as admin (SA). Idempotent.
+    if(r.bookings && typeof r.bookings==='object' && Object.keys(r.bookings).length){
+      try{
+        await fbUpdate('mbookings/'+id, r.bookings);
+        await fetch(DB_URL+'/restaurants/'+id+'/bookings.json'+(await _authQ()),{method:'DELETE'});
+      }catch(_){}
+    }
 
     // ── Fields every restaurant must have ──
 
@@ -10891,7 +10922,7 @@ async function renderBookings(){
   const el=document.getElementById('bookingList');
   if(!el) return;
 
-  const bookings=await fbGet('restaurants/'+restoId+'/bookings')||{};
+  const bookings=await fbGet('mbookings/'+restoId)||{};
   const todayStr=new Date().toISOString().slice(0,10);
 
   let list=Object.entries(bookings).map(([k,b])=>({...b,id:k}));
@@ -11032,7 +11063,7 @@ function openBookingModal(bookId){
 }
 
 async function editBooking(id){
-  const b=await fbGet('restaurants/'+restoId+'/bookings/'+id);
+  const b=await fbGet('mbookings/'+restoId+'/'+id);
   if(!b) return;
   document.getElementById('mBookId').value=id;
   document.getElementById('mBookingTitle').textContent='Edit Reservation';
@@ -11075,10 +11106,10 @@ async function saveBooking(){
     createdBy:me?.name||'owner'
   };
   if(id){
-    await fbUpdate('restaurants/'+restoId+'/bookings/'+id, data);
+    await fbUpdate('mbookings/'+restoId+'/'+id, data);
     notifyD('✅ Reservation updated');
   } else {
-    await restPush('restaurants/'+restoId+'/bookings', data);
+    await restPush('mbookings/'+restoId, data);
     notifyD('✅ Reservation saved for '+name);
   }
   closeModal('mBooking');
@@ -11087,7 +11118,7 @@ async function saveBooking(){
 
 async function changeBookingStatus(id, status){
   const labels={confirmed:'confirmed',cancelled:'cancelled',pending:'pending'};
-  await fbUpdate('restaurants/'+restoId+'/bookings/'+id,{status});
+  await fbUpdate('mbookings/'+restoId+'/'+id,{status});
   notifyD({confirmed:'✅ Reservation confirmed',cancelled:'❌ Reservation cancelled',pending:'⏳ Marked as pending'}[status]||'Updated');
   renderBookings();
 }
@@ -11095,7 +11126,7 @@ async function changeBookingStatus(id, status){
 async function deleteBooking(id){
   if(!confirm('Permanently delete this reservation?')) return;
   // Firebase REST delete
-  await fetch(DB_URL+'/restaurants/'+restoId+'/bookings/'+id+'.json',{method:'DELETE'});
+  await fetch(DB_URL+'/mbookings/'+restoId+'/'+id+'.json'+(await _authQ()),{method:'DELETE'});
   notifyD('🗑 Reservation deleted');
   renderBookings();
 }
@@ -16480,6 +16511,7 @@ async function cleanupOldBookings(opts){
 var RFP_ACCENT={classic:'#c8973a',luxury:'#c8973a',terroir:'#b06a3a',brasserie:'#c8973a',lao:'#1d9e75',cny:'#cc3a3a',ice:'#5b8bd0',galaxy:'#7d6bd0',neon:'#27d3a2',sakura:'#d4537e',tropical:'#1fae9a',zen:'#7a9b6e',ember:'#d4663a',christmas:'#cc3a3a',halloween:'#d4781f',sa:'#c8973a'};
 var _rfpResto=null, _rfpId=null, _rfpKip=v=>{try{return (typeof fmtK==='function')?fmtK(v):('₭'+Number(v||0).toLocaleString());}catch(_){return '₭'+v;}};
 function _rfpEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function _rfpSafeUrl(u){u=String(u||'');return /^(data:image\/|https?:\/\/)/i.test(u)?u.replace(/["'()\\\s]/g,''):'';}
 
 async function renderRestoPage(rid){
   _rfpId=rid;
@@ -16499,19 +16531,19 @@ async function renderRestoPage(rid){
   var catNames=Object.keys(cats).slice(0,3);
 
   var logoHtml = r.logo ? '<img src="'+r.logo+'" alt="">' : _rfpEsc(r.emoji||'🍽️');
-  var coverStyle = r.cover ? 'style="background-image:url('+r.cover.replace(/"/g,'')+')"' : '';
+  var coverStyle = r.cover ? 'style="background-image:url('+_rfpSafeUrl(r.cover)+')"' : '';
   var coverCls = r.cover ? 'rfp-cover' : 'rfp-cover ph';
   var hasLoc = (r.lat!=null && r.lng!=null);
 
   var popHtml=popular.map((d,i)=>{
-    var img=d.img?'style="background-image:url('+d.img.replace(/"/g,'')+')"':'';
+    var img=d.img?'style="background-image:url('+_rfpSafeUrl(d.img)+')"':'';
     var price=(d.sizes&&d.sizes.length)?('from '+_rfpKip(Math.min.apply(null,d.sizes.map(s=>s.price)))):_rfpKip(d.price);
     return '<div class="rfp-dish" onclick="rfpOpenLb('+i+')"><div class="rfp-dimg" '+img+'>'+(d.img?'':'<div style="display:flex;height:100%;align-items:center;justify-content:center;font-size:36px">'+_rfpEsc(d.emoji||'🍽️')+'</div>')+'<span class="z">⤢</span></div><div class="rfp-dn">'+_rfpEsc(d.name)+'</div><div class="rfp-dp">'+price+'</div></div>';
   }).join('');
 
   var menuHtml=catNames.map(cn=>{
     var rows=cats[cn].slice(0,5).map(m=>{
-      var th=m.img?'style="background-image:url('+m.img.replace(/"/g,'')+')"':'';
+      var th=m.img?'style="background-image:url('+_rfpSafeUrl(m.img)+')"':'';
       var price=(m.sizes&&m.sizes.length)?('from '+_rfpKip(Math.min.apply(null,m.sizes.map(s=>s.price)))):_rfpKip(m.price);
       var desc=(typeof itemDesc==='function')?itemDesc(m):(m.desc||'');
       return '<div class="rfp-mrow"><div class="rfp-mthumb" '+th+'>'+(m.img?'':_rfpEsc(m.emoji||'🍽️'))+'</div><div class="rfp-minfo"><div class="rfp-mn">'+_rfpEsc(m.name)+'</div>'+(desc?'<div class="rfp-md">'+_rfpEsc(desc)+'</div>':'')+'</div><div class="rfp-mp">'+price+'</div></div>';
@@ -16565,7 +16597,7 @@ function rfpOpenLb(i){
   var popular=menu.filter(m=>m.badge==='popular'); if(!popular.length) popular=menu.slice(0,5); else popular=popular.slice(0,8);
   var d=popular[i]; if(!d) return;
   var img=document.getElementById('rfpLbImg');
-  if(d.img){ img.style.backgroundImage='url('+d.img.replace(/"/g,'')+')'; img.textContent=''; }
+  if(d.img){ img.style.backgroundImage='url('+_rfpSafeUrl(d.img)+')'; img.textContent=''; }
   else { img.style.backgroundImage=''; img.textContent=(d.emoji||'🍽️'); img.style.fontSize='80px'; }
   document.getElementById('rfpLbName').textContent=d.name||'';
   var price=(d.sizes&&d.sizes.length)?('from '+_rfpKip(Math.min.apply(null,d.sizes.map(s=>s.price)))):_rfpKip(d.price);
