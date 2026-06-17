@@ -6164,6 +6164,13 @@ function hideLoading(){
 async function init(){
   try {
     const p=new URLSearchParams(window.location.search);
+    // [clean-urls] professional paths → existing param routing (old ?book=1 etc. still work too)
+    var _cp=(window.location.pathname||'').replace(/\/+$/,'');
+    var _cpl=_cp.toLowerCase();
+    if(_cpl==='/book'||_cpl==='/booking'){ p.set('book','1'); }
+    else if(_cpl==='/my-booking'||_cpl==='/mybooking'||_cpl==='/check-booking'){ p.set('checkbooking','1'); }
+    else if(_cpl==='/login'||_cpl==='/owner'){ p.set('login','owner'); }
+    else if(_cpl.indexOf('/r/')===0){ var _ridp=decodeURIComponent(_cp.slice(3)); if(_ridp) p.set('r', _ridp); }
     const isCustomer=p.get('qr')==='1';
     // [resto-front-page] Public restaurant page: ?r=<id> with no QR ordering session (no &t=)
     var _rfp=p.get('r');
@@ -16461,6 +16468,10 @@ async function cleanupOldBookings(opts){
 #bkStepBook .bk-table-grid.fp-mode{height:clamp(300px,50vh,420px);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;background:#070707}
 #bkStepBook .bks-confirm{width:100%;background:var(--bks-acc);color:#1a1206;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s}
 #bkStepBook .bks-confirm:active{transform:translateY(1px)}
+#bkStepBook .bks-sect+.bks-sect{border-top:1px solid rgba(255,255,255,.06);padding-top:16px}
+#bkStepBook .bk-party{display:flex;align-items:center;justify-content:center;gap:26px}
+#bkStepBook .bk-party-num{color:var(--bks-acc);font-weight:800;min-width:46px;text-align:center}
+#bkStepBook .bks-cover .bks-name{text-shadow:0 1px 12px rgba(0,0,0,.6)}
 </style>
 <div id="mCustBooking" class="modal-ov" onclick="if(event.target===this){_modalBackdropClose('mCustBooking',function(){return bkState&&bkState.step>1&&bkState.step<7;},bkReleaseLock);}">
   <div class="bkm-shell">
@@ -16494,32 +16505,32 @@ async function cleanupOldBookings(opts){
           <div class="bks-cover-scrim"></div>
           <div class="bks-open" id="bksOpen" style="display:none"><span class="bks-open-d"></span> <span data-lp="bk_open_now">OPEN NOW</span></div>
           <div class="bks-head">
-            <div class="bks-logo" id="bksLogo">\ud83c\udf7d\ufe0f</div>
-            <div><div class="bks-name" id="bksName">\u2014</div><div class="bks-cui" id="bksCui"></div></div>
+            <div class="bks-logo" id="bksLogo">🍽️</div>
+            <div><div class="bks-name" id="bksName">—</div><div class="bks-cui" id="bksCui"></div></div>
           </div>
         </div>
         <!-- DATE -->
         <div class="bks-sect">
-          <div class="bks-sect-h"><span class="bks-i">\u25a3</span> <span data-lp="bk_pick_date">Choose a date</span></div>
+          <div class="bks-sect-h"><span class="bks-i">▣</span> <span data-lp="bk_pick_date">Choose a date</span></div>
           <div class="bk-date-grid" id="bkDateGrid"></div>
         </div>
         <!-- PARTY -->
         <div class="bks-sect">
-          <div class="bks-sect-h"><span class="bks-i">\u25f7</span> <span data-lp="bk_party">How many people?</span></div>
+          <div class="bks-sect-h"><span class="bks-i">◷</span> <span data-lp="bk_party">How many people?</span></div>
           <div class="bk-party">
-            <button class="bk-party-btn" onclick="bkParty(-1)" aria-label="Decrease">\u2212</button>
+            <button class="bk-party-btn" onclick="bkParty(-1)" aria-label="Decrease">−</button>
             <div class="bk-party-num" id="bkPartyNum">2</div>
             <button class="bk-party-btn" onclick="bkParty(1)" aria-label="Increase">+</button>
           </div>
         </div>
         <!-- TIME -->
         <div class="bks-sect">
-          <div class="bks-sect-h"><span class="bks-i">\u25d1</span> <span data-lp="bk_pick_time">Choose a time</span></div>
+          <div class="bks-sect-h"><span class="bks-i">◑</span> <span data-lp="bk_pick_time">Choose a time</span></div>
           <div class="bk-slot-grid" id="bkSlotGrid"><div class="bks-hint" data-lp="bk_need_date">Pick a date first.</div></div>
         </div>
         <!-- TABLE (live map) -->
         <div class="bks-sect">
-          <div class="bks-sect-h"><span class="bks-i">\ud83d\uddfa\ufe0f</span> <span data-lp="bk_pick_table">Choose a table</span><span class="bks-live" id="bksLive" style="display:none"><span class="bks-live-d"></span>LIVE</span></div>
+          <div class="bks-sect-h"><span class="bks-i">🗺️</span> <span data-lp="bk_pick_table">Choose a table</span><span class="bks-live" id="bksLive" style="display:none"><span class="bks-live-d"></span>LIVE</span></div>
           <div id="bkZoneTabs" class="bk-zone-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
           <div id="bkTableGrid" class="bk-table-grid"><div class="bks-hint" data-lp="bk_need_time">Pick a time first.</div></div>
           <div id="bkLockTimer" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(200,151,58,.08);border:1px solid rgba(200,151,58,.3);border-radius:8px;text-align:center">
@@ -16529,14 +16540,14 @@ async function cleanupOldBookings(opts){
         </div>
         <!-- DETAILS -->
         <div class="bks-sect">
-          <div class="bks-sect-h"><span class="bks-i">\u270e</span> <span data-lp="bk_contact">Your details</span></div>
+          <div class="bks-sect-h"><span class="bks-i">✎</span> <span data-lp="bk_contact">Your details</span></div>
           <input type="text" id="bkName" class="bk-input" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
           <input type="tel" id="bkPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]*" style="margin-top:9px">
-          <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences\u2026" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:54px;margin-top:9px"></textarea>
+          <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences…" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:54px;margin-top:9px"></textarea>
         </div>
         <div class="bk-summary" id="bkSummary"></div>
         <button class="bks-confirm" id="bkConfirmBtn" onclick="bkConfirm()" data-lp="bk_submit">Submit Booking</button>
-        <button class="bk-link" style="margin-top:12px;display:block;width:100%;text-align:center" onclick="bkBackToRestos()" data-lp="bk_change_resto">\u2190 Change restaurant</button>
+        <button class="bk-link" style="margin-top:12px;display:block;width:100%;text-align:center" onclick="bkBackToRestos()" data-lp="bk_change_resto">← Change restaurant</button>
       </div>
       <!-- SUCCESS -->
       <div class="bk-step" id="bkStep7">
