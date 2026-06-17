@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2: booking PII moved out of public record into isolated mbookings (+SA migration) on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2: single-page booking with live table map, per-restaurant theme, translations + lock kept on restaurants (tenant-isolation foundation) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -12661,7 +12661,7 @@ function openCustBookingModal(){
   // v5.7: Always start with non-fullscreen modal (step 1 — restaurant picker)
   const _bkShellInit = document.querySelector('#mCustBooking .bkm-shell');
   if(_bkShellInit) _bkShellInit.classList.remove('fp-fullscreen');
-  bkGoStep(1);
+  bkShowView('picker');
   document.getElementById('bkPartyNum').textContent='2';
   document.getElementById('bkName').value='';
   document.getElementById('bkPhone').value='';
@@ -12759,7 +12759,7 @@ function bkPickResto(id){
   bkState.restoId = id;
   bkState.restoName = r.name;
   document.querySelectorAll('#bkRestoList .bk-resto-card').forEach(c=>c.classList.toggle('sel', c.dataset.id===id));
-  setTimeout(()=>bkGoStep(2), 220);
+  setTimeout(()=>bkEnterBook(id), 200);
 }
 
 async function bkLoadHoursAndBuildDates(){
@@ -12796,7 +12796,12 @@ function buildBkDateGrid(){
 function bkPickDate(iso){
   bkState.date = iso;
   document.querySelectorAll('#bkDateGrid .bk-date-card').forEach(c=>c.classList.toggle('sel', c.dataset.d===iso));
-  setTimeout(()=>bkGoStep(3), 220);
+  bkState.slot=null; bkState.tableId=null;
+  var _tg=document.getElementById('bkTableGrid'); if(_tg){ _tg.classList.remove('fp-mode'); _tg.innerHTML='<div class="bks-hint">'+escapeHtml(_lp('bk_need_time','Pick a time first.'))+'</div>'; }
+  var _zt=document.getElementById('bkZoneTabs'); if(_zt) _zt.innerHTML='';
+  var _lv=document.getElementById('bksLive'); if(_lv) _lv.style.display='none';
+  if(typeof bkReleaseLock==='function') bkReleaseLock();
+  bkLoadSlotsAndBuild();
 }
 
 async function bkLoadSlotsAndBuild(){
@@ -12890,7 +12895,10 @@ function buildBkSlotGrid(){
 function bkPickSlot(s){
   bkState.slot = s;
   document.querySelectorAll('#bkSlotGrid .bk-slot').forEach(c=>c.classList.toggle('sel', c.dataset.s===s));
-  setTimeout(()=>bkGoStep(4), 220);
+  bkState.tableId=null;
+  var _lv2=document.getElementById('bksLive'); if(_lv2) _lv2.style.display='';
+  if(typeof bkReleaseLock==='function') bkReleaseLock();
+  bkLoadTables();
 }
 
 function bkParty(delta){
@@ -12898,6 +12906,8 @@ function bkParty(delta){
   if(n<1) n=1; if(n>30) n=30;
   bkState.party = n;
   document.getElementById('bkPartyNum').textContent = n;
+  // booking-v2: party size changes which tables fit → refresh the live map if we're already at table stage
+  if(bkState.date && bkState.slot){ bkState.tableId=null; if(typeof bkReleaseLock==='function') bkReleaseLock(); if(typeof bkLoadTables==='function') bkLoadTables(); }
 }
 
 function bkGoStep(s){
@@ -12930,6 +12940,57 @@ function bkGoStep(s){
   // Back button visibility
   document.getElementById('bkBackBtn').style.visibility = (s>1 && s<7) ? 'visible' : 'hidden';
 }
+
+/* ════ booking-v2 single-page view layer ════ */
+function bkShowView(view){
+  bkState.view = view;
+  var s1=document.getElementById('bkStep1'), sb=document.getElementById('bkStepBook'), s7=document.getElementById('bkStep7');
+  if(s1) s1.classList.toggle('on', view==='picker');
+  if(sb) sb.classList.toggle('on', view==='book');
+  if(s7) s7.classList.toggle('on', view==='success');
+  var foot=document.getElementById('bkActions'); if(foot) foot.style.display=(view==='picker')?'block':'none';
+  var lbl=document.getElementById('bkProgressLbl'); if(lbl) lbl.textContent=(view==='picker')?_lp('bk_pick_resto','Choose a restaurant'):'';
+  var bar=document.getElementById('bkProgressBar'); if(bar) bar.style.width=(view==='success')?'100%':(view==='book'?'66%':'12%');
+  var body=document.querySelector('#mCustBooking .bk-modal-body'); if(body) body.scrollTop=0;
+}
+async function bkEnterBook(id){
+  bkState.date=null; bkState.slot=null; bkState.tableId=null; bkState.tableNum=null; bkState.tableZone=null; bkState.hours=null; bkState.tables=[];
+  if(typeof bkReleaseLock==='function') bkReleaseLock();
+  var r=null; try{ r=await fbGet('restaurants/'+id); }catch(_){}
+  bkApplyRestoChrome(r||{});
+  bkShowView('book');
+  var sg=document.getElementById('bkSlotGrid'); if(sg) sg.innerHTML='<div class="bks-hint">'+escapeHtml(_lp('bk_need_date','Pick a date first.'))+'</div>';
+  var tg=document.getElementById('bkTableGrid'); if(tg){ tg.classList.remove('fp-mode'); tg.innerHTML='<div class="bks-hint">'+escapeHtml(_lp('bk_need_time','Pick a time first.'))+'</div>'; }
+  var zt=document.getElementById('bkZoneTabs'); if(zt){ zt.innerHTML=''; zt.style.display='none'; }
+  var live=document.getElementById('bksLive'); if(live) live.style.display='none';
+  var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'en';
+  if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
+  await bkLoadHoursAndBuildDates();
+}
+function bkApplyRestoChrome(r){
+  var acc=(typeof RFP_ACCENT!=='undefined' && r && RFP_ACCENT[r.theme])||'#c8973a';
+  var shell=document.querySelector('#mCustBooking .bkm-shell'); if(shell) shell.style.setProperty('--bks-acc', acc);
+  var safe=(typeof _rfpSafeUrl==='function')?_rfpSafeUrl:function(u){return String(u||'').replace(/["'()\\]/g,'');};
+  var cover=document.getElementById('bksCover');
+  if(cover){ if(r && r.cover){ cover.style.backgroundImage='url('+safe(r.cover)+')'; cover.classList.remove('noimg'); } else { cover.style.backgroundImage=''; cover.classList.add('noimg'); } }
+  var logo=document.getElementById('bksLogo');
+  if(logo){ var lg=(r&&(r.logo||r.icon))||''; if(lg && lg.length>4){ logo.style.backgroundImage='url('+safe(lg)+')'; logo.textContent=''; } else { logo.style.backgroundImage=''; logo.textContent=lg||'🍽️'; } }
+  var nm=document.getElementById('bksName'); if(nm) nm.textContent=bkState.restoName||(r&&r.name)||'';
+  var cui=document.getElementById('bksCui'); if(cui) cui.textContent=(r&&(r.cuisine||r.tagline))||'';
+}
+function bkConfirm(){
+  if(!bkState.restoId){ alert(_lp('bk_err_pick_resto','Please select a restaurant.')); return; }
+  if(!bkState.date){ alert(_lp('bk_err_pick_date','Please select a date.')); _bkScrollTo('bkDateGrid'); return; }
+  if(!bkState.slot){ alert(_lp('bk_err_pick_slot','Please select a time slot.')); _bkScrollTo('bkSlotGrid'); return; }
+  if(bkState.tables && bkState.tables.length && !bkState.tableId){ alert(_lp('bk_err_pick_table','Please select a table.')); _bkScrollTo('bkTableGrid'); return; }
+  submitCustBooking();
+}
+function bkBackToRestos(){
+  if(typeof bkReleaseLock==='function') bkReleaseLock();
+  bkState.date=null; bkState.slot=null; bkState.tableId=null;
+  bkShowView('picker');
+}
+function _bkScrollTo(id){ var el=document.getElementById(id); if(el && el.scrollIntoView){ try{ el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(_){ el.scrollIntoView(); } } }
 
 function bkBack(){
   if(bkState.step>1){
@@ -14251,7 +14312,8 @@ async function bkLoadTables(){
     if(usableAreaSlugs.length > 0){
       // v5.7: Full-screen mode for the table picker
       const _fpShell = document.querySelector('#mCustBooking .bkm-shell');
-      if(_fpShell) _fpShell.classList.add('fp-fullscreen');
+      /* booking-v2: map stays embedded in the single page — no fullscreen takeover */
+      if(_fpShell) _fpShell.classList.remove('fp-fullscreen');
       // v5.8: Switch grid to floor-plan layout
       grid.classList.add('fp-mode');
       // Hide the legacy zone tabs row (we use our own area tabs above the map)
@@ -14653,7 +14715,6 @@ function _bkStartLockCountdown(){
       cd.textContent = '0:00';
       bkReleaseLock();
       alert(_lp('bk_lock_expired','Your table reservation expired. Please pick another table.'));
-      bkGoStep(5);
       bkLoadTables();
       return;
     }
@@ -14758,7 +14819,7 @@ async function submitCustBooking(){
   const note = document.getElementById('bkNote').value.trim();
   if(!name){ alert(_lp('bk_err_name','Please enter your name.')); return; }
   if(!phone || phone.length<6){ alert(_lp('bk_err_phone','Please enter a valid phone number.')); return; }
-  const btn = document.getElementById('bkNextBtn');
+  const btn = document.getElementById('bkConfirmBtn') || document.getElementById('bkNextBtn');
   btn.disabled = true; btn.textContent = _lp('bk_sending','Sending…');
   try {
     // v6.8: Defense-in-depth — verify booking is still enabled at this restaurant
@@ -14808,7 +14869,7 @@ async function submitCustBooking(){
     document.getElementById('bkSuccessCode').textContent = code;
     // Populate the success-screen summary so customer has a record they can screenshot
     renderBkSuccessSummary(note);
-    bkGoStep(7);
+    bkShowView('success');
   } catch(e){
     console.error('submitCustBooking:',e);
     alert(_lp('bk_err_submit','Could not submit booking. Please try again.'));
@@ -16373,6 +16434,34 @@ async function cleanupOldBookings(opts){
 <!-- ════════════════════════════════════════════ -->
 <!-- v4 BOOKING SYSTEM — Customer Booking Modal -->
 <!-- ════════════════════════════════════════════ -->
+<style id="bks-single">
+/* ════ booking-v2 single-page styles ════ */
+#mCustBooking .bkm-shell{--bks-acc:#c8973a}
+#bkStepBook{padding:0!important}
+#bkStepBook .bks-cover{position:relative;height:150px;background:#241b0e center/cover no-repeat;display:flex;align-items:flex-end;border-radius:14px 14px 0 0;overflow:hidden;margin-bottom:4px}
+#bkStepBook .bks-cover.noimg{background:linear-gradient(135deg,#241b0e,#16110b)}
+#bkStepBook .bks-cover-scrim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(15,12,8,.97) 6%,rgba(15,12,8,.4) 48%,transparent)}
+#bkStepBook .bks-open{position:absolute;top:11px;left:11px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:99px;font-size:10px;letter-spacing:1px;color:#cfcfcf;z-index:2}
+#bkStepBook .bks-open-d{width:6px;height:6px;border-radius:50%;background:#3ddc84;box-shadow:0 0 8px #3ddc84}
+#bkStepBook .bks-head{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:0 16px 13px}
+#bkStepBook .bks-logo{width:50px;height:50px;border-radius:50%;background:#0f0f10 center/cover no-repeat;border:2px solid var(--bks-acc);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+#bkStepBook .bks-name{font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.1;color:#fff}
+#bkStepBook .bks-cui{color:var(--bks-acc);font-size:12px;margin-top:2px}
+#bkStepBook .bks-sect{margin:18px 0}
+#bkStepBook .bks-sect-h{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+#bkStepBook .bks-sect-h .bks-i{color:var(--bks-acc)}
+#bkStepBook .bks-live{margin-left:auto;display:flex;align-items:center;gap:5px;color:#3ddc84;font-size:10px;letter-spacing:1px}
+#bkStepBook .bks-live-d{width:6px;height:6px;border-radius:50%;background:#3ddc84;animation:bksPulse 1.6s infinite}
+@keyframes bksPulse{0%,100%{opacity:1}50%{opacity:.3}}
+#bkStepBook .bks-hint{color:rgba(255,255,255,.35);font-size:13px;padding:8px 2px}
+#bkStepBook #bkDateGrid{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+#bkStepBook #bkDateGrid::-webkit-scrollbar{display:none}
+#bkStepBook .bk-date-card{flex:0 0 auto;min-width:56px}
+#bkStepBook .bk-date-card.sel,#bkStepBook .bk-slot.sel{background:var(--bks-acc)!important;border-color:var(--bks-acc)!important}
+#bkStepBook .bk-table-grid.fp-mode{height:clamp(300px,50vh,420px);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;background:#070707}
+#bkStepBook .bks-confirm{width:100%;background:var(--bks-acc);color:#1a1206;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s}
+#bkStepBook .bks-confirm:active{transform:translateY(1px)}
+</style>
 <div id="mCustBooking" class="modal-ov" onclick="if(event.target===this){_modalBackdropClose('mCustBooking',function(){return bkState&&bkState.step>1&&bkState.step<7;},bkReleaseLock);}">
   <div class="bkm-shell">
     <!-- Progress bar at top -->
@@ -16398,51 +16487,56 @@ async function cleanupOldBookings(opts){
         </div>
         <div class="bk-resto-list" id="bkRestoList"><div class="bk-empty" data-lp="bk_loading_restos">Loading restaurants…</div></div>
       </div>
-      <!-- STEP 2: PICK DATE -->
-      <div class="bk-step" id="bkStep2">
-        <div class="bk-step-h" data-lp="bk_pick_date">Choose a date</div>
-        <div class="bk-step-sub" data-lp="bk_pick_date_sub">Available up to 30 days ahead.</div>
-        <div class="bk-date-grid" id="bkDateGrid"></div>
-      </div>
-      <!-- STEP 3: PICK TIME -->
-      <div class="bk-step" id="bkStep3">
-        <div class="bk-step-h" data-lp="bk_pick_time">Choose a time</div>
-        <div class="bk-step-sub" data-lp="bk_pick_time_sub">Available time slots in 30-minute increments.</div>
-        <div class="bk-slot-grid" id="bkSlotGrid"></div>
-      </div>
-      <!-- STEP 4: PARTY SIZE -->
-      <div class="bk-step" id="bkStep4">
-        <div class="bk-step-h" data-lp="bk_party">How many people?</div>
-        <div class="bk-step-sub" data-lp="bk_party_sub">Including yourself.</div>
-        <div class="bk-party">
-          <button class="bk-party-btn" onclick="bkParty(-1)" aria-label="Decrease">−</button>
-          <div class="bk-party-num" id="bkPartyNum">2</div>
-          <button class="bk-party-btn" onclick="bkParty(1)" aria-label="Increase">+</button>
+      <!-- ════ SINGLE-PAGE BOOKING (booking-v2) — reuses the same engine IDs ════ -->
+      <div class="bk-step" id="bkStepBook">
+        <!-- cover hero (filled on restaurant pick; theme colour set per restaurant) -->
+        <div class="bks-cover" id="bksCover">
+          <div class="bks-cover-scrim"></div>
+          <div class="bks-open" id="bksOpen" style="display:none"><span class="bks-open-d"></span> <span data-lp="bk_open_now">OPEN NOW</span></div>
+          <div class="bks-head">
+            <div class="bks-logo" id="bksLogo">\ud83c\udf7d\ufe0f</div>
+            <div><div class="bks-name" id="bksName">\u2014</div><div class="bks-cui" id="bksCui"></div></div>
+          </div>
         </div>
-        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px" data-lp="bk_min_max">Minimum 1 · Maximum 30</div>
-      </div>
-      <!-- STEP 5: PICK ZONE + TABLE (v5.4) -->
-      <div class="bk-step" id="bkStep5">
-        <div class="bk-step-h" data-lp="bk_pick_table">Choose a table</div>
-        <div class="bk-step-sub" data-lp="bk_pick_table_sub">Pick a zone, then select an available table.</div>
-        <div id="bkZoneTabs" class="bk-zone-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
-        <div id="bkTableGrid" class="bk-table-grid"><div class="bk-empty" data-lp="bk_loading_tables">Loading tables…</div></div>
-        <div id="bkLockTimer" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(200,151,58,.08);border:1px solid rgba(200,151,58,.3);border-radius:8px;text-align:center">
-          <div style="font-size:11px;color:#c8973a;font-weight:700;letter-spacing:1px" data-lp="bk_table_locked">TABLE RESERVED FOR YOU</div>
-          <div style="font-size:13px;color:rgba(255,255,255,.85);margin-top:3px"><span data-lp="bk_lock_msg">Complete booking in</span> <span id="bkLockCountdown" style="font-weight:700;color:#fff">3:00</span></div>
+        <!-- DATE -->
+        <div class="bks-sect">
+          <div class="bks-sect-h"><span class="bks-i">\u25a3</span> <span data-lp="bk_pick_date">Choose a date</span></div>
+          <div class="bk-date-grid" id="bkDateGrid"></div>
         </div>
-      </div>
-      <!-- STEP 6: CONTACT INFO + CONFIRM -->
-      <div class="bk-step" id="bkStep6">
-        <div class="bk-step-h" data-lp="bk_contact">Your details</div>
-        <div class="bk-step-sub" data-lp="bk_contact_sub">You can check your booking status using your phone or code.</div>
+        <!-- PARTY -->
+        <div class="bks-sect">
+          <div class="bks-sect-h"><span class="bks-i">\u25f7</span> <span data-lp="bk_party">How many people?</span></div>
+          <div class="bk-party">
+            <button class="bk-party-btn" onclick="bkParty(-1)" aria-label="Decrease">\u2212</button>
+            <div class="bk-party-num" id="bkPartyNum">2</div>
+            <button class="bk-party-btn" onclick="bkParty(1)" aria-label="Increase">+</button>
+          </div>
+        </div>
+        <!-- TIME -->
+        <div class="bks-sect">
+          <div class="bks-sect-h"><span class="bks-i">\u25d1</span> <span data-lp="bk_pick_time">Choose a time</span></div>
+          <div class="bk-slot-grid" id="bkSlotGrid"><div class="bks-hint" data-lp="bk_need_date">Pick a date first.</div></div>
+        </div>
+        <!-- TABLE (live map) -->
+        <div class="bks-sect">
+          <div class="bks-sect-h"><span class="bks-i">\ud83d\uddfa\ufe0f</span> <span data-lp="bk_pick_table">Choose a table</span><span class="bks-live" id="bksLive" style="display:none"><span class="bks-live-d"></span>LIVE</span></div>
+          <div id="bkZoneTabs" class="bk-zone-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+          <div id="bkTableGrid" class="bk-table-grid"><div class="bks-hint" data-lp="bk_need_time">Pick a time first.</div></div>
+          <div id="bkLockTimer" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(200,151,58,.08);border:1px solid rgba(200,151,58,.3);border-radius:8px;text-align:center">
+            <div style="font-size:11px;color:#c8973a;font-weight:700;letter-spacing:1px" data-lp="bk_table_locked">TABLE RESERVED FOR YOU</div>
+            <div style="font-size:13px;color:rgba(255,255,255,.85);margin-top:3px"><span data-lp="bk_lock_msg">Complete booking in</span> <span id="bkLockCountdown" style="font-weight:700;color:#fff">3:00</span></div>
+          </div>
+        </div>
+        <!-- DETAILS -->
+        <div class="bks-sect">
+          <div class="bks-sect-h"><span class="bks-i">\u270e</span> <span data-lp="bk_contact">Your details</span></div>
+          <input type="text" id="bkName" class="bk-input" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
+          <input type="tel" id="bkPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]*" style="margin-top:9px">
+          <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences\u2026" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:54px;margin-top:9px"></textarea>
+        </div>
         <div class="bk-summary" id="bkSummary"></div>
-        <span class="bk-label" data-lp="bk_name">Full name</span>
-        <input type="text" id="bkName" class="bk-input" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
-        <span class="bk-label" data-lp="bk_phone">Phone number</span>
-        <input type="tel" id="bkPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]*">
-        <span class="bk-label" data-lp="bk_note">Special request (optional)</span>
-        <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences…" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:60px"></textarea>
+        <button class="bks-confirm" id="bkConfirmBtn" onclick="bkConfirm()" data-lp="bk_submit">Submit Booking</button>
+        <button class="bk-link" style="margin-top:12px;display:block;width:100%;text-align:center" onclick="bkBackToRestos()" data-lp="bk_change_resto">\u2190 Change restaurant</button>
       </div>
       <!-- SUCCESS -->
       <div class="bk-step" id="bkStep7">
@@ -16463,7 +16557,7 @@ async function cleanupOldBookings(opts){
       </div>
     </div>
     <div id="bkActions" class="bkm-foot">
-      <div class="bk-actions">
+      <div class="bk-actions" style="display:none">
         <button class="bk-btn bk-btn-back" id="bkBackBtn" onclick="bkBack()" data-lp="bk_back">← Back</button>
         <button class="bk-btn bk-btn-next" id="bkNextBtn" onclick="bkNext()" data-lp="bk_next">Next →</button>
       </div>
