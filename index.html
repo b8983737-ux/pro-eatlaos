@@ -2926,7 +2926,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
     <div class="lp-stickybar-inner">
       <span class="lp-sb-label" data-lp="sb_label">RESERVE</span>
       <button class="lp-sb-btn lp-sb-primary" onclick="openCustBookingModal()" data-lp="sb_book">📅 Book a Table</button>
-      <button class="lp-sb-btn lp-sb-ghost" onclick="location.href='/my-booking'" data-lp="sb_check">Check My Booking</button>
+      <button class="lp-sb-btn lp-sb-ghost" onclick="location.href='/app/?checkbooking=1'" data-lp="sb_check">Check My Booking</button>
     </div>
   </div>
 
@@ -3151,8 +3151,8 @@ function _modalBackdropClose(id, hasDataFn){
   try{ if(typeof hasDataFn==='function' && hasDataFn()){ if(!confirm('Discard your message?')) return; } }catch(e){}
   closeModal(id);
 }
-function showPage(id){ if(id==='pg-owner-login'){ location.href='/login'; return; } if(id && id!=='pg-land') location.href='/app/'; }
-function openCustBookingModal(){ location.href='/book'; }
+function showPage(id){ if(id==='pg-owner-login'){ location.href='/app/?login=owner'; return; } if(id && id!=='pg-land') location.href='/app/'; }
+function openCustBookingModal(){ location.href='/app/?book=1'; }
 
 const LP_TRANSLATIONS = {
   en: {
@@ -4265,7 +4265,7 @@ async function initLanding(){
 function initRestoFX(){
   const grid=document.getElementById('lpRestosGrid'); if(!grid) return;
   grid.addEventListener('click', e=>{
-    var _c=e.target.closest('.lp-resto-card'); if(_c){ var _id=_c.getAttribute('data-rid'); if(_id) location.href='/r/'+encodeURIComponent(_id); else location.href='/book'; }
+    var _c=e.target.closest('.lp-resto-card'); if(_c){ var _id=_c.getAttribute('data-rid'); if(_id) location.href='/app/?r='+encodeURIComponent(_id); else location.href='/app/?book=1'; }
   });
   const fancy = matchMedia('(hover: hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(!fancy) return;
