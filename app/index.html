@@ -2893,6 +2893,12 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-name{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:31px;line-height:1.05;color:var(--rfp-cream);letter-spacing:-.5px}
 #pg-resto .rfp-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;color:var(--rfp-mut);font-size:13px}
 #pg-resto .rfp-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--rfp-mut2)}
+#pg-resto .rfp-status{display:inline-flex;align-items:center;gap:7px;margin-top:11px;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--rfp-line)}
+#pg-resto .rfp-status .rfp-status-d{width:7px;height:7px;border-radius:50%}
+#pg-resto .rfp-status.on{color:#7bdcab}
+#pg-resto .rfp-status.on .rfp-status-d{background:#3ddc84;box-shadow:0 0 8px #3ddc84}
+#pg-resto .rfp-status.off{color:var(--rfp-mut)}
+#pg-resto .rfp-status.off .rfp-status-d{background:var(--rfp-mut2)}
 #pg-resto .rfp-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:22px}
 #pg-resto .rfp-qa{display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 4px;border-radius:14px;background:var(--rfp-surf);border:1px solid var(--rfp-line);color:var(--rfp-txt);font-size:11.5px;cursor:pointer;text-decoration:none}
 #pg-resto .rfp-qa .qi{font-size:18px;color:var(--rfp-lt)}
@@ -2921,6 +2927,9 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-foot{padding:28px 22px;text-align:center;color:var(--rfp-mut2);font-size:12px;border-top:1px solid var(--rfp-line2);margin-top:14px}
 #pg-resto .rfp-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:14px 22px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--rfp-bg) 70%,transparent);z-index:50;display:flex;gap:12px;align-items:center}
 #pg-resto .rfp-book{flex:1;background:var(--rfp-a);color:#17120a;border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 10px 30px color-mix(in srgb,var(--rfp-a),transparent 70%)}
+#pg-resto .rfp-bar-price{display:flex;flex-direction:column;line-height:1.15;flex-shrink:0;padding-left:4px}
+#pg-resto .rfp-bar-price span{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--rfp-mut)}
+#pg-resto .rfp-bar-price b{font-size:16px;color:var(--rfp-cream);font-weight:700}
 #rfpLb{position:fixed;inset:0;z-index:300;background:rgba(6,4,2,.94);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
 #rfpLb.show{display:flex}
 #rfpLb .lbi{width:100%;max-width:430px;height:60vh;border-radius:20px;background:#2a1d0e;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:rgba(255,240,220,.25);font-size:13px}
@@ -16623,6 +16632,20 @@ async function cleanupOldBookings(opts){
 /* [resto-front-page] Renders the public restaurant page from live data. Self-contained, defensive. */
 var RFP_ACCENT={classic:'#c8973a',luxury:'#c8973a',terroir:'#b06a3a',brasserie:'#c8973a',lao:'#1d9e75',cny:'#cc3a3a',ice:'#5b8bd0',galaxy:'#7d6bd0',neon:'#27d3a2',sakura:'#d4537e',tropical:'#1fae9a',zen:'#7a9b6e',ember:'#d4663a',christmas:'#cc3a3a',halloween:'#d4781f',sa:'#c8973a'};
 var _rfpResto=null, _rfpId=null, _rfpKip=v=>{try{return (typeof fmtK==='function')?fmtK(v):('₭'+Number(v||0).toLocaleString());}catch(_){return '₭'+v;}};
+function _rfpOpenStatus(hours){
+  try{
+    if(!hours) return null;
+    var now=new Date(), dow=now.getDay();
+    var h=hours[dow]||hours[String(dow)];
+    if(!h||!h.open||!h.from||!h.to) return {open:false,text:'Closed today'};
+    var nm=now.getHours()*60+now.getMinutes();
+    var fp=h.from.split(':').map(Number), tp=h.to.split(':').map(Number);
+    var fmin=fp[0]*60+fp[1], tmin=tp[0]*60+tp[1];
+    if(nm>=fmin && nm<tmin) return {open:true, text:'Open now · closes '+h.to};
+    if(nm<fmin) return {open:false, text:'Opens '+h.from+' today'};
+    return {open:false, text:'Closed now'};
+  }catch(_){ return null; }
+}
 function _rfpEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function _rfpSafeUrl(u){u=String(u||'');return /^(data:image\/|https?:\/\/)/i.test(u)?u.replace(/["'()\\\s]/g,''):'';}
 
@@ -16635,10 +16658,13 @@ async function renderRestoPage(rid){
   try{ r=await fbGet('restaurants/'+rid); }catch(_){}
   if(!r){ host.innerHTML='<div class="rfp-wrap"><div class="rfp-sec" style="padding-top:90px;text-align:center"><div style="font-size:40px;margin-bottom:12px">🍽️</div><div style="font-size:18px;color:#f4ecdd;font-family:Fraunces,serif">Restaurant not found</div><a href="/" style="display:inline-block;margin-top:18px;color:#c8973a">← Back to EATLAOS</a></div></div>'; return; }
   _rfpResto=r;
+  var hrs=null; try{ hrs=await fbGet('restoHours/'+rid); }catch(_){}
+  var openSt=_rfpOpenStatus(hrs);
   var acc=RFP_ACCENT[r.theme]||'#c8973a';
   host.style.setProperty('--rfp-a', acc);
 
   var menu=Array.isArray(r.menu)?r.menu.filter(m=>m&&m.status!=='inactive'):[];
+  var priceFrom=null; if(menu.length){ var _pp=[]; menu.forEach(m=>{ if(m.sizes&&m.sizes.length) m.sizes.forEach(s=>{ if(s.price) _pp.push(s.price); }); else if(m.price) _pp.push(m.price); }); if(_pp.length) priceFrom=Math.min.apply(null,_pp); }
   var popular=menu.filter(m=>m.badge==='popular'); if(!popular.length) popular=menu.slice(0,5); else popular=popular.slice(0,8);
   var cats={}; menu.forEach(m=>{var c=m.cat||'Menu';(cats[c]=cats[c]||[]).push(m);});
   var catNames=Object.keys(cats).slice(0,3);
@@ -16673,7 +16699,9 @@ async function renderRestoPage(rid){
       '<div class="rfp-htop"><a class="rfp-ib" href="/">‹</a><a class="rfp-ib" href="'+dirHref+'" target="_blank" rel="noopener">↗</a></div></div>'+
     '<div class="rfp-ident"><div class="rfp-logo">'+logoHtml+'</div>'+
       '<div class="rfp-name">'+_rfpEsc(r.name||'Restaurant')+'</div>'+
-      '<div class="rfp-meta"><span>'+_rfpEsc(r.cuisine||'Lao')+'</span>'+(addr?'<span class="dot"></span><span>'+addr+'</span>':'')+'</div></div>'+
+      '<div class="rfp-meta"><span>'+_rfpEsc(r.cuisine||'Lao')+'</span>'+(addr?'<span class="dot"></span><span>'+addr+'</span>':'')+'</div>'+
+      (openSt?'<div class="rfp-status '+(openSt.open?'on':'off')+'"><span class="rfp-status-d"></span>'+_rfpEsc(openSt.text)+'</div>':'')+
+      '</div>'+
     '<div class="rfp-quick">'+
       '<div class="rfp-qa primary" onclick="rfpBook()"><span class="qi">▦</span>Book</div>'+
       '<a class="rfp-qa" href="#rfpMenu"><span class="qi">☷</span>Menu</a>'+
@@ -16685,7 +16713,7 @@ async function renderRestoPage(rid){
     (hasLoc?'<div class="rfp-sec"><div class="rfp-eye">Find us</div><div class="rfp-map" id="rfpMap">loading map…</div>'+(addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+'</div>':'')+
     '<div class="rfp-foot">Powered by <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">Every restaurant, a home online.</div></div>'+
   '</div>'+
-  '<div class="rfp-bar"><button class="rfp-book" onclick="rfpBook()">Reserve a table</button></div>';
+  '<div class="rfp-bar">'+(priceFrom?'<div class="rfp-bar-price"><span>From</span><b>'+_rfpKip(priceFrom)+'</b></div>':'')+'<button class="rfp-book" onclick="rfpBook()">Reserve a table</button></div>';
 
   if(hasLoc) _rfpMap(r.lat, r.lng, acc);
   try{ window.scrollTo(0,0); }catch(_){}
