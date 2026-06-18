@@ -2910,6 +2910,8 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-pop{display:flex;gap:13px;overflow-x:auto;margin:0 -22px;padding:0 22px 4px}
 #pg-resto .rfp-pop::-webkit-scrollbar{display:none}
 #pg-resto .rfp-dish{flex:0 0 152px;cursor:pointer}
+#pg-resto .rfp-menuphotos{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+#pg-resto .rfp-mp{width:100%;border-radius:14px;border:1px solid var(--rfp-line);cursor:zoom-in;display:block;background:#0a0a0b}
 #pg-resto .rfp-dimg{height:152px;border-radius:16px;background:#241a0f;background-size:cover;background-position:center;position:relative;border:1px solid var(--rfp-line2)}
 #pg-resto .rfp-dimg .z{position:absolute;bottom:9px;right:9px;width:28px;height:28px;border-radius:50%;background:rgba(10,7,3,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--rfp-cream)}
 #pg-resto .rfp-dn{margin-top:9px;font-size:14px;color:var(--rfp-cream);font-weight:500}
@@ -2930,6 +2932,23 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-bar-price{display:flex;flex-direction:column;line-height:1.15;flex-shrink:0;padding-left:4px}
 #pg-resto .rfp-bar-price span{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--rfp-mut)}
 #pg-resto .rfp-bar-price b{font-size:16px;color:var(--rfp-cream);font-weight:700}
+/* ── responsive: scale the restaurant page up on iPad + desktop ── */
+@media(min-width:600px){
+  #pg-resto .rfp-wrap{max-width:620px}
+  #pg-resto .rfp-bar{max-width:620px}
+  #pg-resto .rfp-hero{height:360px}
+  #pg-resto .rfp-name{font-size:36px}
+  #pg-resto .rfp-mp{max-width:560px;margin-left:auto;margin-right:auto}
+}
+@media(min-width:1024px){
+  #pg-resto .rfp-wrap{max-width:760px}
+  #pg-resto .rfp-bar{max-width:760px}
+  #pg-resto .rfp-hero{height:430px}
+  #pg-resto .rfp-name{font-size:42px}
+  #pg-resto .rfp-ident{padding:0 30px}
+  #pg-resto .rfp-logo{width:88px;height:88px}
+  #pg-resto .rfp-mp{max-width:600px}
+}
 #rfpLb{position:fixed;inset:0;z-index:300;background:rgba(6,4,2,.94);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
 #rfpLb.show{display:flex}
 #rfpLb .lbi{width:100%;max-width:430px;height:60vh;border-radius:20px;background:#2a1d0e;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:rgba(255,240,220,.25);font-size:13px}
@@ -3999,6 +4018,15 @@ setTimeout(function(){
             <button type="button" class="btn" onclick="document.getElementById('mRcoverFile').click()" style="flex:1">📷 Upload Cover</button>
             <button type="button" class="btn btn-sm btn-red" onclick="clearCover()">✕ Remove</button>
           </div>
+        </div>
+      </div>
+      <!-- [menu-photos] upload photos of the printed menu — for booking-only restaurants with no QR menu -->
+      <div class="fg">
+        <label>Menu Photos (optional) — <span style="color:var(--s-muted);font-size:9px;font-weight:400">photos of the printed menu, shown when customers tap "Menu"</span></label>
+        <div style="margin-top:6px">
+          <div id="mRmenuStrip" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+          <input type="file" id="mRmenuFile" accept="image/*" multiple style="display:none" onchange="previewMenuPhotos(this)">
+          <button type="button" class="btn" onclick="document.getElementById('mRmenuFile').click()" style="width:100%">📷 Add Menu Photo(s)</button>
         </div>
       </div>
       <div class="fg">
@@ -9087,6 +9115,7 @@ function resetRestoModal(){
   document.getElementById('logoPreview').textContent='🍽️';
   // [front-page-fields] clear cover / location / font
   document.getElementById('mRcoverData').value='';
+  _mRmenuPhotos=[]; _renderMenuStrip();
   const _cp=document.getElementById('coverPreview'); if(_cp){_cp.style.backgroundImage='';_cp.textContent='No cover photo';}
   document.getElementById('mRlat').value=''; document.getElementById('mRlng').value='';
   document.getElementById('mRmapInput').value='';
@@ -9197,6 +9226,7 @@ async function saveResto(){
     prep:parseInt(document.getElementById('mRprep').value)||15,
     theme:document.getElementById('mRtheme').value||'classic',
     cover:document.getElementById('mRcoverData').value||'',
+    menuPhotos:_mRmenuPhotos.slice(),
     lat:(parseFloat(document.getElementById('mRlat').value)||null),
     lng:(parseFloat(document.getElementById('mRlng').value)||null),
     font:document.getElementById('mRfont').value||'default',
@@ -9350,6 +9380,7 @@ async function editResto(id){
   else prev.textContent=r.emoji||'🍽️';
   // [front-page-fields] cover / location / font
   document.getElementById('mRcoverData').value=r.cover||'';
+  _mRmenuPhotos=Array.isArray(r.menuPhotos)?r.menuPhotos.slice():[]; _renderMenuStrip();
   const cprev=document.getElementById('coverPreview');
   if(cprev){ if(r.cover){ cprev.style.backgroundImage=`url(${r.cover})`; cprev.textContent=''; } else { cprev.style.backgroundImage=''; cprev.textContent='No cover photo'; } }
   document.getElementById('mRlat').value=(r.lat!=null)?r.lat:'';
@@ -9454,6 +9485,27 @@ function clearCover(){
   const cp=document.getElementById('coverPreview'); if(cp){cp.style.backgroundImage='';cp.textContent='No cover photo';}
   const fi=document.getElementById('mRcoverFile'); if(fi) fi.value='';
 }
+// [menu-photos] upload photos of the printed menu (for booking-only restaurants)
+var _mRmenuPhotos = [];
+async function previewMenuPhotos(input){
+  var files=Array.from(input.files||[]);
+  for(var i=0;i<files.length;i++){
+    if(_mRmenuPhotos.length>=8){ notifyD('⚠ Max 8 menu photos'); break; }
+    if(files[i].size>10*1024*1024){ notifyD('⚠ Max 10MB each'); continue; }
+    try{ var data=await _compressImg(files[i], 1400, 0.8); _mRmenuPhotos.push(data); }catch(_){ notifyD('⚠ Could not process image'); }
+  }
+  input.value='';
+  _renderMenuStrip();
+}
+function _renderMenuStrip(){
+  var el=document.getElementById('mRmenuStrip'); if(!el) return;
+  if(!_mRmenuPhotos.length){ el.innerHTML='<span style="font-size:11px;color:var(--s-muted)">No menu photos yet</span>'; return; }
+  el.innerHTML=_mRmenuPhotos.map(function(p,i){
+    return '<div style="position:relative;width:66px;height:66px;border-radius:6px;overflow:hidden;border:1px solid var(--s-border);background:#000 center/cover no-repeat;background-image:url('+String(p).replace(/["\\\\()]/g,'')+')">'+
+      '<button type="button" onclick="removeMenuPhoto('+i+')" title="Remove" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.72);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:1;cursor:pointer">✕</button></div>';
+  }).join('');
+}
+function removeMenuPhoto(i){ _mRmenuPhotos.splice(i,1); _renderMenuStrip(); }
 // [front-page-fields] Parse a Google Maps link (or "lat, lng") into coordinates for the map pin.
 function parseRestoLocation(val){
   val=(val||'').trim();
@@ -16680,6 +16732,8 @@ async function renderRestoPage(rid){
 
   var menu=Array.isArray(r.menu)?r.menu.filter(m=>m&&m.status!=='inactive'):[];
   var priceFrom=null; if(menu.length){ var _pp=[]; menu.forEach(m=>{ if(m.sizes&&m.sizes.length) m.sizes.forEach(s=>{ if(s.price) _pp.push(s.price); }); else if(m.price) _pp.push(m.price); }); if(_pp.length) priceFrom=Math.min.apply(null,_pp); }
+  var menuPhotos=Array.isArray(r.menuPhotos)?r.menuPhotos.filter(Boolean):[];
+  var menuPhotosHtml=menuPhotos.length?'<div class="rfp-menuphotos">'+menuPhotos.map(function(p){return '<img class="rfp-mp" loading="lazy" src="'+_rfpSafeUrl(p)+'" onclick="rfpOpenImg(this.src)">';}).join('')+'</div>':'';
   var popular=menu.filter(m=>m.badge==='popular'); if(!popular.length) popular=menu.slice(0,5); else popular=popular.slice(0,8);
   var cats={}; menu.forEach(m=>{var c=m.cat||'Menu';(cats[c]=cats[c]||[]).push(m);});
   var catNames=Object.keys(cats).slice(0,3);
@@ -16724,7 +16778,7 @@ async function renderRestoPage(rid){
       '<a class="rfp-qa" href="'+dirHref+'" target="_blank" rel="noopener"><span class="qi">➤</span>Map</a>'+
     '</div>'+
     (popHtml?'<div class="rfp-sec"><div class="rfp-eye">Most loved</div><div class="rfp-pop">'+popHtml+'</div></div>':'')+
-    (menuHtml?'<div class="rfp-sec" id="rfpMenu"><div class="rfp-eye">The menu</div>'+menuHtml+'</div>':'')+
+    ((menuPhotosHtml||menuHtml)?'<div class="rfp-sec" id="rfpMenu"><div class="rfp-eye">The menu</div>'+menuPhotosHtml+menuHtml+'</div>':'')+
     (hasLoc?'<div class="rfp-sec"><div class="rfp-eye">Find us</div><div class="rfp-map" id="rfpMap">loading map…</div>'+(addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+'</div>':'')+
     '<div class="rfp-foot">Powered by <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">Every restaurant, a home online.</div></div>'+
   '</div>'+
@@ -16763,6 +16817,14 @@ function rfpOpenLb(i){
 }
 function rfpCloseLb(e,force){ if(force||e.target.id==='rfpLb'){ document.getElementById('rfpLb').classList.remove('show'); document.body.style.overflow=''; } }
 
+function rfpOpenImg(src){
+  var img=document.getElementById('rfpLbImg');
+  img.style.backgroundImage='url('+_rfpSafeUrl(src)+')'; img.textContent=''; img.style.fontSize='';
+  document.getElementById('rfpLbName').textContent='';
+  document.getElementById('rfpLbPrice').textContent='';
+  document.getElementById('rfpLb').classList.add('show');
+  document.body.style.overflow='hidden';
+}
 function rfpBook(){
   if(!_rfpId) return;
   if(typeof bkOpenForResto==='function'){ bkOpenForResto(_rfpId, (_rfpResto&&_rfpResto.name)||''); }
