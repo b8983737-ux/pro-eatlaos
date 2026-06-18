@@ -16851,7 +16851,7 @@ async function renderRestoPage(rid){
     '</div>'+
     '<div class="rfp-foot">Powered by <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">Every restaurant, a home online.</div></div>'+
   '</div>'+
-  '<div class="rfp-bar">'+(priceFrom?'<div class="rfp-bar-price"><span>From</span><b>'+_rfpKip(priceFrom)+'</b></div>':'')+'<button class="rfp-book" onclick="rfpBook()">Reserve a table</button></div>';
+  '<div class="rfp-bar"><button class="rfp-book" onclick="rfpBook()">Reserve a table</button></div>';
 
   if(hasLoc) _rfpMap(r.lat, r.lng, acc);
   try{ window.scrollTo(0,0); }catch(_){}
