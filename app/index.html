@@ -2875,9 +2875,16 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 <!-- [resto-front-page] fonts + fully-scoped styles (all under #pg-resto — cannot affect other pages) -->
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Pacifico&family=Bangers&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 #pg-resto{--rfp-a:#c8973a;--rfp-lt:color-mix(in srgb,var(--rfp-a),#fff 38%);--rfp-bg:#100c07;--rfp-surf:#181209;--rfp-line:rgba(245,232,210,.10);--rfp-line2:rgba(245,232,210,.06);--rfp-cream:#f4ecdd;--rfp-txt:#ece2d0;--rfp-mut:#a89a85;--rfp-mut2:#766b5b;background:var(--rfp-bg);color:var(--rfp-txt);font-family:'Inter',-apple-system,sans-serif;overflow-y:auto;overflow-x:hidden;padding:0!important;display:block}
+#pg-resto[data-bg="luxe"]{--rfp-bg:#0b0a0d;--rfp-surf:#15131b;--rfp-line:rgba(214,182,122,.15);--rfp-line2:rgba(214,182,122,.07);--rfp-cream:#f4ead4;--rfp-txt:#e9dec8;--rfp-mut:#9b9080;--rfp-mut2:#6b6354;--rfp-a:#cca456;--rfp-lt:#e6cb83;background-color:#0b0a0d;background-image:radial-gradient(110% 70% at 50% -12%,rgba(204,164,86,.16),transparent 55%),radial-gradient(85% 60% at 105% 105%,rgba(150,100,40,.12),transparent 55%)}
+#pg-resto[data-bg="pink"]{--rfp-bg:#f7cbde;--rfp-surf:rgba(255,255,255,.6);--rfp-line:rgba(140,40,85,.16);--rfp-line2:rgba(140,40,85,.08);--rfp-cream:#3d1528;--rfp-txt:#4d2338;--rfp-mut:#8a4f6c;--rfp-mut2:#b68197;--rfp-a:#d6336c;--rfp-lt:#a51e54;background-color:#f7cbde;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.16) 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,rgba(150,50,95,.06) 0 1px,transparent 1px 4px),radial-gradient(130% 90% at 50% -10%,rgba(255,255,255,.45),transparent 55%)}
+#pg-resto[data-bg="linen"]{--rfp-bg:#efe7d6;--rfp-surf:rgba(255,255,255,.62);--rfp-line:rgba(90,70,35,.15);--rfp-line2:rgba(90,70,35,.08);--rfp-cream:#2f2616;--rfp-txt:#3e3422;--rfp-mut:#7c6b4d;--rfp-mut2:#aa9874;--rfp-a:#b8862f;--rfp-lt:#996d1c;background-color:#efe7d6;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.22) 0 1px,transparent 1px 5px),repeating-linear-gradient(90deg,rgba(120,95,55,.06) 0 1px,transparent 1px 5px)}
+#pg-resto[data-bg="marble"]{--rfp-bg:#eceae6;--rfp-surf:rgba(255,255,255,.7);--rfp-line:rgba(40,42,50,.12);--rfp-line2:rgba(40,42,50,.06);--rfp-cream:#222730;--rfp-txt:#2f343d;--rfp-mut:#697079;--rfp-mut2:#9aa0a9;--rfp-a:#9a8654;--rfp-lt:#7c6a3e;background-color:#eceae6;background-image:radial-gradient(70% 55% at 18% 8%,rgba(255,255,255,.85),transparent 55%),radial-gradient(60% 45% at 92% 28%,rgba(205,210,218,.5),transparent 50%),linear-gradient(118deg,rgba(180,186,196,.22) 0%,transparent 22%,transparent 68%,rgba(168,174,188,.3) 100%)}
+#pg-resto[data-bg="paper"]{--rfp-bg:#f5f1e7;--rfp-surf:#fffdf8;--rfp-line:rgba(70,58,35,.13);--rfp-line2:rgba(70,58,35,.07);--rfp-cream:#2c2417;--rfp-txt:#3a3121;--rfp-mut:#776a51;--rfp-mut2:#a89a7d;--rfp-a:#b07a3a;--rfp-lt:#925c22;background-color:#f5f1e7;background-image:radial-gradient(130% 80% at 50% -5%,rgba(255,255,255,.55),transparent 50%)}
 #pg-resto *{box-sizing:border-box}
 #pg-resto .rfp-wrap{max-width:480px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:96px}
 #pg-resto .rfp-lao{font-family:'Noto Sans Lao','Noto Sans',sans-serif}
@@ -2893,7 +2900,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-name{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:31px;line-height:1.05;color:var(--rfp-cream);letter-spacing:-.5px}
 #pg-resto .rfp-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;color:var(--rfp-mut);font-size:13px}
 #pg-resto .rfp-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--rfp-mut2)}
-#pg-resto .rfp-status{display:inline-flex;align-items:center;gap:7px;margin-top:11px;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--rfp-line)}
+#pg-resto .rfp-status{display:inline-flex;align-items:center;gap:7px;margin-top:11px;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:99px;background:var(--rfp-surf);border:1px solid var(--rfp-line)}
 #pg-resto .rfp-status .rfp-status-d{width:7px;height:7px;border-radius:50%}
 #pg-resto .rfp-status.on{color:#7bdcab}
 #pg-resto .rfp-status.on .rfp-status-d{background:#3ddc84;box-shadow:0 0 8px #3ddc84}
@@ -4059,6 +4066,20 @@ setTimeout(function(){
           <option value="elegant">Elegant (serif)</option>
           <option value="modern">Modern (geometric)</option>
           <option value="rounded">Friendly (rounded)</option>
+          <option value="marker">Marker (hand-painted) ✍️</option>
+          <option value="script">Script (girly) 💗</option>
+          <option value="statement">Statement (bold caps) 💥</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Background Texture — <span style="color:var(--s-muted);font-size:9px;font-weight:400">page background for this restaurant's vibe</span></label>
+        <select class="fi" id="mRbg" style="max-width:260px">
+          <option value="dark">Dark (default)</option>
+          <option value="luxe">Dark Luxe (gold glow) ✨</option>
+          <option value="pink">Pink Canvas 💗</option>
+          <option value="linen">Linen (light cream) 🧵</option>
+          <option value="marble">Marble (elegant) 🤍</option>
+          <option value="paper">Paper (warm cream) 📜</option>
         </select>
       </div>
       <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
@@ -9138,6 +9159,7 @@ function resetRestoModal(){
   document.getElementById('mRmapInput').value='';
   const _ls2=document.getElementById('mRlocStatus'); if(_ls2)_ls2.textContent='No location set';
   const _f=document.getElementById('mRfont'); if(_f)_f.value='default';
+  const _bg=document.getElementById('mRbg'); if(_bg)_bg.value='dark';
   // Reset emoji picker
   document.getElementById('mRemoji').value='🍽️';
   const prev=document.getElementById('mRemojiPreview');
@@ -9247,6 +9269,7 @@ async function saveResto(){
     lat:(parseFloat(document.getElementById('mRlat').value)||null),
     lng:(parseFloat(document.getElementById('mRlng').value)||null),
     font:document.getElementById('mRfont').value||'default',
+    bg:document.getElementById('mRbg')?document.getElementById('mRbg').value:'dark',
     expiresAt:newExpiry,
     updatedAt:Date.now()
   };
@@ -9406,6 +9429,7 @@ async function editResto(id){
   const _ls=document.getElementById('mRlocStatus');
   if(_ls) _ls.textContent=(r.lat!=null&&r.lng!=null)?('📍 '+(+r.lat).toFixed(5)+', '+(+r.lng).toFixed(5)):'No location set';
   document.getElementById('mRfont').value=r.font||'default';
+  if(document.getElementById('mRbg')) document.getElementById('mRbg').value=r.bg||'dark';
   const expLabel=r.expiresAt?getExpiryLabel(r.expiresAt):'Lifetime';
   document.getElementById('mRexpiryDisplay').textContent='Current: '+expLabel;
   openModal('mAddResto');
@@ -13083,7 +13107,9 @@ function bkApplyRestoChrome(r){
   if(cover){ if(r && r.cover){ cover.style.backgroundImage='url('+safe(r.cover)+')'; cover.classList.remove('noimg'); } else { cover.style.backgroundImage=''; cover.classList.add('noimg'); } }
   var logo=document.getElementById('bksLogo');
   if(logo){ var lg=(r&&(r.logo||r.icon))||''; if(lg && lg.length>4){ logo.style.backgroundImage='url('+safe(lg)+')'; logo.textContent=''; } else { logo.style.backgroundImage=''; logo.textContent=lg||'🍽️'; } }
-  var nm=document.getElementById('bksName'); if(nm) nm.textContent=bkState.restoName||(r&&r.name)||'';
+  var _bn=bkState.restoName||(r&&r.name)||'';
+  var nm=document.getElementById('bksName'); if(nm){ nm.textContent=_bn; nm.style.fontFamily=(typeof RFP_FONT!=='undefined'&&RFP_FONT[(r&&r.font)])||(typeof RFP_FONT!=='undefined'?RFP_FONT.default:''); }
+  if(_bn) document.title=_bn+' · Book a table · EATLAOS';
   var cui=document.getElementById('bksCui'); if(cui) cui.textContent=(r&&(r.cuisine||r.tagline))||'';
 }
 function bkConfirm(){
@@ -16714,6 +16740,15 @@ async function cleanupOldBookings(opts){
 
 <script>
 /* [resto-front-page] Renders the public restaurant page from live data. Self-contained, defensive. */
+var RFP_FONT={
+  default:"'Plus Jakarta Sans','Noto Sans Lao',sans-serif",
+  elegant:"'Fraunces','Noto Serif Lao',Georgia,serif",
+  modern:"'Poppins','Noto Sans Lao',sans-serif",
+  rounded:"'Quicksand','Noto Sans Lao',sans-serif",
+  marker:"'Permanent Marker','Noto Sans Lao',cursive",
+  script:"'Pacifico','Noto Sans Lao',cursive",
+  statement:"'Bangers','Noto Sans Lao',cursive"
+};
 var RFP_ACCENT={classic:'#c8973a',luxury:'#c8973a',terroir:'#b06a3a',brasserie:'#c8973a',lao:'#1d9e75',cny:'#cc3a3a',ice:'#5b8bd0',galaxy:'#7d6bd0',neon:'#27d3a2',sakura:'#d4537e',tropical:'#1fae9a',zen:'#7a9b6e',ember:'#d4663a',christmas:'#cc3a3a',halloween:'#d4781f',sa:'#c8973a'};
 var _rfpResto=null, _rfpId=null, _rfpKip=v=>{try{return (typeof fmtK==='function')?fmtK(v):('₭'+Number(v||0).toLocaleString());}catch(_){return '₭'+v;}};
 function _rfpOpenStatus(hours){
@@ -16784,17 +16819,19 @@ async function renderRestoPage(rid){
     return '<div class="rfp-mcat">'+_rfpEsc(cn)+'</div>'+rows;
   }).join('');
 
-  var dirHref = hasLoc ? ('https://www.google.com/maps/dir/?api=1&destination='+r.lat+','+r.lng) : '#';
-  var _mapQ=((r.name||'')+' '+(addr||r.cuisine||'')+' Laos').replace(/\s+/g,' ').trim();
-  var _dirH=hasLoc?dirHref:('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(_mapQ));
   var addr=_rfpEsc(r.addr||r.address||'');
+  var dirHref = hasLoc ? ('https://www.google.com/maps/dir/?api=1&destination='+r.lat+','+r.lng) : '#';
+  var _mapQ=((r.name||'')+' '+(r.addr||r.address||r.cuisine||'')+' Laos').replace(/\s+/g,' ').trim();
+  var _dirH=hasLoc?dirHref:('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(_mapQ));
 
+  host.setAttribute('data-bg',(r&&r.bg)||'dark');
+  document.title=(r.name||'Restaurant')+' · EATLAOS';
   host.innerHTML=
   '<div class="rfp-wrap">'+
     '<div class="rfp-hero"><div class="'+coverCls+'" '+coverStyle+'></div><div class="rfp-grad"></div>'+
       '<div class="rfp-htop"><a class="rfp-ib" href="/">‹</a><a class="rfp-ib" href="'+_dirH+'" target="_blank" rel="noopener">↗</a></div></div>'+
     '<div class="rfp-ident"><div class="rfp-logo">'+logoHtml+'</div>'+
-      '<div class="rfp-name">'+_rfpEsc(r.name||'Restaurant')+'</div>'+
+      '<div class="rfp-name" style="font-family:'+(RFP_FONT[r.font]||RFP_FONT.default)+'">'+_rfpEsc(r.name||'Restaurant')+'</div>'+
       '<div class="rfp-meta"><span>'+_rfpEsc(r.cuisine||'Lao')+'</span>'+(addr?'<span class="dot"></span><span>'+addr+'</span>':'')+'</div>'+
       (openSt?'<div class="rfp-status '+(openSt.open?'on':'off')+'"><span class="rfp-status-d"></span>'+_rfpEsc(openSt.text)+'</div>':'')+
       '</div>'+
