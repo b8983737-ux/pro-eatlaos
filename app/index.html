@@ -2937,7 +2937,10 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-hrow span:last-child{color:var(--rfp-mut)}
 #pg-resto .rfp-hrow.today{background:color-mix(in srgb,var(--rfp-a),transparent 90%)}
 #pg-resto .rfp-hrow.today span{color:var(--rfp-lt);font-weight:600}
-#pg-resto .rfp-map{height:180px;border-radius:16px;overflow:hidden;border:1px solid var(--rfp-line);background:#16110b;margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:var(--rfp-mut2);font-size:12px}
+#pg-resto .rfp-mapframe{width:100%;height:220px;border:1px solid var(--rfp-line);border-radius:16px;display:block;background:#16110b}
+#pg-resto .rfp-dirbtn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:11px 18px;border:1px solid var(--rfp-a);color:var(--rfp-lt);border-radius:12px;font-size:13.5px;font-weight:600;text-decoration:none;transition:background .15s}
+#pg-resto .rfp-dirbtn:hover{background:color-mix(in srgb,var(--rfp-a),transparent 88%)}
+#pg-resto .rfp-map{height:220px;border-radius:16px;overflow:hidden;border:1px solid var(--rfp-line);background:#16110b;margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:var(--rfp-mut2);font-size:12px}
 #pg-resto .rfp-addr{display:flex;gap:11px;align-items:flex-start;color:var(--rfp-mut);font-size:14px;line-height:1.5}
 #pg-resto .rfp-foot{padding:28px 22px;text-align:center;color:var(--rfp-mut2);font-size:12px;border-top:1px solid var(--rfp-line2);margin-top:14px}
 #pg-resto .rfp-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:14px 22px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--rfp-bg) 70%,transparent);z-index:50;display:flex;gap:12px;align-items:center}
@@ -16752,7 +16755,7 @@ async function renderRestoPage(rid){
   if(hrs){
     var _dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     var _td=new Date().getDay(), _hr='';
-    for(var _d=0;_d<7;_d++){ var _h=hrs[_d]||hrs[String(_d)]; var _t=(_h&&_h.open&&_h.from&&_h.to)?(_h.from+' – '+_h.to):'Closed';
+    for(var _d=0;_d<7;_d++){ var _h=hrs[_d]||hrs[String(_d)]; var _t=(_h&&_h.open&&_h.from&&_h.to)?(_rfpEsc(_h.from)+' – '+_rfpEsc(_h.to)):'Closed';
       _hr+='<div class="rfp-hrow'+(_d===_td?' today':'')+'"><span>'+_dn[_d]+'</span><span>'+_t+'</span></div>'; }
     hoursHtml='<div class="rfp-sec"><div class="rfp-eye">Opening hours</div><div class="rfp-hours">'+_hr+'</div></div>';
   }
@@ -16782,12 +16785,14 @@ async function renderRestoPage(rid){
   }).join('');
 
   var dirHref = hasLoc ? ('https://www.google.com/maps/dir/?api=1&destination='+r.lat+','+r.lng) : '#';
+  var _mapQ=((r.name||'')+' '+(addr||r.cuisine||'')+' Laos').replace(/\s+/g,' ').trim();
+  var _dirH=hasLoc?dirHref:('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(_mapQ));
   var addr=_rfpEsc(r.addr||r.address||'');
 
   host.innerHTML=
   '<div class="rfp-wrap">'+
     '<div class="rfp-hero"><div class="'+coverCls+'" '+coverStyle+'></div><div class="rfp-grad"></div>'+
-      '<div class="rfp-htop"><a class="rfp-ib" href="/">‹</a><a class="rfp-ib" href="'+dirHref+'" target="_blank" rel="noopener">↗</a></div></div>'+
+      '<div class="rfp-htop"><a class="rfp-ib" href="/">‹</a><a class="rfp-ib" href="'+_dirH+'" target="_blank" rel="noopener">↗</a></div></div>'+
     '<div class="rfp-ident"><div class="rfp-logo">'+logoHtml+'</div>'+
       '<div class="rfp-name">'+_rfpEsc(r.name||'Restaurant')+'</div>'+
       '<div class="rfp-meta"><span>'+_rfpEsc(r.cuisine||'Lao')+'</span>'+(addr?'<span class="dot"></span><span>'+addr+'</span>':'')+'</div>'+
@@ -16802,7 +16807,11 @@ async function renderRestoPage(rid){
     ''+/* 'Most loved' removed — page shows no dish list, only the menu photo via the Menu button */
     ''+/* menu list removed — menu is shown as a photo via the Menu button (rfpShowMenu) */
     hoursHtml+
-    (hasLoc?'<div class="rfp-sec"><div class="rfp-eye">Find us</div><div class="rfp-map" id="rfpMap">loading map…</div>'+(addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+'</div>':'')+
+    '<div class="rfp-sec" id="rfpMapSec"><div class="rfp-eye">Find us</div>'+
+      (hasLoc?'<div class="rfp-map" id="rfpMap">loading map…</div>':'<iframe class="rfp-mapframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q='+encodeURIComponent(_mapQ)+'&z=15&output=embed"></iframe>')+
+      (addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+
+      '<a class="rfp-dirbtn" href="'+_dirH+'" target="_blank" rel="noopener">Get directions →</a>'+
+    '</div>'+
     '<div class="rfp-foot">Powered by <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">Every restaurant, a home online.</div></div>'+
   '</div>'+
   '<div class="rfp-bar">'+(priceFrom?'<div class="rfp-bar-price"><span>From</span><b>'+_rfpKip(priceFrom)+'</b></div>':'')+'<button class="rfp-book" onclick="rfpBook()">Reserve a table</button></div>';
@@ -16841,11 +16850,8 @@ function rfpOpenLb(i){
 function rfpCloseLb(e,force){ if(force||e.target.id==='rfpLb'){ document.getElementById('rfpLb').classList.remove('show'); document.body.style.overflow=''; } }
 
 function rfpScrollMap(){
-  var m=document.getElementById('rfpMap');
-  if(m && m.scrollIntoView){ try{ m.scrollIntoView({behavior:'smooth',block:'center'}); }catch(_){ m.scrollIntoView(); } return; }
-  // no embedded map (no location set) -> open Google Maps search by name/address
-  var q=encodeURIComponent(((_rfpResto&&_rfpResto.name)||'')+' '+((_rfpResto&&(_rfpResto.address||_rfpResto.cuisine))||''));
-  window.open('https://www.google.com/maps/search/?api=1&query='+q,'_blank','noopener');
+  var m=document.getElementById('rfpMapSec')||document.getElementById('rfpMap');
+  if(m && m.scrollIntoView){ try{ m.scrollIntoView({behavior:'smooth',block:'center'}); }catch(_){ m.scrollIntoView(); } }
 }
 function rfpShowMenu(){
   var ov=document.getElementById('rfpMenuOv'), box=document.getElementById('rfpMenuOvImgs');
