@@ -2931,6 +2931,12 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-md{color:var(--rfp-mut2);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #pg-resto .rfp-mp{color:var(--rfp-lt);font-size:14px;white-space:nowrap;flex-shrink:0;align-self:center;border:none;background:none;width:auto;padding:0;border-radius:0;display:inline-block}
 #pg-resto .rfp-hrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--rfp-line2);font-size:14px;color:var(--rfp-mut)}
+#pg-resto .rfp-hours{background:var(--rfp-surf);border:1px solid var(--rfp-line);border-radius:14px;overflow:hidden}
+#pg-resto .rfp-hrow{display:flex;justify-content:space-between;padding:11px 16px;font-size:13.5px;color:var(--rfp-txt);border-bottom:1px solid var(--rfp-line2)}
+#pg-resto .rfp-hrow:last-child{border-bottom:none}
+#pg-resto .rfp-hrow span:last-child{color:var(--rfp-mut)}
+#pg-resto .rfp-hrow.today{background:color-mix(in srgb,var(--rfp-a),transparent 90%)}
+#pg-resto .rfp-hrow.today span{color:var(--rfp-lt);font-weight:600}
 #pg-resto .rfp-map{height:180px;border-radius:16px;overflow:hidden;border:1px solid var(--rfp-line);background:#16110b;margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:var(--rfp-mut2);font-size:12px}
 #pg-resto .rfp-addr{display:flex;gap:11px;align-items:flex-start;color:var(--rfp-mut);font-size:14px;line-height:1.5}
 #pg-resto .rfp-foot{padding:28px 22px;text-align:center;color:var(--rfp-mut2);font-size:12px;border-top:1px solid var(--rfp-line2);margin-top:14px}
@@ -16742,6 +16748,14 @@ async function renderRestoPage(rid){
   var priceFrom=null; if(menu.length){ var _pp=[]; menu.forEach(m=>{ if(m.sizes&&m.sizes.length) m.sizes.forEach(s=>{ if(s.price) _pp.push(s.price); }); else if(m.price) _pp.push(m.price); }); if(_pp.length) priceFrom=Math.min.apply(null,_pp); }
   var menuPhotos=Array.isArray(r.menuPhotos)?r.menuPhotos.filter(Boolean):[];
   var menuPhotosHtml=menuPhotos.length?'<div class="rfp-menuphotos">'+menuPhotos.map(function(p){return '<img class="rfp-menuphoto" loading="lazy" src="'+_rfpSafeUrl(p)+'" onclick="rfpOpenImg(this.src)">';}).join('')+'</div>':'';
+  var hoursHtml='';
+  if(hrs){
+    var _dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var _td=new Date().getDay(), _hr='';
+    for(var _d=0;_d<7;_d++){ var _h=hrs[_d]||hrs[String(_d)]; var _t=(_h&&_h.open&&_h.from&&_h.to)?(_h.from+' – '+_h.to):'Closed';
+      _hr+='<div class="rfp-hrow'+(_d===_td?' today':'')+'"><span>'+_dn[_d]+'</span><span>'+_t+'</span></div>'; }
+    hoursHtml='<div class="rfp-sec"><div class="rfp-eye">Opening hours</div><div class="rfp-hours">'+_hr+'</div></div>';
+  }
   var popular=menu.filter(m=>m.badge==='popular'); if(!popular.length) popular=menu.slice(0,5); else popular=popular.slice(0,8);
   var cats={}; menu.forEach(m=>{var c=m.cat||'Menu';(cats[c]=cats[c]||[]).push(m);});
   var catNames=Object.keys(cats).slice(0,3);
@@ -16781,12 +16795,13 @@ async function renderRestoPage(rid){
       '</div>'+
     '<div class="rfp-quick">'+
       '<div class="rfp-qa primary" onclick="rfpBook()"><span class="qi">▦</span>Book</div>'+
-      (menuPhotos.length?'<div class="rfp-qa" onclick="rfpShowMenu()"><span class="qi">☷</span>Menu</div>':'')+
+      '<div class="rfp-qa" onclick="rfpShowMenu()"><span class="qi">☷</span>Menu</div>'+
       '<a class="rfp-qa" href="'+(r.phone?('tel:'+_rfpEsc(r.phone)):'#')+'"><span class="qi">✆</span>Call</a>'+
-      '<a class="rfp-qa" href="'+dirHref+'" target="_blank" rel="noopener"><span class="qi">➤</span>Map</a>'+
+      '<div class="rfp-qa" onclick="rfpScrollMap()"><span class="qi">➤</span>Map</div>'+
     '</div>'+
     ''+/* 'Most loved' removed — page shows no dish list, only the menu photo via the Menu button */
     ''+/* menu list removed — menu is shown as a photo via the Menu button (rfpShowMenu) */
+    hoursHtml+
     (hasLoc?'<div class="rfp-sec"><div class="rfp-eye">Find us</div><div class="rfp-map" id="rfpMap">loading map…</div>'+(addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+'</div>':'')+
     '<div class="rfp-foot">Powered by <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">Every restaurant, a home online.</div></div>'+
   '</div>'+
@@ -16825,6 +16840,13 @@ function rfpOpenLb(i){
 }
 function rfpCloseLb(e,force){ if(force||e.target.id==='rfpLb'){ document.getElementById('rfpLb').classList.remove('show'); document.body.style.overflow=''; } }
 
+function rfpScrollMap(){
+  var m=document.getElementById('rfpMap');
+  if(m && m.scrollIntoView){ try{ m.scrollIntoView({behavior:'smooth',block:'center'}); }catch(_){ m.scrollIntoView(); } return; }
+  // no embedded map (no location set) -> open Google Maps search by name/address
+  var q=encodeURIComponent(((_rfpResto&&_rfpResto.name)||'')+' '+((_rfpResto&&(_rfpResto.address||_rfpResto.cuisine))||''));
+  window.open('https://www.google.com/maps/search/?api=1&query='+q,'_blank','noopener');
+}
 function rfpShowMenu(){
   var ov=document.getElementById('rfpMenuOv'), box=document.getElementById('rfpMenuOvImgs');
   if(!ov||!box) return;
