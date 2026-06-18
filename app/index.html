@@ -2912,6 +2912,13 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-dish{flex:0 0 152px;cursor:pointer}
 #pg-resto .rfp-menuphotos{display:flex;flex-direction:column;gap:12px;margin-top:4px}
 #pg-resto .rfp-menuphoto{width:100%;border-radius:14px;border:1px solid var(--rfp-line);cursor:zoom-in;display:block;background:#0a0a0b}
+#rfpMenuOv{position:fixed;inset:0;z-index:200;background:rgba(8,6,4,.97);display:none;flex-direction:column;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+#rfpMenuOv.show{display:flex}
+#rfpMenuOv .rfp-mov-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;color:#f4ecdd;font-family:'Fraunces',Georgia,serif;font-size:18px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:rgba(8,6,4,.92);z-index:1}
+#rfpMenuOv .rfp-mov-x{background:rgba(255,255,255,.1);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;flex-shrink:0}
+#rfpMenuOv .rfp-mov-imgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;align-items:center}
+#rfpMenuOv .rfp-mov-imgs img{width:100%;max-width:680px;border-radius:12px;display:block;border:1px solid rgba(255,255,255,.08)}
+#rfpMenuOv .rfp-mov-empty{color:rgba(255,255,255,.4);font-size:14px;margin:auto}
 #pg-resto .rfp-dimg{height:152px;border-radius:16px;background:#241a0f;background-size:cover;background-position:center;position:relative;border:1px solid var(--rfp-line2)}
 #pg-resto .rfp-dimg .z{position:absolute;bottom:9px;right:9px;width:28px;height:28px;border-radius:50%;background:rgba(10,7,3,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--rfp-cream)}
 #pg-resto .rfp-dn{margin-top:9px;font-size:14px;color:var(--rfp-cream);font-weight:500}
@@ -2922,7 +2929,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-minfo{flex:1;min-width:0}
 #pg-resto .rfp-mn{color:var(--rfp-txt);font-size:14.5px;font-weight:500}
 #pg-resto .rfp-md{color:var(--rfp-mut2);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#pg-resto .rfp-mp{color:var(--rfp-lt);font-size:14px;white-space:nowrap}
+#pg-resto .rfp-mp{color:var(--rfp-lt);font-size:14px;white-space:nowrap;flex-shrink:0;align-self:center;border:none;background:none;width:auto;padding:0;border-radius:0;display:inline-block}
 #pg-resto .rfp-hrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--rfp-line2);font-size:14px;color:var(--rfp-mut)}
 #pg-resto .rfp-map{height:180px;border-radius:16px;overflow:hidden;border:1px solid var(--rfp-line);background:#16110b;margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:var(--rfp-mut2);font-size:12px}
 #pg-resto .rfp-addr{display:flex;gap:11px;align-items:flex-start;color:var(--rfp-mut);font-size:14px;line-height:1.5}
@@ -3848,6 +3855,7 @@ setTimeout(function(){
 </div>
 <div id="pg-resto" class="page"></div>
 <div id="rfpLb" onclick="rfpCloseLb(event)"><div class="lbx" onclick="rfpCloseLb(event,true)">✕</div><div class="lbi" id="rfpLbImg"></div><div class="lbc"><div class="n" id="rfpLbName"></div><div class="p" id="rfpLbPrice"></div></div></div>
+<div id="rfpMenuOv" onclick="rfpCloseMenu(event)"><div class="rfp-mov-bar"><span>Menu</span><button class="rfp-mov-x" onclick="rfpCloseMenu(event,true)">✕</button></div><div class="rfp-mov-imgs" id="rfpMenuOvImgs"></div></div>
 
 <div id="pg-customer" class="page" data-theme="classic">
   <!-- Instant loading state shown before Firebase loads -->
@@ -16773,12 +16781,12 @@ async function renderRestoPage(rid){
       '</div>'+
     '<div class="rfp-quick">'+
       '<div class="rfp-qa primary" onclick="rfpBook()"><span class="qi">▦</span>Book</div>'+
-      '<a class="rfp-qa" href="#rfpMenu"><span class="qi">☷</span>Menu</a>'+
+      (menuPhotos.length?'<div class="rfp-qa" onclick="rfpShowMenu()"><span class="qi">☷</span>Menu</div>':'')+
       '<a class="rfp-qa" href="'+(r.phone?('tel:'+_rfpEsc(r.phone)):'#')+'"><span class="qi">✆</span>Call</a>'+
       '<a class="rfp-qa" href="'+dirHref+'" target="_blank" rel="noopener"><span class="qi">➤</span>Map</a>'+
     '</div>'+
-    (popHtml?'<div class="rfp-sec"><div class="rfp-eye">Most loved</div><div class="rfp-pop">'+popHtml+'</div></div>':'')+
-    ((menuPhotosHtml||menuHtml)?'<div class="rfp-sec" id="rfpMenu"><div class="rfp-eye">The menu</div>'+menuPhotosHtml+menuHtml+'</div>':'')+
+    ''+/* 'Most loved' removed — page shows no dish list, only the menu photo via the Menu button */
+    ''+/* menu list removed — menu is shown as a photo via the Menu button (rfpShowMenu) */
     (hasLoc?'<div class="rfp-sec"><div class="rfp-eye">Find us</div><div class="rfp-map" id="rfpMap">loading map…</div>'+(addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+'</div>':'')+
     '<div class="rfp-foot">Powered by <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">Every restaurant, a home online.</div></div>'+
   '</div>'+
@@ -16817,6 +16825,18 @@ function rfpOpenLb(i){
 }
 function rfpCloseLb(e,force){ if(force||e.target.id==='rfpLb'){ document.getElementById('rfpLb').classList.remove('show'); document.body.style.overflow=''; } }
 
+function rfpShowMenu(){
+  var ov=document.getElementById('rfpMenuOv'), box=document.getElementById('rfpMenuOvImgs');
+  if(!ov||!box) return;
+  var photos=(_rfpResto&&Array.isArray(_rfpResto.menuPhotos))?_rfpResto.menuPhotos.filter(Boolean):[];
+  box.innerHTML=photos.length?photos.map(function(p){return '<img loading="lazy" src="'+_rfpSafeUrl(p)+'">';}).join(''):'<div class="rfp-mov-empty">No menu photo yet.</div>';
+  ov.classList.add('show'); document.body.style.overflow='hidden';
+}
+function rfpCloseMenu(e,force){
+  if(e && !force && e.target!==e.currentTarget) return;
+  var ov=document.getElementById('rfpMenuOv'); if(ov) ov.classList.remove('show');
+  document.body.style.overflow='';
+}
 function rfpOpenImg(src){
   var img=document.getElementById('rfpLbImg');
   img.style.backgroundImage='url('+_rfpSafeUrl(src)+')'; img.textContent=''; img.style.fontSize='';
