@@ -12697,6 +12697,19 @@ function openCustBookingModal(){
   loadBkRestaurants();
 }
 
+/* booking-v2: open the booking form straight to a chosen restaurant (used by the restaurant page's Reserve button) */
+function bkOpenForResto(rid, name){
+  if(typeof bkReleaseLock === 'function') bkReleaseLock();
+  bkState = { restoId:rid, restoName:name||'', date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[], tables:[], tableId:null, tableNum:null, tableZone:null, lockSessionId:null, lockExpiresAt:0 };
+  var _sh=document.querySelector('#mCustBooking .bkm-shell'); if(_sh) _sh.classList.remove('fp-fullscreen');
+  var pn=document.getElementById('bkPartyNum'); if(pn) pn.textContent='2';
+  ['bkName','bkPhone','bkNote'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  if(typeof openModal==='function') openModal('mCustBooking');
+  var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'en';
+  if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
+  bkEnterBook(rid);
+}
+
 async function loadBkRestaurants(){
   const list = document.getElementById('bkRestoList');
   list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_restos','Loading restaurants…'))}</div>`;
@@ -12780,10 +12793,12 @@ function _bkClearRestoSearch(){
 function bkPickResto(id){
   const r = bkState.allRestos.find(x=>x.id===id);
   if(!r) return;
-  bkState.restoId = id;
-  bkState.restoName = r.name;
   document.querySelectorAll('#bkRestoList .bk-resto-card').forEach(c=>c.classList.toggle('sel', c.dataset.id===id));
-  setTimeout(()=>bkEnterBook(id), 200);
+  // booking-v2: show the restaurant's full page (menu / location / info) first — Reserve from there
+  setTimeout(function(){
+    if(typeof closeModal==='function') closeModal('mCustBooking');
+    if(typeof renderRestoPage==='function'){ renderRestoPage(id); try{ history.replaceState(null,'','/r/'+encodeURIComponent(id)); }catch(_){} }
+  }, 180);
 }
 
 async function bkLoadHoursAndBuildDates(){
@@ -16749,11 +16764,9 @@ function rfpOpenLb(i){
 function rfpCloseLb(e,force){ if(force||e.target.id==='rfpLb'){ document.getElementById('rfpLb').classList.remove('show'); document.body.style.overflow=''; } }
 
 function rfpBook(){
-  if(typeof openCustBookingModal==='function'){
-    openCustBookingModal();
-    var rid=_rfpId;
-    if(rid && typeof bkPickResto==='function'){ setTimeout(function(){ try{ bkPickResto(rid); }catch(_){ } }, 450); }
-  } else { location.href='/app/'; }
+  if(!_rfpId) return;
+  if(typeof bkOpenForResto==='function'){ bkOpenForResto(_rfpId, (_rfpResto&&_rfpResto.name)||''); }
+  else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
 </body>
