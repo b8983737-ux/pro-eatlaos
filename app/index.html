@@ -2312,6 +2312,18 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
   font-weight:500;
   letter-spacing:.5px;
 }
+.bkm-back{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.6);
+  font-size:14px;font-weight:600;
+  cursor:pointer;line-height:1;
+  height:32px;padding:0 13px 0 10px;
+  border-radius:99px;
+  display:inline-flex;align-items:center;gap:4px;
+  flex-shrink:0;transition:all .2s;
+}
+.bkm-back:hover{background:rgba(200,151,58,.12);border-color:rgba(200,151,58,.35);color:#e3b95f;}
 .bkm-x{
   background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.08);
@@ -3992,6 +4004,10 @@ setTimeout(function(){
       <input type="hidden" id="mRestoId">
       <div class="form-row"><div class="fg"><label>Restaurant Name</label><input class="fi" id="mRname" placeholder="e.g. Savaan Kitchen"></div><div class="fg"><label>Cuisine Type</label><input class="fi" id="mRcuisine" placeholder="e.g. Lao, Thai, Mixed"></div></div>
       <div class="form-row"><div class="fg"><label>Owner Username</label><input class="fi" id="mRuser" placeholder="login username"></div><div class="fg"><label>Owner Password</label><input class="fi" type="password" id="mRpass" placeholder="set a strong password"></div></div>
+      <div class="fg" style="margin-top:-4px">
+        <button type="button" class="btn btn-sm" onclick="saResetOwnerPassword()">🔐 Reset Owner Password (secure server)</button>
+        <div style="font-size:9px;color:var(--s-muted);margin-top:4px;line-height:1.4">Type the new password above, then click. Works for ANY owner (even secure-login). Sets it instantly via the secure server — never stored in the database.</div>
+      </div>
       <div class="form-row">
         <div class="fg"><label>Commission % (platform takes)</label><input class="fi" type="number" id="mRcomm" value="15" min="0" max="100" step="0.5" placeholder="0 = free" onchange="if(this.value==='')this.value=0"></div>
         <div class="fg">
@@ -4464,11 +4480,18 @@ function loadFirebaseSDK(){
         const s3=document.createElement('script');
         s3.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js';
         s3.onload=()=>{
-          if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-          db=firebase.database();
-          try { fbAuth=firebase.auth(); try{ fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(_){ } } catch(e){ console.warn('Auth init failed:', e && e.message); }
-          fbSDKLoaded=true;
-          resolve();
+          const s4=document.createElement('script');
+          s4.src='https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js';
+          const _doInit=()=>{
+            if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            db=firebase.database();
+            try { fbAuth=firebase.auth(); try{ fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(_){ } } catch(e){ console.warn('Auth init failed:', e && e.message); }
+            try { fbFunctions=firebase.app().functions('asia-southeast1'); } catch(e){ console.warn('Functions init failed:', e && e.message); }
+            fbSDKLoaded=true;
+            resolve();
+          };
+          s4.onload=_doInit; s4.onerror=_doInit;
+          document.head.appendChild(s4);
         };
         document.head.appendChild(s3);
       };
@@ -4495,6 +4518,7 @@ const firebaseConfig = {
 };
 let db = null; // set after SDK loads for admin
 let fbAuth = null; // Firebase Auth — set after SDK loads. Replaces ALL hardcoded passwords.
+let fbFunctions = null; // Firebase Functions (asia-southeast1) — secure admin actions (owner password reset).
 
 // ═══════════════════════════════════════════════════════════════
 // I18N
@@ -9240,6 +9264,29 @@ function getExpiryLabel(expiresAt){
   return `~${days} days`;
 }
 
+async function saResetOwnerPassword(){
+  const username=(document.getElementById('mRuser').value||'').trim();
+  const pw=document.getElementById('mRpass').value||'';
+  const id=document.getElementById('mRestoId').value;
+  if(!username){ notifyD('⚠ Enter the owner username first'); return; }
+  if(pw.length<6){ notifyD('⚠ Password must be at least 6 characters'); return; }
+  if(!fbFunctions){ notifyD('⚠ Secure server not ready — hard-refresh and try again'); return; }
+  if(!window.confirm('Reset password for owner "'+username+'"? The owner will need the new password to log in.')) return;
+  try{
+    notifyD('🔐 Resetting password securely…');
+    const fn=fbFunctions.httpsCallable('setOwnerPassword');
+    const res=await fn({ username:username, newPassword:pw });
+    const out=(res&&res.data)||{};
+    if(out&&out.ok){
+      if(id){ try{ await fbUpdate('restaurants/'+id,{ authMigrated:true, ownerUid:out.uid||null, pass:null, ownerPass:null }); }catch(_){} }
+      document.getElementById('mRpass').value='';
+      notifyD('✅ Password reset! Owner can now log in with the new password.');
+    } else { notifyD('⚠ Could not reset password.'); }
+  }catch(e){
+    const msg=(e&&e.message)||'error';
+    notifyD('⚠ '+msg);
+  }
+}
 async function saveResto(){
   const id=document.getElementById('mRestoId').value;
   const dur=document.getElementById('mRexpireDur').value;
@@ -10349,6 +10396,7 @@ async function owTables(){
     // Walk-in detection: table is currently in walk-in mode if walkInUntil is set and not yet expired
     const nowMs = Date.now();
     const isWalkIn = !!(t.walkInUntil && nowMs < t.walkInUntil && nowMs >= (t.walkInFrom || 0));
+    const isClosed = !!t.closed;
     let walkInLabel = '';
     if(isWalkIn){
       try {
@@ -10378,8 +10426,8 @@ async function owTables(){
             <div class="tcard-lbl">${(t.minSeats && t.maxSeats && t.minSeats !== t.maxSeats) ? `${t.minSeats}-${t.maxSeats}` : (t.maxSeats||t.seats||0)} seats${t.zone?` · <span style="color:var(--s-gold)">${escapeHtml(t.zone)}</span>`:''}</div>
           </div>
           <div style="text-align:right">
-            <div style="font-size:10px;font-weight:700;color:${isOcc?'var(--s-green)':isWalkIn?'#60a5fa':'var(--s-muted)'};letter-spacing:.5px">
-              ${isOcc?'🟢 OCCUPIED':isWalkIn?'🚶 WALK-IN':'⚪ FREE'}
+            <div style="font-size:10px;font-weight:700;color:${isOcc?'var(--s-green)':isClosed?'#f59e0b':isWalkIn?'#60a5fa':'var(--s-muted)'};letter-spacing:.5px">
+              ${isOcc?'🟢 OCCUPIED':isClosed?'🔒 CLOSED':isWalkIn?'🚶 WALK-IN':'⚪ FREE'}
             </div>
             ${isOcc&&timeLeft?`<div style="font-size:9px;color:var(--s-muted);margin-top:2px">⏱ ${timeLeft}</div>`:''}
             ${isWalkIn&&walkInLabel?`<div style="font-size:9px;color:#60a5fa;margin-top:2px">${escapeHtml(walkInLabel)}</div>`:''}
@@ -10401,6 +10449,8 @@ async function owTables(){
           <div style="font-size:10px;color:#60a5fa;margin-bottom:8px;text-align:center;font-weight:600">
             🚶 Walk-in only — not bookable online during this period
           </div>
+        `:isClosed?`
+          <div style="font-size:10px;color:#f59e0b;margin-bottom:8px;text-align:center;font-weight:600">🔒 Closed — not bookable online</div>
         `:`
           <div style="font-size:10px;color:var(--s-muted2);margin-bottom:8px;text-align:center">
             ${(()=>{const bk=getTableBooking(t.id,bookings,todayStr);return bk?'<span style=\"color:#f59e0b;font-weight:600\">📅 Booked: '+bk.name+' at '+bk.time+'</span>':'Ready to seat guests';})()}
@@ -10410,6 +10460,7 @@ async function owTables(){
           <button class="btn btn-sm btn-gold" onclick="showQR('${restoId}','${t.id}','${t.num}')" style="flex:1">📱 QR</button>
           ${isOcc?`<button class="btn btn-sm" onclick="owP('bills',null)" style="color:var(--s-green);border-color:var(--s-green)">🧾 Bill</button>`:''}
           <button class="btn btn-sm" onclick="openWalkInTableModal(${i})" title="${isWalkIn?'Edit walk-in period':'Mark as walk-in'}" style="${isWalkIn?'color:#60a5fa;border-color:#60a5fa':''}">🚶</button>
+          <button class="btn btn-sm" onclick="toggleTableClosed(${i})" title="${isClosed?'Re-open this table for booking':'Close this table (block online booking)'}" style="${isClosed?'color:#f59e0b;border-color:#f59e0b':''}">${isClosed?'🔓':'🔒'}</button>
           <button class="btn btn-sm" onclick="openEditTableModal(${i})" title="Edit">✏️</button>
           <button class="btn btn-sm btn-red" onclick="delOwTable(${i})">✕</button>
         </div>
@@ -11485,6 +11536,18 @@ async function saveEditTable(){
   const sorted=sortTablesArray(tables);
   await fbUpdate('restaurants/'+restoId,{tables:sorted});
   closeModal('mEditTable');notifyD('✅ Table updated');owTables();
+}
+async function toggleTableClosed(idx){
+  if(isNaN(idx) || idx < 0){ notifyD('⚠ Invalid table'); return; }
+  const r = await fbGet('restaurants/'+restoId);
+  const tables = [...(r?.tables || [])];
+  if(!tables[idx]){ notifyD('⚠ Table not found'); return; }
+  const nowClosed = !tables[idx].closed;
+  tables[idx] = { ...tables[idx], closed: nowClosed };
+  if(!nowClosed) delete tables[idx].closed;
+  await fbUpdate('restaurants/'+restoId, { tables });
+  notifyD(nowClosed ? '🔒 Table closed — customers can\'t book it online' : '🔓 Table open — bookable again');
+  if(typeof owTables === 'function') owTables();
 }
 async function delOwTable(idx){
   const r=await fbGet('restaurants/'+restoId);
@@ -14425,6 +14488,12 @@ async function bkLoadTables(){
         bookedTableIds.add(b.tableId);
       }
     });
+    // Owner-closed tables: keep them on the map but block online booking (treat as unavailable)
+    tables.forEach(t => { if(t && t.closed) bookedTableIds.add(t.id); });
+    if(bkState.tableId && tables.some(t => t && t.closed && t.id===bkState.tableId)){
+      try{ await bkReleaseLock(); }catch(_){}
+      bkState.tableId = null; bkState.tableNum = null; bkState.tableZone = null;
+    }
     // Read active locks
     const lockedTableIds = new Set();
     const now = Date.now();
@@ -15014,6 +15083,9 @@ async function submitCustBooking(){
 }
 
 /* ─── CUSTOMER STATUS CHECK ─── */
+function bsBackHome(){
+  try{ location.href='/'; }catch(_){ try{ location.assign('/'); }catch(__){} }
+}
 function bsTab(which){
   document.getElementById('bsTabPhone').classList.toggle('on', which==='phone');
   document.getElementById('bsTabCode').classList.toggle('on', which==='code');
@@ -16712,9 +16784,12 @@ async function cleanupOldBookings(opts){
 <div id="mCustBookingStatus" class="modal-ov" onclick="if(event.target===this)_modalBackdropClose('mCustBookingStatus',function(){const f=['bsPhone','bsCode'];return f.some(id=>{const el=document.getElementById(id);return el&&el.value&&el.value.trim();});});">
   <div class="bkm-shell" style="max-width:480px">
     <div class="bkm-head">
-      <div>
-        <div class="bkm-eyebrow" data-lp="bk_status_eyebrow">Check Booking</div>
-        <div class="bkm-title" data-lp="bk_status_title">Your Bookings</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="bkm-back" onclick="bsBackHome()" aria-label="Back">‹ Back</button>
+        <div>
+          <div class="bkm-eyebrow" data-lp="bk_status_eyebrow">Check Booking</div>
+          <div class="bkm-title" data-lp="bk_status_title">Your Bookings</div>
+        </div>
       </div>
       <button class="bkm-x" onclick="closeModal('mCustBookingStatus')" aria-label="Close">×</button>
     </div>
