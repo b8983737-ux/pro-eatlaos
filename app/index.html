@@ -2906,7 +2906,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-cover.ph{background:radial-gradient(120% 80% at 70% 10%,color-mix(in srgb,var(--rfp-a),transparent 78%),transparent 55%),radial-gradient(100% 90% at 20% 90%,rgba(120,70,30,.35),transparent 60%),#2a1d0e}
 #pg-resto .rfp-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,12,7,.5) 0%,transparent 25%,transparent 50%,rgba(16,12,7,.75) 82%,var(--rfp-bg) 100%)}
 #pg-resto .rfp-htop{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:16px;z-index:3;padding-top:max(16px,env(safe-area-inset-top))}
-#pg-resto .rfp-ib{width:38px;height:38px;border-radius:50%;background:rgba(16,12,7,.5);backdrop-filter:blur(8px);border:1px solid var(--rfp-line);color:var(--rfp-cream);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;text-decoration:none}
+#pg-resto .rfp-ib{width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.4);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.35)}
 #pg-resto .rfp-ident{position:relative;z-index:3;margin-top:-72px;padding:0 22px}
 #pg-resto .rfp-logo{width:74px;height:74px;border-radius:18px;background:#0e0a05;border:1px solid var(--rfp-a);box-shadow:0 14px 34px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:13px;overflow:hidden}
 #pg-resto .rfp-logo img{width:100%;height:100%;object-fit:cover}
@@ -12918,9 +12918,14 @@ function _bkRenderRestos(arr){
   // FIX (Bug #4): Use data-id with event delegation instead of inline onclick string
   // interpolation. This is XSS-safe even if Firebase keys contain quotes/special chars.
   list.innerHTML = arr.map(r=>{
-    const ic = (typeof r.icon==='string' && r.icon.length<=4) ? r.icon : '🍽️';
+    const lg = (r.logo || '');
+    const isImg = (typeof lg==='string' && lg.length>4 && typeof _rfpSafeUrl==='function');
+    const emo = (typeof r.emoji==='string' && r.emoji) ? r.emoji : ((typeof r.icon==='string' && r.icon.length<=4) ? r.icon : '🍽️');
+    const icHtml = isImg
+      ? `<div class="bk-resto-ic" style="background-image:url('${_rfpSafeUrl(lg)}');background-size:cover;background-position:center;background-repeat:no-repeat"></div>`
+      : `<div class="bk-resto-ic">${escapeHtml(emo)}</div>`;
     return `<div class="bk-resto-card" data-id="${escapeHtml(r.id)}">
-      <div class="bk-resto-ic">${escapeHtml(ic)}</div>
+      ${icHtml}
       <div class="bk-resto-info">
         <div class="bk-resto-name">${escapeHtml(r.name)}</div>
         <div class="bk-resto-tag">${escapeHtml(r.tag||tapToBook)}</div>
