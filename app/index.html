@@ -2889,6 +2889,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Pacifico&family=Bangers&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Special+Elite&family=Abril+Fatface&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 #pg-resto{--rfp-a:#c8973a;--rfp-lt:color-mix(in srgb,var(--rfp-a),#fff 38%);--rfp-bg:#100c07;--rfp-surf:#181209;--rfp-line:rgba(245,232,210,.10);--rfp-line2:rgba(245,232,210,.06);--rfp-cream:#f4ecdd;--rfp-txt:#ece2d0;--rfp-mut:#a89a85;--rfp-mut2:#766b5b;background:var(--rfp-bg);color:var(--rfp-txt);font-family:'Inter',-apple-system,sans-serif;overflow-y:auto;overflow-x:hidden;padding:0!important;display:block}
@@ -2909,6 +2910,11 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-ident{position:relative;z-index:3;margin-top:-72px;padding:0 22px}
 #pg-resto .rfp-logo{width:74px;height:74px;border-radius:18px;background:#0e0a05;border:1px solid var(--rfp-a);box-shadow:0 14px 34px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:13px;overflow:hidden}
 #pg-resto .rfp-logo img{width:100%;height:100%;object-fit:cover}
+.rsm-l{display:inline-block;padding:.05em .2em;margin:.05em .02em;border-radius:3px;line-height:1;font-weight:800;transform:rotate(var(--r,0deg));animation:rsmShake 3s ease-in-out infinite;-webkit-font-smoothing:antialiased}
+.rsm-sp{display:inline-block;width:.32em}
+@keyframes rsmShake{0%,100%{transform:rotate(var(--r,0deg)) translateY(0)}25%{transform:rotate(calc(var(--r,0deg) + 1.4deg)) translateY(-.5px)}50%{transform:rotate(var(--r,0deg)) translateY(0)}75%{transform:rotate(calc(var(--r,0deg) - 1.4deg)) translateY(.5px)}}
+@media (prefers-reduced-motion:reduce){.rsm-l{animation:none}}
+.rfp-name-ransom{letter-spacing:0!important;line-height:1.55!important;font-family:inherit!important}
 #pg-resto .rfp-name{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:31px;line-height:1.05;color:var(--rfp-cream);letter-spacing:-.5px}
 #pg-resto .rfp-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;color:var(--rfp-mut);font-size:13px}
 #pg-resto .rfp-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--rfp-mut2)}
@@ -4034,7 +4040,7 @@ setTimeout(function(){
           </div>
         </div>
       </div>
-      <div class="fg"><label>Address</label><input class="fi" id="mRaddr" placeholder="Vientiane, Laos"></div>
+      <div class="form-row"><div class="fg"><label>Address</label><input class="fi" id="mRaddr" placeholder="Vientiane, Laos"></div><div class="fg"><label>Phone <span style="color:var(--s-muted);font-size:9px;font-weight:400">— shown on the Call button</span></label><input class="fi" id="mRphone" type="tel" placeholder="e.g. 020 5555 1234"></div></div>
       <div class="fg">
         <label>Restaurant Logo (optional)</label>
         <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
@@ -4085,6 +4091,7 @@ setTimeout(function(){
           <option value="marker">Marker (hand-painted) ✍️</option>
           <option value="script">Script (girly) 💗</option>
           <option value="statement">Statement (bold caps) 💥</option>
+          <option value="ransom">Ransom cut-out (Mean Girls) 🔪</option>
         </select>
       </div>
       <div class="fg">
@@ -4923,7 +4930,7 @@ const STAFF_T={
     bk_err_save_hours:'Could not save hours.',
     bk_err_accept:'Could not accept booking.',
     bk_err_reject:'Could not reject booking.',
-    bk_err_time_order:'Day {d}: opening time must be before closing time.',
+    bk_err_time_order:'Day {d}: opening and closing time can\'t be the same.',
     bk_new_booking_title:'New booking request',
     bk_new_booking_body:'You have a new table booking pending.',
     bk_day_sun:'Sunday',bk_day_mon:'Monday',bk_day_tue:'Tuesday',bk_day_wed:'Wednesday',
@@ -5105,7 +5112,7 @@ const STAFF_T={
     bk_err_save_hours:'ບໍ່ສາມາດບັນທຶກຊົ່ວໂມງ.',
     bk_err_accept:'ບໍ່ສາມາດອະນຸມັດການຈອງ.',
     bk_err_reject:'ບໍ່ສາມາດປະຕິເສດການຈອງ.',
-    bk_err_time_order:'ວັນ {d}: ຊົ່ວໂມງເປີດຕ້ອງມາກ່ອນຊົ່ວໂມງປິດ.',
+    bk_err_time_order:'ວັນ {d}: ເວລາເປີດ ແລະ ປິດ ຈະຄືກັນບໍ່ໄດ້.',
     bk_new_booking_title:'ການຈອງໃໝ່',
     bk_new_booking_body:'ທ່ານມີການຈອງໂຕະໃໝ່ທີ່ກຳລັງລໍຖ້າ.',
     bk_day_sun:'ວັນອາທິດ',bk_day_mon:'ວັນຈັນ',bk_day_tue:'ວັນອັງຄານ',bk_day_wed:'ວັນພຸດ',
@@ -5287,7 +5294,7 @@ const STAFF_T={
     bk_err_save_hours:'ไม่สามารถบันทึกเวลาได้',
     bk_err_accept:'ไม่สามารถอนุมัติการจองได้',
     bk_err_reject:'ไม่สามารถปฏิเสธการจองได้',
-    bk_err_time_order:'วัน {d}: เวลาเปิดต้องมาก่อนเวลาปิด',
+    bk_err_time_order:'วัน {d}: เวลาเปิดและปิดต้องไม่เหมือนกัน',
     bk_new_booking_title:'คำขอจองใหม่',
     bk_new_booking_body:'มีการจองโต๊ะใหม่รอการอนุมัติ',
     bk_day_sun:'อาทิตย์',bk_day_mon:'จันทร์',bk_day_tue:'อังคาร',bk_day_wed:'พุธ',
@@ -5469,7 +5476,7 @@ const STAFF_T={
     bk_err_save_hours:'无法保存营业时间。',
     bk_err_accept:'无法接受预订。',
     bk_err_reject:'无法拒绝预订。',
-    bk_err_time_order:'第 {d} 天：开始时间必须早于结束时间。',
+    bk_err_time_order:'第 {d} 天：开门和关门时间不能相同。',
     bk_new_booking_title:'新预订请求',
     bk_new_booking_body:'您有一个待处理的餐桌预订。',
     bk_day_sun:'星期日',bk_day_mon:'星期一',bk_day_tue:'星期二',bk_day_wed:'星期三',
@@ -5667,7 +5674,7 @@ const STAFF_T={
     bk_err_save_hours:'영업 시간을 저장할 수 없습니다.',
     bk_err_accept:'예약을 수락할 수 없습니다.',
     bk_err_reject:'예약을 거절할 수 없습니다.',
-    bk_err_time_order:'{d}일째: 시작 시간이 종료 시간보다 빨라야 합니다.',
+    bk_err_time_order:'{d}일째: 영업 시작과 종료 시간이 같을 수 없습니다.',
     bk_new_booking_title:'새 예약 요청',
     bk_new_booking_body:'대기 중인 새 테이블 예약이 있습니다.',
     bk_day_sun:'일요일',bk_day_mon:'월요일',bk_day_tue:'화요일',bk_day_wed:'수요일',
@@ -9184,6 +9191,7 @@ function resetRestoModal(){
   const _ls2=document.getElementById('mRlocStatus'); if(_ls2)_ls2.textContent='No location set';
   const _f=document.getElementById('mRfont'); if(_f)_f.value='default';
   const _bg=document.getElementById('mRbg'); if(_bg)_bg.value='dark';
+  const _ph=document.getElementById('mRphone'); if(_ph)_ph.value='';
   // Reset emoji picker
   document.getElementById('mRemoji').value='🍽️';
   const prev=document.getElementById('mRemojiPreview');
@@ -9317,6 +9325,7 @@ async function saveResto(){
     lng:(parseFloat(document.getElementById('mRlng').value)||null),
     font:document.getElementById('mRfont').value||'default',
     bg:document.getElementById('mRbg')?document.getElementById('mRbg').value:'dark',
+    phone:document.getElementById('mRphone')?document.getElementById('mRphone').value.trim():'',
     expiresAt:newExpiry,
     updatedAt:Date.now()
   };
@@ -9477,6 +9486,7 @@ async function editResto(id){
   if(_ls) _ls.textContent=(r.lat!=null&&r.lng!=null)?('📍 '+(+r.lat).toFixed(5)+', '+(+r.lng).toFixed(5)):'No location set';
   document.getElementById('mRfont').value=r.font||'default';
   if(document.getElementById('mRbg')) document.getElementById('mRbg').value=r.bg||'dark';
+  if(document.getElementById('mRphone')) document.getElementById('mRphone').value=r.phone||'';
   const expLabel=r.expiresAt?getExpiryLabel(r.expiresAt):'Lifetime';
   document.getElementById('mRexpiryDisplay').textContent='Current: '+expLabel;
   openModal('mAddResto');
@@ -13045,10 +13055,12 @@ function buildBkSlotGrid(){
     const [fH,fM] = dayHours.from.split(':').map(Number);
     const [tH,tM] = dayHours.to.split(':').map(Number);
     const startMin = fH*60+fM;
-    const endMin = tH*60+tM;
+    let endMin = tH*60+tM;
+    if(endMin <= startMin) endMin += 1440;
     for(let m=startMin; m<endMin; m+=30){
-      const hh = String(Math.floor(m/60)).padStart(2,'0');
-      const mm = String(m%60).padStart(2,'0');
+      const mm2 = m % 1440;
+      const hh = String(Math.floor(mm2/60)).padStart(2,'0');
+      const mm = String(mm2%60).padStart(2,'0');
       slotList.push(hh+':'+mm);
     }
   }
@@ -13171,7 +13183,11 @@ function bkApplyRestoChrome(r){
   var logo=document.getElementById('bksLogo');
   if(logo){ var lg=(r&&(r.logo||r.icon))||''; if(lg && lg.length>4){ logo.style.backgroundImage='url('+safe(lg)+')'; logo.textContent=''; } else { logo.style.backgroundImage=''; logo.textContent=lg||'🍽️'; } }
   var _bn=bkState.restoName||(r&&r.name)||'';
-  var nm=document.getElementById('bksName'); if(nm){ nm.textContent=_bn; nm.style.fontFamily=(typeof RFP_FONT!=='undefined'&&RFP_FONT[(r&&r.font)])||(typeof RFP_FONT!=='undefined'?RFP_FONT.default:''); }
+  var nm=document.getElementById('bksName');
+  if(nm){
+    if(r && r.font==='ransom' && typeof _rfpRansomHTML==='function'){ nm.style.fontFamily=''; nm.classList.add('rfp-name-ransom'); nm.innerHTML=_rfpRansomHTML(_bn); }
+    else { nm.classList.remove('rfp-name-ransom'); nm.textContent=_bn; nm.style.fontFamily=(typeof RFP_FONT!=='undefined'&&RFP_FONT[(r&&r.font)])||(typeof RFP_FONT!=='undefined'?RFP_FONT.default:''); }
+  }
   if(_bn) document.title=_bn+' · Book a table · EATLAOS';
   var cui=document.getElementById('bksCui'); if(cui) cui.textContent=(r&&(r.cuisine||r.tagline))||'';
 }
@@ -16087,7 +16103,7 @@ async function saveOwnerHours(){
     const open = !!(cb && cb.checked);
     const from = document.getElementById('ohFrom-'+i)?.value || '11:00';
     const to = document.getElementById('ohTo-'+i)?.value || '22:00';
-    if(open && from>=to){ alert(errTpl.replace('{d}', i+1)); return; }
+    if(open && from===to){ alert(errTpl.replace('{d}', i+1)); return; }
     // v6.3: Capture booking mode + custom slots from in-memory edit state
     const st = _ohSlotState[i] || { mode: 'auto', slots: [] };
     if(open && st.mode === 'custom' && st.slots.length === 0){
@@ -16842,14 +16858,35 @@ function _rfpOpenStatus(hours){
     var nm=now.getHours()*60+now.getMinutes();
     var fp=h.from.split(':').map(Number), tp=h.to.split(':').map(Number);
     var fmin=fp[0]*60+fp[1], tmin=tp[0]*60+tp[1];
-    if(nm>=fmin && nm<tmin) return {open:true, text:'Open now · closes '+h.to};
-    if(nm<fmin) return {open:false, text:'Opens '+h.from+' today'};
+    var openNow = (tmin<=fmin) ? (nm>=fmin || nm<tmin) : (nm>=fmin && nm<tmin);
+    if(openNow) return {open:true, text:'Open now · closes '+h.to};
+    if(tmin>fmin){ if(nm<fmin) return {open:false, text:'Opens '+h.from+' today'}; }
+    else { if(nm>=tmin && nm<fmin) return {open:false, text:'Opens '+h.from+' today'}; }
     return {open:false, text:'Closed now'};
   }catch(_){ return null; }
 }
 function _rfpEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function _rfpSafeUrl(u){u=String(u||'');return /^(data:image\/|https?:\/\/)/i.test(u)?u.replace(/["'()\\\s]/g,''):'';}
 
+function _rfpRansomHTML(text){
+  var str=String(text==null?'':text);
+  var fonts=["Georgia,'Times New Roman',serif","Arial,Helvetica,sans-serif","'Anton',sans-serif","'Archivo Black',sans-serif","'Special Elite',monospace","'Abril Fatface',serif"];
+  var rots=[-6,5,-3,7,-4,3,-7,4,-2,6];
+  var out='';
+  for(var i=0;i<str.length;i++){
+    var c=str.charAt(i);
+    if(c===' '){ out+='<span class="rsm-sp"></span>'; continue; }
+    var ec=c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    var fnt=fonts[i%fonts.length];
+    var pink=(i%7===3), dark=(i%2===0);
+    var bg=pink?'#ec4899':(dark?'#141414':'#f5f5f5');
+    var col=pink?'#ffffff':(dark?'#ffffff':'#141414');
+    var rot=rots[i%rots.length];
+    var d=((i%5)*0.14).toFixed(2);
+    out+='<span class="rsm-l" style="font-family:'+fnt+';background:'+bg+';color:'+col+';--r:'+rot+'deg;animation-delay:'+d+'s">'+ec+'</span>';
+  }
+  return out;
+}
 async function renderRestoPage(rid){
   _rfpId=rid;
   if(typeof showPage==='function') showPage('pg-resto');
@@ -16913,7 +16950,7 @@ async function renderRestoPage(rid){
     '<div class="rfp-hero"><div class="'+coverCls+'" '+coverStyle+'></div><div class="rfp-grad"></div>'+
       '<div class="rfp-htop"><a class="rfp-ib" href="/">‹</a><a class="rfp-ib" href="'+_dirH+'" target="_blank" rel="noopener">↗</a></div></div>'+
     '<div class="rfp-ident"><div class="rfp-logo">'+logoHtml+'</div>'+
-      '<div class="rfp-name" style="font-family:'+(RFP_FONT[r.font]||RFP_FONT.default)+'">'+_rfpEsc(r.name||'Restaurant')+'</div>'+
+      (r.font==='ransom'?'<div class="rfp-name rfp-name-ransom">'+_rfpRansomHTML(r.name||'Restaurant')+'</div>':'<div class="rfp-name" style="font-family:'+(RFP_FONT[r.font]||RFP_FONT.default)+'">'+_rfpEsc(r.name||'Restaurant')+'</div>')+
       '<div class="rfp-meta"><span>'+_rfpEsc(r.cuisine||'Lao')+'</span>'+(addr?'<span class="dot"></span><span>'+addr+'</span>':'')+'</div>'+
       (openSt?'<div class="rfp-status '+(openSt.open?'on':'off')+'"><span class="rfp-status-d"></span>'+_rfpEsc(openSt.text)+'</div>':'')+
       '</div>'+
