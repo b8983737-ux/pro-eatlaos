@@ -2926,7 +2926,9 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 #pg-resto .rfp-status.off .rfp-status-d{background:var(--rfp-mut2)}
 #pg-resto .rfp-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:22px}
 #pg-resto .rfp-qa{display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 4px;border-radius:14px;background:var(--rfp-surf);border:1px solid var(--rfp-line);color:var(--rfp-txt);font-size:11.5px;cursor:pointer;text-decoration:none}
-#pg-resto .rfp-qa .qi{font-size:18px;color:var(--rfp-lt)}
+#pg-resto .rfp-qa .qi{font-size:26px;line-height:1;color:var(--rfp-lt)}
+#rfpToast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(10px);background:#17120a;color:#f4ecdd;padding:12px 20px;border-radius:13px;font-size:15px;font-weight:600;letter-spacing:.3px;box-shadow:0 10px 30px rgba(0,0,0,.34);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99999;max-width:84vw;text-align:center}
+#rfpToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #pg-resto .rfp-qa.primary{background:var(--rfp-a);border-color:var(--rfp-a);color:#17120a;font-weight:600}
 #pg-resto .rfp-qa.primary .qi{color:#17120a}
 #pg-resto .rfp-sec{padding:14px 22px}
@@ -8332,7 +8334,16 @@ async function submitContact(){
       time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
       status:'new'
     };
-    await fbUpdate('contactRequests/cr'+Date.now(), req);
+    // VERIFIED write: don't trust restUpdate's silent-fail. Throw if Firebase rejects
+    // (e.g. rules block the anonymous create) so the customer sees a true result.
+    const _crId='cr'+Date.now();
+    let _crOk=false;
+    try{
+      const _crR=await fetch(DB_URL+'/contactRequests/'+_crId+'.json'+(await _authQ()),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(req)});
+      _crOk=_crR.ok;
+      if(!_crR.ok) console.warn('[CONTACT WRITE FAIL] HTTP '+_crR.status);
+    }catch(_crE){ console.warn('[CONTACT WRITE ERR]',_crE); }
+    if(!_crOk) throw new Error('contact write rejected by server');
     if(status){status.style.display='block';status.style.color='#1db954';status.textContent='✅ Message sent! We will contact you within 24 hours.';}
     if(btn){btn.textContent='Message Sent ✓';btn.style.background='#1db954';}
     // Clear form after 2s
@@ -12888,7 +12899,7 @@ async function loadBkRestaurants(){
       // v6.8: Skip restaurants where booking feature is disabled by SA
       const feats = _resGetFeatures(r);
       if(!feats.booking) return;
-      arr.push({id, name:r.name, icon:r.logo||r.icon||'🍽️', tag:r.tagline||r.cuisine||''});
+      arr.push({id, name:r.name, logo:r.logo||'', emoji:r.emoji||'', icon:r.icon||'', tag:r.tagline||r.cuisine||''});
     });
     bkState.allRestos = arr;
     if(!arr.length){ list.innerHTML=`<div class="bk-empty">${escapeHtml(_lp('bk_no_restos','No restaurants available right now.'))}</div>`; return; }
@@ -13206,6 +13217,10 @@ function bkConfirm(){
 function bkHeaderBack(){
   if(bkState && bkState.view==='book'){ bkBackToRestos(); }
   else { try{ location.href='/'; }catch(_){ try{ location.assign('/'); }catch(__){} } }
+}
+function bkCloseHome(){
+  try{ if(typeof bkReleaseLock==='function') bkReleaseLock(); }catch(_){}
+  try{ location.href='/'; }catch(_){ try{ location.assign('/'); }catch(__){} }
 }
 function bkBackToRestos(){
   if(typeof bkReleaseLock==='function') bkReleaseLock();
@@ -16709,7 +16724,7 @@ async function cleanupOldBookings(opts){
           <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 6</div>
         </div>
       </div>
-      <button class="bkm-x" onclick="_modalBackdropClose('mCustBooking',function(){return bkState&&bkState.step>1&&bkState.step<7;},bkReleaseLock);" aria-label="Close">×</button>
+      <button class="bkm-x" onclick="bkCloseHome()" aria-label="Close">×</button>
     </div>
     <div class="bk-modal-body">
       <!-- STEP 1: PICK RESTAURANT -->
@@ -16819,7 +16834,7 @@ async function cleanupOldBookings(opts){
           <div class="bkm-title" data-lp="bk_status_title">Your Bookings</div>
         </div>
       </div>
-      <button class="bkm-x" onclick="closeModal('mCustBookingStatus')" aria-label="Close">×</button>
+      <button class="bkm-x" onclick="bsBackHome()" aria-label="Close">×</button>
     </div>
     <div class="bk-modal-body">
       <div class="bk-tabs">
@@ -16854,20 +16869,36 @@ var RFP_FONT={
 };
 var RFP_ACCENT={classic:'#c8973a',luxury:'#c8973a',terroir:'#b06a3a',brasserie:'#c8973a',lao:'#1d9e75',cny:'#cc3a3a',ice:'#5b8bd0',galaxy:'#7d6bd0',neon:'#27d3a2',sakura:'#d4537e',tropical:'#1fae9a',zen:'#7a9b6e',ember:'#d4663a',christmas:'#cc3a3a',halloween:'#d4781f',sa:'#c8973a'};
 var _rfpResto=null, _rfpId=null, _rfpKip=v=>{try{return (typeof fmtK==='function')?fmtK(v):('₭'+Number(v||0).toLocaleString());}catch(_){return '₭'+v;}};
+function _rfpLang(){ try{ return localStorage.getItem('el_lang')||localStorage.getItem('el_lp_lang')||'en'; }catch(_){ return 'en'; } }
+var RFP_T={
+ en:{book:'Book',menu:'Menu',call:'Call',map:'Map',hours:'Opening hours',findus:'Find us',dir:'Get directions →',reserve:'Reserve a table',closed:'Closed',closedToday:'Closed today',closedNow:'Closed now',openCloses:'Open now · closes ',closeSuf:'',opens:'Opens ',today:' today',noMenu:'No menu photo yet.',powered:'Powered by',tagline:'Every restaurant, a home online.'},
+ lo:{book:'ຈອງ',menu:'ເມນູ',call:'ໂທ',map:'ແຜນທີ່',hours:'ເວລາເປີດ',findus:'ສະຖານທີ່',dir:'ເສັ້ນທາງ →',reserve:'ຈອງໂຕະ',closed:'ປິດ',closedToday:'ມື້ນີ້ປິດ',closedNow:'ຕອນນີ້ປິດ',openCloses:'ເປີດຢູ່ · ປິດ ',closeSuf:'',opens:'ເປີດ ',today:' ມື້ນີ້',noMenu:'ຍັງບໍ່ມີຮູບເມນູ.',powered:'ໃຫ້ບໍລິການໂດຍ',tagline:'ທຸກຮ້ານ, ມີໜ້າອອນລາຍ.'},
+ th:{book:'จอง',menu:'เมนู',call:'โทร',map:'แผนที่',hours:'เวลาเปิด',findus:'ที่ตั้ง',dir:'เส้นทาง →',reserve:'จองโต๊ะ',closed:'ปิด',closedToday:'วันนี้ปิด',closedNow:'ขณะนี้ปิด',openCloses:'เปิดอยู่ · ปิด ',closeSuf:'',opens:'เปิด ',today:' วันนี้',noMenu:'ยังไม่มีรูปเมนู',powered:'ขับเคลื่อนโดย',tagline:'ทุกร้าน มีหน้าออนไลน์'},
+ zh:{book:'预订',menu:'菜单',call:'电话',map:'地图',hours:'营业时间',findus:'位置',dir:'获取路线 →',reserve:'预订餐桌',closed:'休息',closedToday:'今日休息',closedNow:'现已打烊',openCloses:'营业中 · ',closeSuf:' 打烊',opens:'今天 ',today:' 开门',noMenu:'暂无菜单图片',powered:'技术支持',tagline:'每家餐厅的线上之家'},
+ ko:{book:'예약',menu:'메뉴',call:'전화',map:'지도',hours:'영업시간',findus:'위치',dir:'길찾기 →',reserve:'테이블 예약',closed:'영업종료',closedToday:'오늘 휴무',closedNow:'현재 영업종료',openCloses:'영업중 · ',closeSuf:' 마감',opens:'오늘 ',today:' 오픈',noMenu:'메뉴 사진이 없습니다',powered:'제공',tagline:'모든 레스토랑의 온라인 공간'}
+};
+function _rfpT(){ return RFP_T[_rfpLang()]||RFP_T.en; }
+function _rfpDayNames(){
+  var loc={en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'}[_rfpLang()]||'en-US';
+  var base=new Date(2024,0,7), out=[];
+  for(var d=0;d<7;d++){ var dt=new Date(base.getTime()+d*86400000); var nm; try{ nm=dt.toLocaleDateString(loc,{weekday:'long'}); }catch(_){ nm=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d]; } out.push(nm); }
+  return out;
+}
 function _rfpOpenStatus(hours){
   try{
     if(!hours) return null;
+    var T=_rfpT();
     var now=new Date(), dow=now.getDay();
     var h=hours[dow]||hours[String(dow)];
-    if(!h||!h.open||!h.from||!h.to) return {open:false,text:'Closed today'};
+    if(!h||!h.open||!h.from||!h.to) return {open:false,text:T.closedToday};
     var nm=now.getHours()*60+now.getMinutes();
     var fp=h.from.split(':').map(Number), tp=h.to.split(':').map(Number);
     var fmin=fp[0]*60+fp[1], tmin=tp[0]*60+tp[1];
     var openNow = (tmin<=fmin) ? (nm>=fmin || nm<tmin) : (nm>=fmin && nm<tmin);
-    if(openNow) return {open:true, text:'Open now · closes '+h.to};
-    if(tmin>fmin){ if(nm<fmin) return {open:false, text:'Opens '+h.from+' today'}; }
-    else { if(nm>=tmin && nm<fmin) return {open:false, text:'Opens '+h.from+' today'}; }
-    return {open:false, text:'Closed now'};
+    if(openNow) return {open:true, text:T.openCloses+h.to+T.closeSuf};
+    if(tmin>fmin){ if(nm<fmin) return {open:false, text:T.opens+h.from+T.today}; }
+    else { if(nm>=tmin && nm<fmin) return {open:false, text:T.opens+h.from+T.today}; }
+    return {open:false, text:T.closedNow};
   }catch(_){ return null; }
 }
 function _rfpEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -16896,6 +16927,7 @@ async function renderRestoPage(rid){
   _rfpId=rid;
   if(typeof showPage==='function') showPage('pg-resto');
   var host=document.getElementById('pg-resto');
+  var T=_rfpT();
   host.innerHTML='<div class="rfp-wrap"><div class="rfp-sec" style="padding-top:80px;text-align:center;color:#a89a85">Loading…</div></div>';
   var r=null;
   try{ r=await fbGet('restaurants/'+rid); }catch(_){}
@@ -16912,11 +16944,11 @@ async function renderRestoPage(rid){
   var menuPhotosHtml=menuPhotos.length?'<div class="rfp-menuphotos">'+menuPhotos.map(function(p){return '<img class="rfp-menuphoto" loading="lazy" src="'+_rfpSafeUrl(p)+'" onclick="rfpOpenImg(this.src)">';}).join('')+'</div>':'';
   var hoursHtml='';
   if(hrs){
-    var _dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var _dn=_rfpDayNames();
     var _td=new Date().getDay(), _hr='';
-    for(var _d=0;_d<7;_d++){ var _h=hrs[_d]||hrs[String(_d)]; var _t=(_h&&_h.open&&_h.from&&_h.to)?(_rfpEsc(_h.from)+' – '+_rfpEsc(_h.to)):'Closed';
+    for(var _d=0;_d<7;_d++){ var _h=hrs[_d]||hrs[String(_d)]; var _t=(_h&&_h.open&&_h.from&&_h.to)?(_rfpEsc(_h.from)+' – '+_rfpEsc(_h.to)):_rfpEsc(T.closed);
       _hr+='<div class="rfp-hrow'+(_d===_td?' today':'')+'"><span>'+_dn[_d]+'</span><span>'+_t+'</span></div>'; }
-    hoursHtml='<div class="rfp-sec"><div class="rfp-eye">Opening hours</div><div class="rfp-hours">'+_hr+'</div></div>';
+    hoursHtml='<div class="rfp-sec"><div class="rfp-eye">'+_rfpEsc(T.hours)+'</div><div class="rfp-hours">'+_hr+'</div></div>';
   }
   var popular=menu.filter(m=>m.badge==='popular'); if(!popular.length) popular=menu.slice(0,5); else popular=popular.slice(0,8);
   var cats={}; menu.forEach(m=>{var c=m.cat||'Menu';(cats[c]=cats[c]||[]).push(m);});
@@ -16960,22 +16992,22 @@ async function renderRestoPage(rid){
       (openSt?'<div class="rfp-status '+(openSt.open?'on':'off')+'"><span class="rfp-status-d"></span>'+_rfpEsc(openSt.text)+'</div>':'')+
       '</div>'+
     '<div class="rfp-quick">'+
-      '<div class="rfp-qa primary" onclick="rfpBook()"><span class="qi">▦</span>Book</div>'+
-      '<div class="rfp-qa" onclick="rfpShowMenu()"><span class="qi">☷</span>Menu</div>'+
-      '<a class="rfp-qa" href="'+(r.phone?('tel:'+_rfpEsc(r.phone)):'#')+'"><span class="qi">✆</span>Call</a>'+
-      '<div class="rfp-qa" onclick="rfpScrollMap()"><span class="qi">➤</span>Map</div>'+
+      '<div class="rfp-qa primary" onclick="rfpBook()"><span class="qi">▦</span>'+_rfpEsc(T.book)+'</div>'+
+      '<div class="rfp-qa" onclick="rfpShowMenu()"><span class="qi">☷</span>'+_rfpEsc(T.menu)+'</div>'+
+      '<div class="rfp-qa" onclick="rfpCall()"><span class="qi">✆</span>'+_rfpEsc(T.call)+'</div>'+
+      '<div class="rfp-qa" onclick="rfpScrollMap()"><span class="qi">➤</span>'+_rfpEsc(T.map)+'</div>'+
     '</div>'+
     ''+/* 'Most loved' removed — page shows no dish list, only the menu photo via the Menu button */
     ''+/* menu list removed — menu is shown as a photo via the Menu button (rfpShowMenu) */
     hoursHtml+
-    '<div class="rfp-sec" id="rfpMapSec"><div class="rfp-eye">Find us</div>'+
+    '<div class="rfp-sec" id="rfpMapSec"><div class="rfp-eye">'+_rfpEsc(T.findus)+'</div>'+
       (hasLoc?'<div class="rfp-map" id="rfpMap">loading map…</div>':'<iframe class="rfp-mapframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q='+encodeURIComponent(_mapQ)+'&z=15&output=embed"></iframe>')+
       (addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+
-      '<a class="rfp-dirbtn" href="'+_dirH+'" target="_blank" rel="noopener">Get directions →</a>'+
+      '<a class="rfp-dirbtn" href="'+_dirH+'" target="_blank" rel="noopener">'+_rfpEsc(T.dir)+'</a>'+
     '</div>'+
-    '<div class="rfp-foot">Powered by <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">Every restaurant, a home online.</div></div>'+
+    '<div class="rfp-foot">'+_rfpEsc(T.powered)+' <b style="color:var(--rfp-lt);font-family:Fraunces,serif">EATLAOS</b><div style="margin-top:5px">'+_rfpEsc(T.tagline)+'</div></div>'+
   '</div>'+
-  '<div class="rfp-bar"><button class="rfp-book" onclick="rfpBook()">Reserve a table</button></div>';
+  '<div class="rfp-bar"><button class="rfp-book" onclick="rfpBook()">'+_rfpEsc(T.reserve)+'</button></div>';
 
   if(hasLoc) _rfpMap(r.lat, r.lng, acc);
   try{ window.scrollTo(0,0); }catch(_){}
@@ -17014,11 +17046,26 @@ function rfpScrollMap(){
   var m=document.getElementById('rfpMapSec')||document.getElementById('rfpMap');
   if(m && m.scrollIntoView){ try{ m.scrollIntoView({behavior:'smooth',block:'center'}); }catch(_){ m.scrollIntoView(); } }
 }
+function _rfpToast(msg){
+  var t=document.getElementById('rfpToast');
+  if(!t){ t=document.createElement('div'); t.id='rfpToast'; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(_rfpToast._tm); _rfpToast._tm=setTimeout(function(){ t.classList.remove('show'); },2800);
+}
+function rfpCall(){
+  var ph=(_rfpResto&&_rfpResto.phone)?String(_rfpResto.phone).trim():'';
+  if(!ph){ _rfpToast('\u260e \u2014'); return; }
+  var isTouch=('ontouchstart' in window)||(navigator.maxTouchPoints>0);
+  if(isTouch){ try{ window.location.href='tel:'+ph.replace(/[^0-9+]/g,''); return; }catch(_){} }
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(ph); } }catch(_){}
+  _rfpToast('\u260e  '+ph);
+}
 function rfpShowMenu(){
   var ov=document.getElementById('rfpMenuOv'), box=document.getElementById('rfpMenuOvImgs');
   if(!ov||!box) return;
   var photos=(_rfpResto&&Array.isArray(_rfpResto.menuPhotos))?_rfpResto.menuPhotos.filter(Boolean):[];
-  box.innerHTML=photos.length?photos.map(function(p){return '<img loading="lazy" src="'+_rfpSafeUrl(p)+'">';}).join(''):'<div class="rfp-mov-empty">No menu photo yet.</div>';
+  box.innerHTML=photos.length?photos.map(function(p){return '<img loading="lazy" src="'+_rfpSafeUrl(p)+'">';}).join(''):'<div class="rfp-mov-empty">'+_rfpEsc(_rfpT().noMenu)+'</div>';
+  var _mt=ov.querySelector('.rfp-mov-bar span'); if(_mt) _mt.textContent=_rfpT().menu;
   ov.classList.add('show'); document.body.style.overflow='hidden';
 }
 function rfpCloseMenu(e,force){
