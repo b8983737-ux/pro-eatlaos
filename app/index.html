@@ -73,7 +73,7 @@ function loadQRCode(cb){
   --c-bg:#faf6f1;--c-surf:#fff;--c-surf2:#f3ede4;--c-surf3:#ede5d8;
   --c-border:#e8e0d4;--c-border2:#d4c8b8;--c-text:#1a1209;--c-muted:#8a7a68;
   --c-gold:#b8821e;--c-gold2:#d4a03c;--c-green:#1a6b3a;--c-red:#b83232;
-  --ff:'Plus Jakarta Sans',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif;
+  --ff:'Plus Jakarta Sans','Noto Sans Lao',system-ui,sans-serif;--fb:'Inter','Noto Sans Lao',system-ui,sans-serif;
   --shadow:0 4px 20px rgba(0,0,0,.15);--shadow-lg:0 12px 48px rgba(0,0,0,.22);--shadow-xl:0 24px 80px rgba(0,0,0,.3);
 }
 /* Classic (light) theme overrides */
@@ -2352,6 +2352,16 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-step.on{display:block;}
 @keyframes bkFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .bk-step-h{font-family:var(--ff,'Plus Jakarta Sans');font-size:22px;font-weight:800;margin-bottom:6px;color:#fff;letter-spacing:-.4px;}
+/* Lao & Thai are stacked scripts — negative tracking crowds them and clips tone marks.
+   Reset letter-spacing and give a little extra line-height so they read cleanly/professionally. */
+html.el-lang-lo .bk-step-h, html.el-lang-th .bk-step-h,
+html.el-lang-lo .bkm-title, html.el-lang-th .bkm-title,
+html.el-lang-lo .rfp-name, html.el-lang-th .rfp-name,
+html.el-lang-lo .bk-resto-name, html.el-lang-th .bk-resto-name{ letter-spacing:0 !important; }
+html.el-lang-lo .bk-step-h, html.el-lang-th .bk-step-h,
+html.el-lang-lo .bkm-title, html.el-lang-th .bkm-title{ line-height:1.4; }
+html.el-lang-lo .bk-modal-body, html.el-lang-th .bk-modal-body,
+html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-step-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;line-height:1.5;}
 /* Restaurant search bar (Step 1 of customer booking) */
 .bk-resto-search-wrap{position:relative;margin-bottom:14px;display:flex;align-items:center;}
@@ -8101,6 +8111,8 @@ const LP_TRANSLATIONS = {
 
 function applyLpTranslation(lang){
   const t = LP_TRANSLATIONS[lang] || LP_TRANSLATIONS.en;
+  // Tag the document so Lao/Thai (stacked scripts) get clean spacing, not Latin tracking
+  try{ var _de=document.documentElement; _de.classList.toggle('el-lang-lo', lang==='lo'); _de.classList.toggle('el-lang-th', lang==='th'); }catch(_){}
   document.querySelectorAll('[data-lp]').forEach(el=>{
     const key = el.getAttribute('data-lp');
     if(t[key] !== undefined) el.innerHTML = t[key];
@@ -16869,7 +16881,7 @@ var RFP_FONT={
 };
 var RFP_ACCENT={classic:'#c8973a',luxury:'#c8973a',terroir:'#b06a3a',brasserie:'#c8973a',lao:'#1d9e75',cny:'#cc3a3a',ice:'#5b8bd0',galaxy:'#7d6bd0',neon:'#27d3a2',sakura:'#d4537e',tropical:'#1fae9a',zen:'#7a9b6e',ember:'#d4663a',christmas:'#cc3a3a',halloween:'#d4781f',sa:'#c8973a'};
 var _rfpResto=null, _rfpId=null, _rfpKip=v=>{try{return (typeof fmtK==='function')?fmtK(v):('₭'+Number(v||0).toLocaleString());}catch(_){return '₭'+v;}};
-function _rfpLang(){ try{ return localStorage.getItem('el_lang')||localStorage.getItem('el_lp_lang')||'en'; }catch(_){ return 'en'; } }
+function _rfpLang(){ try{ return localStorage.getItem('el_lp_lang')||localStorage.getItem('el_lang')||'en'; }catch(_){ return 'en'; } }
 var RFP_T={
  en:{book:'Book',menu:'Menu',call:'Call',map:'Map',hours:'Opening hours',findus:'Find us',dir:'Get directions →',reserve:'Reserve a table',closed:'Closed',closedToday:'Closed today',closedNow:'Closed now',openCloses:'Open now · closes ',closeSuf:'',opens:'Opens ',today:' today',noMenu:'No menu photo yet.',powered:'Powered by',tagline:'Every restaurant, a home online.'},
  lo:{book:'ຈອງ',menu:'ເມນູ',call:'ໂທ',map:'ແຜນທີ່',hours:'ເວລາເປີດ',findus:'ສະຖານທີ່',dir:'ເສັ້ນທາງ →',reserve:'ຈອງໂຕະ',closed:'ປິດ',closedToday:'ມື້ນີ້ປິດ',closedNow:'ຕອນນີ້ປິດ',openCloses:'ເປີດຢູ່ · ປິດ ',closeSuf:'',opens:'ເປີດ ',today:' ມື້ນີ້',noMenu:'ຍັງບໍ່ມີຮູບເມນູ.',powered:'ໃຫ້ບໍລິການໂດຍ',tagline:'ທຸກຮ້ານ, ມີໜ້າອອນລາຍ.'},
