@@ -1370,6 +1370,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 /* ═══ TABLES GRID ═══ */
 .tbl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:18px;}
+.tbl-filter{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 18px 0}
+.tbl-filter .tf-btn{background:var(--s-surf2);border:1px solid var(--s-border);color:var(--s-muted);font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px;cursor:pointer;transition:all .15s;font-family:inherit}
+.tbl-filter .tf-btn:hover{border-color:var(--s-gold);color:var(--s-text)}
+.tbl-filter .tf-btn.on{background:var(--s-gold);border-color:var(--s-gold);color:#1a1205}
+#ow-tablegrid[data-filter="normal"] .tcard.is-vip{display:none}
+#ow-tablegrid[data-filter="vip"] .tcard.is-normal{display:none}
 .tcard{background:var(--s-surf2);border:1px solid var(--s-border);text-align:center;position:relative;transition:all .25s;border-radius:8px;overflow:hidden;}
 .tcard:hover{border-color:var(--s-gold);box-shadow:0 4px 16px rgba(0,0,0,.2);}
 .tcard.occ{border-color:var(--s-green);box-shadow:0 0 0 1px var(--s-green);}
@@ -2932,6 +2938,8 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 #pg-resto .rfp-status .rfp-status-d{width:7px;height:7px;border-radius:50%}
 #pg-resto .rfp-status.on{color:#7bdcab}
 #pg-resto .rfp-status.on .rfp-status-d{background:#3ddc84;box-shadow:0 0 8px #3ddc84}
+#pg-resto .rfp-status.later{color:#f5a623}
+#pg-resto .rfp-status.later .rfp-status-d{background:#f5a623;box-shadow:0 0 8px #f5a623}
 #pg-resto .rfp-status.off{color:#e5484d}
 #pg-resto .rfp-status.off .rfp-status-d{background:#e5484d;box-shadow:0 0 8px #e5484d}
 #pg-resto .rfp-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:22px}
@@ -4174,7 +4182,16 @@ setTimeout(function(){
   <div class="modal-box w380">
     <div class="modal-h"><div class="modal-title">Add Table</div><button class="modal-x" onclick="closeModal('mOwAddTable')">✕</button></div>
     <div class="modal-b">
-      <div class="form-row"><div class="fg"><label>Table Number / Name</label><input class="fi" id="mTnum" placeholder="e.g. 1 or VIP-A"></div></div>
+      <div class="ow-tr-section" style="margin-bottom:8px">
+        <label class="ow-tr-toggle"><input type="checkbox" id="mTbulkOn" onchange="_owBulkToggle()"><span>➕ Add many tables at once (e.g. 01 → 70)</span></label>
+      </div>
+      <div class="form-row" id="mTsingleRow"><div class="fg"><label>Table Number / Name</label><input class="fi" id="mTnum" placeholder="e.g. 1 or VIP-A"></div></div>
+      <div id="mTbulkRow" style="display:none">
+        <div class="form-row"><div class="fg"><label>Prefix (optional)</label><input class="fi" id="mTbulkPrefix" oninput="_owBulkPreview()" placeholder="blank = normal · type VIP for VIP"></div></div>
+        <div class="form-row" style="margin-top:10px"><div class="fg"><label>From #</label><input class="fi" type="number" id="mTbulkFrom" value="1" min="1" max="999" oninput="_owBulkPreview()"></div><div class="fg"><label>To #</label><input class="fi" type="number" id="mTbulkTo" value="70" min="1" max="999" oninput="_owBulkPreview()"></div></div>
+        <label class="ow-tr-toggle" style="margin-top:8px"><input type="checkbox" id="mTbulkPad" checked onchange="_owBulkPreview()"><span>Pad numbers → 01, 02, 03…</span></label>
+        <div class="ow-tr-hint" id="mTbulkPreview" style="margin-top:6px"></div>
+      </div>
       <div class="form-row" style="margin-top:10px"><div class="fg"><label>Min Seats</label><input class="fi" type="number" id="mTminSeats" value="2" min="1" max="30"></div><div class="fg"><label>Max Seats</label><input class="fi" type="number" id="mTseats" value="4" min="1" max="30"></div></div>
       <div class="fg" style="margin-top:10px"><label>Zone</label>
         <select class="fi" id="mTzone" onchange="onTzoneChange()">
@@ -10380,6 +10397,25 @@ async function editOwCat(idx){
   setTimeout(()=>initEmojiPickers(),50);
 }
 
+// VIP detection: explicit flag, or name starts with "VIP", or VIP/Private zone, or has a booking requirement.
+function _isVipTable(t){
+  if(!t) return false;
+  if(t.vip===true) return true;
+  var n=String(t.num||'').trim().toLowerCase();
+  if(/^vip/.test(n)) return true;
+  var z=String(t.zone||'').toLowerCase();
+  if(z.indexOf('vip')>=0||z.indexOf('private')>=0) return true;
+  if(t.bookingRequirement) return true;
+  return false;
+}
+let owTableFilter='all';
+function owSetTableFilter(f){
+  owTableFilter=f;
+  var g=document.getElementById('ow-tablegrid'); if(g) g.dataset.filter=f;
+  document.querySelectorAll('.tbl-filter .tf-btn').forEach(function(b){
+    b.classList.toggle('on', (b.getAttribute('onclick')||'').indexOf("'"+f+"'")>=0);
+  });
+}
 async function owTables(){
   const r=await fbGet('restaurants/'+restoId);
   const tables=r?.tables||[];
@@ -10389,6 +10425,8 @@ async function owTables(){
 
   // Sort tables: numbers 1-100 first, then text names (VIP, Garden...) at end
   const sortedTables=sortTablesArray(tables);
+  const _vipCount=sortedTables.filter(_isVipTable).length;
+  const _normalCount=sortedTables.length-_vipCount;
 
   // Calculate stats
   let occupied=0, available=0, totalOrders=0, totalRevenue=0;
@@ -10425,6 +10463,7 @@ async function owTables(){
   // Table cards
   const cardsHTML=tableData.length?tableData.map(({t,i,activeSess,sessOrders,sessTotal})=>{
     const isOcc=!!activeSess;
+    const _vip=_isVipTable(t);
     const sessKey=activeSess?activeSess[0]:null;
     // Walk-in detection: table is currently in walk-in mode if walkInUntil is set and not yet expired
     const nowMs = Date.now();
@@ -10450,7 +10489,7 @@ async function owTables(){
       }
     }
     return`
-    <div class="tcard ${isOcc?'occ':''}${isWalkIn?' walkin':''}" style="border-radius:8px;overflow:hidden;padding:0">
+    <div class="tcard ${_vip?'is-vip':'is-normal'} ${isOcc?'occ':''}${isWalkIn?' walkin':''}" style="border-radius:8px;overflow:hidden;padding:0">
       <!-- Card header with status color -->
       <div style="padding:12px 14px 10px;background:${isOcc?'rgba(29,185,84,.08)':isWalkIn?'rgba(96,165,250,.08)':'rgba(255,255,255,.02)'};border-bottom:1px solid ${isOcc?'rgba(29,185,84,.2)':isWalkIn?'rgba(96,165,250,.25)':'var(--s-border)'}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -10510,9 +10549,17 @@ async function owTables(){
   // Insert summary before grid
   const summaryEl=document.createElement('div');
   summaryEl.id='tableSummaryBar';
-  summaryEl.innerHTML=summaryHTML;
+  const filterHTML = tables.length ? `
+  <div class="tbl-filter">
+    <span style="font-size:11px;color:var(--s-muted);margin-right:2px">Show:</span>
+    <button class="tf-btn ${owTableFilter==='all'?'on':''}" onclick="owSetTableFilter('all')">All · ${tables.length}</button>
+    <button class="tf-btn ${owTableFilter==='normal'?'on':''}" onclick="owSetTableFilter('normal')">Normal · ${_normalCount}</button>
+    <button class="tf-btn ${owTableFilter==='vip'?'on':''}" onclick="owSetTableFilter('vip')">🌟 VIP · ${_vipCount}</button>
+  </div>` : '';
+  summaryEl.innerHTML=summaryHTML+filterHTML;
   container.insertBefore(summaryEl,document.getElementById('ow-tablegrid'));
   document.getElementById('ow-tablegrid').innerHTML=cardsHTML;
+  document.getElementById('ow-tablegrid').dataset.filter=owTableFilter;
 }
 
 // Owner Item CRUD
@@ -10945,6 +10992,7 @@ function sortTablesArray(tables){
 }
 async function saveOwTable(){
   const r=await fbGet('restaurants/'+restoId);
+  if(document.getElementById('mTbulkOn')&&document.getElementById('mTbulkOn').checked){ return _saveOwTablesBulk(r); }
   const num=document.getElementById('mTnum').value.trim();
   // v5.9: Min/max seats fields
   let maxSeats = parseInt(document.getElementById('mTseats').value)||4;
@@ -10985,6 +11033,58 @@ async function saveOwTable(){
   closeModal('mOwAddTable');owTables();notifyD('✓ Table added');
 }
 
+function _owBulkToggle(){
+  var on=document.getElementById('mTbulkOn')&&document.getElementById('mTbulkOn').checked;
+  var sr=document.getElementById('mTsingleRow'); if(sr) sr.style.display=on?'none':'';
+  var br=document.getElementById('mTbulkRow'); if(br) br.style.display=on?'':'none';
+  if(on) _owBulkPreview();
+}
+function _owBulkPreview(){
+  var el=document.getElementById('mTbulkPreview'); if(!el) return;
+  var pre=((document.getElementById('mTbulkPrefix')||{}).value||'').trim().replace(/['"\\<>]/g,'');
+  var from=parseInt((document.getElementById('mTbulkFrom')||{}).value)||1;
+  var to=parseInt((document.getElementById('mTbulkTo')||{}).value)||1;
+  var pad=!!(document.getElementById('mTbulkPad')||{}).checked;
+  if(to<from){ el.textContent='⚠ "To" must be greater than or equal to "From"'; return; }
+  if(to-from+1>200){ el.textContent='⚠ Max 200 tables per batch'; return; }
+  var f=function(x){ return pre+(pad?String(x).padStart(2,'0'):String(x)); };
+  var mid=(from+1<=to)?(', '+f(from+1)):'';
+  el.textContent='Will create '+(to-from+1)+' tables: '+f(from)+mid+(to>from+1?' … '+f(to):'');
+}
+async function _saveOwTablesBulk(r){
+  var pre=((document.getElementById('mTbulkPrefix')||{}).value||'').trim().replace(/['"\\<>]/g,'');
+  var from=parseInt((document.getElementById('mTbulkFrom')||{}).value)||1;
+  var to=parseInt((document.getElementById('mTbulkTo')||{}).value)||1;
+  var pad=!!(document.getElementById('mTbulkPad')||{}).checked;
+  var maxSeats=parseInt(document.getElementById('mTseats').value)||4;
+  var minSeats=parseInt((document.getElementById('mTminSeats')||{}).value)||1;
+  if(maxSeats<1)maxSeats=1; if(minSeats<1)minSeats=1; if(minSeats>maxSeats)minSeats=maxSeats;
+  if(from<1)from=1;
+  if(to<from){ notifyD('⚠ "To" must be greater than or equal to "From"'); return; }
+  if(to-from+1>200){ notifyD('⚠ Max 200 tables per batch'); return; }
+  var zone=(document.getElementById('mTzone')||{}).value||'Indoor';
+  if(zone==='__custom__'){ var c=((document.getElementById('mTzoneCustom')||{}).value||'').trim(); zone=c||'Indoor'; }
+  var reqOn=!!(document.getElementById('mTreqOn')||{}).checked;
+  var reqText=((document.getElementById('mTreqText')||{}).value||'').trim();
+  var existing=(r&&r.tables)||[];
+  var seen={}; existing.forEach(function(t){ seen[String(t.num).toLowerCase()]=1; });
+  var toAdd=[], skipped=0, base=Date.now();
+  for(var x=from;x<=to;x++){
+    var num=pre+(pad?String(x).padStart(2,'0'):String(x));
+    var key=num.toLowerCase();
+    if(seen[key]){ skipped++; continue; }
+    seen[key]=1;
+    var nt={id:'t'+(base+x),num:num,seats:maxSeats,minSeats:minSeats,maxSeats:maxSeats,zone:zone};
+    if(reqOn&&reqText) nt.bookingRequirement=reqText.slice(0,280);
+    toAdd.push(nt);
+  }
+  if(!toAdd.length){ notifyD('⚠ Nothing added — all those numbers already exist'); return; }
+  var sorted=sortTablesArray(existing.concat(toAdd));
+  await fbUpdate('restaurants/'+restoId,{tables:sorted});
+  closeModal('mOwAddTable'); owTables();
+  notifyD('✓ Added '+toAdd.length+' tables'+(skipped?' ('+skipped+' skipped — already existed)':''));
+}
+
 /* Toggle the booking-requirement textarea visibility (used by both Add & Edit table modals).
    prefix is 'mT' for Add, 'mEt' for Edit. */
 function _owTrToggle(prefix){
@@ -11006,6 +11106,14 @@ function _resetAddTableModal(){
   const reqOn = document.getElementById('mTreqOn'); if(reqOn) reqOn.checked = false;
   const reqText = document.getElementById('mTreqText'); if(reqText) reqText.value = '';
   const reqBody = document.getElementById('mTreqBody'); if(reqBody) reqBody.style.display = 'none';
+  const bulkOn=document.getElementById('mTbulkOn'); if(bulkOn) bulkOn.checked=false;
+  const bulkRow=document.getElementById('mTbulkRow'); if(bulkRow) bulkRow.style.display='none';
+  const singleRow=document.getElementById('mTsingleRow'); if(singleRow) singleRow.style.display='';
+  const bp=document.getElementById('mTbulkPrefix'); if(bp) bp.value='';
+  const bf=document.getElementById('mTbulkFrom'); if(bf) bf.value='1';
+  const bt=document.getElementById('mTbulkTo'); if(bt) bt.value='70';
+  const bpad=document.getElementById('mTbulkPad'); if(bpad) bpad.checked=true;
+  const bpv=document.getElementById('mTbulkPreview'); if(bpv) bpv.textContent='';
 }
 
 // ═══ 24-HOUR TIME PICKER ═══
@@ -16919,8 +17027,8 @@ function _rfpOpenStatus(hours){
     var fmin=fp[0]*60+fp[1], tmin=tp[0]*60+tp[1];
     var openNow = (tmin<=fmin) ? (nm>=fmin || nm<tmin) : (nm>=fmin && nm<tmin);
     if(openNow) return {open:true, text:T.openCloses+h.to+T.closeSuf};
-    if(tmin>fmin){ if(nm<fmin) return {open:false, text:T.opens+h.from+T.today}; }
-    else { if(nm>=tmin && nm<fmin) return {open:false, text:T.opens+h.from+T.today}; }
+    if(tmin>fmin){ if(nm<fmin) return {open:false, later:true, text:T.opens+h.from+T.today}; }
+    else { if(nm>=tmin && nm<fmin) return {open:false, later:true, text:T.opens+h.from+T.today}; }
     return {open:false, text:T.closedNow};
   }catch(_){ return null; }
 }
@@ -17015,7 +17123,7 @@ async function renderRestoPage(rid){
     '<div class="rfp-ident"><div class="rfp-logo">'+logoHtml+'</div>'+
       (r.font==='ransom'?'<div class="rfp-name rfp-name-ransom">'+_rfpRansomHTML(r.name||'Restaurant')+'</div>':'<div class="rfp-name" style="font-family:'+(RFP_FONT[r.font]||RFP_FONT.default)+'">'+_rfpEsc(r.name||'Restaurant')+'</div>')+
       '<div class="rfp-meta"><span>'+_rfpEsc(r.cuisine||'Lao')+'</span>'+(addr?'<span class="dot"></span><span>'+addr+'</span>':'')+'</div>'+
-      (openSt?'<div class="rfp-status '+(openSt.open?'on':'off')+'"><span class="rfp-status-d"></span>'+_rfpEsc(openSt.text)+'</div>':'')+
+      (openSt?'<div class="rfp-status '+(openSt.open?'on':(openSt.later?'later':'off'))+'"><span class="rfp-status-d"></span>'+_rfpEsc(openSt.text)+'</div>':'')+
       '</div>'+
     '<div class="rfp-quick">'+
       '<div class="rfp-qa primary" onclick="rfpBook()"><span class="qi">▦</span>'+_rfpEsc(T.book)+'</div>'+
