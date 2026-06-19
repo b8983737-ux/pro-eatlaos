@@ -2913,7 +2913,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Special+Elite&family=Abril+Fatface&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-#pg-resto{--rfp-a:#c8973a;--rfp-lt:color-mix(in srgb,var(--rfp-a),#fff 38%);--rfp-bg:#100c07;--rfp-surf:#181209;--rfp-line:rgba(245,232,210,.10);--rfp-line2:rgba(245,232,210,.06);--rfp-cream:#f4ecdd;--rfp-txt:#ece2d0;--rfp-mut:#a89a85;--rfp-mut2:#766b5b;background:var(--rfp-bg);color:var(--rfp-txt);font-family:'Inter',-apple-system,sans-serif;overflow-y:auto;overflow-x:hidden;padding:0!important;display:block}
+#pg-resto{--rfp-a:#c8973a;--rfp-lt:color-mix(in srgb,var(--rfp-a),#fff 38%);--rfp-bg:#100c07;--rfp-surf:#181209;--rfp-line:rgba(245,232,210,.10);--rfp-line2:rgba(245,232,210,.06);--rfp-cream:#f4ecdd;--rfp-txt:#ece2d0;--rfp-mut:#a89a85;--rfp-mut2:#766b5b;background:var(--rfp-bg);color:var(--rfp-txt);font-family:'Inter',-apple-system,sans-serif;overflow-y:auto;overflow-x:hidden;padding:0!important;min-height:100vh;min-height:100dvh;display:block}
 #pg-resto[data-bg="luxe"]{--rfp-bg:#0b0a0d;--rfp-surf:#15131b;--rfp-line:rgba(214,182,122,.15);--rfp-line2:rgba(214,182,122,.07);--rfp-cream:#f4ead4;--rfp-txt:#e9dec8;--rfp-mut:#9b9080;--rfp-mut2:#6b6354;--rfp-a:#cca456;--rfp-lt:#e6cb83;background-color:#0b0a0d;background-image:radial-gradient(110% 70% at 50% -12%,rgba(204,164,86,.16),transparent 55%),radial-gradient(85% 60% at 105% 105%,rgba(150,100,40,.12),transparent 55%)}
 #pg-resto[data-bg="pink"]{--rfp-bg:#f7b8d2;--rfp-surf:rgba(255,255,255,.62);--rfp-line:rgba(140,40,85,.18);--rfp-line2:rgba(140,40,85,.09);--rfp-cream:#3d1528;--rfp-txt:#4d2338;--rfp-mut:#8a4f6c;--rfp-mut2:#b68197;--rfp-a:#d6336c;--rfp-lt:#a51e54;background-color:#f7b8d2;background-image:none}
 #pg-resto[data-bg="rose"]{--rfp-bg:#f48cb6;--rfp-surf:rgba(255,255,255,.66);--rfp-line:rgba(120,25,70,.20);--rfp-line2:rgba(120,25,70,.10);--rfp-cream:#3a1020;--rfp-txt:#4a1a2e;--rfp-mut:#7e3f5d;--rfp-mut2:#a86c88;--rfp-a:#c81f63;--rfp-lt:#9c0f49;background-color:#f48cb6;background-image:none}
@@ -2922,7 +2922,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 #pg-resto[data-bg="marble"]{--rfp-bg:#eceae6;--rfp-surf:rgba(255,255,255,.7);--rfp-line:rgba(40,42,50,.12);--rfp-line2:rgba(40,42,50,.06);--rfp-cream:#222730;--rfp-txt:#2f343d;--rfp-mut:#697079;--rfp-mut2:#9aa0a9;--rfp-a:#9a8654;--rfp-lt:#7c6a3e;background-color:#eceae6;background-image:radial-gradient(70% 55% at 18% 8%,rgba(255,255,255,.85),transparent 55%),radial-gradient(60% 45% at 92% 28%,rgba(205,210,218,.5),transparent 50%),linear-gradient(118deg,rgba(180,186,196,.22) 0%,transparent 22%,transparent 68%,rgba(168,174,188,.3) 100%)}
 #pg-resto[data-bg="paper"]{--rfp-bg:#f5f1e7;--rfp-surf:#fffdf8;--rfp-line:rgba(70,58,35,.13);--rfp-line2:rgba(70,58,35,.07);--rfp-cream:#2c2417;--rfp-txt:#3a3121;--rfp-mut:#776a51;--rfp-mut2:#a89a7d;--rfp-a:#b07a3a;--rfp-lt:#925c22;background-color:#f5f1e7;background-image:radial-gradient(130% 80% at 50% -5%,rgba(255,255,255,.55),transparent 50%)}
 #pg-resto *{box-sizing:border-box}
-#pg-resto .rfp-wrap{max-width:480px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:96px}
+#pg-resto .rfp-wrap{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;padding-bottom:96px}
 #pg-resto .rfp-lao{font-family:'Noto Sans Lao','Noto Sans',sans-serif}
 #pg-resto .rfp-hero{position:relative;height:300px;overflow:hidden;background:#241a0e}
 #pg-resto .rfp-cover{position:absolute;inset:0;background-size:cover;background-position:center}
@@ -6317,13 +6317,8 @@ async function init(){
     else if(_cpl==='/login'||_cpl==='/owner'){ p.set('login','owner'); }
     else if(_cpl.indexOf('/r/')===0){ var _ridp=decodeURIComponent(_cp.slice(3)); if(_ridp) p.set('r', _ridp); }
     // [clean-urls] show a pretty URL in the address bar (no server rewrite needed — works on GitHub Pages)
-    (function(){ var cu=null;
-      if(p.get('r')) cu='/r/'+encodeURIComponent(p.get('r'));
-      else if(p.get('book')==='1') cu='/book';
-      else if(p.get('checkbooking')==='1') cu='/my-booking';
-      else if(p.get('login')==='owner') cu='/login';
-      if(cu){ try{ history.replaceState(null,'',cu); }catch(_){} }
-    })();
+    /* [clean-urls DISABLED] Pretty /r/ paths 404 on refresh because Cloudflare isn't rewriting them.
+       Keep the real, always-working path (/app/?r=<id>) in the address bar instead. */
     const isCustomer=p.get('qr')==='1';
     // [resto-front-page] Public restaurant page: ?r=<id> with no QR ordering session (no &t=)
     var _rfp=p.get('r');
@@ -6748,6 +6743,7 @@ function showPage(id){
     const flexPages=['pg-land','pg-owner-login','pg-sa-login','pg-ow','pg-sa','pg-customer'];
     el.style.display=flexPages.includes(id)?'flex':'block';
   }
+  if(id!=='pg-resto'){ try{ document.documentElement.style.backgroundColor=''; document.body.style.backgroundColor=''; }catch(_){} }
   // [authsafe-B5.7] Debug panel is DEV-ONLY now: shows only with ?debug=1 in the URL, and never on
   // the customer page. Keeps the internal-log tool available to you without exposing it in production.
   var btn=document.getElementById('debugBtn');
@@ -13111,7 +13107,7 @@ function bkPickResto(id){
   // booking-v2: show the restaurant's full page (menu / location / info) first — Reserve from there
   setTimeout(function(){
     if(typeof closeModal==='function') closeModal('mCustBooking');
-    if(typeof renderRestoPage==='function'){ renderRestoPage(id); try{ history.replaceState(null,'','/r/'+encodeURIComponent(id)); }catch(_){} }
+    if(typeof renderRestoPage==='function'){ renderRestoPage(id); try{ history.replaceState(null,'','/app/?r='+encodeURIComponent(id)); }catch(_){} }
   }, 180);
 }
 
@@ -17066,13 +17062,17 @@ function _rfpRansomHTML(text){
   }
   return out;
 }
+function _rfpSyncPageBg(host){
+  try{ var c=getComputedStyle(host).getPropertyValue('--rfp-bg').trim();
+    if(c){ document.documentElement.style.backgroundColor=c; document.body.style.backgroundColor=c; } }catch(_){}
+}
 async function renderRestoPage(rid){
   _rfpId=rid;
   if(typeof showPage==='function') showPage('pg-resto');
   var host=document.getElementById('pg-resto');
   var T=_rfpT();
   // Apply the remembered skin instantly so a refresh doesn't flash the dark default.
-  try{ var _cbg=localStorage.getItem('rfp_bg_'+rid); if(_cbg) host.setAttribute('data-bg',_cbg); }catch(_){}
+  try{ var _cbg=localStorage.getItem('rfp_bg_'+rid); if(_cbg){ host.setAttribute('data-bg',_cbg); _rfpSyncPageBg(host); } }catch(_){}
   host.innerHTML='<div class="rfp-wrap"><div class="rfp-sec" style="padding-top:80px;text-align:center;color:#a89a85">Loading…</div></div>';
   var r=null;
   try{ r=await fbGet('restaurants/'+rid); }catch(_){}
@@ -17126,6 +17126,7 @@ async function renderRestoPage(rid){
   var _dirH=hasLoc?dirHref:('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(_mapQ));
 
   host.setAttribute('data-bg',(r&&r.bg)||'dark');
+  _rfpSyncPageBg(host);
   try{ localStorage.setItem('rfp_bg_'+rid,(r&&r.bg)||'dark'); }catch(_){}
   document.title=(r.name||'Restaurant')+' · EATLAOS';
   host.innerHTML=
