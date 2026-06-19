@@ -3102,7 +3102,7 @@ setTimeout(function(){
 setTimeout(function(){
   var e=document.getElementById('loadingScreen');
   if(e){e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(function(){e.style.display='none';},300);}
-},1500);
+},5000);
 </script>
   <div id="loadSplash">
     <!-- Default EATLAOS splash (shown for admin) -->
@@ -6318,8 +6318,9 @@ async function init(){
     // [resto-front-page] Public restaurant page: ?r=<id> with no QR ordering session (no &t=)
     var _rfp=p.get('r');
     if(_rfp && !isCustomer && !p.get('t')){
-      try{ renderRestoPage(_rfp); }catch(_){}
-      if(typeof hideLoading==='function') hideLoading();
+      // Keep the branded splash up until the page + its skin are painted, so a
+      // customer on a slow phone never sees the dark default flash as "black".
+      Promise.resolve().then(function(){ return renderRestoPage(_rfp); }).catch(function(){}).then(function(){ if(typeof hideLoading==='function') hideLoading(); });
       return;
     }
     // [clean-split-fix] Public booking actions handed off from the landing — open the modal, no redirect
@@ -7230,7 +7231,7 @@ async function _owFetchOlderOrders(neededRange){
     console.error('_owFetchOlderOrders failed:', e);
   }
 }
-let _lpLang = localStorage.getItem('el_lp_lang')||'en';
+let _lpLang = localStorage.getItem('el_lp_lang')||'lo';
 
 function setLpLang(lang, flag, code){
   _lpLang = lang;
@@ -8146,7 +8147,7 @@ function applyLpTranslation(lang){
 }
 
 function initLpLang(){
-  const saved = localStorage.getItem('el_lp_lang')||'en';
+  const saved = localStorage.getItem('el_lp_lang')||'lo';
   const flags = {en:'🇬🇧',lo:'🇱🇦',th:'🇹🇭',zh:'🇨🇳',ko:'🇰🇷'};
   const codes = {en:'EN',lo:'ລາວ',th:'ไทย',zh:'中文',ko:'한국어'};
   const flagEl=document.getElementById('lpLangFlag');
@@ -8389,7 +8390,7 @@ async function submitContact(){
 }
 
 // ══ LANDING PAGE TRANSLATIONS ══
-_lpLang = localStorage.getItem('el_lp_lang')||'en';
+_lpLang = localStorage.getItem('el_lp_lang')||'lo';
 
 
 async function loadContactRequests(){
@@ -10981,13 +10982,14 @@ async function delOwCat(idx){
 }
 function sortTablesArray(tables){
   return [...tables].sort((a,b)=>{
-    const an=parseInt(a.num),bn=parseInt(b.num);
-    const ai=!isNaN(an)&&String(an)===String(a.num).trim();
-    const bi=!isNaN(bn)&&String(bn)===String(b.num).trim();
-    if(ai&&bi) return an-bn;
-    if(ai) return -1;
+    const as=String(a.num==null?'':a.num).trim();
+    const bs=String(b.num==null?'':b.num).trim();
+    const ai=/^\d+$/.test(as);   // pure digits, incl. zero-padded like "01"
+    const bi=/^\d+$/.test(bs);
+    if(ai&&bi){ const d=parseInt(as,10)-parseInt(bs,10); return d!==0?d:as.localeCompare(bs); }
+    if(ai) return -1;            // numbers before text names (VIP, Garden…)
     if(bi) return 1;
-    return String(a.num).localeCompare(String(b.num));
+    return as.localeCompare(bs, undefined, {numeric:true}); // VIP2 < VIP10 etc.
   });
 }
 async function saveOwTable(){
@@ -12920,7 +12922,7 @@ setTimeout(function(){ try{init();}catch(e){
 /* Translation helpers — landing-page (customer) and staff (owner) */
 function _lp(key, fallback){
   try {
-    const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+    const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
     const t = (typeof LP_TRANSLATIONS!=='undefined' && LP_TRANSLATIONS[lng]) ? LP_TRANSLATIONS[lng] : (LP_TRANSLATIONS && LP_TRANSLATIONS.en);
     if(t && t[key]!==undefined) return t[key];
   } catch(e){}
@@ -12942,7 +12944,7 @@ function _bkLocalISO(d){
 }
 function _lpDow(dayIdx, short){
   // dayIdx: 0=Sun..6=Sat. short=true returns 3-letter abbreviation.
-  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
   // Try Intl.DateTimeFormat for native long names (with LP locale)
   try {
     const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
@@ -12954,7 +12956,7 @@ function _lpDow(dayIdx, short){
   }
 }
 function _lpMonth(monthIdx, short){
-  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
   try {
     const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
     const d = new Date(2024,monthIdx,1);
@@ -12989,7 +12991,7 @@ function openCustBookingModal(){
   document.getElementById('bkNote').value='';
   openModal('mCustBooking');
   // Re-apply current LP language to the freshly visible modal
-  const curLang = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  const curLang = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
   loadBkRestaurants();
 }
@@ -14916,7 +14918,7 @@ function tiOpen(tableId){
   if(m){
     m.classList.add('open');
     // Apply LP translation
-    const curLang = (typeof localStorage !== 'undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+    const curLang = (typeof localStorage !== 'undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
     if(typeof applyLpTranslation === 'function' && curLang !== 'en') applyLpTranslation(curLang);
   }
 }
@@ -15117,7 +15119,7 @@ window.addEventListener('beforeunload', () => {
 function _bkBuildSummaryHtml(opts){
   opts = opts || {};
   const d = new Date(bkState.date+'T00:00:00');
-  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+  const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
   const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
   let dateStr;
   try {
@@ -15335,7 +15337,7 @@ async function bsLookup(by){
       return;
     }
     found.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-    const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'en';
+    const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
     const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
     const lblDate = _lp('bk_status_date','Date');
     const lblTime = _lp('bk_status_time','Time');
@@ -16998,7 +17000,7 @@ var RFP_FONT={
 };
 var RFP_ACCENT={classic:'#c8973a',luxury:'#c8973a',terroir:'#b06a3a',brasserie:'#c8973a',lao:'#1d9e75',cny:'#cc3a3a',ice:'#5b8bd0',galaxy:'#7d6bd0',neon:'#27d3a2',sakura:'#d4537e',tropical:'#1fae9a',zen:'#7a9b6e',ember:'#d4663a',christmas:'#cc3a3a',halloween:'#d4781f',sa:'#c8973a'};
 var _rfpResto=null, _rfpId=null, _rfpKip=v=>{try{return (typeof fmtK==='function')?fmtK(v):('₭'+Number(v||0).toLocaleString());}catch(_){return '₭'+v;}};
-function _rfpLang(){ try{ return localStorage.getItem('el_lp_lang')||localStorage.getItem('el_lang')||'en'; }catch(_){ return 'en'; } }
+function _rfpLang(){ try{ return localStorage.getItem('el_lp_lang')||'lo'; }catch(_){ return 'lo'; } }
 var RFP_T={
  en:{book:'Book',menu:'Menu',call:'Call',map:'Map',hours:'Opening hours',findus:'Find us',dir:'Get directions →',reserve:'Reserve a table',closed:'Closed',closedToday:'Closed today',closedNow:'Closed now',openCloses:'Open now · closes ',closeSuf:'',opens:'Opens ',today:' today',noMenu:'No menu photo yet.',powered:'Powered by',tagline:'Every restaurant, a home online.'},
  lo:{book:'ຈອງ',menu:'ເມນູ',call:'ໂທ',map:'ແຜນທີ່',hours:'ເວລາເປີດ',findus:'ສະຖານທີ່',dir:'ເສັ້ນທາງ →',reserve:'ຈອງໂຕະ',closed:'ປິດ',closedToday:'ມື້ນີ້ປິດ',closedNow:'ຕອນນີ້ປິດ',openCloses:'ເປີດຢູ່ · ປິດ ',closeSuf:'',opens:'ເປີດ ',today:' ມື້ນີ້',noMenu:'ຍັງບໍ່ມີຮູບເມນູ.',powered:'ໃຫ້ບໍລິການໂດຍ',tagline:'ທຸກຮ້ານ, ມີໜ້າອອນລາຍ.'},
