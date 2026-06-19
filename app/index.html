@@ -9148,7 +9148,7 @@ function buildSARevenueChart(filtered){
   }
   // If all data is 0, show demo data
   if(data.every(v=>v===0)) data=data.map(()=>0);
-  saCI=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3,label:'Revenue (₭)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'₭'+Math.round(ctx.parsed.y).toLocaleString()}}},scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}},y:{grid:{color:'#1a1a1a'},ticks:{color:'#555',font:{size:10},callback:v=>'₭'+Math.round(v/1000)+'k'}}}}});
+  saCI=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3,label:'Revenue (₭)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'₭'+Math.round(ctx.parsed.y).toLocaleString()}}},scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}},y:{grid:{color:'#1a1a1a'},ticks:{color:'#555',font:{size:10},callback:v=>'₭'+Math.round(v).toLocaleString()}}}}});
 }
 
 function buildSARestoChart(filtered){
@@ -11758,7 +11758,7 @@ async function initOwChart(type){
         .reduce((sum,o)=>sum+(type==='rev'?(o.total||0)*(1-comm):1),0));
     }
   }
-  owCI=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>type==='rev'?'₭'+Math.round(ctx.parsed.y).toLocaleString():ctx.parsed.y+' orders'}}},scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}},y:{grid:{color:'#1c1c1c'},ticks:{color:'#555',font:{size:10},callback:v=>type==='rev'?'₭'+Math.round(v/1000)+'k':v}}}}});
+  owCI=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(200,151,58,.75)',borderWidth:0,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>type==='rev'?'₭'+Math.round(ctx.parsed.y).toLocaleString():ctx.parsed.y+' orders'}}},scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}},y:{grid:{color:'#1c1c1c'},ticks:{color:'#555',font:{size:10},callback:v=>type==='rev'?'₭'+Math.round(v).toLocaleString():v}}}}});
 }
 function owChartSw(type,btn){
   document.querySelectorAll('#ow-dashboard .ctab').forEach(t=>t.classList.remove('on'));
