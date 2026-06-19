@@ -3110,7 +3110,7 @@ setTimeout(function(){
 setTimeout(function(){
   var e=document.getElementById('loadingScreen');
   if(e){e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(function(){e.style.display='none';},300);}
-},5000);
+}, (document.documentElement.classList.contains('cust-load')?20000:5000));
 </script>
   <div id="loadSplash">
     <!-- Default EATLAOS splash (shown for admin) -->
@@ -6325,7 +6325,9 @@ async function init(){
     if(_rfp && !isCustomer && !p.get('t')){
       // Keep the branded splash up until the page + its skin are painted, so a
       // customer on a slow phone never sees the dark default flash as "black".
-      Promise.resolve().then(function(){ return renderRestoPage(_rfp); }).catch(function(){}).then(function(){ if(typeof hideLoading==='function') hideLoading(); });
+      Promise.resolve().then(function(){ return renderRestoPage(_rfp); })
+        .catch(function(e){ try{ console.error('rfp render error:',e); var _h=document.getElementById('pg-resto'); if(_h && !_h.innerHTML.trim()){ _h.innerHTML='<div style="padding:90px 20px;text-align:center;color:#a89a85;font-family:Inter,sans-serif">Could not load. Please refresh.</div>'; } }catch(_){} })
+        .then(function(){ if(typeof hideLoading==='function') hideLoading(); });
       return;
     }
     // [clean-split-fix] Public booking actions handed off from the landing — open the modal, no redirect
