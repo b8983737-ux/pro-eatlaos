@@ -13182,6 +13182,10 @@ function bkConfirm(){
   if(bkState.tables && bkState.tables.length && !bkState.tableId){ alert(_lp('bk_err_pick_table','Please select a table.')); _bkScrollTo('bkTableGrid'); return; }
   submitCustBooking();
 }
+function bkHeaderBack(){
+  if(bkState && bkState.view==='book'){ bkBackToRestos(); }
+  else { try{ location.href='/'; }catch(_){ try{ location.assign('/'); }catch(__){} } }
+}
 function bkBackToRestos(){
   if(typeof bkReleaseLock==='function') bkReleaseLock();
   bkState.date=null; bkState.slot=null; bkState.tableId=null;
@@ -16677,9 +16681,12 @@ async function cleanupOldBookings(opts){
     <!-- Progress bar at top -->
     <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
     <div class="bkm-head">
-      <div>
-        <div class="bkm-eyebrow" data-lp="bk_eyebrow">Book a Table</div>
-        <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 6</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="bkm-back" onclick="bkHeaderBack()" aria-label="Back">‹ Back</button>
+        <div>
+          <div class="bkm-eyebrow" data-lp="bk_eyebrow">Book a Table</div>
+          <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 6</div>
+        </div>
       </div>
       <button class="bkm-x" onclick="_modalBackdropClose('mCustBooking',function(){return bkState&&bkState.step>1&&bkState.step<7;},bkReleaseLock);" aria-label="Close">×</button>
     </div>
