@@ -45,7 +45,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&family=Noto+Serif+Lao:wght@400;600;700;900&family=Noto+Sans+Lao:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <!-- Firebase scripts — loaded synchronously just before our JS -->
 <!-- Chart.js: only needed for admin dashboards, load lazily -->
-<script>
+<script data-cfasync="false">
 // Lazy load Chart.js only when admin logs in
 function loadChartJS(cb){
   if(window.Chart){if(cb)cb();return;}
@@ -2881,7 +2881,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 }
 </style>
 
-<script>
+<script data-cfasync="false">
 // Apply Lao font class to body based on saved language (non-invasive)
 (function(){
   function applyLangClass(){
@@ -3041,7 +3041,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
     <button onclick="dbgCopyLog()" style="background:#333;border:none;color:#888;padding:2px 8px;font-size:10px;cursor:pointer;border-radius:3px;margin-left:4px">Copy</button>
   </div>
 </div>
-<script>
+<script data-cfasync="false">
 var _dbgLogs=[];
 function dbg(msg,type){
   var color=type==='err'?'#f66':type==='warn'?'#fa0':'#8f8';
@@ -3103,9 +3103,9 @@ setTimeout(function(){
 
 
 <!-- LOADING -->
-<script>(function(){try{var s=location.search||'',p=(location.pathname||'').toLowerCase();if(/[?&](r|book|checkbooking)=/.test(s)||p.indexOf('/r/')===0||p==='/book'||p==='/booking'||p==='/my-booking'||p==='/mybooking'||p==='/check-booking'){document.documentElement.className+=' cust-load';}}catch(_){}})();</script>
+<script data-cfasync="false">(function(){try{var s=location.search||'',p=(location.pathname||'').toLowerCase();if(/[?&](r|book|checkbooking)=/.test(s)||p.indexOf('/r/')===0||p==='/book'||p==='/booking'||p==='/my-booking'||p==='/mybooking'||p==='/check-booking'){document.documentElement.className+=' cust-load';}}catch(_){}})();</script>
 <div id="loadingScreen">
-<script>
+<script data-cfasync="false">
 // Force hide loading screen after 5 seconds NO MATTER WHAT
 setTimeout(function(){
   var e=document.getElementById('loadingScreen');
@@ -4364,7 +4364,7 @@ setTimeout(function(){
 <div class="new-ord-bar" id="newOrdBar" onclick="owP('liveorders',null)">🔔 New order! Click to view</div>
 <div class="firebase-status" id="globalFbStatus" style="display:none"><div class="fb-dot" id="globalFbDot"></div><span id="globalFbTxt"></span></div>
 
-<script>
+<script data-cfasync="false">
 // ═══ FIREBASE LOADER ═══
 // Load Firebase SDK only for admin/owner paths
 // Customer QR path uses direct REST API (zero SDK needed)
@@ -6323,11 +6323,23 @@ async function init(){
     // [resto-front-page] Public restaurant page: ?r=<id> with no QR ordering session (no &t=)
     var _rfp=p.get('r');
     if(_rfp && !isCustomer && !p.get('t')){
-      // Keep the branded splash up until the page + its skin are painted, so a
-      // customer on a slow phone never sees the dark default flash as "black".
-      Promise.resolve().then(function(){ return renderRestoPage(_rfp); })
-        .catch(function(e){ try{ console.error('rfp render error:',e); var _h=document.getElementById('pg-resto'); if(_h && !_h.innerHTML.trim()){ _h.innerHTML='<div style="padding:90px 20px;text-align:center;color:#a89a85;font-family:Inter,sans-serif">Could not load. Please refresh.</div>'; } }catch(_){} })
-        .then(function(){ if(typeof hideLoading==='function') hideLoading(); });
+      // [black-page fix] renderRestoPage lives at ~99% of this 1MB file. On a slow
+      // connection or if Cloudflare reorders scripts, init() can reach this point
+      // BEFORE that script block has defined renderRestoPage -> calling it throws ->
+      // black screen, no error. So instead of calling blindly, we WAIT (poll) until
+      // the draw fn exists, then run it. Page paints even if the tail loads late.
+      (function _tryRfp(n){
+        if(typeof renderRestoPage==='function'){
+          Promise.resolve().then(function(){ return renderRestoPage(_rfp); })
+            .catch(function(e){ try{ console.error('rfp render error:',e); var _h=document.getElementById('pg-resto'); if(_h && !(_h.innerHTML||'').trim()){ _h.innerHTML='<div style="padding:90px 20px;text-align:center;color:#a89a85;font-family:Inter,sans-serif">Could not load — please refresh.</div>'; } }catch(_){} })
+            .then(function(){ if(typeof hideLoading==='function') hideLoading(); });
+        } else if(n>0){
+          setTimeout(function(){ _tryRfp(n-1); }, 50);   // wait up to 80*50ms = 4s for the tail
+        } else {
+          try{ if(typeof showPage==='function') showPage('pg-resto'); var _h=document.getElementById('pg-resto'); if(_h) _h.innerHTML='<div style="padding:90px 20px;text-align:center;color:#a89a85;font-family:Inter,sans-serif">Could not load — please refresh.</div>'; }catch(_){}
+          if(typeof hideLoading==='function') hideLoading();
+        }
+      })(80);
       return;
     }
     // [clean-split-fix] Public booking actions handed off from the landing — open the modal, no redirect
@@ -16995,7 +17007,7 @@ async function cleanupOldBookings(opts){
   </div>
 </div>
 
-<script>
+<script data-cfasync="false">
 /* [resto-front-page] Renders the public restaurant page from live data. Self-contained, defensive. */
 var RFP_FONT={
   default:"'Plus Jakarta Sans','Noto Sans Lao',sans-serif",
