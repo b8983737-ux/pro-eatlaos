@@ -16834,9 +16834,30 @@ async function cleanupOldBookings(opts){
 <style id="bks-single">
 /* ════ booking-v2 single-page styles ════ */
 #mCustBooking .bkm-shell{--bks-acc:#c8973a}
-#mCustBooking .bkm-shell[data-bg="blush"]{background:linear-gradient(180deg,#3d1c2c 0%,#2a1320 100%);border-color:rgba(247,184,210,.30)}
-#mCustBooking .bkm-shell[data-bg="pink"]{background:linear-gradient(180deg,#47152f 0%,#300d20 100%);border-color:rgba(247,184,210,.34)}
-#mCustBooking .bkm-shell[data-bg="rose"]{background:linear-gradient(180deg,#4e0f2a 0%,#33091c 100%);border-color:rgba(244,140,182,.40)}
+/* ── Light-pink booking skin: matches the restaurant front page exactly.
+      Background goes light, so body text + controls flip to dark plum for readability.
+      (The cover image area keeps its white-on-scrim look.) ── */
+#mCustBooking .bkm-shell[data-bg="blush"]{background:#f9d6e3;border-color:rgba(120,40,75,.20)}
+#mCustBooking .bkm-shell[data-bg="pink"]{background:#f7b8d2;border-color:rgba(120,40,75,.22)}
+#mCustBooking .bkm-shell[data-bg="rose"]{background:#f48cb6;border-color:rgba(120,40,75,.26)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-eyebrow,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-sect-h .bks-i{color:#b8336e}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-title,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-step-h,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-day,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-num{color:#4a1730}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-sect-h,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-step-sub,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-dow,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-mo,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-step-of,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-hint{color:rgba(74,23,48,.62)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-back,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-x,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-btn{background:rgba(255,255,255,.55);border-color:rgba(120,40,75,.22);color:#7a2d52}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-card,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-slot{background:rgba(255,255,255,.5);border-color:rgba(120,40,75,.16)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-foot{background:rgba(255,255,255,.25);border-top-color:rgba(120,40,75,.14)}
 #bkStepBook{padding:0!important}
 #bkStepBook .bks-cover{position:relative;height:150px;background:#241b0e center/cover no-repeat;display:flex;align-items:flex-end;border-radius:14px 14px 0 0;overflow:hidden;margin-bottom:4px}
 #bkStepBook .bks-cover.noimg{background:linear-gradient(135deg,#241b0e,#16110b)}
