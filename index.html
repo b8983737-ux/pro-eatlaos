@@ -1,7 +1,7 @@
 <!DOCTYPE html><!-- BUILD:1781062200 --><!-- EATLAOS v5 · BUILD 1781062200 · authsafe-B1: owners → Firebase Auth (migrate-on-login), all plaintext passwords removed -->
 <html lang="en">
 <head>
-<script>/* EATLAOS landing: hand off app/customer/admin/supplier traffic to /app/ instantly (before render) */(function(){try{var p=new URLSearchParams(location.search),h=location.hash||'';if(p.get('qr')==='1'||p.has('admin')||p.has('r')||h.indexOf('#/')===0){location.replace('/app/'+location.search+location.hash);}}catch(e){}})();</script>
+<script>/* EATLAOS landing: hand off app/customer/admin/supplier traffic to /app/ instantly (before render). Handles BOTH clean-URL paths (/r/<id>, /book, /my-booking, /login) on refresh AND query-param links. */(function(){try{var path=(location.pathname||'').replace(/\/+$/,''),pl=path.toLowerCase(),s=location.search||'',h=location.hash||'';if(pl.indexOf('/r/')===0){location.replace('/app/?r='+encodeURIComponent(decodeURIComponent(path.slice(3))));return;}if(pl==='/book'||pl==='/booking'){location.replace('/app/?book=1');return;}if(pl==='/my-booking'||pl==='/mybooking'||pl==='/check-booking'){location.replace('/app/?checkbooking=1');return;}if(pl==='/login'||pl==='/owner'){location.replace('/app/?login=owner');return;}var p=new URLSearchParams(s);if(p.get('qr')==='1'||p.has('admin')||p.has('r')||h.indexOf('#/')===0){location.replace('/app/'+s+h);}}catch(e){}})();</script>
 <meta charset="UTF-8">
 <title>EATLAOS · Restaurant Platform · Laos</title>
 <meta name="description" content="Let customers scan a QR code and order from their table. No app needed.">
