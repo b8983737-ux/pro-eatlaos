@@ -2368,6 +2368,10 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 html.el-lang-lo .bk-step-h, html.el-lang-th .bk-step-h,
 html.el-lang-lo .bkm-title, html.el-lang-th .bkm-title,
 html.el-lang-lo .rfp-name, html.el-lang-th .rfp-name,
+html.el-lang-lo .rfp-eye, html.el-lang-th .rfp-eye,
+html.el-lang-lo .bkm-eyebrow, html.el-lang-th .bkm-eyebrow,
+html.el-lang-lo .bks-sect-h, html.el-lang-th .bks-sect-h,
+html.el-lang-lo .bk-date-dow, html.el-lang-th .bk-date-dow,
 html.el-lang-lo .bk-resto-name, html.el-lang-th .bk-resto-name{ letter-spacing:0 !important; }
 html.el-lang-lo .bk-step-h, html.el-lang-th .bk-step-h,
 html.el-lang-lo .bkm-title, html.el-lang-th .bkm-title{ line-height:1.4; }
@@ -2746,6 +2750,8 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.2);stroke:rgba(251,191,36,.5);stroke-width:1;}
 .fp-vw-table.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
 .fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3;}
+.fp-vw-table.toosmall .fp-vw-el-shape{fill:rgba(150,150,150,.16);stroke:rgba(180,180,180,.35);stroke-width:1;}
+.fp-vw-table.toosmall{opacity:.5;cursor:not-allowed;}
 /* Subtle "breathing" halo on AVAILABLE tables — soft white glow that fades in/out every 3s.
    GPU-accelerated via SVG filter; paused on hover & when selected to keep UI calm during interaction.
    VIP tables get a warm cream-tinted halo to harmonize with their amber base. */
@@ -2913,7 +2919,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Special+Elite&family=Abril+Fatface&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-#pg-resto{--rfp-a:#c8973a;--rfp-lt:color-mix(in srgb,var(--rfp-a),#fff 38%);--rfp-bg:#100c07;--rfp-surf:#181209;--rfp-line:rgba(245,232,210,.10);--rfp-line2:rgba(245,232,210,.06);--rfp-cream:#f4ecdd;--rfp-txt:#ece2d0;--rfp-mut:#a89a85;--rfp-mut2:#766b5b;background:var(--rfp-bg);color:var(--rfp-txt);font-family:'Inter',-apple-system,sans-serif;overflow-y:auto;overflow-x:hidden;padding:0!important;min-height:100vh;min-height:100dvh;display:block}
+#pg-resto{--rfp-a:#c8973a;--rfp-lt:color-mix(in srgb,var(--rfp-a),#fff 38%);--rfp-bg:#100c07;--rfp-surf:#181209;--rfp-line:rgba(245,232,210,.10);--rfp-line2:rgba(245,232,210,.06);--rfp-cream:#f4ecdd;--rfp-txt:#ece2d0;--rfp-mut:#a89a85;--rfp-mut2:#766b5b;background:var(--rfp-bg);color:var(--rfp-txt);font-family:'Inter','Noto Sans Lao',-apple-system,sans-serif;overflow-y:auto;overflow-x:hidden;padding:0!important;min-height:100vh;min-height:100dvh;display:block}
 #pg-resto[data-bg="luxe"]{--rfp-bg:#0b0a0d;--rfp-surf:#15131b;--rfp-line:rgba(214,182,122,.15);--rfp-line2:rgba(214,182,122,.07);--rfp-cream:#f4ead4;--rfp-txt:#e9dec8;--rfp-mut:#9b9080;--rfp-mut2:#6b6354;--rfp-a:#cca456;--rfp-lt:#e6cb83;background-color:#0b0a0d;background-image:radial-gradient(110% 70% at 50% -12%,rgba(204,164,86,.16),transparent 55%),radial-gradient(85% 60% at 105% 105%,rgba(150,100,40,.12),transparent 55%)}
 #pg-resto[data-bg="pink"]{--rfp-bg:#f7b8d2;--rfp-surf:rgba(255,255,255,.62);--rfp-line:rgba(140,40,85,.18);--rfp-line2:rgba(140,40,85,.09);--rfp-cream:#3d1528;--rfp-txt:#4d2338;--rfp-mut:#8a4f6c;--rfp-mut2:#b68197;--rfp-a:#d6336c;--rfp-lt:#a51e54;background-color:#f7b8d2;background-image:none}
 #pg-resto[data-bg="rose"]{--rfp-bg:#f48cb6;--rfp-surf:rgba(255,255,255,.66);--rfp-line:rgba(120,25,70,.20);--rfp-line2:rgba(120,25,70,.10);--rfp-cream:#3a1020;--rfp-txt:#4a1a2e;--rfp-mut:#7e3f5d;--rfp-mut2:#a86c88;--rfp-a:#c81f63;--rfp-lt:#9c0f49;background-color:#f48cb6;background-image:none}
@@ -2938,7 +2944,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 @keyframes rsmShake{0%,100%{transform:rotate(var(--r,0deg)) translateY(0)}25%{transform:rotate(calc(var(--r,0deg) + 1.4deg)) translateY(-.5px)}50%{transform:rotate(var(--r,0deg)) translateY(0)}75%{transform:rotate(calc(var(--r,0deg) - 1.4deg)) translateY(.5px)}}
 @media (prefers-reduced-motion:reduce){.rsm-l{animation:none}}
 .rfp-name-ransom{letter-spacing:0!important;line-height:1.55!important;font-family:inherit!important}
-#pg-resto .rfp-name{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:31px;line-height:1.05;color:var(--rfp-cream);letter-spacing:-.5px}
+#pg-resto .rfp-name{font-family:'Fraunces','Noto Serif Lao',Georgia,serif;font-weight:600;font-size:31px;line-height:1.05;color:var(--rfp-cream);letter-spacing:-.5px}
 #pg-resto .rfp-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;color:var(--rfp-mut);font-size:13px}
 #pg-resto .rfp-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--rfp-mut2)}
 #pg-resto .rfp-status{display:inline-flex;align-items:center;gap:7px;margin-top:11px;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:99px;background:var(--rfp-surf);border:1px solid var(--rfp-line)}
@@ -2966,7 +2972,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 #pg-resto .rfp-menuphoto{width:100%;border-radius:14px;border:1px solid var(--rfp-line);cursor:zoom-in;display:block;background:#0a0a0b}
 #rfpMenuOv{position:fixed;inset:0;z-index:200;background:rgba(8,6,4,.97);display:none;flex-direction:column;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 #rfpMenuOv.show{display:flex}
-#rfpMenuOv .rfp-mov-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;color:#f4ecdd;font-family:'Fraunces',Georgia,serif;font-size:18px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:rgba(8,6,4,.92);z-index:1}
+#rfpMenuOv .rfp-mov-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;color:#f4ecdd;font-family:'Fraunces','Noto Serif Lao',Georgia,serif;font-size:18px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:rgba(8,6,4,.92);z-index:1}
 #rfpMenuOv .rfp-mov-x{background:rgba(255,255,255,.1);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;flex-shrink:0}
 #rfpMenuOv .rfp-mov-imgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;align-items:center}
 #rfpMenuOv .rfp-mov-imgs img{width:100%;max-width:680px;border-radius:12px;display:block;border:1px solid rgba(255,255,255,.08)}
@@ -2975,7 +2981,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 #pg-resto .rfp-dimg .z{position:absolute;bottom:9px;right:9px;width:28px;height:28px;border-radius:50%;background:rgba(10,7,3,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--rfp-cream)}
 #pg-resto .rfp-dn{margin-top:9px;font-size:14px;color:var(--rfp-cream);font-weight:500}
 #pg-resto .rfp-dp{color:var(--rfp-lt);font-size:13px;margin-top:2px}
-#pg-resto .rfp-mcat{font-family:'Fraunces',serif;font-size:18px;color:var(--rfp-cream);margin:16px 0 4px}
+#pg-resto .rfp-mcat{font-family:'Fraunces','Noto Serif Lao',serif;font-size:18px;color:var(--rfp-cream);margin:16px 0 4px}
 #pg-resto .rfp-mrow{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--rfp-line2);cursor:pointer}
 #pg-resto .rfp-mthumb{width:52px;height:52px;border-radius:11px;background:#241a0f;background-size:cover;background-position:center;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
 #pg-resto .rfp-minfo{flex:1;min-width:0}
@@ -14485,7 +14491,7 @@ function _fpStartResize(e, dir){
 }
 
 /* ─── Customer-side viewer ─── */
-function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId, walkInTableIds){
+function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId, walkInTableIds, tooSmallIds){
   if(!plan || !plan.elements || !plan.elements.length) return null;
   const W = plan.width  || 1000;
   const H = plan.height || 700;
@@ -14581,6 +14587,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     if(bookedTableIds && bookedTableIds.has(el.tableId)) stateClass = 'booked';
     else if(lockedTableIds && lockedTableIds.has(el.tableId)) stateClass = 'locked';
     else if(isWalkIn) stateClass = 'walkin';
+    else if(tooSmallIds && tooSmallIds.has(el.tableId)) stateClass = 'toosmall';
     if(selectedTableId === el.tableId) stateClass = 'selected';
     // VIP detection: explicit kind (table-vip-*) OR linked table has a bookingRequirement set
     const isVip = _fpIsVipKind(el.kind) || !!(t && t.bookingRequirement && String(t.bookingRequirement).trim());
@@ -14982,10 +14989,13 @@ function _bkRenderActiveAreaMap(replaceOnly){
     const min = t.minSeats || 1;
     if(bkState.party > max || bkState.party < min) tooSmall.add(tid);
   });
-  const viewerBooked = new Set([...(bkState._bookedTableIds||[]), ...tooSmall]);
+  const viewerBooked = new Set([...(bkState._bookedTableIds||[])]);
   // Cache plan for tiOpen popup (so it knows shape)
   bkState._cachedPlan = area;
-  const svg = fpRenderCustomerView(area, bkState.tables, viewerBooked, bkState._lockedTableIds, bkState.tableId, bkState.walkInTableIds);
+  // v6.2: render the FULL floor plan (every placed table) like the SA editor — tables
+  // that don't fit the party size show dimmed ('toosmall') instead of being hidden.
+  const _allTablesArr = Object.values(bkState._allTablesById || {});
+  const svg = fpRenderCustomerView(area, _allTablesArr, viewerBooked, bkState._lockedTableIds, bkState.tableId, bkState.walkInTableIds, tooSmall);
   const wrapHtml = `<div class="fp-viewer-wrap">${svg}</div>`;
   if(replaceOnly){
     const oldWrap = grid.querySelector('.fp-viewer-wrap');
@@ -15005,7 +15015,7 @@ function _bkWireMapClicks(){
   svgEl.onclick = function(ev){
     const tEl = ev.target.closest('.fp-vw-table');
     if(!tEl) return;
-    if(tEl.classList.contains('booked') || tEl.classList.contains('locked')) return;
+    if(tEl.classList.contains('booked') || tEl.classList.contains('locked') || tEl.classList.contains('toosmall')) return;
     if(tEl.classList.contains('walkin')){
       // Walk-in table — show friendly alert, no selection
       alert(_lp('bk_walkin_only','This table is reserved for walk-in customers on this date.\nPlease visit the restaurant directly, or pick another table.'));
@@ -16858,6 +16868,20 @@ async function cleanupOldBookings(opts){
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-card,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-slot{background:rgba(255,255,255,.5);border-color:rgba(120,40,75,.16)}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-foot{background:rgba(255,255,255,.25);border-top-color:rgba(120,40,75,.14)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input{background:rgba(255,255,255,.6);border-color:rgba(120,40,75,.20);color:#4a1730}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input::placeholder{color:rgba(74,23,48,.42)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input:focus{border-color:#b8336e;background:#fff;box-shadow:0 0 0 3px rgba(184,51,110,.14)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-table-card{background:rgba(255,255,255,.5);border-color:rgba(120,40,75,.18)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-table-num{color:#4a1730}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-table-cap{color:rgba(74,23,48,.58)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-summary{background:rgba(255,255,255,.42);border-color:rgba(120,40,75,.18)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-val,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-vip-req-text,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-note-text{color:#4a1730}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-lbl,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-note-h,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-vip-req-note{color:rgba(74,23,48,.6)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-link{color:#b8336e}
 #bkStepBook{padding:0!important}
 #bkStepBook .bks-cover{position:relative;height:150px;background:#241b0e center/cover no-repeat;display:flex;align-items:flex-end;border-radius:14px 14px 0 0;overflow:hidden;margin-bottom:4px}
 #bkStepBook .bks-cover.noimg{background:linear-gradient(135deg,#241b0e,#16110b)}
@@ -17117,6 +17141,7 @@ function _rfpFitRansom(host){
 async function renderRestoPage(rid){
   _rfpId=rid;
   if(typeof showPage==='function') showPage('pg-resto');
+  try{ var _lg=_rfpLang(); var _de=document.documentElement; _de.classList.toggle('el-lang-lo', _lg==='lo'); _de.classList.toggle('el-lang-th', _lg==='th'); }catch(_){}
   var host=document.getElementById('pg-resto');
   var T=_rfpT();
   // Apply the remembered skin instantly so a refresh doesn't flash the dark default.
