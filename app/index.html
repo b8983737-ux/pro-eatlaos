@@ -16951,6 +16951,8 @@ async function renderRestoPage(rid){
   if(typeof showPage==='function') showPage('pg-resto');
   var host=document.getElementById('pg-resto');
   var T=_rfpT();
+  // Apply the remembered skin instantly so a refresh doesn't flash the dark default.
+  try{ var _cbg=localStorage.getItem('rfp_bg_'+rid); if(_cbg) host.setAttribute('data-bg',_cbg); }catch(_){}
   host.innerHTML='<div class="rfp-wrap"><div class="rfp-sec" style="padding-top:80px;text-align:center;color:#a89a85">Loading…</div></div>';
   var r=null;
   try{ r=await fbGet('restaurants/'+rid); }catch(_){}
@@ -17004,6 +17006,7 @@ async function renderRestoPage(rid){
   var _dirH=hasLoc?dirHref:('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(_mapQ));
 
   host.setAttribute('data-bg',(r&&r.bg)||'dark');
+  try{ localStorage.setItem('rfp_bg_'+rid,(r&&r.bg)||'dark'); }catch(_){}
   document.title=(r.name||'Restaurant')+' · EATLAOS';
   host.innerHTML=
   '<div class="rfp-wrap">'+
