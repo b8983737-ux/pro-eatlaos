@@ -3,19 +3,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>EATLAOS</title>
-<style>html,body{margin:0;height:100%;background:#0c0906}</style>
 <script>
-/* EATLAOS clean-URL router (GitHub Pages): map pretty paths -> the app, then the app tidies the bar back to the pretty path. */
+/* EATLAOS clean-URL router. Cloudflare/GitHub serve this for unmatched paths;
+   we instantly hand the pretty path to the app, which then tidies the URL bar back. */
 (function(){
   try{
-    var p = location.pathname.replace(/\/+$/,''); var pl = p.toLowerCase(); var to;
-    if(pl==='/book' || pl==='/booking')                         to='/app/?book=1';
+    var p=location.pathname.replace(/\/+$/,''); var pl=p.toLowerCase(); var to;
+    if(pl==='/book'||pl==='/booking')                                    to='/app/?book=1';
     else if(pl==='/my-booking'||pl==='/mybooking'||pl==='/check-booking') to='/app/?checkbooking=1';
-    else if(pl==='/login' || pl==='/owner')                     to='/app/?login=owner';
+    else if(pl==='/login'||pl==='/owner')                                 to='/app/?login=owner';
     else if(pl.indexOf('/r/')===0){ var id=decodeURIComponent(p.slice(3)); to=id?('/app/?r='+encodeURIComponent(id)):'/'; }
-    else to='/';   /* unknown path -> landing */
-    location.replace(to + location.hash);
+    else to='/';
+    location.replace(to+location.hash);
   }catch(e){ location.replace('/'); }
 })();
 </script>
-</head><body></body></html>
+<style>
+  html,body{margin:0;height:100%}
+  body{background:#100c07;display:flex;align-items:center;justify-content:center;
+       font-family:Georgia,'Times New Roman',serif;color:#f4ecdd}
+  .sp{text-align:center}
+  .lg{font-size:42px;font-weight:900;letter-spacing:-1.5px}
+  .lg em{color:#c8973a;font-style:italic}
+  .sub{margin-top:6px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#a89a85;font-family:Arial,sans-serif}
+  .sn{width:26px;height:26px;margin:20px auto 0;border:2px solid #2a2118;border-top-color:#c8973a;border-radius:50%;animation:r .8s linear infinite}
+  @keyframes r{to{transform:rotate(360deg)}}
+</style>
+</head><body>
+  <div class="sp">
+    <div class="lg">EAT<em>LAOS</em></div>
+    <div class="sub">Loading…</div>
+    <div class="sn"></div>
+  </div>
+</body></html>
