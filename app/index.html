@@ -1164,6 +1164,11 @@ button,input,select,textarea{font-family:var(--fb);}
 .load-logo{font-family:'Fraunces',Georgia,serif;font-size:48px;font-weight:900;letter-spacing:-2px;animation:fadeUp .4s ease;}
 .load-logo em{color:#c8973a;font-style:italic;}
 .load-spinner{width:28px;height:28px;border:2px solid #222;border-top-color:#c8973a;border-radius:50%;animation:spin .8s linear infinite;}
+html.cust-load #loadingScreen{background:#f6f1e8}
+html.cust-load #loadSplash svg text:first-of-type{fill:#2f2616}
+html.cust-load #loadSplash .load-logo span{color:#2f2616!important}
+html.cust-load #loadTxt{color:#7c6b4d}
+html.cust-load .load-spinner{border-color:#e2d8c4;border-top-color:#c8973a}
 .load-txt{font-size:13px;color:#444;letter-spacing:3px;text-transform:uppercase;}
 
 /* ═══ LANDING ═══ */
@@ -2910,7 +2915,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 <style>
 #pg-resto{--rfp-a:#c8973a;--rfp-lt:color-mix(in srgb,var(--rfp-a),#fff 38%);--rfp-bg:#100c07;--rfp-surf:#181209;--rfp-line:rgba(245,232,210,.10);--rfp-line2:rgba(245,232,210,.06);--rfp-cream:#f4ecdd;--rfp-txt:#ece2d0;--rfp-mut:#a89a85;--rfp-mut2:#766b5b;background:var(--rfp-bg);color:var(--rfp-txt);font-family:'Inter',-apple-system,sans-serif;overflow-y:auto;overflow-x:hidden;padding:0!important;display:block}
 #pg-resto[data-bg="luxe"]{--rfp-bg:#0b0a0d;--rfp-surf:#15131b;--rfp-line:rgba(214,182,122,.15);--rfp-line2:rgba(214,182,122,.07);--rfp-cream:#f4ead4;--rfp-txt:#e9dec8;--rfp-mut:#9b9080;--rfp-mut2:#6b6354;--rfp-a:#cca456;--rfp-lt:#e6cb83;background-color:#0b0a0d;background-image:radial-gradient(110% 70% at 50% -12%,rgba(204,164,86,.16),transparent 55%),radial-gradient(85% 60% at 105% 105%,rgba(150,100,40,.12),transparent 55%)}
-#pg-resto[data-bg="pink"]{--rfp-bg:#f7cbde;--rfp-surf:rgba(255,255,255,.6);--rfp-line:rgba(140,40,85,.16);--rfp-line2:rgba(140,40,85,.08);--rfp-cream:#3d1528;--rfp-txt:#4d2338;--rfp-mut:#8a4f6c;--rfp-mut2:#b68197;--rfp-a:#d6336c;--rfp-lt:#a51e54;background-color:#f7cbde;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.16) 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,rgba(150,50,95,.06) 0 1px,transparent 1px 4px),radial-gradient(130% 90% at 50% -10%,rgba(255,255,255,.45),transparent 55%)}
+#pg-resto[data-bg="pink"]{--rfp-bg:#f7b8d2;--rfp-surf:rgba(255,255,255,.62);--rfp-line:rgba(140,40,85,.18);--rfp-line2:rgba(140,40,85,.09);--rfp-cream:#3d1528;--rfp-txt:#4d2338;--rfp-mut:#8a4f6c;--rfp-mut2:#b68197;--rfp-a:#d6336c;--rfp-lt:#a51e54;background-color:#f7b8d2;background-image:none}
+#pg-resto[data-bg="rose"]{--rfp-bg:#f48cb6;--rfp-surf:rgba(255,255,255,.66);--rfp-line:rgba(120,25,70,.20);--rfp-line2:rgba(120,25,70,.10);--rfp-cream:#3a1020;--rfp-txt:#4a1a2e;--rfp-mut:#7e3f5d;--rfp-mut2:#a86c88;--rfp-a:#c81f63;--rfp-lt:#9c0f49;background-color:#f48cb6;background-image:none}
+#pg-resto[data-bg="blush"]{--rfp-bg:#f9d6e3;--rfp-surf:rgba(255,255,255,.58);--rfp-line:rgba(140,40,85,.14);--rfp-line2:rgba(140,40,85,.07);--rfp-cream:#3d1528;--rfp-txt:#4d2338;--rfp-mut:#8a4f6c;--rfp-mut2:#b68197;--rfp-a:#d6336c;--rfp-lt:#a51e54;background-color:#f9d6e3;background-image:none}
 #pg-resto[data-bg="linen"]{--rfp-bg:#efe7d6;--rfp-surf:rgba(255,255,255,.62);--rfp-line:rgba(90,70,35,.15);--rfp-line2:rgba(90,70,35,.08);--rfp-cream:#2f2616;--rfp-txt:#3e3422;--rfp-mut:#7c6b4d;--rfp-mut2:#aa9874;--rfp-a:#b8862f;--rfp-lt:#996d1c;background-color:#efe7d6;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.22) 0 1px,transparent 1px 5px),repeating-linear-gradient(90deg,rgba(120,95,55,.06) 0 1px,transparent 1px 5px)}
 #pg-resto[data-bg="marble"]{--rfp-bg:#eceae6;--rfp-surf:rgba(255,255,255,.7);--rfp-line:rgba(40,42,50,.12);--rfp-line2:rgba(40,42,50,.06);--rfp-cream:#222730;--rfp-txt:#2f343d;--rfp-mut:#697079;--rfp-mut2:#9aa0a9;--rfp-a:#9a8654;--rfp-lt:#7c6a3e;background-color:#eceae6;background-image:radial-gradient(70% 55% at 18% 8%,rgba(255,255,255,.85),transparent 55%),radial-gradient(60% 45% at 92% 28%,rgba(205,210,218,.5),transparent 50%),linear-gradient(118deg,rgba(180,186,196,.22) 0%,transparent 22%,transparent 68%,rgba(168,174,188,.3) 100%)}
 #pg-resto[data-bg="paper"]{--rfp-bg:#f5f1e7;--rfp-surf:#fffdf8;--rfp-line:rgba(70,58,35,.13);--rfp-line2:rgba(70,58,35,.07);--rfp-cream:#2c2417;--rfp-txt:#3a3121;--rfp-mut:#776a51;--rfp-mut2:#a89a7d;--rfp-a:#b07a3a;--rfp-lt:#925c22;background-color:#f5f1e7;background-image:radial-gradient(130% 80% at 50% -5%,rgba(255,255,255,.55),transparent 50%)}
@@ -3096,6 +3103,7 @@ setTimeout(function(){
 
 
 <!-- LOADING -->
+<script>(function(){try{var s=location.search||'',p=(location.pathname||'').toLowerCase();if(/[?&](r|book|checkbooking)=/.test(s)||p.indexOf('/r/')===0||p==='/book'||p==='/booking'||p==='/my-booking'||p==='/mybooking'||p==='/check-booking'){document.documentElement.className+=' cust-load';}}catch(_){}})();</script>
 <div id="loadingScreen">
 <script>
 // Force hide loading screen after 5 seconds NO MATTER WHAT
@@ -4119,7 +4127,9 @@ setTimeout(function(){
         <select class="fi" id="mRbg" style="max-width:260px">
           <option value="dark">Dark (default)</option>
           <option value="luxe">Dark Luxe (gold glow) ✨</option>
-          <option value="pink">Pink Canvas 💗</option>
+          <option value="blush">Pink — Soft (light) 🌸</option>
+          <option value="pink">Pink — Canvas (medium) 💗</option>
+          <option value="rose">Pink — Rose (deep) 🌹</option>
           <option value="linen">Linen (light cream) 🧵</option>
           <option value="marble">Marble (elegant) 🤍</option>
           <option value="paper">Paper (warm cream) 📜</option>
