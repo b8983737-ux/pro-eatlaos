@@ -4078,7 +4078,7 @@ async function loadLandingRestos(){
   try{
     // Check daily cache FIRST — avoid downloading restaurants every visit
     // Cache version: bump when filtering rules change to force fresh fetch for all visitors
-    const RCACHE_VER='v2'; // v2 = filter by status='active' (was: filter by name only)
+    const RCACHE_VER='v3'; // v3 = include validated restaurant logo on cards
     const RCACHE_KEY='el_lp_restos_cache';
     const RCACHE_DATE='el_lp_restos_date';
     const RCACHE_DATA='el_lp_restos_data'; // lightweight card data cache
@@ -4129,8 +4129,9 @@ async function loadLandingRestos(){
         .filter(([k,r])=>r.name && r.status==='active')
         .map(([k,r])=>([k,{
           name:r.name, emoji:r.emoji||'🍽️',
-          // NO logo — base64 logos are huge (50-200KB each!)
-          // Landing page shows emoji only to save bandwidth
+          // v3: include uploaded logo (image data-URL / https only) so cards show
+          // the real restaurant logo. Guarded + cache write is already try/catch'd.
+          logo:((typeof r.logo==='string' && r.logo.length>4 && /^(data:image\/|https:\/\/)/.test(r.logo)) ? r.logo : ''),
           cuisine:r.cuisine||r.addr||'Laos',
           _tableCount:(r.tables||[]).length
         }]));
@@ -4190,7 +4191,7 @@ async function loadLandingRestos(){
       const [k,r] = Array.isArray(item) ? item : [item.id, item];
       return `<div class="lp-resto-card" data-rid="${k}">
         <div class="lp-resto-live"><div class="lp-resto-live-dot"></div><span class="lp-resto-live-txt">LIVE</span></div>
-        <div class="lp-resto-logo">${r.emoji||'🍽️'}</div>
+        <div class="lp-resto-logo">${(typeof r.logo==='string' && r.logo.length>4 && /^(data:image\/|https:\/\/)/.test(r.logo)) ? `<img src="${r.logo.replace(/"/g,'&quot;')}" loading="lazy" alt="">` : (r.emoji||'🍽️')}</div>
         <div class="lp-resto-name">${r.name||'Restaurant'}</div>
         <div class="lp-resto-cuisine">${r.cuisine||'Laos'}</div>
       </div>`;
