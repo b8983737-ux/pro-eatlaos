@@ -13334,7 +13334,7 @@ async function bkEnterBook(id){
 }
 function bkApplyRestoChrome(r){
   var acc=(typeof RFP_ACCENT!=='undefined' && r && RFP_ACCENT[r.theme])||'#c8973a';
-  var shell=document.querySelector('#mCustBooking .bkm-shell'); if(shell) shell.style.setProperty('--bks-acc', acc);
+  var shell=document.querySelector('#mCustBooking .bkm-shell'); if(shell){ shell.style.setProperty('--bks-acc', acc); shell.setAttribute('data-bg',(r&&r.bg)||'dark'); }
   var safe=(typeof _rfpSafeUrl==='function')?_rfpSafeUrl:function(u){return String(u||'').replace(/["'()\\]/g,'');};
   var cover=document.getElementById('bksCover');
   if(cover){ if(r && r.cover){ cover.style.backgroundImage='url('+safe(r.cover)+')'; cover.classList.remove('noimg'); } else { cover.style.backgroundImage=''; cover.classList.add('noimg'); } }
@@ -16834,6 +16834,9 @@ async function cleanupOldBookings(opts){
 <style id="bks-single">
 /* ════ booking-v2 single-page styles ════ */
 #mCustBooking .bkm-shell{--bks-acc:#c8973a}
+#mCustBooking .bkm-shell[data-bg="blush"]{background:linear-gradient(180deg,#3d1c2c 0%,#2a1320 100%);border-color:rgba(247,184,210,.30)}
+#mCustBooking .bkm-shell[data-bg="pink"]{background:linear-gradient(180deg,#47152f 0%,#300d20 100%);border-color:rgba(247,184,210,.34)}
+#mCustBooking .bkm-shell[data-bg="rose"]{background:linear-gradient(180deg,#4e0f2a 0%,#33091c 100%);border-color:rgba(244,140,182,.40)}
 #bkStepBook{padding:0!important}
 #bkStepBook .bks-cover{position:relative;height:150px;background:#241b0e center/cover no-repeat;display:flex;align-items:flex-end;border-radius:14px 14px 0 0;overflow:hidden;margin-bottom:4px}
 #bkStepBook .bks-cover.noimg{background:linear-gradient(135deg,#241b0e,#16110b)}
@@ -16860,7 +16863,7 @@ async function cleanupOldBookings(opts){
 #bkStepBook .bks-confirm:active{transform:translateY(1px)}
 #bkStepBook .bks-sect+.bks-sect{border-top:1px solid rgba(255,255,255,.06);padding-top:16px}
 #bkStepBook .bk-party{display:flex;align-items:center;justify-content:center;gap:26px}
-#bkStepBook .bk-party-num{color:var(--bks-acc);font-weight:800;min-width:46px;text-align:center}
+#bkStepBook .bk-party-num{color:#fff;font-weight:800;min-width:46px;text-align:center}
 #bkStepBook .bks-cover .bks-name{text-shadow:0 1px 12px rgba(0,0,0,.6)}
 </style>
 <div id="mCustBooking" class="modal-ov" onclick="if(event.target===this){_modalBackdropClose('mCustBooking',function(){return bkState&&bkState.step>1&&bkState.step<7;},bkReleaseLock);}">
@@ -17080,6 +17083,16 @@ function _rfpSyncPageBg(host){
   try{ var c=getComputedStyle(host).getPropertyValue('--rfp-bg').trim();
     if(c){ document.documentElement.style.backgroundColor=c; document.body.style.backgroundColor=c; } }catch(_){}
 }
+function _rfpFitRansom(host){
+  try{
+    var el=host&&host.querySelector('.rfp-name-ransom'); if(!el) return;
+    el.style.whiteSpace='nowrap'; el.style.fontSize='';            // reset to CSS base, then shrink if needed
+    var parent=el.parentElement||host; var avail=parent.clientWidth-10;
+    if(avail<=0) return;
+    var fs=parseFloat(getComputedStyle(el).fontSize)||31, g=0;
+    while(el.scrollWidth>avail && fs>11 && g<60){ fs-=1; el.style.fontSize=fs+'px'; g++; }
+  }catch(_){}
+}
 async function renderRestoPage(rid){
   _rfpId=rid;
   if(typeof showPage==='function') showPage('pg-resto');
@@ -17172,6 +17185,8 @@ async function renderRestoPage(rid){
 
   if(hasLoc) _rfpMap(r.lat, r.lng, acc);
   try{ window.scrollTo(0,0); }catch(_){}
+  _rfpFitRansom(host);
+  if(!window._rfpFitBound){ window._rfpFitBound=1; window.addEventListener('resize',function(){ var h=document.getElementById('pg-resto'); if(h) _rfpFitRansom(h); }); }
 }
 
 function _rfpMap(lat,lng,acc){
