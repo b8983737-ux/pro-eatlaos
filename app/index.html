@@ -12793,11 +12793,11 @@ setTimeout(function(){
     },2000);
   }
 },6000);
-try{init();}catch(e){
+setTimeout(function(){ try{init();}catch(e){
   console.error('init error:',e);
   var ls=document.getElementById('loadingScreen');
   if(ls){ls.style.opacity='0';setTimeout(function(){ls.style.display='none';},400);}
-}
+} }, 0);
 
 /* ════════════════════════════════════════════════════════════════ */
 /* v4 BOOKING SYSTEM (Phase 1) — Customer + Owner + Hours          */
@@ -16898,7 +16898,7 @@ var RFP_T={
  zh:{book:'预订',menu:'菜单',call:'电话',map:'地图',hours:'营业时间',findus:'位置',dir:'获取路线 →',reserve:'预订餐桌',closed:'休息',closedToday:'今日休息',closedNow:'现已打烊',openCloses:'营业中 · ',closeSuf:' 打烊',opens:'今天 ',today:' 开门',noMenu:'暂无菜单图片',powered:'技术支持',tagline:'每家餐厅的线上之家'},
  ko:{book:'예약',menu:'메뉴',call:'전화',map:'지도',hours:'영업시간',findus:'위치',dir:'길찾기 →',reserve:'테이블 예약',closed:'영업종료',closedToday:'오늘 휴무',closedNow:'현재 영업종료',openCloses:'영업중 · ',closeSuf:' 마감',opens:'오늘 ',today:' 오픈',noMenu:'메뉴 사진이 없습니다',powered:'제공',tagline:'모든 레스토랑의 온라인 공간'}
 };
-function _rfpT(){ return RFP_T[_rfpLang()]||RFP_T.en; }
+function _rfpT(){ try{ return RFP_T[_rfpLang()]||RFP_T.en; }catch(_){ return (typeof RFP_T!=='undefined'&&RFP_T.en)||{}; } }
 var RFP_DAYS={
   en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
   lo:['ວັນອາທິດ','ວັນຈັນ','ວັນອັງຄານ','ວັນພຸດ','ວັນພະຫັດ','ວັນສຸກ','ວັນເສົາ'],
