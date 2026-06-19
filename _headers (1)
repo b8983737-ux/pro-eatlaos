@@ -1,0 +1,22 @@
+# EATLAOS — always serve FRESH html so a refresh never shows a stale page,
+# an old cached 404, or an outdated app version. (Images/static still cache fine.)
+/
+  Cache-Control: no-cache, must-revalidate
+/index.html
+  Cache-Control: no-cache, must-revalidate
+/app/
+  Cache-Control: no-cache, must-revalidate
+/app/index.html
+  Cache-Control: no-cache, must-revalidate
+/r/*
+  Cache-Control: no-cache, must-revalidate
+/book
+  Cache-Control: no-cache, must-revalidate
+/booking
+  Cache-Control: no-cache, must-revalidate
+/my-booking
+  Cache-Control: no-cache, must-revalidate
+/mybooking
+  Cache-Control: no-cache, must-revalidate
+/login
+  Cache-Control: no-cache, must-revalidate
