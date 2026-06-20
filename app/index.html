@@ -2930,8 +2930,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 #pg-resto *{box-sizing:border-box}
 #pg-resto .rfp-wrap{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;padding-bottom:96px}
 #pg-resto .rfp-lao{font-family:'Noto Sans Lao','Noto Sans',sans-serif}
+#pg-resto{touch-action:pan-x pan-y}
 #pg-resto .rfp-hero{position:relative;height:300px;overflow:hidden;background:#241a0e}
-#pg-resto .rfp-cover{position:absolute;inset:0;background-size:cover;background-position:center}
+#pg-resto .rfp-cover{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none}
 #pg-resto .rfp-cover.ph{background:radial-gradient(120% 80% at 70% 10%,color-mix(in srgb,var(--rfp-a),transparent 78%),transparent 55%),radial-gradient(100% 90% at 20% 90%,rgba(120,70,30,.35),transparent 60%),#2a1d0e}
 #pg-resto .rfp-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,12,7,.5) 0%,transparent 25%,transparent 50%,rgba(16,12,7,.75) 82%,var(--rfp-bg) 100%)}
 #pg-resto .rfp-htop{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:16px;z-index:3;padding-top:max(16px,env(safe-area-inset-top))}
@@ -14619,7 +14620,10 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     }
     // hitArea first so visible shape sits on top (but hit area still catches clicks via parent <g>)
     const groupCls = `fp-vw-table ${stateClass}${isVip?' vip':''}${isWalkIn?' walkin':''}`;
-    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
+    // Shrink the label so long names (e.g. "VIP05") fit inside the table box; short numbers stay big.
+    var _numStr = String(num), _tnumFs = 32, _availW = (el.w || 60) - 10;
+    if(_numStr.length){ var _estW = _numStr.length * _tnumFs * 0.58; if(_estW > _availW) _tnumFs = Math.max(10, Math.floor(_availW / (_numStr.length * 0.58))); }
+    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
@@ -17204,7 +17208,7 @@ async function renderRestoPage(rid){
   document.title=(r.name||'Restaurant')+' · EATLAOS';
   host.innerHTML=
   '<div class="rfp-wrap">'+
-    '<div class="rfp-hero"><div class="'+coverCls+'" '+coverStyle+'></div><div class="rfp-grad"></div>'+
+    '<div class="rfp-hero" oncontextmenu="return false"><div class="'+coverCls+'" '+coverStyle+'></div><div class="rfp-grad"></div>'+
       '<div class="rfp-htop"><a class="rfp-ib" href="/">‹</a><a class="rfp-ib" href="'+_dirH+'" target="_blank" rel="noopener">↗</a></div></div>'+
     '<div class="rfp-ident"><div class="rfp-logo">'+logoHtml+'</div>'+
       (r.font==='ransom'?'<div class="rfp-name rfp-name-ransom">'+_rfpRansomHTML(r.name||'Restaurant')+'</div>':'<div class="rfp-name" style="font-family:'+(RFP_FONT[r.font]||RFP_FONT.default)+'">'+_rfpEsc(r.name||'Restaurant')+'</div>')+
