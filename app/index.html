@@ -2372,6 +2372,10 @@ html.el-lang-lo .rfp-eye, html.el-lang-th .rfp-eye,
 html.el-lang-lo .bkm-eyebrow, html.el-lang-th .bkm-eyebrow,
 html.el-lang-lo .bks-sect-h, html.el-lang-th .bks-sect-h,
 html.el-lang-lo .bk-date-dow, html.el-lang-th .bk-date-dow,
+html.el-lang-lo .bk-label, html.el-lang-th .bk-label,
+html.el-lang-lo .bk-status-info b, html.el-lang-th .bk-status-info b,
+html.el-lang-lo .bk-status-pill, html.el-lang-th .bk-status-pill,
+html.el-lang-lo .bk-tab, html.el-lang-th .bk-tab,
 html.el-lang-lo .bk-resto-name, html.el-lang-th .bk-resto-name{ letter-spacing:0 !important; }
 html.el-lang-lo .bk-step-h, html.el-lang-th .bk-step-h,
 html.el-lang-lo .bkm-title, html.el-lang-th .bkm-title{ line-height:1.4; }
@@ -2956,7 +2960,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 #pg-resto .rfp-status.later .rfp-status-d{background:#f5a623;box-shadow:0 0 8px #f5a623}
 #pg-resto .rfp-status.off{color:#e5484d}
 #pg-resto .rfp-status.off .rfp-status-d{background:#e5484d;box-shadow:0 0 8px #e5484d}
-#pg-resto .rfp-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:22px}
+#pg-resto .rfp-quick{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:20px 14px}
 #pg-resto .rfp-qa{display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 4px;border-radius:14px;background:var(--rfp-surf);border:1px solid var(--rfp-line);color:var(--rfp-txt);font-size:11.5px;cursor:pointer;text-decoration:none}
 #pg-resto .rfp-qa .qi{font-size:26px;line-height:1;color:var(--rfp-lt)}
 #rfpToast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(10px);background:#17120a;color:#f4ecdd;padding:12px 20px;border-radius:13px;font-size:15px;font-weight:600;letter-spacing:.3px;box-shadow:0 10px 30px rgba(0,0,0,.34);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99999;max-width:84vw;text-align:center}
@@ -15377,6 +15381,8 @@ async function bsLookup(by){
     const lblTime = _lp('bk_status_time','Time');
     const lblPpl = _lp('bk_status_people','Guests');
     const lblCode = _lp('bk_status_code','Code');
+    const lblName = _lp('bk_name','Name');
+    const lblTable = _lp('bk_summary_table','Table');
     results.innerHTML = `<div class="bk-status-list">${found.map(b=>{
       const pillClass = 'bk-pill-'+b.status;
       const pillTxt = _lp('bk_status_'+b.status, b.status.toUpperCase());
@@ -15393,9 +15399,11 @@ async function bsLookup(by){
           <div class="bk-status-pill ${pillClass}">${escapeHtml(pillTxt)}</div>
         </div>
         <div class="bk-status-info">
+          ${b.name?`<div><b>${escapeHtml(lblName)}</b>${escapeHtml(b.name)}</div>`:''}
           <div><b>${escapeHtml(lblDate)}</b>${escapeHtml(dStr)}</div>
           <div><b>${escapeHtml(lblTime)}</b>${escapeHtml(b.slot||'')}</div>
           <div><b>${escapeHtml(lblPpl)}</b>${b.party||1}</div>
+          ${b.tableNum?`<div><b>${escapeHtml(lblTable)}</b>${escapeHtml(b.tableNum)}${b.tableZone?' · '+escapeHtml(b.tableZone):''}</div>`:''}
           <div><b>${escapeHtml(lblCode)}</b><span style="font-family:monospace;letter-spacing:2px">${escapeHtml(b.code||'')}</span></div>
         </div>
         ${b.note?`<div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.55);font-style:italic">"${escapeHtml(b.note)}"</div>`:''}
@@ -16886,6 +16894,28 @@ async function cleanupOldBookings(opts){
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-note-h,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-sum-vip-req-note{color:rgba(74,23,48,.6)}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-link{color:#b8336e}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-slot,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-slot-time{color:#4a1730}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-slot-badge{color:rgba(74,23,48,.55)}
+/* ── Status / "My Booking" modal: same soft light-pink skin as the restaurant ── */
+#mCustBookingStatus .bkm-shell[data-bg="blush"]{background:#f9d6e3;border-color:rgba(120,40,75,.20)}
+#mCustBookingStatus .bkm-shell[data-bg="pink"]{background:#f7b8d2;border-color:rgba(120,40,75,.22)}
+#mCustBookingStatus .bkm-shell[data-bg="rose"]{background:#f48cb6;border-color:rgba(120,40,75,.26)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-eyebrow{color:#b8336e}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-title,
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-resto{color:#4a1730}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-back,
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-x{background:rgba(255,255,255,.55);border-color:rgba(120,40,75,.22);color:#7a2d52}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-tabs{background:rgba(255,255,255,.4)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-tab{color:rgba(74,23,48,.55)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-label{color:rgba(74,23,48,.6)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input{background:rgba(255,255,255,.6);border-color:rgba(120,40,75,.20);color:#4a1730}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input::placeholder{color:rgba(74,23,48,.42)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input:focus{border-color:#b8336e;background:#fff;box-shadow:0 0 0 3px rgba(184,51,110,.14)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-card{background:rgba(255,255,255,.5);border-color:rgba(120,40,75,.18)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-info{color:rgba(74,23,48,.7)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-info b{color:rgba(74,23,48,.5)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-empty{color:rgba(74,23,48,.5)}
 #bkStepBook{padding:0!important}
 #bkStepBook .bks-cover{position:relative;height:150px;background:#241b0e center/cover no-repeat;display:flex;align-items:flex-end;border-radius:14px 14px 0 0;overflow:hidden;margin-bottom:4px}
 #bkStepBook .bks-cover.noimg{background:linear-gradient(135deg,#241b0e,#16110b)}
@@ -17074,11 +17104,11 @@ var RFP_ACCENT={classic:'#c8973a',luxury:'#c8973a',terroir:'#b06a3a',brasserie:'
 var _rfpResto=null, _rfpId=null, _rfpKip=v=>{try{return (typeof fmtK==='function')?fmtK(v):('₭'+Number(v||0).toLocaleString());}catch(_){return '₭'+v;}};
 function _rfpLang(){ try{ return localStorage.getItem('el_lp_lang')||'lo'; }catch(_){ return 'lo'; } }
 var RFP_T={
- en:{book:'Book',menu:'Menu',call:'Call',map:'Map',hours:'Opening hours',findus:'Find us',dir:'Get directions →',reserve:'Reserve a table',closed:'Closed',closedToday:'Closed today',closedNow:'Closed now',openCloses:'Open now · closes ',closeSuf:'',opens:'Opens ',today:' today',noMenu:'No menu photo yet.',powered:'Powered by',tagline:'Every restaurant, a home online.'},
- lo:{book:'ຈອງ',menu:'ເມນູ',call:'ໂທ',map:'ແຜນທີ່',hours:'ເວລາເປີດ',findus:'ສະຖານທີ່',dir:'ເສັ້ນທາງ →',reserve:'ຈອງໂຕະ',closed:'ປິດ',closedToday:'ມື້ນີ້ປິດ',closedNow:'ຕອນນີ້ປິດ',openCloses:'ເປີດຢູ່ · ປິດ ',closeSuf:'',opens:'ເປີດ ',today:' ມື້ນີ້',noMenu:'ຍັງບໍ່ມີຮູບເມນູ.',powered:'ໃຫ້ບໍລິການໂດຍ',tagline:'ທຸກຮ້ານ, ມີໜ້າອອນລາຍ.'},
- th:{book:'จอง',menu:'เมนู',call:'โทร',map:'แผนที่',hours:'เวลาเปิด',findus:'ที่ตั้ง',dir:'เส้นทาง →',reserve:'จองโต๊ะ',closed:'ปิด',closedToday:'วันนี้ปิด',closedNow:'ขณะนี้ปิด',openCloses:'เปิดอยู่ · ปิด ',closeSuf:'',opens:'เปิด ',today:' วันนี้',noMenu:'ยังไม่มีรูปเมนู',powered:'ขับเคลื่อนโดย',tagline:'ทุกร้าน มีหน้าออนไลน์'},
- zh:{book:'预订',menu:'菜单',call:'电话',map:'地图',hours:'营业时间',findus:'位置',dir:'获取路线 →',reserve:'预订餐桌',closed:'休息',closedToday:'今日休息',closedNow:'现已打烊',openCloses:'营业中 · ',closeSuf:' 打烊',opens:'今天 ',today:' 开门',noMenu:'暂无菜单图片',powered:'技术支持',tagline:'每家餐厅的线上之家'},
- ko:{book:'예약',menu:'메뉴',call:'전화',map:'지도',hours:'영업시간',findus:'위치',dir:'길찾기 →',reserve:'테이블 예약',closed:'영업종료',closedToday:'오늘 휴무',closedNow:'현재 영업종료',openCloses:'영업중 · ',closeSuf:' 마감',opens:'오늘 ',today:' 오픈',noMenu:'메뉴 사진이 없습니다',powered:'제공',tagline:'모든 레스토랑의 온라인 공간'}
+ en:{book:'Book',menu:'Menu',call:'Call',map:'Map',mybk:'My Booking',hours:'Opening hours',findus:'Find us',dir:'Get directions →',reserve:'Reserve a table',closed:'Closed',closedToday:'Closed today',closedNow:'Closed now',openCloses:'Open now · closes ',closeSuf:'',opens:'Opens ',today:' today',noMenu:'No menu photo yet.',powered:'Powered by',tagline:'Every restaurant, a home online.'},
+ lo:{book:'ຈອງ',menu:'ເມນູ',call:'ໂທ',map:'ແຜນທີ່',mybk:'ກວດການຈອງ',hours:'ເວລາເປີດ',findus:'ສະຖານທີ່',dir:'ເສັ້ນທາງ →',reserve:'ຈອງໂຕະ',closed:'ປິດ',closedToday:'ມື້ນີ້ປິດ',closedNow:'ຕອນນີ້ປິດ',openCloses:'ເປີດຢູ່ · ປິດ ',closeSuf:'',opens:'ເປີດ ',today:' ມື້ນີ້',noMenu:'ຍັງບໍ່ມີຮູບເມນູ.',powered:'ໃຫ້ບໍລິການໂດຍ',tagline:'ທຸກຮ້ານ, ມີໜ້າອອນລາຍ.'},
+ th:{book:'จอง',menu:'เมนู',call:'โทร',map:'แผนที่',mybk:'เช็คการจอง',hours:'เวลาเปิด',findus:'ที่ตั้ง',dir:'เส้นทาง →',reserve:'จองโต๊ะ',closed:'ปิด',closedToday:'วันนี้ปิด',closedNow:'ขณะนี้ปิด',openCloses:'เปิดอยู่ · ปิด ',closeSuf:'',opens:'เปิด ',today:' วันนี้',noMenu:'ยังไม่มีรูปเมนู',powered:'ขับเคลื่อนโดย',tagline:'ทุกร้าน มีหน้าออนไลน์'},
+ zh:{book:'预订',menu:'菜单',call:'电话',map:'地图',mybk:'查订位',hours:'营业时间',findus:'位置',dir:'获取路线 →',reserve:'预订餐桌',closed:'休息',closedToday:'今日休息',closedNow:'现已打烊',openCloses:'营业中 · ',closeSuf:' 打烊',opens:'今天 ',today:' 开门',noMenu:'暂无菜单图片',powered:'技术支持',tagline:'每家餐厅的线上之家'},
+ ko:{book:'예약',menu:'메뉴',call:'전화',map:'지도',mybk:'예약 확인',hours:'영업시간',findus:'위치',dir:'길찾기 →',reserve:'테이블 예약',closed:'영업종료',closedToday:'오늘 휴무',closedNow:'현재 영업종료',openCloses:'영업중 · ',closeSuf:' 마감',opens:'오늘 ',today:' 오픈',noMenu:'메뉴 사진이 없습니다',powered:'제공',tagline:'모든 레스토랑의 온라인 공간'}
 };
 function _rfpT(){ try{ return RFP_T[_rfpLang()]||RFP_T.en; }catch(_){ return (typeof RFP_T!=='undefined'&&RFP_T.en)||{}; } }
 var RFP_DAYS={
@@ -17141,6 +17171,10 @@ function _rfpFitRansom(host){
     var fs=parseFloat(getComputedStyle(el).fontSize)||31, g=0;
     while(el.scrollWidth>avail && fs>11 && g<60){ fs-=1; el.style.fontSize=fs+'px'; g++; }
   }catch(_){}
+}
+function rfpOpenMyBooking(){
+  try{ var h=document.getElementById('pg-resto'); var sh=document.querySelector('#mCustBookingStatus .bkm-shell'); if(sh) sh.setAttribute('data-bg', (h&&h.getAttribute('data-bg'))||'dark'); }catch(_){}
+  if(typeof openModal==='function') openModal('mCustBookingStatus');
 }
 async function renderRestoPage(rid){
   _rfpId=rid;
@@ -17220,6 +17254,7 @@ async function renderRestoPage(rid){
       '<div class="rfp-qa" onclick="rfpShowMenu()"><span class="qi">☷</span>'+_rfpEsc(T.menu)+'</div>'+
       '<div class="rfp-qa" onclick="rfpCall()"><span class="qi">✆</span>'+_rfpEsc(T.call)+'</div>'+
       '<div class="rfp-qa" onclick="rfpScrollMap()"><span class="qi">➤</span>'+_rfpEsc(T.map)+'</div>'+
+      '<div class="rfp-qa" onclick="rfpOpenMyBooking()"><span class="qi">✓</span>'+_rfpEsc(T.mybk)+'</div>'+
     '</div>'+
     ''+/* 'Most loved' removed — page shows no dish list, only the menu photo via the Menu button */
     ''+/* menu list removed — menu is shown as a photo via the Menu button (rfpShowMenu) */
