@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781065000 --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2: single-page booking with live table map, per-restaurant theme, translations + lock kept on restaurants (tenant-isolation foundation) -->
+<!DOCTYPE html><!-- BUILD:1781945406 · turnover P1+P2 · map Lao-fix + zone header dropdown --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2795,7 +2795,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-vip-crown{font-size:26px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 .fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
 .fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:800;}
-.fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:24px;font-weight:700;fill:rgba(255,255,255,.9);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:.4px;paint-order:stroke;stroke:rgba(0,0,0,.65);stroke-width:3px;stroke-linejoin:round;}
+.fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:24px;font-weight:700;fill:rgba(255,255,255,.92);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:0;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
@@ -2805,12 +2805,20 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 /* Green "free tables" pill badge — used on owner map tabs, customer floor-plan area tabs, and customer zone tabs */
 .fp-free-badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 7px;background:rgba(34,197,94,.18);color:#4ade80;border:1px solid rgba(74,222,128,.35);border-radius:11px;font-size:11px;font-weight:800;letter-spacing:.2px;line-height:1;box-shadow:0 0 0 1px rgba(0,0,0,.15) inset;}
 .bk-area-tab.on .fp-free-badge{background:rgba(34,197,94,.25);}
+.bk-zone-bar{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-shrink:0;background:rgba(200,151,58,.10);border:1px solid rgba(200,151,58,.30);border-radius:12px;padding:0 12px;}
+.bk-zone-bar .bk-zone-ic{font-size:15px;flex-shrink:0;}
+.bk-zone-sel{flex:1;min-width:0;appearance:none;-webkit-appearance:none;-moz-appearance:none;background:transparent;border:none;color:#f4ecdd;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:0;padding:12px 4px;cursor:pointer;outline:none;}
+.bk-zone-sel option{background:#161310;color:#f4ecdd;font-weight:600;}
+.bk-zone-chev{color:#c8973a;font-weight:800;pointer-events:none;flex-shrink:0;font-size:13px;}
+.bk-zone-bar.single{padding:11px 14px;}
+.bk-zone-bar.single .bk-zone-name{color:#f4ecdd;font-size:14px;font-weight:700;letter-spacing:0;}
 .ow-tm-tab .fp-free-badge{margin-left:6px;}
 .ow-tm-tab.on .fp-free-badge{background:rgba(34,197,94,.3);border-color:rgba(74,222,128,.5);color:#0a3018;}
 .bk-zone-tab .fp-free-badge{margin-left:5px;}
 .bkm-shell.fp-fullscreen .fp-vw-legend{margin-top:6px;}
 .fp-vw-legend span{display:inline-flex;align-items:center;gap:8px;}
 .fp-vw-legend i{width:12px;height:12px;border-radius:50%;display:inline-block;}
+body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,body.lang-th .fp-vw-tnum,body.lang-lo .fp-vw-legend,body.lang-th .fp-vw-legend,body.lang-lo .ow-tm-legend,body.lang-th .ow-tm-legend{letter-spacing:0 !important;}
 
 /* ═══ v5.9: TABLE INFO POPUP (centered modal over map) ═══ */
 .ti-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
@@ -4147,6 +4155,7 @@ setTimeout(function(){
         </select>
       </div>
       <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
+      <div class="form-row"><div class="fg"><label>🪑 Table Seating Mode</label><select class="fi" id="mRseating"><option value="open">🍺 Open — held all night (owner frees table)</option><option value="min60">⏰ 60 min — auto-free for next booking</option><option value="min90">⏰ 90 min — auto-free for next booking</option><option value="min120">⏰ 120 min — auto-free for next booking</option></select></div><div class="fg"><label style="opacity:.7">When to use</label><div style="font-size:11px;color:var(--s-muted);line-height:1.45;padding-top:8px">Beer / bar → <b>Open</b>. Dinner / casual → pick a duration so a 20:00 table reopens for a later guest.</div></div></div>
       <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px">
         <div id="mRvatHistory" style="margin-top:10px;display:none">
           <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--s-muted);margin-bottom:6px">📋 VAT Change History</div>
@@ -5067,6 +5076,11 @@ const STAFF_T={
     owtm_stat_free:'ວ່າງ',
     owtm_stat_walkin:'Walk-in',
     owtm_stat_total:'ໂຕະທັງໝົດໃນເຂດ',
+    owtm_reserved_title:'ຈອງຢູ່ຕອນນີ້ — ແຕະເພື່ອປ່ອຍໂຕະ',
+    owtm_no_reserved:'ບໍ່ມີໂຕະທີ່ຖືກຈອງຕອນນີ້.',
+    owtm_free_btn:'✓ ປ່ອຍ',
+    owtm_free_confirm:'ປ່ອຍໂຕະນີ້ບໍ? ການຈອງຈະຖືກໝາຍວ່າສຳເລັດ ແລະ ໂຕະຈະເປີດໃຫ້ຈອງຮອບຕໍ່ໄປ.',
+    owtm_freed:'ປ່ອຍໂຕະແລ້ວ',
     owtm_leg_free:'ວ່າງ',
     owtm_leg_booked:'ຖືກຈອງ',
     owtm_leg_walkin:'Walk-in',
@@ -9390,6 +9404,7 @@ async function saveResto(){
     addr:document.getElementById('mRaddr').value.trim(),
     status:document.getElementById('mRstatus').value,
     prep:parseInt(document.getElementById('mRprep').value)||15,
+    seatingMode:(document.getElementById('mRseating')&&document.getElementById('mRseating').value)||'open',
     theme:document.getElementById('mRtheme').value||'classic',
     cover:document.getElementById('mRcoverData').value||'',
     menuPhotos:_mRmenuPhotos.slice(),
@@ -9525,6 +9540,7 @@ async function editResto(id){
   document.getElementById('mRaddr').value=r.addr||r.address||'';
   document.getElementById('mRstatus').value=r.status||'active';
   document.getElementById('mRprep').value=r.prep||15;
+  if(document.getElementById('mRseating')) document.getElementById('mRseating').value=r.seatingMode||'open';
   document.getElementById('mRvat').value=r.vat||0;
   // Restore theme
   const restoTheme=r.theme||'classic';
@@ -13178,6 +13194,22 @@ function bkPickDate(iso){
   bkLoadSlotsAndBuild();
 }
 
+// ── booking-v2 TURNOVER ── does a booking that STARTS at bSlot still occupy qSlot?
+// seatingMode: 'open'  = held all night, owner frees table manually (beer / bar)
+//              'minNN' = auto-frees NN minutes after start (dinner / casual dining)
+function _bkOccupies(bSlot, qSlot, seatingMode){
+  if(!bSlot || !qSlot) return false;
+  const _m = s => { const p=String(s).split(':'); return (parseInt(p[0],10)||0)*60 + (parseInt(p[1],10)||0); };
+  let bs=_m(bSlot), qs=_m(qSlot);
+  if(bs < 360) bs += 1440;            // past-midnight slot sorts after evening slots
+  if(qs < 360) qs += 1440;
+  if(qs < bs) return false;           // query slot is before the booking even starts
+  const mode = seatingMode || 'open';
+  if(mode === 'open') return true;    // beer restaurant: holds the table the rest of the night
+  const dur = parseInt(String(mode).replace(/\D/g,''),10) || 90;
+  return qs < bs + dur;               // fixed seating: occupies [start, start+duration)
+}
+
 async function bkLoadSlotsAndBuild(){
   // v6.3: Count bookings PER slot (not just which slots are touched) so we can show capacity
   const bookedCount = {};  // { '20:00': 3, '21:00': 1 }
@@ -13189,11 +13221,19 @@ async function bkLoadSlotsAndBuild(){
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date)
     ]);
     if(r && Array.isArray(r.tables)) totalTables = r.tables.length;
+    // booking-v2 TURNOVER: each booking occupies a SPAN of slots, not just its start slot
+    const seatingMode = (r && r.seatingMode) || 'open';
+    bkState.seatingMode = seatingMode;
+    const durMin = (seatingMode==='open') ? null : (parseInt(String(seatingMode).replace(/\D/g,''),10)||90);
+    const _fmt = m => { const x=((m%1440)+1440)%1440; return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0'); };
     if(all) Object.keys(all).forEach(k=>{
       const b = all[k];
       // Only count bookings that hold a table — exclude rejected and expired
-      if(b && b.date===bkState.date && (b.status==='pending' || b.status==='accepted')){
-        bookedCount[b.slot] = (bookedCount[b.slot]||0) + 1;
+      if(b && b.date===bkState.date && (b.status==='pending' || b.status==='accepted') && b.slot){
+        const p=String(b.slot).split(':'); let start=(parseInt(p[0],10)||0)*60+(parseInt(p[1],10)||0);
+        if(start < 360) start += 1440;                                   // past-midnight start
+        const endM = (seatingMode==='open') ? 1800 : (start + durMin);   // open = held until ~06:00
+        for(let m=start; m<endM; m+=30){ const t=_fmt(m); bookedCount[t]=(bookedCount[t]||0)+1; }
       }
     });
   } catch(e){}
@@ -14689,8 +14729,10 @@ async function bkLoadTables(){
     // (date check is defensive — if fbGetFiltered fell back to full fetch, it still works)
     const allBookings = dayBookings || {};
     const bookedTableIds = new Set();
+    const _sMode = (r && r.seatingMode) || 'open';   // booking-v2 turnover mode
     Object.values(allBookings).forEach(b => {
-      if(b && b.date===bkState.date && b.slot===bkState.slot && b.status!=='rejected' && b.tableId){
+      // a table is taken for the chosen slot if ANY booking still occupies it then (turnover-aware)
+      if(b && b.date===bkState.date && b.status!=='rejected' && b.tableId && _bkOccupies(b.slot, bkState.slot, _sMode)){
         bookedTableIds.add(b.tableId);
       }
     });
@@ -14764,18 +14806,20 @@ async function bkLoadTables(){
           });
           return free;
         };
-        tabsHtml = `<div class="bk-area-tabs">${usableAreaSlugs.map(slug => {
+        const _freeWord = escapeHtml(_lp('bk_legend_available','Available'));
+        const _fullWord = escapeHtml(_lp('bk_zone_full','Full'));
+        const _opts = usableAreaSlugs.map(slug => {
           const a = allAreas[slug];
           // Translate standard areas
           let label = a.area || _fpAreaLabelFromSlug(slug);
           const stdLabelKey = 'fp_'+slug;
           const t = _lp(stdLabelKey, '');
           if(t && t !== stdLabelKey) label = t;
-          const cls = (slug === bkState._activeArea) ? 'bk-area-tab on' : 'bk-area-tab';
           const free = _freeInArea(slug);
-          const badge = free > 0 ? `<span class="fp-free-badge" title="${free} ${escapeHtml(_lp('bk_legend_available','Available'))}">${free}</span>` : '';
-          return `<button class="${cls}" data-area="${escapeHtml(slug)}">${escapeHtml(label)}${badge}</button>`;
-        }).join('')}</div>`;
+          const tail = free > 0 ? (' · '+free+' '+_freeWord) : (' · '+_fullWord);
+          return `<option value="${escapeHtml(slug)}"${slug===bkState._activeArea?' selected':''}>${escapeHtml(label)}${tail}</option>`;
+        }).join('');
+        tabsHtml = `<div class="bk-zone-bar"><span class="bk-zone-ic">🗺️</span><select class="bk-zone-sel" id="bkZoneSel" aria-label="Zone">${_opts}</select><span class="bk-zone-chev">▾</span></div>`;
       }
       // Initial render
       _bkRenderActiveAreaMap();
@@ -14788,17 +14832,13 @@ async function bkLoadTables(){
           <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
       `;
-      // Wire up area tab clicks
-      const tabsEl = grid.querySelector('.bk-area-tabs');
-      if(tabsEl){
-        tabsEl.onclick = function(ev){
-          const btn = ev.target.closest('button[data-area]');
-          if(!btn) return;
-          const slug = btn.dataset.area;
+      // Wire up zone selector — tap header shows all zones, pick one to switch the map
+      const zoneSel = grid.querySelector('#bkZoneSel');
+      if(zoneSel){
+        zoneSel.onchange = function(){
+          const slug = this.value;
           if(!slug || slug === bkState._activeArea) return;
           bkState._activeArea = slug;
-          // Re-render only the map portion
-          tabsEl.querySelectorAll('button[data-area]').forEach(b => b.classList.toggle('on', b.dataset.area === slug));
           _bkRenderActiveAreaMap(true);
         };
       }
@@ -15680,11 +15720,13 @@ async function _owTmFetchAndRender(silent){
   const areas = _fpReadAreas(r);
   // Compute booked table IDs for the chosen date (active bookings only — pending or accepted)
   const bookedTableIds = new Set();
+  const activeBookings = [];   // Pass 2: bookings currently holding a table (for tap-to-free)
   if(dayBookings){
-    Object.values(dayBookings).forEach(b=>{
+    Object.entries(dayBookings).forEach(([bid,b])=>{
       // Defensive date check (in case fbGetFiltered fell back to full fetch)
       if(b && b.date===targetDate && (b.status==='pending' || b.status==='accepted') && b.tableId){
         bookedTableIds.add(b.tableId);
+        activeBookings.push({ bid, tableId:b.tableId, slot:b.slot||'', name:b.name||'', party:(b.party||b.guests||b.pax||0), status:b.status });
       }
     });
   }
@@ -15700,6 +15742,7 @@ async function _owTmFetchAndRender(silent){
   _owTmState.areas = areas;
   _owTmState.tables = tables;
   _owTmState.bookedTableIds = bookedTableIds;
+  _owTmState.activeBookings = activeBookings;
   _owTmState.walkInTableIds = walkInTableIds;
   // Pick first area if none selected, or keep current if it still exists
   const areaSlugs = Object.keys(areas);
@@ -15803,6 +15846,7 @@ function _owTmRenderAll(){
     ${walkInChunk}
     <div>${escapeHtml(lblTotal)}: <b>${tablesInArea.length}</b></div>
   `;
+  _owTmRenderReserved();
   // Render the map SVG using the existing customer-side renderer
   if(!activeArea || !activeArea.elements || !activeArea.elements.length){
     map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">🗺️</span>${escapeHtml(_ts('owtm_no_floorplan','No floor plan set up yet. Ask your administrator to design the table map.'))}</div>`;
@@ -15820,6 +15864,51 @@ function _owTmPickArea(slug){
   if(!_owTmState.areas[slug]) return;
   _owTmState.activeArea = slug;
   _owTmRenderAll();
+}
+
+// Pass 2: show tables held by today's reservations, with a one-tap "Free" override.
+// Freeing = mark the booking 'completed' -> turnover compute (pending/accepted only) reopens the table.
+function _owTmRenderReserved(){
+  const box = document.getElementById('owTmReserved');
+  if(!box) return;
+  const list = _owTmState.activeBookings || [];
+  const title = escapeHtml(_ts('owtm_reserved_title','Reserved now — tap to free the table'));
+  const tableLabel = (tid)=>{
+    const t = (_owTmState.tables||[]).find(x=>x.id===tid);
+    if(!t) return tid;
+    let s = (t.num!=null) ? ('#'+t.num) : (t.label||t.name||String(tid));
+    if(t.num!=null && t.label) s += ' '+t.label;
+    return s;
+  };
+  if(!list.length){
+    box.innerHTML = `<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--s-muted);margin:14px 0 8px">${title}</div>`+
+      `<div style="font-size:13px;color:var(--s-muted);padding:10px 2px">${escapeHtml(_ts('owtm_no_reserved','No tables reserved right now.'))}</div>`;
+    return;
+  }
+  const rows = list.slice().sort((a,b)=>String(a.slot).localeCompare(String(b.slot))).map(bk=>{
+    const tl = escapeHtml(tableLabel(bk.tableId));
+    const slot = escapeHtml(bk.slot||'');
+    const who = escapeHtml(bk.name||'');
+    const party = bk.party? (' · '+escapeHtml(String(bk.party))+'p') : '';
+    const freeBtn = escapeHtml(_ts('owtm_free_btn','✓ Free'));
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--s-surf3,rgba(255,255,255,.03));border:1px solid var(--s-border);border-radius:8px;margin-bottom:7px">`+
+      `<div style="min-width:0"><b style="color:#fff;font-size:14px">${tl}</b> <span style="color:var(--s-green);font-weight:700;font-size:13px">${slot}</span><div style="font-size:11px;color:var(--s-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${who}${party}</div></div>`+
+      `<button onclick="owTmFreeTable('${escapeHtml(bk.bid)}')" style="flex-shrink:0;background:var(--s-green,#1db954);color:#04210f;border:none;border-radius:7px;padding:9px 14px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">${freeBtn}</button>`+
+      `</div>`;
+  }).join('');
+  box.innerHTML = `<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--s-muted);margin:14px 0 8px">${title}</div>${rows}`;
+}
+
+async function owTmFreeTable(bid){
+  if(!bid) return;
+  if(!confirm(_ts('owtm_free_confirm','Free this table now? The reservation is marked completed and the table reopens for later bookings.'))) return;
+  try{
+    await fbUpdate('bookings/'+restoId+'/'+bid, { status:'completed', freedAt:Date.now() });
+    if(typeof notifyC==='function') notifyC(_ts('owtm_freed','Table freed'), true);
+    _owTmFetchAndRender(false);
+  }catch(e){
+    if(typeof notifyD==='function') notifyD('⚠ '+((e&&e.message)||'Could not free table'));
+  }
 }
 
 function renderOwnerBookings(){
@@ -16447,6 +16536,7 @@ async function cleanupOldBookings(opts){
       <div class="ow-tm-tabs" id="owTmTabs"></div>
       <div class="ow-tm-stats" id="owTmStats"></div>
       <div class="ow-tm-map" id="owTmMap"></div>
+      <div class="ow-tm-reserved" id="owTmReserved"></div>
       <div class="ow-tm-legend">
         <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-free"></span><span data-ts="owtm_leg_free">Free</span></span>
         <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-bk"></span><span data-ts="owtm_leg_booked">Booked</span></span>
