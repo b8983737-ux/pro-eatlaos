@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1781945406 · r-CLEAN customer · turnover · map Lao-fix + zone header dropdown --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · owner+debug STRIPPED (11 modals + 41 fns + debug panel, -81KB) · turnover · map Lao-fix + zone dropdown + booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -49,13 +49,7 @@
 // Lazy load Chart.js only when admin logs in
 
 // Lazy load QRCode only when QR modal opens
-function loadQRCode(cb){
-  if(window.QRCode){if(cb)cb();return;}
-  const s=document.createElement('script');
-  s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-  s.onload=cb;
-  document.head.appendChild(s);
-}
+
 </script>
 <style>
 /* ═══ TOKENS ═══ */
@@ -3041,70 +3035,7 @@ body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,bod
 </head>
 <body>
 
-<!-- DEBUG PANEL - owner/SA only, hidden from customers -->
-<div id="debugBtn" onclick="toggleDebug()" style="position:fixed;bottom:4px;left:4px;z-index:99999;width:12px;height:12px;border-radius:50%;background:rgba(200,151,58,.7);cursor:pointer;display:none;" title="Debug"></div>
-<div id="debugPanel" style="display:none;position:fixed;bottom:20px;left:10px;z-index:99999;background:rgba(0,0,0,.95);color:#0f0;font-family:monospace;font-size:11px;padding:12px;border:1px solid #333;max-width:340px;border-radius:6px;max-height:60vh;overflow-y:auto;">
-  <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-    <span style="color:#ffd700;font-weight:bold">⚙ EATLAOS DEBUG</span>
-    <span onclick="toggleDebug()" style="cursor:pointer;color:#888">✕</span>
-  </div>
-  <div id="dbgLog" style="display:flex;flex-direction:column;gap:3px"></div>
-  <div style="margin-top:8px;border-top:1px solid #333;padding-top:8px">
-    <button onclick="dbgClear()" style="background:#333;border:none;color:#888;padding:2px 8px;font-size:10px;cursor:pointer;border-radius:3px">Clear</button>
-    <button onclick="dbgCopyLog()" style="background:#333;border:none;color:#888;padding:2px 8px;font-size:10px;cursor:pointer;border-radius:3px;margin-left:4px">Copy</button>
-  </div>
-</div>
-<script data-cfasync="false">
-var _dbgLogs=[];
-function dbg(msg,type){
-  var color=type==='err'?'#f66':type==='warn'?'#fa0':'#8f8';
-  var ts=new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  var entry={ts:ts,msg:msg,color:color};
-  _dbgLogs.push(entry);
-  var log=document.getElementById('dbgLog');
-  if(log){
-    var el=document.createElement('div');
-    el.style.color=color;
-    el.style.borderBottom='1px solid #111';
-    el.style.paddingBottom='2px';
-    el.textContent=ts+' '+msg;
-    log.appendChild(el);
-    log.scrollTop=log.scrollHeight;
-  }
-}
-function toggleDebug(){
-  var p=document.getElementById('debugPanel');
-  if(p) p.style.display=p.style.display==='none'?'block':'none';
-}
-function dbgClear(){
-  _dbgLogs=[];
-  var log=document.getElementById('dbgLog');
-  if(log) log.innerHTML='';
-}
-function dbgCopyLog(){
-  var txt=_dbgLogs.map(function(l){return l.ts+' '+l.msg;}).join('\n');
-  navigator.clipboard&&navigator.clipboard.writeText(txt);
-}
-// Show debug btn on owner/SA pages only
 
-
-// Capture JS errors
-window.onerror=function(msg,src,line,col){
-  dbg('ERROR: '+msg+' (L'+line+')','err');
-  return false;
-};
-window.onunhandledrejection=function(e){
-  dbg('PROMISE: '+(e.reason?.message||e.reason||'rejected'),'err');
-};
-dbg('Page loaded');
-// Show debug dot on initial load (login/landing pages)
-setTimeout(function(){
-  var btn=document.getElementById('debugBtn');
-  var pg=document.querySelector('.page.on');
-  var adminIds=['pg-ow','pg-sa','pg-sa-login','pg-owner-login','pg-land'];
-  if(btn&&pg&&adminIds.indexOf(pg.id)>=0) btn.style.display='block';
-},500);
-</script>
 
 
 <!-- LOADING -->
@@ -3279,323 +3210,19 @@ setTimeout(function(){
 </div>
 
 <!-- ADD RESTAURANT (SA) -->
-<div class="modal-ov" id="mAddResto">
-  <div class="modal-box w660" style="max-height:92vh;display:flex;flex-direction:column;">
-    <div class="modal-h"><div class="modal-title" id="mRestoTitle">Add Restaurant</div><button class="modal-x" onclick="closeModal('mAddResto')">✕</button></div>
-    <div class="modal-b" style="overflow-y:auto;flex:1;">
-      <input type="hidden" id="mRestoId">
-      <div class="form-row"><div class="fg"><label>Restaurant Name</label><input class="fi" id="mRname" placeholder="e.g. Savaan Kitchen"></div><div class="fg"><label>Cuisine Type</label><input class="fi" id="mRcuisine" placeholder="e.g. Lao, Thai, Mixed"></div></div>
-      <div class="form-row"><div class="fg"><label>Owner Username</label><input class="fi" id="mRuser" placeholder="login username"></div><div class="fg"><label>Owner Password</label><input class="fi" type="password" id="mRpass" placeholder="set a strong password"></div></div>
-      <div class="fg" style="margin-top:-4px">
-        <button type="button" class="btn btn-sm" onclick="saResetOwnerPassword()">🔐 Reset Owner Password (secure server)</button>
-        <div style="font-size:9px;color:var(--s-muted);margin-top:4px;line-height:1.4">Type the new password above, then click. Works for ANY owner (even secure-login). Sets it instantly via the secure server — never stored in the database.</div>
-      </div>
-      <div class="form-row">
-        <div class="fg"><label>Commission % (platform takes)</label><input class="fi" type="number" id="mRcomm" value="15" min="0" max="100" step="0.5" placeholder="0 = free" onchange="if(this.value==='')this.value=0"></div>
-        <div class="fg">
-          <label>Restaurant Icon Emoji</label>
-          <input type="hidden" id="mRemoji" value="🍽️">
-          <div class="ep-wrap" style="margin-top:6px">
-            <div class="ep-trigger" onclick="toggleEP('restoEP')" style="padding:8px 12px">
-              <div class="ep-preview" id="mRemojiPreview" style="width:44px;height:44px;font-size:26px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:4px;overflow:hidden">🍽️</div>
-              <div class="ep-trigger-label"><div class="ep-trigger-title" style="font-size:12px">Choose Restaurant Icon</div><div class="ep-trigger-sub">Click to open picker</div></div>
-              <span class="ep-arrow">▼</span>
-            </div>
-            <div class="ep-dropdown" id="restoEP">
-              <div class="ep-tabs">
-                <button class="ep-tab on" onclick="epTab('restoEP','icons',this)">🏪 Restos</button>
-                <button class="ep-tab" onclick="epTab('restoEP','food',this)">🍽️ Food</button>
-                <button class="ep-tab" onclick="epTab('restoEP','drink',this)">🥤 Drinks</button>
-                <button class="ep-tab" onclick="epTab('restoEP','star',this)">⭐ Special</button>
-              </div>
-              <div class="ep-tab-content on" id="restoEP-icons"><div class="ep-grid" id="restoEP-icons-grid"></div></div>
-              <div class="ep-tab-content" id="restoEP-food"><div class="ep-grid" id="restoEP-food-grid"></div></div>
-              <div class="ep-tab-content" id="restoEP-drink"><div class="ep-grid" id="restoEP-drink-grid"></div></div>
-              <div class="ep-tab-content" id="restoEP-star"><div class="ep-grid" id="restoEP-star-grid"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-row"><div class="fg"><label>Address</label><input class="fi" id="mRaddr" placeholder="Vientiane, Laos"></div><div class="fg"><label>Phone <span style="color:var(--s-muted);font-size:9px;font-weight:400">— shown on the Call button</span></label><input class="fi" id="mRphone" type="tel" placeholder="e.g. 020 5555 1234"></div></div>
-      <div class="fg">
-        <label>Restaurant Logo (optional)</label>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
-          <div id="logoPreview" style="width:64px;height:64px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border-radius:4px;overflow:hidden">🍽️</div>
-          <div style="flex:1">
-            <input type="file" id="mRlogoFile" accept="image/*" style="display:none" onchange="previewLogo(this)">
-            <input type="hidden" id="mRlogoData">
-            <button type="button" class="btn" onclick="document.getElementById('mRlogoFile').click()" style="width:100%;margin-bottom:6px">📷 Upload Logo</button>
-            <button type="button" class="btn btn-sm btn-red" onclick="clearLogo()" style="width:100%">✕ Remove</button>
-          </div>
-        </div>
-      </div>
-      <!-- [front-page-fields] Cover photo / Location / Font — additive, for the restaurant's public page -->
-      <div class="fg">
-        <label>Cover Photo (optional) — <span style="color:var(--s-muted);font-size:9px;font-weight:400">big banner on the restaurant's page</span></label>
-        <div style="margin-top:6px">
-          <div id="coverPreview" style="width:100%;height:120px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--s-muted);border-radius:6px;overflow:hidden;background-size:cover;background-position:center">No cover photo</div>
-          <input type="file" id="mRcoverFile" accept="image/*" style="display:none" onchange="previewCover(this)">
-          <input type="hidden" id="mRcoverData">
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button type="button" class="btn" onclick="document.getElementById('mRcoverFile').click()" style="flex:1">📷 Upload Cover</button>
-            <button type="button" class="btn btn-sm btn-red" onclick="clearCover()">✕ Remove</button>
-          </div>
-        </div>
-      </div>
-      <!-- [menu-photos] upload photos of the printed menu — for booking-only restaurants with no QR menu -->
-      <div class="fg">
-        <label>Menu Photos (optional) — <span style="color:var(--s-muted);font-size:9px;font-weight:400">photos of the printed menu, shown when customers tap "Menu"</span></label>
-        <div style="margin-top:6px">
-          <div id="mRmenuStrip" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
-          <input type="file" id="mRmenuFile" accept="image/*" multiple style="display:none" onchange="previewMenuPhotos(this)">
-          <button type="button" class="btn" onclick="document.getElementById('mRmenuFile').click()" style="width:100%">📷 Add Menu Photo(s)</button>
-        </div>
-      </div>
-      <div class="fg">
-        <label>Location — <span style="color:var(--s-muted);font-size:9px;font-weight:400">paste a Google Maps link or "lat, lng"</span></label>
-        <input class="fi" id="mRmapInput" placeholder="https://maps.google.com/... or 16.5569, 104.7506" oninput="parseRestoLocation(this.value)">
-        <input type="hidden" id="mRlat"><input type="hidden" id="mRlng">
-        <div id="mRlocStatus" style="margin-top:6px;font-size:11px;color:var(--s-muted)">No location set</div>
-      </div>
-      <div class="fg">
-        <label>Page Font — <span style="color:var(--s-muted);font-size:9px;font-weight:400">typography for the restaurant's page</span></label>
-        <select class="fi" id="mRfont" style="max-width:260px">
-          <option value="default">Default (clean sans-serif)</option>
-          <option value="elegant">Elegant (serif)</option>
-          <option value="modern">Modern (geometric)</option>
-          <option value="rounded">Friendly (rounded)</option>
-          <option value="marker">Marker (hand-painted) ✍️</option>
-          <option value="script">Script (girly) 💗</option>
-          <option value="statement">Statement (bold caps) 💥</option>
-          <option value="ransom">Ransom cut-out (Mean Girls) 🔪</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Background Texture — <span style="color:var(--s-muted);font-size:9px;font-weight:400">page background for this restaurant's vibe</span></label>
-        <select class="fi" id="mRbg" style="max-width:260px">
-          <option value="dark">Dark (default)</option>
-          <option value="luxe">Dark Luxe (gold glow) ✨</option>
-          <option value="blush">Pink — Soft (light) 🌸</option>
-          <option value="pink">Pink — Canvas (medium) 💗</option>
-          <option value="rose">Pink — Rose (deep) 🌹</option>
-          <option value="linen">Linen (light cream) 🧵</option>
-          <option value="marble">Marble (elegant) 🤍</option>
-          <option value="paper">Paper (warm cream) 📜</option>
-        </select>
-      </div>
-      <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
-      <div class="form-row"><div class="fg"><label>🪑 Table Seating Mode</label><select class="fi" id="mRseating"><option value="open">🍺 Open — held all night (owner frees table)</option><option value="min60">⏰ 60 min — auto-free for next booking</option><option value="min90">⏰ 90 min — auto-free for next booking</option><option value="min120">⏰ 120 min — auto-free for next booking</option></select></div><div class="fg"><label style="opacity:.7">When to use</label><div style="font-size:11px;color:var(--s-muted);line-height:1.45;padding-top:8px">Beer / bar → <b>Open</b>. Dinner / casual → pick a duration so a 20:00 table reopens for a later guest.</div></div></div>
-      <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px">
-        <div id="mRvatHistory" style="margin-top:10px;display:none">
-          <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--s-muted);margin-bottom:6px">📋 VAT Change History</div>
-          <div id="mRvatHistoryList" style="max-height:120px;overflow-y:auto;font-size:11px"></div>
-        </div></div>
-      <div class="fg">
-        <label>Customer Menu Theme <span style="color:var(--s-muted);font-size:9px;font-weight:400;letter-spacing:0">— how your menu looks when customers scan QR</span></label>
-        <input type="hidden" id="mRtheme" value="classic">
-        <div class="theme-grid" id="themePickerGrid"></div>
-        <div style="margin-top:10px;padding:10px 12px;background:var(--s-surf3);border:1px solid var(--s-border);font-size:11px;color:var(--s-muted)">
-          Selected: <b id="themeSelectedName" style="color:var(--s-gold)">Savaan Classic</b>
-          <span style="margin-left:8px;color:var(--s-muted2)">· Customers see this theme when they scan the QR code</span>
-        </div>
-      </div>
-      <div class="fg">
-        <label>Access Expiry (Subscription)</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
-          <select class="fi" id="mRexpireDur"><option value="1month">1 Month</option><option value="2months">2 Months</option><option value="3months">3 Months</option><option value="6months">6 Months</option><option value="1year" selected>1 Year</option><option value="lifetime">Lifetime (No Expiry)</option></select>
-          <div style="display:flex;align-items:center;font-size:12px;color:var(--s-muted)" id="mRexpiryDisplay">Expires: not set</div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-f"><button class="btn" onclick="closeModal('mAddResto')">Cancel</button><button class="btn btn-gold" onclick="saveResto()">Save Restaurant</button></div>
-  </div>
-</div>
+
 
 <!-- QR MODAL -->
-<div class="modal-ov" id="mQR">
-  <div class="modal-box qr-m">
-    <div class="modal-h"><div class="modal-title" id="mQRTitle">QR Code</div><button class="modal-x" onclick="closeModal('mQR')">✕</button></div>
-    <div class="modal-b">
-      <div style="font-size:11px;color:var(--s-muted);margin-bottom:14px" id="mQRSub"></div>
-      <div style="background:var(--s-surf3);border:1px solid var(--s-border);padding:14px;margin-bottom:14px">
-        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:8px">⏰ Session Duration</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select class="fi" id="qrDurSel" style="flex:1"><option value="1">1 hour</option><option value="2" selected>2 hours</option><option value="4">4 hours</option><option value="8">8 hours</option><option value="24">1 day</option></select>
-          <button class="btn btn-gold" onclick="generateSession()" style="padding:10px 14px;white-space:nowrap">▶ Start</button>
-        </div>
-        <div id="qrActiveSess" style="margin-top:10px;font-size:11px;color:var(--s-green);display:none">🟢 Active: <span id="qrSessLeft"></span> remaining</div>
-      </div>
-      <div class="qr-box-wrap"><div id="qrCodeEl"></div></div>
-      <div class="qr-url-txt" id="qrUrlTxt"></div>
-      <div style="margin-top:14px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-gold" onclick="printQR()">🖨️ Print</button>
-        <button class="btn" onclick="openQRLink()">📱 Open</button>
-        <button class="btn" onclick="copyQRLink()">📋 Copy URL</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <!-- OWNER ADD TABLE -->
-<div class="modal-ov" id="mOwAddTable">
-  <div class="modal-box w380">
-    <div class="modal-h"><div class="modal-title">Add Table</div><button class="modal-x" onclick="closeModal('mOwAddTable')">✕</button></div>
-    <div class="modal-b">
-      <div class="ow-tr-section" style="margin-bottom:8px">
-        <label class="ow-tr-toggle"><input type="checkbox" id="mTbulkOn" onchange="_owBulkToggle()"><span>➕ Add many tables at once (e.g. 01 → 70)</span></label>
-      </div>
-      <div class="form-row" id="mTsingleRow"><div class="fg"><label>Table Number / Name</label><input class="fi" id="mTnum" placeholder="e.g. 1 or VIP-A"></div></div>
-      <div id="mTbulkRow" style="display:none">
-        <div class="form-row"><div class="fg"><label>Prefix (optional)</label><input class="fi" id="mTbulkPrefix" oninput="_owBulkPreview()" placeholder="blank = normal · type VIP for VIP"></div></div>
-        <div class="form-row" style="margin-top:10px"><div class="fg"><label>From #</label><input class="fi" type="number" id="mTbulkFrom" value="1" min="1" max="999" oninput="_owBulkPreview()"></div><div class="fg"><label>To #</label><input class="fi" type="number" id="mTbulkTo" value="70" min="1" max="999" oninput="_owBulkPreview()"></div></div>
-        <label class="ow-tr-toggle" style="margin-top:8px"><input type="checkbox" id="mTbulkPad" checked onchange="_owBulkPreview()"><span>Pad numbers → 01, 02, 03…</span></label>
-        <div class="ow-tr-hint" id="mTbulkPreview" style="margin-top:6px"></div>
-      </div>
-      <div class="form-row" style="margin-top:10px"><div class="fg"><label>Min Seats</label><input class="fi" type="number" id="mTminSeats" value="2" min="1" max="30"></div><div class="fg"><label>Max Seats</label><input class="fi" type="number" id="mTseats" value="4" min="1" max="30"></div></div>
-      <div class="fg" style="margin-top:10px"><label>Zone</label>
-        <select class="fi" id="mTzone" onchange="onTzoneChange()">
-          <option value="Indoor">Indoor</option>
-          <option value="Outdoor">Outdoor</option>
-          <option value="Garden">Garden</option>
-          <option value="Bar">Bar</option>
-          <option value="Private Room">Private Room</option>
-          <option value="__custom__">+ Custom zone…</option>
-        </select>
-        <input class="fi" id="mTzoneCustom" placeholder="Type your custom zone" style="display:none;margin-top:6px">
-      </div>
-      <!-- Booking requirement (e.g. VIP table — must order 1 bottle) -->
-      <div class="ow-tr-section" style="margin-top:12px">
-        <label class="ow-tr-toggle">
-          <input type="checkbox" id="mTreqOn" onchange="_owTrToggle('mT')">
-          <span>Set booking requirement (e.g. VIP minimum order)</span>
-        </label>
-        <div class="ow-tr-body" id="mTreqBody" style="display:none">
-          <textarea class="fi ow-tr-text" id="mTreqText" maxlength="280" rows="3" placeholder="e.g. VIP table — must pre-order 1 bottle of whiskey"></textarea>
-          <div class="ow-tr-hint">Customers will see this in a popup when they tap this table to book.</div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-f"><button class="btn" onclick="closeModal('mOwAddTable')">Cancel</button><button class="btn btn-gold" onclick="saveOwTable()">Add Table</button></div>
-  </div>
-</div>
+
 
 <!-- OWNER ITEM -->
-<div class="modal-ov" id="mOwItem">
-  <div class="modal-box">
-    <div class="modal-h"><div class="modal-title" id="mOwItemTitle">Add Menu Item</div><button class="modal-x" onclick="closeModal('mOwItem')">✕</button></div>
-    <div class="modal-b">
-      <input type="hidden" id="mOwItemId">
-      <div class="fg"><label>Item Name</label><input class="fi" id="mIname" placeholder="e.g. Lao Larb"></div>
-      <div class="form-row"><div class="fg"><label>Category</label><select class="fi" id="mIcat"></select></div><div class="fg"><label>Price (₭)</label><input class="fi" type="number" id="mIprice" placeholder="50000" step="1000"></div></div>
-      <div class="form-row"><div class="fg"><label>Description (English)</label><input class="fi" id="mIdesc" placeholder="Brief description..."></div><div class="fg"><label>Description (ລາວ)</label><input class="fi" id="mIdescLo" placeholder="ຄຳອະທິບາຍ..."></div></div>
-      <div class="form-row"><div class="fg"><label>Description (ไทย)</label><input class="fi" id="mIdescTh" placeholder="คำอธิบาย..."></div><div class="fg"><label>Description (中文)</label><input class="fi" id="mIdescZh" placeholder="菜品描述..."></div></div>
-      <div class="fg" style="max-width:50%"><label>Description (한국어)</label><input class="fi" id="mIdescKo" placeholder="메뉴 설명..."></div>
-      <div class="fg">
-        <label>Item Image / Emoji</label>
-        <input type="hidden" id="mIemoji" value="🍽️">
-        <input type="hidden" id="mIimgData">
-        <input type="file" id="mIimgFile" accept="image/*" style="display:none" onchange="previewItemImg(this)">
-        <div class="ep-wrap" id="itemEpWrap">
-          <div class="ep-trigger" onclick="toggleEP('itemEP')">
-            <div class="ep-preview" id="mIimgPreview">🍽️</div>
-            <div class="ep-trigger-label"><div class="ep-trigger-title">Choose Emoji or Upload Photo</div><div class="ep-trigger-sub">Click to open picker</div></div>
-            <span class="ep-arrow">▼</span>
-          </div>
-          <div class="ep-dropdown" id="itemEP">
-            <div class="ep-tabs">
-              <button class="ep-tab on" onclick="epTab('itemEP','food',this)">🍽️ Food</button>
-              <button class="ep-tab" onclick="epTab('itemEP','drink',this)">🥤 Drinks</button>
-              <button class="ep-tab" onclick="epTab('itemEP','other',this)">🎯 Other</button>
-              <button class="ep-tab" onclick="epTab('itemEP','photo',this)">📷 Photo</button>
-            </div>
-            <div class="ep-tab-content on" id="itemEP-food">
-              <div class="ep-grid" id="itemEP-food-grid"></div>
-            </div>
-            <div class="ep-tab-content" id="itemEP-drink">
-              <div class="ep-grid" id="itemEP-drink-grid"></div>
-            </div>
-            <div class="ep-tab-content" id="itemEP-other">
-              <div class="ep-grid" id="itemEP-other-grid"></div>
-            </div>
-            <div class="ep-tab-content" id="itemEP-photo">
-              <div id="itemEP-photo-inner">
-                <div class="ep-upload-area" onclick="document.getElementById('mIimgFile').click()">
-                  <div class="ep-upload-icon">📷</div>
-                  <div class="ep-upload-label">Click to upload photo<br><span style="font-size:10px;color:var(--s-muted2)">PNG, JPG, WEBP · Max 2MB</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-row"><div class="fg"><label>Badge</label><select class="fi" id="mIbadge"><option value="">None</option><option value="new">🆕 New</option><option value="popular">⭐ Popular</option><option value="sold">Sold Out</option></select></div><div class="fg"><label>Status</label><select class="fi" id="mIstatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div></div>
-      <!-- SIZES -->
-      <div class="fg" style="margin-top:4px">
-        <label>Sizes <span style="color:var(--s-muted);font-weight:400">(optional — e.g. S, M, L, XL)</span></label>
-        <div id="mISizeList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
-        <button type="button" class="btn" onclick="addSizeRow()" style="font-size:12px;padding:4px 12px">+ Add Size</button>
-      </div>
-      <!-- COMMENT -->
-      <div class="form-row" style="margin-top:4px">
-        <div class="fg"><label>Allow Customer Comment</label>
-          <select class="fi" id="mIcomment">
-            <option value="">No comment</option>
-            <option value="1">Yes — allow comment</option>
-          </select>
-        </div>
-        <div class="fg"><label>Comment Placeholder</label>
-          <input class="fi" id="mIcommentHint" placeholder="e.g. Extra spicy, No onion...">
-        </div>
-      </div>
-    </div>
-    <div class="modal-f"><button class="btn" onclick="closeModal('mOwItem')">Cancel</button><button class="btn btn-gold" onclick="saveOwItem()">Save</button></div>
-  </div>
-</div>
+
 
 <!-- OWNER CAT -->
-<div class="modal-ov" id="mOwCat">
-  <div class="modal-box w380">
-    <div class="modal-h"><div class="modal-title" id="mCatModalTitle">Add Category</div><button class="modal-x" onclick="closeModal('mOwCat');editCatIdx=null">✕</button></div>
-    <div class="modal-b">
-      <div class="fg"><label>Category Name</label><input class="fi" id="mCatName" placeholder="e.g. Main Course"></div>
-      <div class="fg">
-        <label>Category Icon Emoji</label>
-        <input type="hidden" id="mCatEmoji" value="🏷️">
-        <div class="ep-wrap" style="margin-top:6px">
-          <div class="ep-trigger" onclick="toggleEP('catEP')">
-            <div class="ep-preview" id="mCatEmojiPrev" style="width:44px;height:44px;font-size:26px;background:var(--s-surf3);border:1px solid var(--s-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:4px">🏷️</div>
-            <div class="ep-trigger-label"><div class="ep-trigger-title">Choose Category Icon</div><div class="ep-trigger-sub">Click to open emoji picker</div></div>
-            <span class="ep-arrow">▼</span>
-          </div>
-          <div class="ep-dropdown" id="catEP">
-            <div class="ep-tabs">
-              <button class="ep-tab on" onclick="epTab('catEP','tags',this)">🏷️ All</button>
-              <button class="ep-tab" onclick="epTab('catEP','food',this)">🍽️ Food</button>
-              <button class="ep-tab" onclick="epTab('catEP','drink',this)">🥤 Drinks</button>
-              <button class="ep-tab" onclick="epTab('catEP','other',this)">⭐ More</button>
-            </div>
-            <div class="ep-tab-content on" id="catEP-tags">
-              <div class="ep-grid" id="catEP-tags-grid"></div>
-            </div>
-            <div class="ep-tab-content" id="catEP-food">
-              <div class="ep-grid" id="catEP-food-grid2"></div>
-            </div>
-            <div class="ep-tab-content" id="catEP-drink">
-              <div class="ep-grid" id="catEP-drink-grid2"></div>
-            </div>
-            <div class="ep-tab-content" id="catEP-other">
-              <div class="ep-grid" id="catEP-other-grid2"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-f">
-      <button class="btn" onclick="closeModal('mOwCat');editCatIdx=null">Cancel</button>
-      <button class="btn btn-gold" onclick="saveOwCat()">Save</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- RECEIPT -->
 <div class="c-modal-ov" id="mReceipt">
@@ -5334,9 +4961,7 @@ function applyTranslation(root){
 
 // Auto-translate any element after rendering
 // Usage: renderSomething(); autoT();
-function autoT(el){
-  applyTranslation(el||document.getElementById('pg-ow'));
-}
+
 
 // MutationObserver — watches for new HTML injected into pg-ow
 // and auto-translates it. This means ANY new feature auto-translates!
@@ -5617,140 +5242,7 @@ async function init(){
 // ═══════════════════════════════════════════════════════════════
 async 
 
-async function migrateAllRestaurants(){
-  const restos = await fbGet('restaurants');
-  if(!restos) return;
 
-  const now = Date.now();
-  const oneYearMs = 365*86400000;
-
-  for(const [id, r] of Object.entries(restos)){
-    const updates = {};
-
-    // [authsafe-B5.6] Stamp the owner's synthetic email so the security rules can verify ownership
-    // reliably — robust against Firebase uid changes and username casing. Derived from the username,
-    // so no password is needed and the SA (admin) can (re)stamp it for every restaurant.
-    const _un=(r.user||r.ownerUser||'').trim();
-    if(_un){ const _oe=_ownerEmail(_un); if(r.ownerEmail!==_oe) updates.ownerEmail=_oe; }
-
-    // [pii-fix] One-time: move legacy manual reservations OUT of the publicly-readable restaurant
-    // record (restaurants/{id}/bookings exposed customer name+phone) into the access-controlled
-    // mbookings/{id} node, then delete the public copy. Runs as admin (SA). Idempotent.
-    if(r.bookings && typeof r.bookings==='object' && Object.keys(r.bookings).length){
-      try{
-        await fbUpdate('mbookings/'+id, r.bookings);
-        await fetch(DB_URL+'/restaurants/'+id+'/bookings.json'+(await _authQ()),{method:'DELETE'});
-      }catch(_){}
-    }
-
-    // ── Fields every restaurant must have ──
-
-    // createdAt — when restaurant was created
-    if(!r.createdAt) updates.createdAt = now;
-
-    // expiresAt — subscription expiry (1 year from creation if missing)
-    if(!r.expiresAt) updates.expiresAt = (r.createdAt||now) + oneYearMs;
-
-    // updatedAt — track last update
-    if(!r.updatedAt) updates.updatedAt = now;
-
-    // status — active by default
-    if(!r.status) updates.status = 'active';
-
-    // theme — classic by default
-    if(!r.theme) updates.theme = 'classic';
-
-    // prep time — 15 mins by default
-    if(!r.prep) updates.prep = 15;
-
-    // vat — 0 by default (owner sets it)
-    if(r.vat === undefined) updates.vat = 0;
-
-    // comm — 0 by default
-    if(r.comm === undefined) updates.comm = 0;
-
-    // emoji — default restaurant icon
-    if(!r.emoji) updates.emoji = '🍽️';
-
-    // cats — default categories if missing
-    if(!r.cats || !Array.isArray(r.cats) || r.cats.length === 0){
-      updates.cats = [
-        {id:'c1',name:'Main Course',icon:'🍽️'},
-        {id:'c2',name:'Starters',icon:'🥗'},
-        {id:'c3',name:'Drinks',icon:'🥤'},
-        {id:'c4',name:'Desserts',icon:'🍰'},
-      ];
-    }
-
-    // menu — empty array if missing
-    if(!r.menu){
-      updates.menu=[];
-    } else if(Array.isArray(r.menu)){
-      let menuChanged=false;
-      const fixedMenu=r.menu.map(item=>{
-        const f={...item};
-        if(!f.sizes){f.sizes=[];menuChanged=true;}
-        if(f.allowComment===undefined){f.allowComment=false;menuChanged=true;}
-        if(!f.commentHint){f.commentHint='';menuChanged=true;}
-        return f;
-      });
-      if(menuChanged) updates.menu=fixedMenu;
-    }
-
-    // tables — empty array if missing
-    if(!r.tables) updates.tables = [];
-
-    // bookings — empty object if missing (new feature)
-    if(!r.bookings) updates.bookings = {};
-
-    // addr — empty string if missing
-    if(r.addr === undefined) updates.addr = '';
-
-    // cuisine — empty string if missing
-    if(r.cuisine === undefined) updates.cuisine = '';
-
-    // logo — empty string if missing
-    if(r.logo === undefined) updates.logo = '';
-
-    // slug — URL-friendly name if missing
-    if(!r.slug){
-      updates.slug = (r.name||'restaurant')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g,'-')
-        .replace(/^-|-$/g,'');
-    }
-
-    // Only update if there's something to fix
-    // [authsafe-B5.2] SA-driven AUTH migration: upgrade legacy plaintext owners to Firebase Auth
-    // HERE, where the SA holds admin rights. The owner's own migrate-on-login cannot write ownerUid
-    // (they're not signed into Firebase yet) and the tenant-isolation rules correctly deny it — a
-    // chicken-and-egg. As admin we create the owner's Firebase account from the plaintext still in
-    // the DB, stamp ownerUid, and delete the plaintext. One-time per owner.
-    if(r.authMigrated !== true){
-      const _plain = (r.pass !== undefined ? r.pass : (r.ownerPass !== undefined ? r.ownerPass : null));
-      const _uname = (r.user || r.ownerUser || '').trim();
-      if(_plain && _uname){
-        try {
-          const _ouid = await _authCreateOwner(_uname, _plain);
-          updates.authMigrated = true; updates.ownerUid = _ouid || null; updates.pass = null; updates.ownerPass = null;
-          console.log('🔐 Auth-migrated owner (SA):', _uname);
-        } catch(e){
-          if(e && e.code === 'auth/email-already-in-use'){
-            let _ouid = null;
-            try { const _c = await _ownerCreatorAuth().signInWithEmailAndPassword(_ownerEmail(_uname), _plain); _ouid = _c.user && _c.user.uid; await _ownerCreatorAuth().signOut(); } catch(_){}
-            updates.authMigrated = true; updates.ownerUid = _ouid || null; updates.pass = null; updates.ownerPass = null;
-            console.log('🔐 Auth-migrated owner (SA, account existed):', _uname);
-          }
-          // else (e.g. password <6 chars): leave as legacy; SA can reset the password to migrate.
-        }
-      }
-    }
-    if(Object.keys(updates).length > 0){
-      await fbUpdate('restaurants/'+id, updates);
-      console.log('Migrated restaurant "'+r.name+'": added', Object.keys(updates).join(', '));
-    }
-  }
-}
 
 
 async 
@@ -5809,12 +5301,7 @@ function showPage(id){
 let _ownerCreatorApp=null;
 
 // Create an owner Auth account; returns uid. Does NOT disturb the current session.
-async function _authCreateOwner(username, password){
-  const cred=await _ownerCreatorAuth().createUserWithEmailAndPassword(_ownerEmail(username), password);
-  const uid=cred.user && cred.user.uid;
-  try { await _ownerCreatorAuth().signOut(); } catch(e){}
-  return uid;
-}
+
 // Verify an owner password: Firebase Auth if migrated, else legacy plaintext (until upgraded).
 async 
 // Migrate-on-login: the first time a legacy (plaintext) owner logs in successfully, we have
@@ -7111,151 +6598,7 @@ function getExpiryLabel(expiresAt){
 }
 
 async 
-async function saveResto(){
-  const id=document.getElementById('mRestoId').value;
-  const dur=document.getElementById('mRexpireDur').value;
-  const expiresAt=id?(await fbGet('restaurants/'+id+'/expiresAt')):calcExpiry(dur);
-  const newExpiry=calcExpiry(document.getElementById('mRexpireDur').value);
-  const logoData=document.getElementById('mRlogoData').value;
-  const vatVal=parseFloat(document.getElementById('mRvat').value);
-  const newVat=isNaN(vatVal)?0:Math.max(0,Math.min(50,vatVal));
-  // Track VAT changes for audit log
-  const prevVat=id?((await fbGet('restaurants/'+id+'/vat'))||0):0;
-  const vatChanged=!!id && prevVat!==newVat;
-  const editId=id;
-  const data={
-    name:document.getElementById('mRname').value.trim(),
-    cuisine:document.getElementById('mRcuisine').value.trim(),
-    user:document.getElementById('mRuser').value.trim(),
-    comm:(v=>isNaN(v)?0:Math.max(0,Math.min(100,v)))(parseFloat(document.getElementById('mRcomm').value)),
-    vat:newVat,
-    emoji:document.getElementById('mRemoji').value.trim()||'🍽️',
-    logo:logoData||'',
-    addr:document.getElementById('mRaddr').value.trim(),
-    status:document.getElementById('mRstatus').value,
-    prep:parseInt(document.getElementById('mRprep').value)||15,
-    seatingMode:(document.getElementById('mRseating')&&document.getElementById('mRseating').value)||'open',
-    theme:document.getElementById('mRtheme').value||'classic',
-    cover:document.getElementById('mRcoverData').value||'',
-    menuPhotos:_mRmenuPhotos.slice(),
-    lat:(parseFloat(document.getElementById('mRlat').value)||null),
-    lng:(parseFloat(document.getElementById('mRlng').value)||null),
-    font:document.getElementById('mRfont').value||'default',
-    bg:document.getElementById('mRbg')?document.getElementById('mRbg').value:'dark',
-    phone:document.getElementById('mRphone')?document.getElementById('mRphone').value.trim():'',
-    expiresAt:newExpiry,
-    updatedAt:Date.now()
-  };
-  // Validate
-  if(!data.name){notifyD('⚠ Restaurant name is required');return;}
-  if(!data.user){notifyD('⚠ Owner username is required');return;}
-  // [authsafe-B5.7] Stamp ownerEmail so the new/edited owner can edit their own restaurant immediately
-  // (security rules verify ownership by this email — robust against Firebase uid changes).
-  data.ownerEmail=_ownerEmail(data.user);
-  const pw=document.getElementById('mRpass').value;
-  try {
-    if(id){
-      // EDIT — password optional. Passwords NEVER stored in our DB.
-      if(pw){
-        if(pw.length<6){notifyD('⚠ Password must be at least 6 characters');return;}
-        const wasMigrated=(await fbGet('restaurants/'+id+'/authMigrated'))===true;
-        if(wasMigrated){
-          // Migrated owners use Firebase Auth — their password can't be reset from the client SA.
-          notifyD('🔐 This owner uses secure login. Password reset must be done by the owner. Other changes saved.');
-        } else {
-          // Legacy owner → upgrade to Firebase Auth now, using the new password
-          try {
-            const _ouid=await _authCreateOwner((data.user||'').trim(), pw);
-            data.authMigrated=true; data.ownerUid=_ouid||null; data.pass=null; data.ownerPass=null;
-          } catch(e){
-            if(e && e.code==='auth/email-already-in-use'){ data.authMigrated=true; data.pass=null; data.ownerPass=null; }
-            else { notifyD('⚠ Could not set password: '+((e&&e.message)||'error')); return; }
-          }
-        }
-      }
-      await fbUpdate('restaurants/'+id,data);
-      notifyD('✓ Restaurant updated successfully!');
-    } else {
-      // ADD — password required. Creates a Firebase Auth account; NO plaintext stored.
-      if(!pw){notifyD('⚠ Please set a password for the owner');return;}
-      if(pw.length<6){notifyD('⚠ Password must be at least 6 characters');return;}
-      try {
-        const _ouid=await _authCreateOwner((data.user||'').trim(), pw);
-        data.authMigrated=true; data.ownerUid=_ouid||null; // password lives only in Firebase Auth
-      } catch(e){
-        if(e && e.code==='auth/email-already-in-use'){ notifyD('⚠ That owner username is already taken'); return; }
-        notifyD('⚠ Could not create owner login: '+((e&&e.message)||'error')); return;
-      }
-      data.createdAt=Date.now();
-      data.updatedAt=Date.now();
-      data.expiresAt=Date.now()+(365*24*3600000); // 1 year subscription
-      data.status='active';
-      data.theme=data.theme||'classic';
-      data.emoji=data.emoji||'🍽️';
-      data.prep=data.prep||15;
-      data.vat=data.vat||0;
-      data.comm=data.comm||0;
-      data.addr=data.addr||'';
-      data.cuisine=data.cuisine||'';
-      data.logo=data.logo||'';
-      data.bookings={};
-      // Default categories — owner can edit/add more
-      data.cats=[
-        {id:'c1',name:'Main Course',icon:'🍽️'},
-        {id:'c2',name:'Starters',icon:'🥗'},
-        {id:'c3',name:'Drinks',icon:'🥤'},
-        {id:'c4',name:'Desserts',icon:'🍰'},
-      ];
-      data.menu=[];
-      data.tables=[];
-      // Generate URL slug from restaurant name
-      data.slug=(data.name||'restaurant')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g,'-')
-        .replace(/^-|-$/g,'');
-      const pushResult=await fbPush('restaurants',data);
-      // v5.1: Auto-seed default opening hours for NEW restaurants only.
-      // Owner sees a "needs review" banner until they save their real hours.
-      const newRestoId = pushResult && pushResult.key;
-      if(newRestoId){
-        try {
-          await fbSet('restoHours/'+newRestoId, {
-            needsReview: true,
-            0: { open:true, from:'11:00', to:'22:00' },
-            1: { open:true, from:'11:00', to:'22:00' },
-            2: { open:true, from:'11:00', to:'22:00' },
-            3: { open:true, from:'11:00', to:'22:00' },
-            4: { open:true, from:'11:00', to:'22:00' },
-            5: { open:true, from:'11:00', to:'22:00' },
-            6: { open:true, from:'11:00', to:'22:00' }
-          });
-        } catch(e){ console.warn('Default hours seed failed (non-fatal):', e.message); }
-      }
-      await migrateAllRestaurants().catch(()=>{});
-      notifyD('✓ Restaurant "'+data.name+'" created! Owner can now login with: '+data.user);
-    }
-    // Log VAT history if VAT changed on existing restaurant
-    if(vatChanged && editId){
-      const now=new Date();
-      const histEntry={
-        from:prevVat, to:newVat,
-        ts:Date.now(),
-        date:now.toLocaleDateString('en-GB'),
-        time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
-        by:'superadmin'
-      };
-      const existing=await fbGet('restaurants/'+editId+'/vatHistory')||[];
-      await fbUpdate('restaurants/'+editId,{vatHistory:[...existing,histEntry]});
-    }
-    closeModal('mAddResto');
-    // Invalidate landing page cache so new/updated restaurant status reflects immediately
-    _bustLandingRestoCache();
-    loadAndRenderRestos();
-  } catch(err) {
-    console.error('Save error:',err);
-    notifyD('❌ Error: '+err.message+' — Check Firebase rules');
-  }
-}
+
 
 async function editResto(id){
   const r=await fbGet('restaurants/'+id);if(!r) return;
@@ -7349,70 +6692,17 @@ async function renewResto(id){
 }
 
 // Logo
-function previewLogo(input){
-  if(!input.files||!input.files[0]) return;
-  const file=input.files[0];
-  if(file.size>2*1024*1024){notifyD('⚠ Max 2MB');return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    document.getElementById('mRlogoData').value=e.target.result;
-    document.getElementById('logoPreview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
-  };
-  reader.readAsDataURL(file);
-}
-function clearLogo(){
-  document.getElementById('mRlogoData').value='';
-  document.getElementById('logoPreview').textContent=document.getElementById('mRemoji').value||'🍽️';
-  const fi=document.getElementById('mRlogoFile');if(fi) fi.value='';
-}
+
+
 
 // [front-page-fields] Reusable client-side image compressor → returns a JPEG data URL.
 // Resizes down to maxW so big phone photos become light (HD-looking, small). No server needed.
-function _compressImg(file, maxW, quality){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=e=>{
-      const img=new Image();
-      img.onload=()=>{
-        let w=img.width, h=img.height;
-        if(w>maxW){ h=Math.round(h*maxW/w); w=maxW; }
-        const c=document.createElement('canvas'); c.width=w; c.height=h;
-        c.getContext('2d').drawImage(img,0,0,w,h);
-        try{ resolve(c.toDataURL('image/jpeg', quality)); }catch(err){ reject(err); }
-      };
-      img.onerror=reject; img.src=e.target.result;
-    };
-    reader.onerror=reject; reader.readAsDataURL(file);
-  });
-}
-async function previewCover(input){
-  if(!input.files||!input.files[0]) return;
-  const file=input.files[0];
-  if(file.size>10*1024*1024){notifyD('⚠ Max 10MB');return;}
-  try{
-    const data=await _compressImg(file, 1280, 0.82); // cover banner: ~1280px wide
-    document.getElementById('mRcoverData').value=data;
-    const cp=document.getElementById('coverPreview');
-    cp.style.backgroundImage=`url(${data})`; cp.textContent='';
-  }catch(_){ notifyD('⚠ Could not process image'); }
-}
-function clearCover(){
-  document.getElementById('mRcoverData').value='';
-  const cp=document.getElementById('coverPreview'); if(cp){cp.style.backgroundImage='';cp.textContent='No cover photo';}
-  const fi=document.getElementById('mRcoverFile'); if(fi) fi.value='';
-}
+
+
+
 // [menu-photos] upload photos of the printed menu (for booking-only restaurants)
 var _mRmenuPhotos = [];
-async function previewMenuPhotos(input){
-  var files=Array.from(input.files||[]);
-  for(var i=0;i<files.length;i++){
-    if(_mRmenuPhotos.length>=8){ notifyD('⚠ Max 8 menu photos'); break; }
-    if(files[i].size>10*1024*1024){ notifyD('⚠ Max 10MB each'); continue; }
-    try{ var data=await _compressImg(files[i], 1400, 0.8); _mRmenuPhotos.push(data); }catch(_){ notifyD('⚠ Could not process image'); }
-  }
-  input.value='';
-  _renderMenuStrip();
-}
+
 function _renderMenuStrip(){
   var el=document.getElementById('mRmenuStrip'); if(!el) return;
   if(!_mRmenuPhotos.length){ el.innerHTML='<span style="font-size:11px;color:var(--s-muted)">No menu photos yet</span>'; return; }
@@ -7423,26 +6713,7 @@ function _renderMenuStrip(){
 }
 function removeMenuPhoto(i){ _mRmenuPhotos.splice(i,1); _renderMenuStrip(); }
 // [front-page-fields] Parse a Google Maps link (or "lat, lng") into coordinates for the map pin.
-function parseRestoLocation(val){
-  val=(val||'').trim();
-  let m=val.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)
-       ||val.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/)
-       ||val.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/)
-       ||val.match(/^(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)$/);
-  const st=document.getElementById('mRlocStatus');
-  if(m){
-    const lat=parseFloat(m[1]), lng=parseFloat(m[2]);
-    if(Math.abs(lat)<=90 && Math.abs(lng)<=180){
-      document.getElementById('mRlat').value=lat;
-      document.getElementById('mRlng').value=lng;
-      if(st) st.innerHTML='📍 '+lat.toFixed(5)+', '+lng.toFixed(5)+' <span style="color:var(--s-green)">✓</span>';
-      return;
-    }
-  }
-  document.getElementById('mRlat').value='';
-  document.getElementById('mRlng').value='';
-  if(st) st.textContent = val ? '⚠ Could not read location — paste a full Maps link or "lat, lng"' : 'No location set';
-}
+
 
 // ═══════════════════════════════════════════════════════════════
 // OWNER PANELS
@@ -7708,25 +6979,9 @@ function renderEPGrid(gridId, emojis, target){
   el.innerHTML=emojis.map(e=>`<button type="button" class="ep-emoji-btn" onclick="selectEmoji('${e}','${target}')" title="${e}">${e}</button>`).join('');
 }
 
-function toggleEP(id){
-  // Close all others first
-  document.querySelectorAll('.ep-dropdown').forEach(d=>{if(d.id!==id) d.classList.remove('open');});
-  const el=document.getElementById(id);
-  if(!el) return;
-  const isOpening=!el.classList.contains('open');
-  el.classList.toggle('open');
-  // Always re-populate grids when opening — guarantees emojis show
-  if(isOpening) initEmojiPickers();
-}
 
-function epTab(pickerID, tabName, btn){
-  const picker=document.getElementById(pickerID);
-  if(!picker) return;
-  picker.querySelectorAll('.ep-tab').forEach(t=>t.classList.remove('on'));
-  btn.classList.add('on');
-  picker.querySelectorAll('.ep-tab-content').forEach(c=>c.classList.remove('on'));
-  document.getElementById(pickerID+'-'+tabName)?.classList.add('on');
-}
+
+
 
 function selectEmoji(e, target){
   if(target==='item'){
@@ -7768,30 +7023,7 @@ document.addEventListener('click',e=>{
   if(!e.target.closest('.ep-wrap')) closeAllEP();
 });
 
-function previewItemImg(input){
-  if(!input.files||!input.files[0]) return;
-  const file=input.files[0];
-  if(file.size>2*1024*1024){notifyD('⚠ Max 2MB');return;}
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const data=ev.target.result;
-    document.getElementById('mIimgData').value=data;
-    const prev=document.getElementById('mIimgPreview');
-    prev.innerHTML=`<img src="${data}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
-    prev.style.fontSize='';
-    // Update photo tab preview
-    const photoInner=document.getElementById('itemEP-photo-inner');
-    if(photoInner) photoInner.innerHTML=`
-      <div style="text-align:center">
-        <img src="${data}" class="ep-img-preview">
-        <div class="ep-img-actions">
-          <button type="button" class="btn btn-sm btn-gold" onclick="document.getElementById('mIimgFile').click()">Change</button>
-          <button type="button" class="btn btn-sm btn-red" onclick="clearItemImg()">Remove</button>
-        </div>
-      </div>`;
-  };
-  reader.readAsDataURL(file);
-}
+
 
 function clearItemImg(){
   document.getElementById('mIimgData').value='';
@@ -7803,127 +7035,16 @@ function clearItemImg(){
   if(photoInner) photoInner.innerHTML=`<div class="ep-upload-area" onclick="document.getElementById('mIimgFile').click()"><div class="ep-upload-icon">📷</div><div class="ep-upload-label">Click to upload photo<br><span style="font-size:10px;color:var(--s-muted2)">PNG, JPG, WEBP · Max 2MB</span></div></div>`;
 }
 
-function addSizeRow(lbl='',prc=''){
-  const list=document.getElementById('mISizeList');
-  const row=document.createElement('div');
-  row.className='size-row';
-  row.innerHTML=`<input class="fi size-lbl" placeholder="Size label (S/M/L/XL)" value="${lbl}" style="max-width:140px">
-    <input class="fi size-prc" type="number" placeholder="Price ₭" value="${prc}" step="1000" style="max-width:140px">
-    <button type="button" class="del-size" onclick="this.parentElement.remove()">✕</button>`;
-  list.appendChild(row);
-}
+
 
 async 
 async 
-async function saveOwItem(){
-  const r=await fbGet('restaurants/'+restoId);if(!r) return;
-  const name=document.getElementById('mIname').value.trim();
-  const price=parseInt(document.getElementById('mIprice').value);
-  const cat=document.getElementById('mIcat').value;
-  if(!name||!price||!cat){notifyD('⚠ Fill required fields');return;}
-  // Collect sizes from size rows
-const sizeRows=document.querySelectorAll('#mISizeList .size-row');
-const sizes=[];
-sizeRows.forEach(row=>{
-  const lbl=row.querySelector('.size-lbl')?.value.trim();
-  const prc=parseInt(row.querySelector('.size-prc')?.value)||0;
-  if(lbl) sizes.push({label:lbl,price:prc});
-});
-// Get existing item to preserve ID and image if not changed
-  const existingImg=editItemId!==null?(await fbGet('restaurants/'+restoId+''))?.menu?.[editItemId]?.img||'':'';
-  const imgValue=document.getElementById('mIimgData').value||existingImg||'';
-  const data={name,price,cat,desc:document.getElementById('mIdesc').value.trim(),dLo:document.getElementById('mIdescLo').value.trim(),dTh:document.getElementById('mIdescTh').value.trim(),dZh:document.getElementById('mIdescZh')?.value.trim()||'',dKo:document.getElementById('mIdescKo')?.value.trim()||'',emoji:document.getElementById('mIemoji').value.trim()||'🍽️',img:imgValue,badge:document.getElementById('mIbadge').value,status:document.getElementById('mIstatus').value,sizes:sizes,allowComment:document.getElementById('mIcomment').value==='1',commentHint:document.getElementById('mIcommentHint').value.trim(),id:editItemId!==null?(await fbGet('restaurants/'+restoId))?.menu?.[editItemId]?.id||('m'+Date.now()):'m'+Date.now()};
-  const menu=[...(r.menu||[])];
-  if(editItemId!==null) menu[editItemId]={...menu[editItemId],...data};
-  else menu.push(data);
-  await fbUpdate('restaurants/'+restoId,{menu});
-  notifyD(editItemId!==null?'✓ Item updated':'✓ Item added');
-  closeModal('mOwItem');owMenu();owStats();
-}
+
 async 
-async function saveOwCat(){
-  const r=await fbGet('restaurants/'+restoId);
-  const name=document.getElementById('mCatName').value.trim();
-  const icon=document.getElementById('mCatEmoji').value.trim()||document.getElementById('mCatIcon')?.value.trim()||'🏷️';
-  if(!name){notifyD('⚠ Enter category name');return;}
-  const cats=[...(r?.cats||[])];
-  if(editCatIdx!==null&&editCatIdx>=0){
-    // Edit existing
-    cats[editCatIdx]={...cats[editCatIdx],name,icon};
-    // Also update menu items that use this category name
-    const menu=[...(r?.menu||[])];
-    const oldName=(r?.cats||[])[editCatIdx]?.name;
-    if(oldName&&oldName!==name){
-      menu.forEach(m=>{if(m.cat===oldName) m.cat=name;});
-      await fbUpdate('restaurants/'+restoId,{cats,menu});
-    } else {
-      await fbUpdate('restaurants/'+restoId,{cats});
-    }
-    notifyD('✓ Category updated');
-  } else {
-    // Add new
-    cats.push({id:'c'+Date.now(),name,icon});
-    await fbUpdate('restaurants/'+restoId,{cats});
-    notifyD('✓ Category added');
-  }
-  editCatIdx=null;
-  closeModal('mOwCat');owCats();
-}
+
 async 
-function sortTablesArray(tables){
-  return [...tables].sort((a,b)=>{
-    const as=String(a.num==null?'':a.num).trim();
-    const bs=String(b.num==null?'':b.num).trim();
-    const ai=/^\d+$/.test(as);   // pure digits, incl. zero-padded like "01"
-    const bi=/^\d+$/.test(bs);
-    if(ai&&bi){ const d=parseInt(as,10)-parseInt(bs,10); return d!==0?d:as.localeCompare(bs); }
-    if(ai) return -1;            // numbers before text names (VIP, Garden…)
-    if(bi) return 1;
-    return as.localeCompare(bs, undefined, {numeric:true}); // VIP2 < VIP10 etc.
-  });
-}
-async function saveOwTable(){
-  const r=await fbGet('restaurants/'+restoId);
-  if(document.getElementById('mTbulkOn')&&document.getElementById('mTbulkOn').checked){ return _saveOwTablesBulk(r); }
-  const num=document.getElementById('mTnum').value.trim();
-  // v5.9: Min/max seats fields
-  let maxSeats = parseInt(document.getElementById('mTseats').value)||4;
-  let minSeats = parseInt(document.getElementById('mTminSeats')?.value)||1;
-  if(maxSeats < 1) maxSeats = 1;
-  if(minSeats < 1) minSeats = 1;
-  if(minSeats > maxSeats) minSeats = maxSeats; // auto-correct
-  if(!num){notifyD('⚠ Enter table number');return;}
-  // Prevent duplicate table numbers
-  if((r?.tables||[]).find(t=>String(t.num).toLowerCase()===num.toLowerCase())){
-    notifyD('⚠ Table number "'+num+'" already exists — please use a different number');
-    // Flash + focus the input field
-    const _inp = document.getElementById('mTnum');
-    if(_inp){
-      _inp.classList.remove('fi-error'); void _inp.offsetWidth; // restart animation
-      _inp.classList.add('fi-error');
-      _inp.focus(); _inp.select();
-      setTimeout(()=>_inp.classList.remove('fi-error'), 1500);
-    }
-    return;
-  }
-  // v5.4: Capture zone (default "Indoor" if empty)
-  let zone = document.getElementById('mTzone')?.value || 'Indoor';
-  if(zone === '__custom__'){
-    const custom = (document.getElementById('mTzoneCustom')?.value || '').trim();
-    zone = custom || 'Indoor';
-  }
-  // Booking requirement (VIP minimum order, etc) — only saved if toggle is on AND text is non-empty
-  const reqOn = !!document.getElementById('mTreqOn')?.checked;
-  const reqText = (document.getElementById('mTreqText')?.value || '').trim();
-  const newTable = {id:'t'+Date.now(),num,seats:maxSeats,minSeats,maxSeats,zone};
-  if(reqOn && reqText){
-    newTable.bookingRequirement = reqText.slice(0, 280); // safety cap
-  }
-  // Keep `seats` (= maxSeats) for backward compatibility
-  const sorted=sortTablesArray([...(r?.tables||[]),newTable]);
-  await fbUpdate('restaurants/'+restoId,{tables:sorted});
-  closeModal('mOwAddTable');owTables();notifyD('✓ Table added');
-}
+
+
 
 
 
@@ -8201,37 +7322,7 @@ async function editBooking(id){
   openModal('mBooking');
 }
 
-async function saveBooking(){
-  const id=document.getElementById('mBookId').value;
-  const name=document.getElementById('mBookName').value.trim();
-  const date=document.getElementById('mBookDate').value;
-  const time=document.getElementById('mBookTime').value;
-  const guests=parseInt(document.getElementById('mBookGuests').value)||1;
-  if(!name||!date||!time){notifyD('⚠ Name, date and time are required');return;}
-  const sel=document.getElementById('mBookTable');
-  const tableId=sel.value;
-  const tableNum=sel.options[sel.selectedIndex]?.getAttribute('data-num')||'';
-  const data={
-    name,
-    phone:document.getElementById('mBookPhone').value.trim(),
-    date,time,
-    endTime:document.getElementById('mBookEnd').value,
-    guests,tableId,tableNum,
-    notes:document.getElementById('mBookNotes').value.trim(),
-    status:document.getElementById('mBookStatus').value,
-    createdAt:Date.now(),
-    createdBy:me?.name||'owner'
-  };
-  if(id){
-    await fbUpdate('mbookings/'+restoId+'/'+id, data);
-    notifyD('✅ Reservation updated');
-  } else {
-    await restPush('mbookings/'+restoId, data);
-    notifyD('✅ Reservation saved for '+name);
-  }
-  closeModal('mBooking');
-  renderBookings();
-}
+
 
 async function changeBookingStatus(id, status){
   const labels={confirmed:'confirmed',cancelled:'cancelled',pending:'pending'};
@@ -8252,38 +7343,9 @@ async function deleteBooking(id){
 
 
 
-function onEtZoneChange(){
-  const sel = document.getElementById('mEtZone');
-  const cust = document.getElementById('mEtZoneCustom');
-  if(!sel || !cust) return;
-  if(sel.value === '__custom__'){
-    cust.style.display = '';
-    cust.focus();
-  } else {
-    cust.style.display = 'none';
-    cust.value = '';
-  }
-}
-function onTzoneChange(){
-  const sel = document.getElementById('mTzone');
-  const cust = document.getElementById('mTzoneCustom');
-  if(!sel || !cust) return;
-  if(sel.value === '__custom__'){
-    cust.style.display = '';
-    cust.focus();
-  } else {
-    cust.style.display = 'none';
-    cust.value = '';
-  }
-}
-function updateTablePreview(){
-  const num=document.getElementById('mEtNum')?.value||'—';
-  const seats=document.getElementById('mEtSeats')?.value||'—';
-  const pN=document.getElementById('mEtPreviewNum');
-  const pS=document.getElementById('mEtPreviewSeats');
-  if(pN) pN.textContent=num;
-  if(pS) pS.textContent=seats+' SEATS';
-}
+
+
+
 
 /* ─── Walk-In Table feature ───────────────────────────────────────────
    Owner marks a table as walk-in (not bookable online) for a date range.
@@ -8291,130 +7353,26 @@ function updateTablePreview(){
    Customer-side filter: if customer's booking date falls in the range,
    the table is hidden from booking (still visible on map as walk-in). */
 
-function _wiLocalISO(d){
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  return `${yyyy}-${mm}-${dd}`;
-}
+
 function _wiDateAtMidnight(iso){
   // Returns ms timestamp at LOCAL midnight for an ISO date (yyyy-mm-dd)
   if(!iso) return 0;
   const [y,m,d] = iso.split('-').map(Number);
   return new Date(y, m-1, d, 0, 0, 0, 0).getTime();
 }
-function _wiDateAtEndOfDay(iso){
-  if(!iso) return 0;
-  const [y,m,d] = iso.split('-').map(Number);
-  return new Date(y, m-1, d, 23, 59, 59, 999).getTime();
-}
 
 
 
-function _wiQuickPick(days){
-  const today = new Date();
-  const from = _wiLocalISO(today);
-  const until = new Date(today);
-  until.setDate(until.getDate() + days);
-  const untilIso = _wiLocalISO(until);
-  document.getElementById('mWiFrom').value = from;
-  document.getElementById('mWiUntil').value = untilIso;
-  // Highlight the active chip
-  document.querySelectorAll('.wi-quick').forEach(b => b.classList.remove('on'));
-  const active = document.querySelector(`.wi-quick[data-days="${days}"]`);
-  if(active) active.classList.add('on');
-}
 
-function _wiClearQuickPick(){
-  document.querySelectorAll('.wi-quick').forEach(b => b.classList.remove('on'));
-}
 
-async function saveWalkInTable(unlock){
-  const idx = parseInt(document.getElementById('mWiTableIdx').value);
-  if(isNaN(idx) || idx < 0){ notifyD('⚠ Invalid table'); return; }
-  const r = await fbGet('restaurants/'+restoId);
-  const tables = [...(r?.tables || [])];
-  if(!tables[idx]){ notifyD('⚠ Table not found'); return; }
-  if(unlock){
-    // Remove walk-in fields
-    tables[idx] = { ...tables[idx] };
-    delete tables[idx].walkInFrom;
-    delete tables[idx].walkInUntil;
-  } else {
-    const fromIso = document.getElementById('mWiFrom').value;
-    const untilIso = document.getElementById('mWiUntil').value;
-    if(!fromIso || !untilIso){ notifyD('⚠ Please pick both from and until dates'); return; }
-    if(_wiDateAtMidnight(untilIso) < _wiDateAtMidnight(fromIso)){
-      notifyD('⚠ "Until" date must be on or after "from" date');
-      return;
-    }
-    tables[idx] = {
-      ...tables[idx],
-      walkInFrom: _wiDateAtMidnight(fromIso),
-      walkInUntil: _wiDateAtEndOfDay(untilIso)
-    };
-  }
-  await fbUpdate('restaurants/'+restoId, { tables });
-  closeModal('mWalkInTable');
-  notifyD(unlock ? '✓ Table unlocked — bookable again' : '✓ Walk-in period saved');
-  if(typeof owTables === 'function') owTables();
-}
+
+
+
+
 
 /* ─── End walk-in feature ───────────────────────────────────────────── */
 
-async function saveEditTable(){
-  const idx=parseInt(document.getElementById('mEtIdx').value);
-  const num=document.getElementById('mEtNum').value.trim();
-  const maxSeats=parseInt(document.getElementById('mEtSeats').value)||4;
-  // v5.9: Min seats — empty means "up to N" mode (legacy behaviour)
-  const minRaw = document.getElementById('mEtMinSeats')?.value;
-  let minSeats = parseInt(minRaw);
-  if(isNaN(minSeats) || minSeats < 1) minSeats = null;
-  if(minSeats !== null && minSeats > maxSeats) minSeats = maxSeats;
-  const desc=document.getElementById('mEtDesc').value.trim();
-  if(!num){notifyD('⚠ Table name required');return;}
-  // v5.4: Capture zone (default "Indoor" if missing)
-  let zone = document.getElementById('mEtZone')?.value || 'Indoor';
-  if(zone === '__custom__'){
-    const custom = (document.getElementById('mEtZoneCustom')?.value || '').trim();
-    zone = custom || 'Indoor';
-  }
-  const r=await fbGet('restaurants/'+restoId);
-  const tables=[...(r?.tables||[])];
-  if(tables.some((t,i)=>i!==idx&&String(t.num).toLowerCase()===num.toLowerCase())){
-    notifyD('⚠ Table number "'+num+'" already exists — please use a different number');
-    // Flash + focus the input field
-    const _inp = document.getElementById('mEtNum');
-    if(_inp){
-      _inp.classList.remove('fi-error'); void _inp.offsetWidth;
-      _inp.classList.add('fi-error');
-      _inp.focus(); _inp.select();
-      setTimeout(()=>_inp.classList.remove('fi-error'), 1500);
-    }
-    return;
-  }
-  // Build the updated table — keep `seats` field for backward compat (= maxSeats)
-  const updated = {...tables[idx],num,seats:maxSeats,maxSeats,desc,zone};
-  if(minSeats !== null){
-    updated.minSeats = minSeats;
-  } else {
-    // Owner cleared the min field — remove minSeats so it falls back to "up to N"
-    delete updated.minSeats;
-  }
-  // Booking requirement (VIP minimum order, etc) — only saved if toggle is on AND text is non-empty
-  const reqOn = !!document.getElementById('mEtReqOn')?.checked;
-  const reqText = (document.getElementById('mEtReqText')?.value || '').trim();
-  if(reqOn && reqText){
-    updated.bookingRequirement = reqText.slice(0, 280); // safety cap
-  } else {
-    // Toggle off OR text empty → remove the requirement entirely
-    delete updated.bookingRequirement;
-  }
-  tables[idx] = updated;
-  const sorted=sortTablesArray(tables);
-  await fbUpdate('restaurants/'+restoId,{tables:sorted});
-  closeModal('mEditTable');notifyD('✅ Table updated');owTables();
-}
+
 async 
 async 
 
@@ -8428,129 +7386,15 @@ async
 // ═══════════════════════════════════════════════════════════════
 // QR & SESSIONS (Firebase)
 // ═══════════════════════════════════════════════════════════════
-function qrURL(rId,tId,sessId){
-  const base=window.location.href.split('?')[0];
-  return`${base}?qr=1&r=${rId}&t=${tId}&s=${sessId}`;
-}
+
 
 async 
 
-async function generateSession(){
-  if(!curQRData){notifyD('⚠ No table selected');return;}
-  const {rId,tId,tNum}=curQRData;
-  const hours=parseInt(document.getElementById('qrDurSel').value)||2;
-  try {
-    const r=await fbGet('restaurants/'+rId);
-    const now=Date.now();
-    const exp=now+(hours*3600000);
-    // End any existing session for this table
-    const sessions=await fbGet('sessions')||{};
-    const updates={};
-    Object.entries(sessions).forEach(([k,s])=>{if(s.tId===tId&&Date.now()<(s.exp||0)) updates['sessions/'+k+'/exp']=now-1;});
-    if(Object.keys(updates).length){
-      if(db) await db.ref().update(updates);
-      else{for(const[k,v] of Object.entries(updates)) await restUpdate(k.replace(/^\//,''),v);}
-    }
-    // Create new session
-    const sessData={rId,rName:r?.name||'',tId,tNum,start:now,exp,duration:hours,
-      startTime:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
-      startDate:new Date().toLocaleDateString()};
-    const sessRef=await fbPush('sessions',sessData);
-    const sessKey=sessRef.key;
-    curQRData.sessKey=sessKey;
-    // Generate QR
-    const url=qrURL(rId,tId,sessKey);
-    document.getElementById('qrUrlTxt').textContent=url;
-    const qrEl=document.getElementById('qrCodeEl');
-    qrEl.innerHTML='';
-    loadQRCode(()=>{new QRCode(qrEl,{text:url,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});});
-    document.getElementById('qrActiveSess').style.display='block';
-    document.getElementById('qrSessLeft').textContent=hours+'h 0m';
-    document.getElementById('mQRSub').textContent='Table '+tNum+' · '+hours+'h session · Scan with phone camera';
-    notifyD('✓ '+hours+'h session started for Table '+tNum);
-    // Refresh tables view
-    const activePanel=document.querySelector('#pg-ow .panel.on');
-    if(activePanel?.id==='ow-tables') owTables();
-  } catch(err){
-    console.error('Session error:',err);
-    notifyD('❌ Cannot create session: '+err.message);
-    // Show Firebase rules reminder
-    alert('Cannot save session. Please check Firebase Database Rules:\n\nGo to Firebase Console → Realtime Database → Rules\nSet sessions: { ".write": true }');
-  }
-}
 
-function openQRLink(){if(!curQRData?.sessKey) return;window.open(qrURL(curQRData.rId,curQRData.tId,curQRData.sessKey),'_blank');}
-function copyQRLink(){
-  if(!curQRData?.sessKey){notifyD('⚠ Start a session first');return;}
-  navigator.clipboard.writeText(qrURL(curQRData.rId,curQRData.tId,curQRData.sessKey)).then(()=>notifyD('✓ URL copied'));
-}
-async function printQR(){
-  if(!curQRData?.sessKey){notifyD('⚠ Start a session first');return;}
-  const qrHtml=document.getElementById('qrCodeEl').innerHTML;
-  const url=document.getElementById('qrUrlTxt').textContent;
-  const dur=document.getElementById('qrDurSel').value;
-  const tNum=curQRData.tNum;
-  // Load restaurant data fresh for logo
-  const r=await fbGet('restaurants/'+curQRData.rId);
-  const logoSection=r?.logo
-    ?`<img src="${r.logo}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #d4a03c;display:block;margin:0 auto 6px">`
-    :`<div style="font-size:44px;text-align:center;margin-bottom:6px">${r?.emoji||'🍽️'}</div>`;
-  // Use iframe to avoid freezing parent window
-  let pf=document.getElementById('_qrPrintFrame');
-  if(pf) pf.remove();
-  const pframe=document.createElement('iframe');
-  pframe.id='_qrPrintFrame';
-  pframe.style.cssText='position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
-  document.body.appendChild(pframe);
-  const w=pframe.contentWindow;
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR Table ${tNum}</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    @page{size:80mm auto;margin:4mm;}
-    body{font-family:'Courier New',monospace;background:#fff;color:#111;width:72mm;margin:0 auto;}
-    .outer{border:2px solid #1a0e03;padding:0;overflow:hidden;}
-    .header{background:#1a0e03;color:#fff;padding:12px 14px;text-align:center;}
-    .header-logo{font-family:Georgia,serif;font-size:22px;font-weight:900;letter-spacing:-1px;}
-    .header-logo em{color:#d4a03c;font-style:italic;}
-    .header-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:4px;}
-    .table-label{background:#d4a03c;color:#000;text-align:center;padding:8px;font-size:22px;font-weight:900;font-family:Georgia,serif;letter-spacing:1px;}
-    .qr-area{background:#fff;text-align:center;padding:16px 12px 8px;}
-    .qr-area img,.qr-area canvas{display:block;margin:0 auto;}
-    .url-txt{font-size:7px;color:#aaa;word-break:break-all;text-align:center;padding:0 10px 8px;line-height:1.4;}
-    .divider{border:none;border-top:1px dashed #ccc;margin:0 10px;}
-    .info-section{padding:10px 14px;}
-    .info-row{display:flex;align-items:center;gap:8px;font-size:10px;color:#444;margin:3px 0;}
-    .info-icon{font-size:13px;width:18px;text-align:center;}
-    .footer{background:#1a0e03;color:rgba(255,255,255,.5);text-align:center;padding:8px;font-size:8px;letter-spacing:1px;}
-    .session-badge{display:inline-block;background:#f5f0e8;border:1px solid #d4a03c;color:#b8821e;font-size:9px;padding:3px 10px;letter-spacing:1px;margin-top:6px;font-weight:700;}
-    @media print{body{width:72mm;}.outer{border-width:1.5px;}}
-  </style>
-  </head><body>
-  <div class="outer">
-    <div class="header">
-      ${logoSection}
-      <div class="header-logo">${r?.name||'Restaurant'}</div>
-      <div class="header-sub">${r?.addr||'Vientiane, Laos'}</div>
-    </div>
-    <div class="table-label">🪑 TABLE ${tNum}</div>
-    <div class="qr-area">
-      ${qrHtml}
-      <div class="session-badge">⏰ Session: ${dur} hours</div>
-    </div>
-    <div class="url-txt">${url}</div>
-    <hr class="divider">
-    <div class="info-section">
-      <div class="info-row"><span class="info-icon">📱</span><span>Point camera at QR code</span></div>
-      <div class="info-row"><span class="info-icon">🍽️</span><span>Menu opens instantly — no app needed</span></div>
-      <div class="info-row"><span class="info-icon">🛒</span><span>Order directly from your table</span></div>
-      <div class="info-row"><span class="info-icon">📋</span><span>Track your orders in real time</span></div>
-    </div>
-    <div class="footer">${r?.name||'Restaurant'} · eatlaos.la</div>
-  </div>
-  <script>window.onload=()=>setTimeout(()=>{window.print();setTimeout(()=>{var f=window.frameElement;if(f)f.remove();},500);},400);<\/script>
-  </body></html>`);
-  w.document.close();
-}
+
+
+
+
 
 // ═══════════════════════════════════════════════════════════════
 // CUSTOMER SESSION (Firebase)
@@ -9891,9 +8735,7 @@ const FP_AREA_TYPES = [
 ];
 const FP_MAX_AREAS = 3;
 
-function _fpAreaSlugify(name){
-  return String(name||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,32);
-}
+
 
 /* v6.6: Migrate legacy single floorPlan → multi-area map.
    Old: r.floorPlan = { width, height, bgColor, elements }
@@ -9976,37 +8818,9 @@ async function rfOpen(restoId){
   }
 }
 
-function rfClose(){
-  document.getElementById('mResFeat').classList.remove('open');
-  _rfRestoId = null;
-}
 
-async function rfSave(){
-  if(!_rfRestoId) return;
-  const btn = document.getElementById('rfSaveBtn');
-  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
-  try {
-    const features = {
-      booking: !!document.getElementById('rfBooking').checked,
-      qrOrder: !!document.getElementById('rfQrOrder').checked
-    };
-    if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
-    await fbSet('restaurants/'+_rfRestoId+'/features', features);
-    // v6.9: Invalidate the owner-side cache so next owner login/refresh sees the new flags.
-    // (The owner is in a separate browser session, but if SA is also testing as owner in the same
-    //  browser, they'll get the new flags on next panel switch within 60s anyway.)
-    if(typeof _owFeaturesCache !== 'undefined') _owFeaturesCache = null;
-    if(typeof notifyD === 'function') notifyD('✅ Features saved');
-    rfClose();
-    // Refresh the SA list so any visual feature indicators update
-    if(typeof loadAndRenderRestos === 'function') loadAndRenderRestos(true);
-  } catch(e){
-    console.error('rfSave:', e);
-    alert(_ts('rf_err_save','Could not save features.') + '\n\n' + (e.message || 'unknown error'));
-  } finally {
-    if(btn){ btn.disabled = false; btn.textContent = '💾 Save'; }
-  }
-}
+
+
 
 /* v6.7: Cross-area duplicate detection.
    Returns a Map of tableId → area-slug for tables placed on ANY area's map.
@@ -10239,10 +9053,7 @@ function fpOpenAddAreaModal(){
   }
 }
 
-function fpCloseAddAreaModal(){
-  document.getElementById('mFpAddArea').classList.remove('open');
-  _fpAaPick = null;
-}
+
 
 function _fpAaSelect(slug){
   _fpAaPick = slug;
@@ -10269,41 +9080,7 @@ function _fpAaSelect(slug){
   }
 }
 
-function fpConfirmAddArea(){
-  if(!_fpAaPick) return;
-  let slug, label;
-  if(_fpAaPick === '__custom__'){
-    const raw = (document.getElementById('fpAreaCustomInput').value || '').trim();
-    if(!raw){ alert('Enter a custom name.'); return; }
-    label = raw;
-    const baseSlug = 'custom_' + _fpAreaSlugify(raw);
-    let candidate = baseSlug;
-    let n = 2;
-    while(fpState.areas[candidate]){ candidate = baseSlug + '_' + (n++); }
-    slug = candidate;
-  } else {
-    if(fpState.areas[_fpAaPick]){ alert('That area already exists.'); return; }
-    slug = _fpAaPick;
-    label = _fpAreaLabelFromSlug(slug);
-  }
-  fpState.areas[slug] = {
-    area: label,
-    width: 1000,
-    height: 700,
-    bgColor: '#0f0f0f',
-    elements: []
-  };
-  fpState.activeArea = slug;
-  fpState.plan = fpState.areas[slug];
-  fpState.selectedId = null;
-  fpMarkDirty();
-  fpRenderAreaTabs();
-  _fpApplyFloorColor(fpState.plan.bgColor);
-  fpRenderAll();
-  fpRenderProps();
-  fpCloseAddAreaModal();
-  fpSetStatus('Added area: ' + label);
-}
+
 
 function fpSetStatus(msg){
   const el = document.getElementById('fpStatusMsg');
@@ -11617,6 +10394,10 @@ function _bkBuildSummaryHtml(opts){
   const lblTime  = _lp('bk_summary_time','Time');
   const lblPpl   = _lp('bk_summary_people','Guests');
   const lblTable = _lp('bk_summary_table','Table');
+  const lblName = _lp('bk_name','Name');
+  let _bkNm = (bkState.name||'').trim();
+  if(!_bkNm){ var _bkNmEl=document.getElementById('bkName'); if(_bkNmEl) _bkNm=(_bkNmEl.value||'').trim(); }
+  const nameRow = _bkNm ? `<div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblName)}</span><span class="bk-sum-val">${escapeHtml(_bkNm)}</span></div>` : '';
   const tableRow = bkState.tableId ? `<div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTable)}</span><span class="bk-sum-val">${escapeHtml(bkState.tableNum||'')} · ${escapeHtml(bkState.tableZone||'')}</span></div>` : '';
   // VIP booking requirement
   let vipReqBlock = '';
@@ -11645,6 +10426,7 @@ function _bkBuildSummaryHtml(opts){
     </div>`;
   }
   return `
+    ${nameRow}
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblResto)}</span><span class="bk-sum-val">${escapeHtml(bkState.restoName||'')}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblDate)}</span><span class="bk-sum-val">${escapeHtml(dateStr)}</span></div>
     <div class="bk-sum-row"><span class="bk-sum-lbl">${escapeHtml(lblTime)}</span><span class="bk-sum-val">${escapeHtml(bkState.slot||'')}</span></div>
@@ -11726,6 +10508,7 @@ async function submitCustBooking(){
     // v5.4: Release table lock now that booking is saved
     bkReleaseLock();
     document.getElementById('bkSuccessCode').textContent = code;
+    bkState.name = name;
     // Populate the success-screen summary so customer has a record they can screenshot
     renderBkSuccessSummary(note);
     bkShowView('success');
@@ -11989,233 +10772,19 @@ if(typeof escapeHtml!=='function'){
 /*   cleanupOldBookings({dryRun:true}) — preview only               */
 /*   cleanupOldBookings({days:14})     — custom retention           */
 /* ════════════════════════════════════════════════════════════════ */
-async function cleanupOldBookings(opts){
-  opts = opts || {};
-  const days = (typeof opts.days === 'number' && opts.days > 0) ? opts.days : 7;
-  const dryRun = !!opts.dryRun;
-  const cutoff = Date.now() - (days * 86400000);
-  console.log(`%c[Booking Cleanup] Threshold: ${days} days. Cutoff timestamp: ${cutoff} (${new Date(cutoff).toISOString()})`, 'color:#c8973a;font-weight:bold');
-  if(dryRun) console.log('%c[Booking Cleanup] DRY RUN — nothing will be deleted', 'color:#ffc107');
-  if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
-  if(typeof db==='undefined' || !db){
-    console.error('[Booking Cleanup] Firebase SDK not loaded.');
-    return { error:'no_db' };
-  }
-  let snap;
-  try {
-    snap = await db.ref('bookings').once('value');
-  } catch(e){
-    console.error('[Booking Cleanup] Could not read bookings/:', e.message);
-    return { error:'read_failed', message:e.message };
-  }
-  const data = snap.val() || {};
-  const restoIds = Object.keys(data);
-  let totalScanned = 0, totalDeleted = 0, totalKept = 0;
-  const deletedSamples = [];
-  for(const restoId of restoIds){
-    const restoBookings = data[restoId] || {};
-    for(const bookingId of Object.keys(restoBookings)){
-      const b = restoBookings[bookingId];
-      totalScanned++;
-      if(!b || typeof b.createdAt !== 'number'){
-        console.warn(`[Booking Cleanup] Skip malformed: ${restoId}/${bookingId}`);
-        continue;
-      }
-      if(b.createdAt < cutoff){
-        if(deletedSamples.length < 5) deletedSamples.push({restoId, bookingId, createdAt:new Date(b.createdAt).toISOString(), name:b.name, status:b.status});
-        if(!dryRun){
-          try {
-            await db.ref('bookings/'+restoId+'/'+bookingId).remove();
-            // Invalidate cache for parent path so list views are accurate
-            if(typeof _fbCacheInvalidate === 'function') _fbCacheInvalidate('bookings/'+restoId+'/'+bookingId);
-            totalDeleted++;
-          } catch(e){
-            console.error(`[Booking Cleanup] Failed to delete ${restoId}/${bookingId}:`, e.message);
-          }
-        } else {
-          totalDeleted++;
-        }
-      } else {
-        totalKept++;
-      }
-    }
-  }
-  console.log(`%c[Booking Cleanup] Scanned: ${totalScanned}, ${dryRun?'Would delete':'Deleted'}: ${totalDeleted}, Kept: ${totalKept}`, 'color:#66bb6a;font-weight:bold');
-  if(deletedSamples.length){
-    console.log('[Booking Cleanup] Sample of '+(dryRun?'would-be-deleted':'deleted')+' bookings:');
-    console.table(deletedSamples);
-  }
-  return { scanned:totalScanned, deleted:totalDeleted, kept:totalKept, dryRun };
-}
+
 </script>
 <!-- BOOKING MODAL -->
-<div class="modal-ov" id="mBooking">
-  <div class="modal-box" style="max-width:520px;max-height:92vh;display:flex;flex-direction:column">
-    <div class="modal-h" style="flex-shrink:0">
-      <div>
-        <div class="modal-title" id="mBookingTitle">New Reservation</div>
-        <div style="font-size:11px;color:var(--s-muted);margin-top:2px">Fill in guest details and booking time</div>
-      </div>
-      <button class="modal-x" onclick="closeModal('mBooking')">✕</button>
-    </div>
-    <div class="modal-b" style="overflow-y:auto;flex:1">
-      <input type="hidden" id="mBookId">
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin-bottom:10px">Guest Information</div>
-      <div class="form-row">
-        <div class="fg"><label>Full Name *</label><input class="fi" id="mBookName" placeholder="e.g. Somphone Vongsa"></div>
-        <div class="fg"><label>Phone Number</label><input class="fi" id="mBookPhone" placeholder="+856 20 xxx xxxx" type="tel" inputmode="tel" pattern="[0-9 +()\-]*"></div>
-      </div>
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Date &amp; Time</div>
-      <div class="form-row">
-        <div class="fg"><label>Reservation Date *</label><input class="fi" type="date" id="mBookDate" onchange="updateTimeDisplay()"></div>
-        <div class="fg"><label>Number of Guests *</label><input class="fi" type="number" id="mBookGuests" min="1" max="100" value="2"></div>
-      </div>
-      <div class="form-row">
-        <div class="fg"><label>Arrival Time *</label><div id="mBookTimeWrap"></div></div>
-        <div class="fg"><label>End Time / Checkout *</label><div id="mBookEndWrap"></div></div>
-      </div>
-      <div class="time-range-display" id="timeRangeDisplay">Select arrival and end time</div>
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Table &amp; Status</div>
-      <div class="form-row">
-        <div class="fg"><label>Assign Table</label><select class="fi" id="mBookTable"><option value="">🪑 Any Available Table</option></select></div>
-        <div class="fg"><label>Status</label><select class="fi" id="mBookStatus"><option value="confirmed">✅ Confirmed</option><option value="pending">⏳ Pending</option></select></div>
-      </div>
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--s-muted);margin:16px 0 10px">Special Requests</div>
-      <textarea class="fi" id="mBookNotes" rows="3" placeholder="Birthday celebration, food allergies, seating preferences..." style="resize:vertical;width:100%"></textarea>
-    </div>
-    <div class="modal-f" style="flex-shrink:0">
-      <button class="btn" onclick="closeModal('mBooking')">Cancel</button>
-      <button class="btn btn-gold" onclick="saveBooking()">💾 Save Reservation</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- OWNER TODAY MAP — read-only floor plan viewer for today's booked tables -->
-<div class="modal-ov" id="mOwTodayMap" onclick="if(event.target===this)closeModal('mOwTodayMap')">
-  <div class="modal-box ow-tm-shell">
-    <div class="modal-h">
-      <div>
-        <div class="modal-title">🗺️ <span data-ts="owtm_title">Booked Tables</span></div>
-        <div class="modal-sub" id="owTmSub">Live view</div>
-      </div>
-      <button class="modal-x" onclick="closeModal('mOwTodayMap')">✕</button>
-    </div>
-    <div class="ow-tm-body">
-      <div class="ow-tm-tabs" id="owTmTabs"></div>
-      <div class="ow-tm-stats" id="owTmStats"></div>
-      <div class="ow-tm-map" id="owTmMap"></div>
-      <div class="ow-tm-legend">
-        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-free"></span><span data-ts="owtm_leg_free">Free</span></span>
-        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-bk"></span><span data-ts="owtm_leg_booked">Booked</span></span>
-        <span class="ow-tm-leg-i"><span class="ow-tm-dot ow-tm-walkin"></span><span data-ts="owtm_leg_walkin">Walk-in</span></span>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <!-- EDIT TABLE MODAL -->
-<div class="modal-ov" id="mEditTable">
-  <div class="modal-box" style="max-width:420px">
-    <div class="modal-h">
-      <div><div class="modal-title">Edit Table</div></div>
-      <button class="modal-x" onclick="closeModal('mEditTable')">✕</button>
-    </div>
-    <div class="modal-b">
-      <input type="hidden" id="mEtIdx">
-      <div class="form-row">
-        <div class="fg"><label>Table Number / Name *</label>
-          <input class="fi" id="mEtNum" placeholder="e.g. 1, VIP, Terrace" maxlength="20" oninput="updateTablePreview()">
-        </div>
-        <div class="fg"><label>Min Seats</label>
-          <input class="fi" type="number" id="mEtMinSeats" min="1" max="50" placeholder="2">
-        </div>
-        <div class="fg"><label>Max Seats *</label>
-          <input class="fi" type="number" id="mEtSeats" min="1" max="50" oninput="updateTablePreview()">
-        </div>
-      </div>
-      <div class="fg" style="margin-top:4px"><label>Description</label>
-        <input class="fi" id="mEtDesc" placeholder="Window seat, Outdoor..." oninput="updateTablePreview()">
-      </div>
-      <div class="fg" style="margin-top:10px"><label>Zone (for online bookings)</label>
-        <select class="fi" id="mEtZone" onchange="onEtZoneChange()">
-          <option value="Indoor">Indoor</option>
-          <option value="Outdoor">Outdoor</option>
-          <option value="Garden">Garden</option>
-          <option value="Bar">Bar</option>
-          <option value="Private Room">Private Room</option>
-          <option value="__custom__">+ Custom zone…</option>
-        </select>
-        <input class="fi" id="mEtZoneCustom" placeholder="Type your custom zone" style="display:none;margin-top:6px">
-      </div>
-      <div style="margin-top:14px;padding:14px;background:var(--s-surf2);border:1px solid var(--s-border);border-radius:6px;text-align:center">
-        <div style="font-size:11px;color:var(--s-muted);margin-bottom:8px;letter-spacing:1px">PREVIEW</div>
-        <div style="font-family:var(--ff);font-size:32px;font-weight:900;color:var(--s-text)" id="mEtPreviewNum">—</div>
-        <div style="font-size:11px;color:var(--s-muted);margin-top:4px;letter-spacing:2px" id="mEtPreviewSeats">— SEATS</div>
-      </div>
-      <!-- Booking requirement (e.g. VIP table — must order 1 bottle) -->
-      <div class="ow-tr-section" style="margin-top:14px">
-        <label class="ow-tr-toggle">
-          <input type="checkbox" id="mEtReqOn" onchange="_owTrToggle('mEt')">
-          <span>Set booking requirement (e.g. VIP minimum order)</span>
-        </label>
-        <div class="ow-tr-body" id="mEtReqBody" style="display:none">
-          <textarea class="fi ow-tr-text" id="mEtReqText" maxlength="280" rows="3" placeholder="e.g. VIP table — must pre-order 1 bottle of whiskey"></textarea>
-          <div class="ow-tr-hint">Customers will see this in a popup when they tap this table to book.</div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-f">
-      <button class="btn" onclick="closeModal('mEditTable')">Cancel</button>
-      <button class="btn btn-gold" onclick="saveEditTable()">💾 Save</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- WALK-IN TABLE MODAL — owner marks table as walk-in only for a date range -->
-<div class="modal-ov" id="mWalkInTable">
-  <div class="modal-box" style="max-width:460px">
-    <div class="modal-h">
-      <div>
-        <div class="modal-title">🚶 <span data-ts="wi_title">Walk-in only</span></div>
-        <div class="modal-sub" data-ts="wi_subtitle">Mark this table as walk-in only for a date range</div>
-      </div>
-      <button class="modal-x" onclick="closeModal('mWalkInTable')">✕</button>
-    </div>
-    <div class="modal-b">
-      <input type="hidden" id="mWiTableIdx">
-      <div id="mWiTableInfo" style="padding:12px 14px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.2);border-radius:8px;margin-bottom:14px;font-size:13px;color:#fff">
-        <span style="color:#60a5fa;font-weight:700">Table:</span> <span id="mWiTableName">—</span>
-      </div>
-      <div id="mWiCurrent" style="display:none;padding:12px 14px;background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.25);border-radius:8px;margin-bottom:14px;font-size:13px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fbbf24;margin-bottom:4px" data-ts="wi_currently_locked">Currently walk-in:</div>
-        <div id="mWiCurrentRange" style="color:#fff;font-weight:600">—</div>
-      </div>
-      <div class="fg" style="margin-bottom:14px">
-        <label data-ts="wi_quick_pick">Quick pick</label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
-          <button type="button" class="btn btn-sm wi-quick" data-days="0" onclick="_wiQuickPick(0)" data-ts="wi_today">Today</button>
-          <button type="button" class="btn btn-sm wi-quick" data-days="1" onclick="_wiQuickPick(1)" data-ts="wi_tomorrow">Tomorrow</button>
-          <button type="button" class="btn btn-sm wi-quick" data-days="7" onclick="_wiQuickPick(7)" data-ts="wi_7days">Next 7 days</button>
-          <button type="button" class="btn btn-sm wi-quick" data-days="30" onclick="_wiQuickPick(30)" data-ts="wi_30days">Next 30 days</button>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="fg"><label data-ts="wi_from">From date</label>
-          <input class="fi" type="date" id="mWiFrom" oninput="_wiClearQuickPick()">
-        </div>
-        <div class="fg"><label data-ts="wi_until">Until date</label>
-          <input class="fi" type="date" id="mWiUntil" oninput="_wiClearQuickPick()">
-        </div>
-      </div>
-      <div style="margin-top:10px;font-size:11px;color:var(--s-muted);line-height:1.5" data-ts="wi_hint">During this period, customers won't be able to book this table online. It stays available for walk-in customers at the restaurant.</div>
-    </div>
-    <div class="modal-f">
-      <button class="btn" onclick="closeModal('mWalkInTable')" data-ts="wi_cancel">Cancel</button>
-      <button class="btn btn-red" id="mWiUnlockBtn" onclick="saveWalkInTable(true)" style="display:none" data-ts="wi_unlock">Unlock now</button>
-      <button class="btn btn-gold" onclick="saveWalkInTable(false)" data-ts="wi_save">🚶 Save</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- ════════════════════════════════════════════════════════════════ -->
 <!-- v5.5 FLOOR PLAN EDITOR — SA only                                 -->
@@ -12379,67 +10948,13 @@ async function cleanupOldBookings(opts){
 </div>
 
 <!-- v6.6: Add Area picker (small modal nested in SA editor) -->
-<div id="mFpAddArea" class="modal-ov fp-aa-modal" onclick="if(event.target===this)_modalBackdropClose('mFpAddArea',function(){const el=document.getElementById('fpAreaCustomInput');return el&&el.value&&el.value.trim();},function(){if(typeof fpCloseAddAreaModal==='function')fpCloseAddAreaModal();});">
-  <div class="fp-aa-shell">
-    <button class="fp-aa-x" onclick="fpCloseAddAreaModal()" aria-label="Close">×</button>
-    <div class="fp-aa-title" data-ts="fp_aa_title">Add a new area</div>
-    <div class="fp-aa-sub" data-ts="fp_aa_sub">Pick which kind of area this map represents.</div>
-    <div class="fp-aa-list" id="fpAreaTypeList"></div>
-    <div class="fp-aa-custom-row" id="fpAreaCustomRow" style="display:none">
-      <input type="text" class="fp-aa-input" id="fpAreaCustomInput" maxlength="32" placeholder="e.g. Rooftop">
-    </div>
-    <div class="fp-aa-actions">
-      <button class="btn btn-sm" onclick="fpCloseAddAreaModal()" data-ts="fp_aa_cancel">Cancel</button>
-      <button class="btn btn-sm btn-gold" id="fpAreaAddConfirm" onclick="fpConfirmAddArea()" disabled data-ts="fp_aa_create">Create</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- ════════════════════════════════════════════════════════════════ -->
 <!-- v6.8 SA FEATURE LICENSING MODAL — toggle which features a       -->
 <!-- restaurant has access to (booking, QR order).                   -->
 <!-- ════════════════════════════════════════════════════════════════ -->
-<div id="mResFeat" class="modal-ov rf-modal" onclick="if(event.target===this)rfClose()">
-  <div class="rf-shell">
-    <button class="rf-x" onclick="rfClose()" aria-label="Close">×</button>
-    <div class="rf-head">
-      <div class="rf-icon">🔐</div>
-      <div>
-        <div class="rf-title" data-ts="rf_title">Features</div>
-        <div class="rf-sub" id="rfRestoName"></div>
-      </div>
-    </div>
-    <div class="rf-desc" data-ts="rf_desc">Toggle which features this restaurant has access to. Disabled features are hidden from the owner panel and blocked for customers.</div>
-    <div class="rf-list">
-      <label class="rf-row">
-        <div class="rf-row-icon">📅</div>
-        <div class="rf-row-text">
-          <div class="rf-row-title" data-ts="rf_booking_title">Booking system</div>
-          <div class="rf-row-sub" data-ts="rf_booking_sub">Customers can reserve tables in advance.</div>
-        </div>
-        <div class="rf-toggle">
-          <input type="checkbox" id="rfBooking" class="rf-cb">
-          <label for="rfBooking" class="rf-sw"></label>
-        </div>
-      </label>
-      <label class="rf-row">
-        <div class="rf-row-icon">📱</div>
-        <div class="rf-row-text">
-          <div class="rf-row-title" data-ts="rf_qr_title">QR Order system</div>
-          <div class="rf-row-sub" data-ts="rf_qr_sub">Customers scan a QR code to order from the menu.</div>
-        </div>
-        <div class="rf-toggle">
-          <input type="checkbox" id="rfQrOrder" class="rf-cb">
-          <label for="rfQrOrder" class="rf-sw"></label>
-        </div>
-      </label>
-    </div>
-    <div class="rf-actions">
-      <button class="btn btn-sm" onclick="rfClose()" data-ts="rf_cancel">Cancel</button>
-      <button class="btn btn-sm btn-gold" id="rfSaveBtn" onclick="rfSave()" data-ts="rf_save">💾 Save</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- ════════════════════════════════════════════════════════════════ -->
 <!-- v5.9 CUSTOMER TABLE INFO POPUP — appears when table is clicked   -->
