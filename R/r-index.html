@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · owner+debug STRIPPED (11 modals + 41 fns + debug panel, -81KB) · turnover · map Lao-fix + zone dropdown + booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · owner+debug STRIPPED + SA-gate token removed · turnover · map Lao-fix + zone dropdown + booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -5161,12 +5161,6 @@ async function init(){
       try { if(localStorage.getItem('el_session')) localStorage.removeItem('el_session'); } catch(e){}
       const _saved=sessionStorage.getItem('el_session');
       if(!_saved){
-        // Check if SA admin URL — show SA login instead of landing
-        if(p.get('admin')==='EatLaos2026SecretAdmin'){
-          showPage('pg-sa-login');
-          hideLoading();
-          return;
-        }
         // [clean-split] Owner login deep-link from the public landing → show the login form directly
         if(p.get('login')==='owner'){
           showPage('pg-owner-login');
