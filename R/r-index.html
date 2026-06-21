@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · ALL+zone buttons · bar-slot midnight-fix · owner+debug stripped · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · ALL+zone buttons · bar-slot midnight-fix + bar-leadtime(round2) · owner+debug stripped · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8543,7 +8543,8 @@ function buildBkSlotGrid(){
   slotList.forEach(slot => {
     const [sh, sm] = slot.split(':').map(Number);
     const slotMin = sh*60 + sm;
-    const isPast = isToday && slotMin <= nowMin + 30;
+    const _leadMin = (bkState.seatingMode === 'open') ? 0 : 30; // bar (open) → bookable until it starts (round 2 opens at 21:00); dinner → 30-min lead time
+    const isPast = isToday && slotMin <= nowMin + _leadMin;
     const used = bookedCount[slot] || 0;
     const remaining = total - used;
     const isFull = remaining <= 0 || isPast;
