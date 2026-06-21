@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · owner+debug STRIPPED + SA-gate token removed · turnover · map Lao-fix + zone dropdown + booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · ALL+zone buttons · bar-slot midnight-fix · owner+debug stripped · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2798,6 +2798,13 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-zone-sel{flex:1;min-width:0;appearance:none;-webkit-appearance:none;-moz-appearance:none;background:transparent;border:none;color:#f4ecdd;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:0;padding:12px 4px;cursor:pointer;outline:none;}
 .bk-zone-sel option{background:#161310;color:#f4ecdd;font-weight:600;}
 .bk-zone-chev{color:#c8973a;font-weight:800;pointer-events:none;flex-shrink:0;font-size:13px;}
+/* [zone-buttons] All + zone filter buttons + stacked All view */
+.bk-zone-bar.bk-zone-btns{flex-wrap:wrap;padding:8px 10px;}
+.bk-zone-btns .bk-zone-tab{padding:7px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.75);border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.bk-zone-btns .bk-zone-tab:hover{background:rgba(255,255,255,.09);color:#fff;}
+.bk-zone-btns .bk-zone-tab.on{background:rgba(200,151,58,.16);border-color:#c8973a;color:#f5c976;}
+.bk-allzone-block{margin-bottom:14px;}
+.bk-allzone-h{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#c8973a;padding:4px 2px 6px;border-bottom:1px solid rgba(200,151,58,.18);margin-bottom:8px;}
 .bk-zone-bar.single{padding:11px 14px;}
 .bk-zone-bar.single .bk-zone-name{color:#f4ecdd;font-size:14px;font-weight:700;letter-spacing:0;}
 .ow-tm-tab .fp-free-badge{margin-left:6px;}
@@ -7408,7 +7415,7 @@ async function ensureAnonAuth(){
     if(fbAuth.currentUser) return;                 // owner/SA/customer already signed in
     if(!_anonAuthP){ _anonAuthP = fbAuth.signInAnonymously().catch(e=>{ _anonAuthP=null; throw e; }); }
     await _anonAuthP;
-  }catch(e){ if(typeof dbg==='function') dbg('anon auth: '+((e&&e.message)||e),'warn'); }
+  }catch(e){ /* anon auth failed — non-fatal */ }
 }
 
 async function startCustomerSession(rId,tId,sessId){
@@ -8503,7 +8510,10 @@ function buildBkSlotGrid(){
   const mode = dayHours.bookingMode || 'auto';
   if(mode === 'custom' && Array.isArray(dayHours.customSlots) && dayHours.customSlots.length){
     // Owner-set custom times: validate format and sort
-    slotList = dayHours.customSlots.filter(s => /^([01]\d|2[0-3]):[0-5]\d$/.test(s)).slice().sort();
+    // [bar-fix] sort by clock time, but slots before opening (e.g. 00:00 close for a bar) wrap to next-day so they sort AFTER late evening (20:00 → 23:30 → 00:00)
+    const _bkFromMin = (function(){ if(dayHours.from){ const _p=String(dayHours.from).split(':'); return (+_p[0])*60+(+_p[1]); } return 360; })();
+    const _bkSlotKey = function(s){ const _p=s.split(':'); let _v=(+_p[0])*60+(+_p[1]); if(_v < _bkFromMin) _v += 1440; return _v; };
+    slotList = dayHours.customSlots.filter(s => /^([01]\d|2[0-3]):[0-5]\d$/.test(s)).slice().sort((a,b)=>_bkSlotKey(a)-_bkSlotKey(b));
   } else {
     // Auto-generate every 30 min (existing behavior — backward compat)
     const [fH,fM] = dayHours.from.split(':').map(Number);
@@ -9948,9 +9958,9 @@ async function bkLoadTables(){
       // Hide the legacy zone tabs row (we use our own area tabs above the map)
       tabs.innerHTML = '';
       tabs.style.display = 'none';
-      // Pick initial area: keep current if still valid, else first usable
-      if(!bkState._activeArea || usableAreaSlugs.indexOf(bkState._activeArea) < 0){
-        bkState._activeArea = usableAreaSlugs[0];
+      // Pick initial area: default to "All zones"; keep current if still valid
+      if(!bkState._activeArea || (bkState._activeArea!=='__all__' && usableAreaSlugs.indexOf(bkState._activeArea) < 0)){
+        bkState._activeArea = '__all__';
       }
       // Cache for re-renders
       bkState._allAreas = allAreas;
@@ -9986,39 +9996,47 @@ async function bkLoadTables(){
         };
         const _freeWord = escapeHtml(_lp('bk_legend_available','Available'));
         const _fullWord = escapeHtml(_lp('bk_zone_full','Full'));
-        const _opts = usableAreaSlugs.map(slug => {
+        const _zBtn = (slug, label, free, isAll) => {
+          const on = (slug===bkState._activeArea)?' on':'';
+          const tail = isAll ? (' · '+free+' '+_freeWord) : (free > 0 ? (' · '+free+' '+_freeWord) : (' · '+_fullWord));
+          return `<button class="bk-zone-tab${on}" data-slug="${escapeHtml(slug)}">${escapeHtml(label)}${tail}</button>`;
+        };
+        const _totalFree = usableAreaSlugs.reduce((s,slug)=>s+_freeInArea(slug),0);
+        let _btns = _zBtn('__all__', _lp('bk_all','All'), _totalFree, true);
+        _btns += usableAreaSlugs.map(slug => {
           const a = allAreas[slug];
-          // Translate standard areas
           let label = a.area || _fpAreaLabelFromSlug(slug);
           const stdLabelKey = 'fp_'+slug;
           const t = _lp(stdLabelKey, '');
           if(t && t !== stdLabelKey) label = t;
-          const free = _freeInArea(slug);
-          const tail = free > 0 ? (' · '+free+' '+_freeWord) : (' · '+_fullWord);
-          return `<option value="${escapeHtml(slug)}"${slug===bkState._activeArea?' selected':''}>${escapeHtml(label)}${tail}</option>`;
+          return _zBtn(slug, label, _freeInArea(slug), false);
         }).join('');
-        tabsHtml = `<div class="bk-zone-bar"><span class="bk-zone-ic">🗺️</span><select class="bk-zone-sel" id="bkZoneSel" aria-label="Zone">${_opts}</select><span class="bk-zone-chev">▾</span></div>`;
+        tabsHtml = `<div class="bk-zone-bar bk-zone-btns" id="bkZoneBar"><span class="bk-zone-ic">🗺️</span>${_btns}</div>`;
       }
       // Initial render
       _bkRenderActiveAreaMap();
       // Insert tabs (above the wrap) + legend (below the wrap)
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
-      grid.innerHTML = tabsHtml + wrapHtml + `
+      grid.innerHTML = tabsHtml + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
         <div class="fp-vw-legend">
           <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
           <span><i style="background:rgba(220,53,69,.4)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
           <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
       `;
-      // Wire up zone selector — tap header shows all zones, pick one to switch the map
-      const zoneSel = grid.querySelector('#bkZoneSel');
-      if(zoneSel){
-        zoneSel.onchange = function(){
-          const slug = this.value;
-          if(!slug || slug === bkState._activeArea) return;
-          bkState._activeArea = slug;
-          _bkRenderActiveAreaMap(true);
-        };
+      // Wire up zone buttons — tap All or a zone to switch the map
+      const zoneBar = grid.querySelector('#bkZoneBar');
+      if(zoneBar){
+        zoneBar.querySelectorAll('.bk-zone-tab').forEach(btn => {
+          btn.onclick = function(){
+            const slug = this.dataset.slug;
+            if(!slug || slug === bkState._activeArea) return;
+            bkState._activeArea = slug;
+            zoneBar.querySelectorAll('.bk-zone-tab').forEach(b => b.classList.remove('on'));
+            this.classList.add('on');
+            _bkRenderActiveAreaMap(true);
+          };
+        });
       }
       // Wire up SVG click handler — picks a table, then opens info popup
       _bkWireMapClicks();
@@ -10199,35 +10217,55 @@ async function tiConfirm(){
 function _bkRenderActiveAreaMap(replaceOnly){
   const grid = document.getElementById('bkTableGrid');
   if(!grid) return;
-  const slug = bkState._activeArea;
-  if(!slug || !bkState._allAreas) return;
-  const area = bkState._allAreas[slug];
-  if(!area) return;
-  // Compute too-small tables (per party size) for THIS area only
-  const placedTableIds = (area.elements || [])
-    .filter(e => e.kind && e.kind.indexOf('table')===0 && e.tableId)
-    .map(e => e.tableId);
-  const tooSmall = new Set();
-  placedTableIds.forEach(tid => {
-    const t = bkState._allTablesById[tid];
-    if(!t) return;
-    const max = t.maxSeats || t.seats || 0;
-    const min = t.minSeats || 1;
-    if(bkState.party > max || bkState.party < min) tooSmall.add(tid);
-  });
-  const viewerBooked = new Set([...(bkState._bookedTableIds||[])]);
-  // Cache plan for tiOpen popup (so it knows shape)
-  bkState._cachedPlan = area;
-  // v6.2: render the FULL floor plan (every placed table) like the SA editor — tables
-  // that don't fit the party size show dimmed ('toosmall') instead of being hidden.
+  const activeSlug = bkState._activeArea;
+  if(!activeSlug || !bkState._allAreas) return;
   const _allTablesArr = Object.values(bkState._allTablesById || {});
-  const svg = fpRenderCustomerView(area, _allTablesArr, viewerBooked, bkState._lockedTableIds, bkState.tableId, bkState.walkInTableIds, tooSmall);
-  const wrapHtml = `<div class="fp-viewer-wrap">${svg}</div>`;
-  if(replaceOnly){
-    const oldWrap = grid.querySelector('.fp-viewer-wrap');
-    if(oldWrap) oldWrap.outerHTML = wrapHtml;
+  const viewerBooked = new Set([...(bkState._bookedTableIds||[])]);
+  // Render ONE area into a .fp-viewer-wrap (returns '' if missing)
+  const _renderOne = (slug) => {
+    const area = bkState._allAreas[slug];
+    if(!area) return '';
+    const placedTableIds = (area.elements || [])
+      .filter(e => e.kind && e.kind.indexOf('table')===0 && e.tableId)
+      .map(e => e.tableId);
+    const tooSmall = new Set();
+    placedTableIds.forEach(tid => {
+      const t = bkState._allTablesById[tid];
+      if(!t) return;
+      const max = t.maxSeats || t.seats || 0;
+      const min = t.minSeats || 1;
+      if(bkState.party > max || bkState.party < min) tooSmall.add(tid);
+    });
+    bkState._cachedPlan = area; // last-rendered area (for tiOpen popup shape)
+    const svg = fpRenderCustomerView(area, _allTablesArr, viewerBooked, bkState._lockedTableIds, bkState.tableId, bkState.walkInTableIds, tooSmall);
+    return `<div class="fp-viewer-wrap">${svg}</div>`;
+  };
+  let mapHtml;
+  if(activeSlug === '__all__'){
+    // Stack every zone's floor plan, each under its zone label
+    const slugs = bkState._usableAreaSlugs || Object.keys(bkState._allAreas);
+    mapHtml = slugs.map(slug => {
+      const a = bkState._allAreas[slug];
+      let label = (a && a.area) || _fpAreaLabelFromSlug(slug);
+      const k = 'fp_'+slug; const tr = _lp(k,''); if(tr && tr!==k) label = tr;
+      return `<div class="bk-allzone-block"><div class="bk-allzone-h">${escapeHtml(label)}</div>${_renderOne(slug)}</div>`;
+    }).join('');
+    // Merge all zones' elements so the table-info popup resolves any table's shape in All view
+    const _mergedEls = [];
+    slugs.forEach(slug => { const a = bkState._allAreas[slug]; if(a && a.elements) _mergedEls.push.apply(_mergedEls, a.elements); });
+    bkState._cachedPlan = { elements: _mergedEls };
   } else {
-    grid.innerHTML = wrapHtml;
+    mapHtml = _renderOne(activeSlug);
+  }
+  if(replaceOnly){
+    const host = grid.querySelector('.bk-map-host');
+    if(host){ host.innerHTML = mapHtml; }
+    else {
+      const oldWrap = grid.querySelector('.fp-viewer-wrap');
+      if(oldWrap) oldWrap.outerHTML = mapHtml;
+    }
+  } else {
+    grid.innerHTML = mapHtml;
   }
   // Re-wire clicks (DOM changed)
   _bkWireMapClicks();
@@ -10236,9 +10274,10 @@ function _bkRenderActiveAreaMap(replaceOnly){
 function _bkWireMapClicks(){
   const grid = document.getElementById('bkTableGrid');
   if(!grid) return;
-  const svgEl = grid.querySelector('svg');
-  if(!svgEl) return;
-  svgEl.onclick = function(ev){
+  const svgs = grid.querySelectorAll('svg');
+  if(!svgs.length) return;
+  svgs.forEach(svgEl => {
+    svgEl.onclick = function(ev){
     const tEl = ev.target.closest('.fp-vw-table');
     if(!tEl) return;
     if(tEl.classList.contains('booked') || tEl.classList.contains('locked') || tEl.classList.contains('toosmall')) return;
@@ -10249,7 +10288,8 @@ function _bkWireMapClicks(){
     }
     const tid = tEl.dataset.tid;
     if(tid) tiOpen(tid);
-  };
+    };
+  });
 }
 
 async function bkPickTable(tableId){
