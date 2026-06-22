@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782046800 · turnover P1+P2 + bar-leadtime(round2) · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782048600 · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2258,26 +2258,27 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bkm-shell.fp-fullscreen .bk-step-sub{margin-bottom:10px;font-size:12px;}
 
 /* v5.8: When floor plan mode active, override the bk-table-grid CSS grid (it was forcing 110px cells) */
-.bk-table-grid.fp-mode{display:flex;flex-direction:column;flex:1;min-height:0;gap:0;grid-template-columns:none;}
+.bk-table-grid.fp-mode{display:flex;flex-direction:column;gap:0;grid-template-columns:none;}
 .bkm-shell.fp-fullscreen .bk-table-grid.fp-mode{flex:1;}
 .bk-table-grid.fp-mode .fp-viewer-wrap{
-  flex:1;
   margin-bottom:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:300px;
   background:#0a0a0a;
   border:1px solid rgba(255,255,255,.08);
   border-radius:10px;
   padding:6px;
-  overflow:hidden;
+  overflow:visible;
 }
 .bk-table-grid.fp-mode .fp-viewer-svg{
   width:100%;
-  height:100%;
-  max-height:none;
+  height:auto;
+  max-height:52vh;
   display:block;
+  margin:0 auto;
+}
+/* [map-fit] desktop: use the bigger screen — wider booking modal + taller map */
+@media(min-width:1024px){
+  #mCustBooking .bkm-shell{max-width:760px;}
+  #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:62vh;}
 }
 .bkm-progress{
   height:3px;
@@ -3814,6 +3815,7 @@ setTimeout(function(){
                 <button class="btn btn-sm" id="bkDateBtnToday" onclick="setBookingDateFilterToday()" data-ts="bk_today">Today</button>
                 <button class="btn btn-sm" id="bkDateBtnClear" onclick="clearBookingDateFilter()" data-ts="bk_all_dates">All dates</button>
               </div>
+              <button class="btn btn-gold" id="btnOwLiveMap" onclick="owOpenTodayMap()" style="margin-left:auto" title="View booked &amp; free tables on the live floor map">🗺️ <span data-ts="owtm_title">Booked Tables</span></button>
             </div>
             <div class="card-h" style="border-top:1px solid rgba(255,255,255,.05);padding-top:10px;margin-top:0;justify-content:flex-start">
               <span class="bk-datefilter-lbl" style="margin-right:6px" data-ts="bk_status_label">Status:</span>
@@ -16997,7 +16999,7 @@ async function cleanupOldBookings(opts){
 #bkStepBook #bkDateGrid::-webkit-scrollbar{display:none}
 #bkStepBook .bk-date-card{flex:0 0 auto;min-width:56px}
 #bkStepBook .bk-date-card.sel,#bkStepBook .bk-slot.sel{background:var(--bks-acc)!important;border-color:var(--bks-acc)!important}
-#bkStepBook .bk-table-grid.fp-mode{height:clamp(300px,50vh,420px);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;background:#070707}
+#bkStepBook .bk-table-grid.fp-mode{border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:visible;background:#070707}
 #bkStepBook .bks-confirm{width:100%;background:var(--bks-acc);color:#1a1206;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s}
 #bkStepBook .bks-confirm:active{transform:translateY(1px)}
 #bkStepBook .bks-sect+.bks-sect{border-top:1px solid rgba(255,255,255,.06);padding-top:16px}
