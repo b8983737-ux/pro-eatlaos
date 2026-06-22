@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782021600 · r-PURE customer · ALL+zone buttons · bar-slot midnight-fix + bar-leadtime(round2) · owner+debug stripped · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782097400 · BOOKING WINDOW (date grid honors owner setting, default 1mo) · r-PURE customer · ALL+zone buttons + MAP AUTO-FIT(phone+desktop) · bar-leadtime · owner+debug stripped · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2246,26 +2246,27 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bkm-shell.fp-fullscreen .bk-step-sub{margin-bottom:10px;font-size:12px;}
 
 /* v5.8: When floor plan mode active, override the bk-table-grid CSS grid (it was forcing 110px cells) */
-.bk-table-grid.fp-mode{display:flex;flex-direction:column;flex:1;min-height:0;gap:0;grid-template-columns:none;}
+.bk-table-grid.fp-mode{display:flex;flex-direction:column;gap:0;grid-template-columns:none;}
 .bkm-shell.fp-fullscreen .bk-table-grid.fp-mode{flex:1;}
 .bk-table-grid.fp-mode .fp-viewer-wrap{
-  flex:1;
   margin-bottom:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:300px;
   background:#0a0a0a;
   border:1px solid rgba(255,255,255,.08);
   border-radius:10px;
   padding:6px;
-  overflow:hidden;
+  overflow:visible;
 }
 .bk-table-grid.fp-mode .fp-viewer-svg{
   width:100%;
-  height:100%;
-  max-height:none;
+  height:auto;
+  max-height:52vh;
   display:block;
+  margin:0 auto;
+}
+/* [map-fit] desktop: use the bigger screen — wider booking modal + taller map */
+@media(min-width:1024px){
+  #mCustBooking .bkm-shell{max-width:760px;}
+  #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:62vh;}
 }
 .bkm-progress{
   height:3px;
@@ -8405,12 +8406,18 @@ function bkPickResto(id){
 }
 
 async function bkLoadHoursAndBuildDates(){
-  let h = null;
-  try { h = await fbGet('restoHours/'+bkState.restoId); } catch(e){}
+  let h = null, _win = null;
+  try {
+    [h, _win] = await Promise.all([
+      fbGet('restoHours/'+bkState.restoId),
+      fbGet('restaurants/'+bkState.restoId+'/bookingWindowDays')
+    ]);
+  } catch(e){}
   if(!h){
     h = {0:{open:true,from:'11:00',to:'22:00'},1:{open:true,from:'11:00',to:'22:00'},2:{open:true,from:'11:00',to:'22:00'},3:{open:true,from:'11:00',to:'22:00'},4:{open:true,from:'11:00',to:'22:00'},5:{open:true,from:'11:00',to:'22:00'},6:{open:true,from:'11:00',to:'22:00'}};
   }
   bkState.hours = h;
+  bkState.bookingWindowDays = parseInt(_win,10) || 30;
   buildBkDateGrid();
 }
 
@@ -8418,7 +8425,8 @@ function buildBkDateGrid(){
   const grid = document.getElementById('bkDateGrid');
   const today = new Date(); today.setHours(0,0,0,0);
   let html = '';
-  for(let i=0; i<30; i++){
+  const _win = Math.max(1, Math.min(120, (bkState && parseInt(bkState.bookingWindowDays,10)) || 30));
+  for(let i=0; i<_win; i++){
     const d = new Date(today.getTime() + i*86400000);
     const dow = d.getDay();
     const dayHours = bkState.hours[dow] || bkState.hours[String(dow)];
@@ -11144,7 +11152,7 @@ if(typeof escapeHtml!=='function'){
 #bkStepBook #bkDateGrid::-webkit-scrollbar{display:none}
 #bkStepBook .bk-date-card{flex:0 0 auto;min-width:56px}
 #bkStepBook .bk-date-card.sel,#bkStepBook .bk-slot.sel{background:var(--bks-acc)!important;border-color:var(--bks-acc)!important}
-#bkStepBook .bk-table-grid.fp-mode{height:clamp(300px,50vh,420px);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;background:#070707}
+#bkStepBook .bk-table-grid.fp-mode{border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:visible;background:#070707}
 #bkStepBook .bks-confirm{width:100%;background:var(--bks-acc);color:#1a1206;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s}
 #bkStepBook .bks-confirm:active{transform:translateY(1px)}
 #bkStepBook .bks-sect+.bks-sect{border-top:1px solid rgba(255,255,255,.06);padding-top:16px}
