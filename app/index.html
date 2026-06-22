@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782096400 · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782097400 · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -4096,6 +4096,7 @@ setTimeout(function(){
       </div>
       <div class="form-row"><div class="fg"><label>Status</label><select class="fi" id="mRstatus"><option value="active">Active</option><option value="pending">Pending Approval</option><option value="inactive">Inactive</option></select></div><div class="fg"><label>Avg Prep Time (mins)</label><input class="fi" type="number" id="mRprep" value="15"></div></div>
       <div class="form-row"><div class="fg"><label>🪑 Table Seating Mode</label><select class="fi" id="mRseating"><option value="open">🍺 Open — held all night (owner frees table)</option><option value="min60">⏰ 60 min — auto-free for next booking</option><option value="min90">⏰ 90 min — auto-free for next booking</option><option value="min120">⏰ 120 min — auto-free for next booking</option></select></div><div class="fg"><label style="opacity:.7">When to use</label><div style="font-size:11px;color:var(--s-muted);line-height:1.45;padding-top:8px">Beer / bar → <b>Open</b>. Dinner / casual → pick a duration so a 20:00 table reopens for a later guest.</div></div></div>
+      <div class="form-row"><div class="fg"><label>📅 Booking Window — how far ahead customers can book</label><select class="fi" id="mRbookWindow"><option value="7">1 week ahead</option><option value="14">2 weeks ahead</option><option value="30" selected>1 month ahead (default)</option><option value="60">2 months ahead</option><option value="90">3 months ahead</option></select></div><div class="fg"><label style="opacity:.7">What it does</label><div style="font-size:11px;color:var(--s-muted);line-height:1.45;padding-top:8px">Controls how many days of dates the customer can pick when booking. Closed days are greyed out automatically.</div></div></div>
       <div class="fg"><label>VAT Rate (%) — <span style="color:var(--s-muted);font-size:9px">Set to 0 to disable VAT on bills</span></label><input class="fi" type="number" id="mRvat" value="0" min="0" max="50" step="0.5" placeholder="e.g. 10 for 10% VAT" style="max-width:200px">
         <div id="mRvatHistory" style="margin-top:10px;display:none">
           <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--s-muted);margin-bottom:6px">📋 VAT Change History</div>
@@ -9338,6 +9339,7 @@ async function saveResto(){
     status:document.getElementById('mRstatus').value,
     prep:parseInt(document.getElementById('mRprep').value)||15,
     seatingMode:(document.getElementById('mRseating')&&document.getElementById('mRseating').value)||'open',
+    bookingWindowDays:(document.getElementById('mRbookWindow')&&parseInt(document.getElementById('mRbookWindow').value,10))||30,
     theme:document.getElementById('mRtheme').value||'classic',
     cover:document.getElementById('mRcoverData').value||'',
     menuPhotos:_mRmenuPhotos.slice(),
@@ -9474,6 +9476,7 @@ async function editResto(id){
   document.getElementById('mRstatus').value=r.status||'active';
   document.getElementById('mRprep').value=r.prep||15;
   if(document.getElementById('mRseating')) document.getElementById('mRseating').value=r.seatingMode||'open';
+  if(document.getElementById('mRbookWindow')) document.getElementById('mRbookWindow').value=String(r.bookingWindowDays||30);
   document.getElementById('mRvat').value=r.vat||0;
   // Restore theme
   const restoTheme=r.theme||'classic';
@@ -13086,12 +13089,18 @@ function bkPickResto(id){
 }
 
 async function bkLoadHoursAndBuildDates(){
-  let h = null;
-  try { h = await fbGet('restoHours/'+bkState.restoId); } catch(e){}
+  let h = null, _win = null;
+  try {
+    [h, _win] = await Promise.all([
+      fbGet('restoHours/'+bkState.restoId),
+      fbGet('restaurants/'+bkState.restoId+'/bookingWindowDays')
+    ]);
+  } catch(e){}
   if(!h){
     h = {0:{open:true,from:'11:00',to:'22:00'},1:{open:true,from:'11:00',to:'22:00'},2:{open:true,from:'11:00',to:'22:00'},3:{open:true,from:'11:00',to:'22:00'},4:{open:true,from:'11:00',to:'22:00'},5:{open:true,from:'11:00',to:'22:00'},6:{open:true,from:'11:00',to:'22:00'}};
   }
   bkState.hours = h;
+  bkState.bookingWindowDays = parseInt(_win,10) || 30;
   buildBkDateGrid();
 }
 
@@ -13099,7 +13108,8 @@ function buildBkDateGrid(){
   const grid = document.getElementById('bkDateGrid');
   const today = new Date(); today.setHours(0,0,0,0);
   let html = '';
-  for(let i=0; i<30; i++){
+  const _win = Math.max(1, Math.min(120, (bkState && parseInt(bkState.bookingWindowDays,10)) || 30));
+  for(let i=0; i<_win; i++){
     const d = new Date(today.getTime() + i*86400000);
     const dow = d.getDay();
     const dayHours = bkState.hours[dow] || bkState.hours[String(dow)];
