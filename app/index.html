@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782048600 · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782096400 · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2560,7 +2560,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 
 /* Owner Today Map modal — read-only viewer for today's booked tables */
 .ow-tm-shell{max-width:1100px;width:96vw;max-height:92vh;display:flex;flex-direction:column;}
-.ow-tm-body{padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px;flex:1;overflow:hidden;}
+.ow-tm-body{padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px;flex:1;overflow-y:auto;}
 .ow-tm-tabs{display:flex;gap:6px;flex-wrap:wrap;}
 .ow-tm-tabs:empty{display:none;}
 .ow-tm-tab{padding:8px 16px;background:transparent;border:1px solid var(--s-border);color:var(--s-muted);font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;transition:all .2s;font-family:var(--fb);}
@@ -2571,8 +2571,8 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .ow-tm-stats .ow-tm-stat-bk b{color:#ff7a78;}
 .ow-tm-stats .ow-tm-stat-free b{color:#7fe3a3;}
 .ow-tm-stats .ow-tm-stat-walkin b{color:#60a5fa;}
-.ow-tm-map{flex:1;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:340px;position:relative;}
-.ow-tm-map .fp-viewer-svg{width:100%;height:100%;display:block;}
+.ow-tm-map{flex:0 0 auto;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:8px;overflow:visible;display:flex;align-items:center;justify-content:center;min-height:200px;position:relative;}
+.ow-tm-map .fp-viewer-svg{width:100%;height:auto;max-height:50vh;display:block;margin:0 auto;}
 .ow-tm-empty{padding:40px 24px;text-align:center;color:var(--s-muted);font-size:13px;line-height:1.7;max-width:380px;}
 .ow-tm-empty-emoji{font-size:36px;margin-bottom:10px;display:block;}
 .ow-tm-legend{display:flex;gap:18px;font-size:11.5px;color:var(--s-muted);font-family:var(--fb);letter-spacing:.4px;justify-content:center;padding-top:4px;border-top:1px solid var(--s-border);margin-top:2px;padding-top:10px;}
@@ -2586,7 +2586,8 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
   .ow-tm-body{padding:10px 12px 12px;}
   .ow-tm-stats{font-size:11px;gap:10px;}
   .ow-tm-stats b{font-size:13px;}
-  .ow-tm-map{min-height:280px;}
+  .ow-tm-map{min-height:180px;}
+  .ow-tm-map .fp-viewer-svg{max-height:42vh;}
 }
 .bk-stats-context{grid-column:1/-1;font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-align:center;letter-spacing:.3px;margin-top:2px;}
 @media(max-width:640px){
