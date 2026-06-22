@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782097400 · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782124200 · NAME EFFECT (iridescent BLUE butterfly, flapping + twinkle sparkles, 3s) · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2967,6 +2967,19 @@ body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,bod
 @media (prefers-reduced-motion:reduce){.rsm-l{animation:none}}
 .rfp-name-ransom{letter-spacing:0!important;line-height:1.55!important;font-family:inherit!important}
 #pg-resto .rfp-name{font-family:'Fraunces','Noto Serif Lao',Georgia,serif;font-weight:600;font-size:31px;line-height:1.05;color:var(--rfp-cream);letter-spacing:-.5px}
+/* ── Restaurant name "butterfly reveal" effect (owner opt-in: nameEffect=butterfly) ── */
+.rfp-name.rfp-fx-host{position:relative;display:inline-block;overflow:visible;}
+.rfp-fx-ink{display:inline-block;animation:rfpFxWipe 3s cubic-bezier(.42,0,.18,1) .2s both;}
+.rfp-fx-wing{position:absolute;top:50%;left:0;width:1.55em;height:auto;z-index:4;pointer-events:none;will-change:transform,left,opacity;filter:drop-shadow(0 4px 6px rgba(70,20,55,.3));animation:rfpFxFly 3s cubic-bezier(.42,0,.18,1) .2s both;}
+.rfp-fx-wing .rfp-wL{transform-box:fill-box;transform-origin:100% 50%;animation:rfpFxFlap .2s ease-in-out infinite;}
+.rfp-fx-wing .rfp-wR{transform-box:fill-box;transform-origin:0% 50%;animation:rfpFxFlap .2s ease-in-out infinite;}
+.rfp-fx-sparks{position:absolute;inset:-12% -6%;z-index:3;pointer-events:none;}
+.rfp-fx-sparks i{position:absolute;width:.38em;height:.38em;background:#fff;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);filter:drop-shadow(0 0 3px rgba(255,220,242,.95));opacity:0;transform:scale(0);animation:rfpFxTwinkle 1.8s ease-in-out infinite;}
+@keyframes rfpFxWipe{0%{clip-path:inset(-45% 100% -45% -12%);}100%{clip-path:inset(-45% -12% -45% -12%);}}
+@keyframes rfpFxFly{0%{left:-6%;opacity:0;transform:translateY(-50%) rotate(-12deg) scale(.86);}12%{opacity:1;}30%{transform:translateY(-50%) translateY(-16px) rotate(7deg) scale(1);}55%{transform:translateY(-50%) translateY(7px) rotate(-6deg) scale(1);}80%{transform:translateY(-50%) translateY(-12px) rotate(8deg) scale(1);}90%{left:106%;opacity:1;}100%{left:122%;opacity:0;transform:translateY(-50%) translateY(-30px) rotate(13deg) scale(.82);}}
+@keyframes rfpFxFlap{0%,100%{transform:scaleX(1);}50%{transform:scaleX(.4);}}
+@keyframes rfpFxTwinkle{0%,100%{opacity:0;transform:scale(.2) rotate(0deg);}22%{opacity:1;transform:scale(1.15) rotate(35deg);}45%{opacity:0;transform:scale(.2) rotate(70deg);}}
+@media (prefers-reduced-motion:reduce){.rfp-fx-ink,.rfp-fx-wing,.rfp-fx-sparks i{animation:none;}.rfp-fx-wing,.rfp-fx-sparks{display:none;}}
 #pg-resto .rfp-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;color:var(--rfp-mut);font-size:13px}
 #pg-resto .rfp-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--rfp-mut2)}
 #pg-resto .rfp-status{display:inline-flex;align-items:center;gap:7px;margin-top:11px;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:99px;background:var(--rfp-surf);border:1px solid var(--rfp-line)}
@@ -4079,6 +4092,13 @@ setTimeout(function(){
           <option value="script">Script (girly) 💗</option>
           <option value="statement">Statement (bold caps) 💥</option>
           <option value="ransom">Ransom cut-out (Mean Girls) 🔪</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>✨ Name Effect — <span style="color:var(--s-muted);font-size:9px;font-weight:400">animated reveal on the restaurant name (customer page)</span></label>
+        <select class="fi" id="mRnameEffect" style="max-width:260px">
+          <option value="none">Normal (no effect)</option>
+          <option value="butterfly">🦋 Butterfly reveal</option>
         </select>
       </div>
       <div class="fg">
@@ -9210,6 +9230,7 @@ function resetRestoModal(){
   document.getElementById('mRmapInput').value='';
   const _ls2=document.getElementById('mRlocStatus'); if(_ls2)_ls2.textContent='No location set';
   const _f=document.getElementById('mRfont'); if(_f)_f.value='default';
+  const _ne=document.getElementById('mRnameEffect'); if(_ne)_ne.value='none';
   const _bg=document.getElementById('mRbg'); if(_bg)_bg.value='dark';
   const _ph=document.getElementById('mRphone'); if(_ph)_ph.value='';
   // Reset emoji picker
@@ -9346,6 +9367,7 @@ async function saveResto(){
     lat:(parseFloat(document.getElementById('mRlat').value)||null),
     lng:(parseFloat(document.getElementById('mRlng').value)||null),
     font:document.getElementById('mRfont').value||'default',
+    nameEffect:(document.getElementById('mRnameEffect')&&document.getElementById('mRnameEffect').value)||'none',
     bg:document.getElementById('mRbg')?document.getElementById('mRbg').value:'dark',
     phone:document.getElementById('mRphone')?document.getElementById('mRphone').value.trim():'',
     expiresAt:newExpiry,
@@ -9509,6 +9531,7 @@ async function editResto(id){
   const _ls=document.getElementById('mRlocStatus');
   if(_ls) _ls.textContent=(r.lat!=null&&r.lng!=null)?('📍 '+(+r.lat).toFixed(5)+', '+(+r.lng).toFixed(5)):'No location set';
   document.getElementById('mRfont').value=r.font||'default';
+  if(document.getElementById('mRnameEffect')) document.getElementById('mRnameEffect').value=r.nameEffect||'none';
   if(document.getElementById('mRbg')) document.getElementById('mRbg').value=r.bg||'dark';
   if(document.getElementById('mRphone')) document.getElementById('mRphone').value=r.phone||'';
   const expLabel=r.expiresAt?getExpiryLabel(r.expiresAt):'Lifetime';
@@ -17231,6 +17254,55 @@ function _rfpRansomHTML(text){
   }
   return out;
 }
+/* ── Restaurant name "butterfly reveal" effect — pro SVG butterfly w/ flapping wings ── */
+var _RFP_BFLY_SVG = '<svg class="rfp-fx-wing" viewBox="0 0 120 104" aria-hidden="true">'
+  + '<defs>'
+  + '<radialGradient id="bbF" cx="50%" cy="40%" r="72%"><stop offset="0" stop-color="#0d1530"/><stop offset=".5" stop-color="#1c3f86"/><stop offset="1" stop-color="#4a90de"/></radialGradient>'
+  + '<radialGradient id="bbH" cx="50%" cy="38%" r="78%"><stop offset="0" stop-color="#0c1430"/><stop offset=".45" stop-color="#1659a8"/><stop offset=".8" stop-color="#2f9fd8"/><stop offset="1" stop-color="#62dcef"/></radialGradient>'
+  + '</defs>'
+  + '<g class="rfp-wL">'
+  + '<path d="M59 42 C44 15 19 9 10 22 C3 33 10 49 29 53 C41 56 53 52 59 49 Z" fill="url(#bbF)" stroke="#070a1a" stroke-width="1.4"/>'
+  + '<path d="M58 50 C41 54 21 60 17 79 C15 91 34 93 46 85 C54 80 58 66 58 58 Z" fill="url(#bbH)" stroke="#070a1a" stroke-width="1.4"/>'
+  + '<path d="M57 47 L26 30 M57 50 L20 44 M57 54 L24 70 M57 58 L34 84" stroke="#0a1024" stroke-width=".8" opacity=".4" fill="none"/>'
+  + '<ellipse cx="27" cy="82" rx="2.4" ry="2.8" fill="#ff7a2e"/><ellipse cx="33" cy="85.5" rx="2.4" ry="2.8" fill="#ff8c38"/><ellipse cx="39" cy="86.5" rx="2.3" ry="2.7" fill="#ff7a2e"/><ellipse cx="45" cy="84" rx="2.1" ry="2.5" fill="#ff8c38"/>'
+  + '<ellipse cx="24" cy="85" rx="1.5" ry="1.8" fill="#d8f0ff"/><ellipse cx="30" cy="88.5" rx="1.5" ry="1.8" fill="#d8f0ff"/><ellipse cx="37" cy="89.5" rx="1.5" ry="1.8" fill="#d8f0ff"/><ellipse cx="43" cy="87" rx="1.4" ry="1.7" fill="#d8f0ff"/>'
+  + '<ellipse cx="15" cy="26" rx="1.6" ry="1.9" fill="#d8f0ff" opacity=".9"/><ellipse cx="13" cy="34" rx="1.5" ry="1.8" fill="#d8f0ff" opacity=".9"/>'
+  + '</g>'
+  + '<g class="rfp-wR">'
+  + '<path d="M61 42 C76 15 101 9 110 22 C117 33 110 49 91 53 C79 56 67 52 61 49 Z" fill="url(#bbF)" stroke="#070a1a" stroke-width="1.4"/>'
+  + '<path d="M62 50 C79 54 99 60 103 79 C105 91 86 93 74 85 C66 80 62 66 62 58 Z" fill="url(#bbH)" stroke="#070a1a" stroke-width="1.4"/>'
+  + '<path d="M63 47 L94 30 M63 50 L100 44 M63 54 L96 70 M63 58 L86 84" stroke="#0a1024" stroke-width=".8" opacity=".4" fill="none"/>'
+  + '<ellipse cx="93" cy="82" rx="2.4" ry="2.8" fill="#ff7a2e"/><ellipse cx="87" cy="85.5" rx="2.4" ry="2.8" fill="#ff8c38"/><ellipse cx="81" cy="86.5" rx="2.3" ry="2.7" fill="#ff7a2e"/><ellipse cx="75" cy="84" rx="2.1" ry="2.5" fill="#ff8c38"/>'
+  + '<ellipse cx="96" cy="85" rx="1.5" ry="1.8" fill="#d8f0ff"/><ellipse cx="90" cy="88.5" rx="1.5" ry="1.8" fill="#d8f0ff"/><ellipse cx="83" cy="89.5" rx="1.5" ry="1.8" fill="#d8f0ff"/><ellipse cx="77" cy="87" rx="1.4" ry="1.7" fill="#d8f0ff"/>'
+  + '<ellipse cx="105" cy="26" rx="1.6" ry="1.9" fill="#d8f0ff" opacity=".9"/><ellipse cx="107" cy="34" rx="1.5" ry="1.8" fill="#d8f0ff" opacity=".9"/>'
+  + '</g>'
+  + '<ellipse cx="60" cy="52" rx="3.6" ry="21" fill="#0a0a14"/>'
+  + '<ellipse cx="60" cy="44" rx="4.2" ry="8" fill="#15151f"/>'
+  + '<circle cx="60" cy="30" r="3.4" fill="#0a0a14"/>'
+  + '<path d="M60 27 C56 16 52 13 47 10" fill="none" stroke="#0a0a14" stroke-width="1.5" stroke-linecap="round"/>'
+  + '<path d="M60 27 C64 16 68 13 73 10" fill="none" stroke="#0a0a14" stroke-width="1.5" stroke-linecap="round"/>'
+  + '<circle cx="46.6" cy="9.6" r="2" fill="#0a0a14"/><circle cx="73.4" cy="9.6" r="2" fill="#0a0a14"/>'
+  + '</svg>';
+var _RFP_SPARKS = '<span class="rfp-fx-sparks" aria-hidden="true">'
+  + '<i style="left:6%;top:-16%;animation-delay:.2s"></i>'
+  + '<i style="left:24%;top:88%;animation-delay:.9s"></i>'
+  + '<i style="left:48%;top:-24%;animation-delay:.5s"></i>'
+  + '<i style="left:68%;top:78%;animation-delay:1.4s"></i>'
+  + '<i style="left:90%;top:-10%;animation-delay:.7s"></i>'
+  + '<i style="left:38%;top:46%;animation-delay:1.9s"></i></span>';
+function _rfpNameDiv(r){
+  var isRansom = (r.font==='ransom');
+  var inner = isRansom ? _rfpRansomHTML(r.name||'Restaurant') : _rfpEsc(r.name||'Restaurant');
+  var cls = 'rfp-name' + (isRansom?' rfp-name-ransom':'');
+  var style = isRansom ? '' : (' style="font-family:'+(RFP_FONT[r.font]||RFP_FONT.default)+'"');
+  if(r && r.nameEffect==='butterfly'){
+    return '<div class="'+cls+' rfp-fx-host"'+style+'>'
+      + '<span class="rfp-fx-ink">'+inner+'</span>'
+      + _RFP_SPARKS + _RFP_BFLY_SVG
+      + '</div>';
+  }
+  return '<div class="'+cls+'"'+style+'>'+inner+'</div>';
+}
 function _rfpSyncPageBg(host){
   try{ var c=getComputedStyle(host).getPropertyValue('--rfp-bg').trim();
     if(c){ document.documentElement.style.backgroundColor=c; document.body.style.backgroundColor=c; } }catch(_){}
@@ -17318,7 +17390,7 @@ async function renderRestoPage(rid){
     '<div class="rfp-hero" oncontextmenu="return false"><div class="'+coverCls+'" '+coverStyle+'></div><div class="rfp-grad"></div>'+
       '<div class="rfp-htop"><a class="rfp-ib" href="/">‹</a><a class="rfp-ib" href="'+_dirH+'" target="_blank" rel="noopener">↗</a></div></div>'+
     '<div class="rfp-ident"><div class="rfp-logo">'+logoHtml+'</div>'+
-      (r.font==='ransom'?'<div class="rfp-name rfp-name-ransom">'+_rfpRansomHTML(r.name||'Restaurant')+'</div>':'<div class="rfp-name" style="font-family:'+(RFP_FONT[r.font]||RFP_FONT.default)+'">'+_rfpEsc(r.name||'Restaurant')+'</div>')+
+      _rfpNameDiv(r)+
       '<div class="rfp-meta"><span>'+_rfpEsc(r.cuisine||'Lao')+'</span>'+(addr?'<span class="dot"></span><span>'+addr+'</span>':'')+'</div>'+
       (openSt?'<div class="rfp-status '+(openSt.open?'on':(openSt.later?'later':'off'))+'"><span class="rfp-status-d"></span>'+_rfpEsc(openSt.text)+'</div>':'')+
       '</div>'+
