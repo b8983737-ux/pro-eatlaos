@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782190600 · Lao date names fix · map legend fix · booking full-Lao · VIP CONDITION · NAME EFFECT blue butterfly+twinkle · BOOKING WINDOW (date grid honors owner setting, default 1mo) · r-PURE customer · ALL+zone buttons + MAP AUTO-FIT(phone+desktop) · bar-leadtime · owner+debug stripped · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782194200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2348,6 +2348,25 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 }
 /* Customer booking modal body */
 .bk-modal-body{padding:22px 24px;max-height:calc(85vh - 110px);overflow-y:auto;}
+.bk-scroll-cue{position:absolute;left:50%;bottom:13px;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:3px;padding:4px 12px;background:transparent;border:none;font-family:inherit;color:var(--bks-acc,#c8973a);cursor:pointer;z-index:7;opacity:0;transition:opacity .25s ease;-webkit-tap-highlight-color:transparent;}
+.bk-scroll-cue.show{display:inline-flex;opacity:1;}
+.bk-scroll-cue .bks-cue-txt{font-weight:700;font-size:13px;letter-spacing:.3px;line-height:1;white-space:nowrap;}
+.bk-scroll-cue .bks-cue-chev{display:flex;flex-direction:column;align-items:center;line-height:.5;}
+.bk-scroll-cue .bks-cue-chev svg{width:22px;height:14px;display:block;}
+.bk-scroll-cue.show .bks-cue-chev svg:nth-child(1){animation:bkCueBob 1.3s ease-in-out infinite;}
+.bk-scroll-cue.show .bks-cue-chev svg:nth-child(2){opacity:.55;margin-top:-6px;animation:bkCueBob 1.3s ease-in-out .15s infinite;}
+@keyframes bkCueBob{0%,100%{transform:translateY(0);}50%{transform:translateY(5px);}}
+@media (prefers-reduced-motion:reduce){.bk-scroll-cue .bks-cue-chev svg{animation:none;}}
+.bk-scroll-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:6;width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;padding:0;background:linear-gradient(180deg,#d8a93f,#c8973a);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.28);opacity:1;transition:opacity .3s ease,transform .3s ease;animation:bkScrollNudge 1.5s ease-in-out infinite;}
+.bk-scroll-hint:hover{filter:brightness(1.07);}
+.bk-scroll-hint.hide{opacity:0;pointer-events:none;transform:translateX(-50%) translateY(8px);}
+.bk-scroll-hint svg{display:block;}
+@keyframes bkScrollNudge{0%,100%{bottom:16px;}50%{bottom:9px;}}
+@media (prefers-reduced-motion:reduce){.bk-scroll-hint{animation:none;}}
+.bk-scroll-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:rgba(200,151,58,.95);color:#1a1206;box-shadow:0 6px 18px rgba(0,0,0,.35);z-index:6;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease;animation:bkScrollBounce 1.5s ease-in-out infinite;}
+.bk-scroll-hint.show{opacity:1;visibility:visible;pointer-events:auto;}
+@keyframes bkScrollBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(5px);}}
+@media (prefers-reduced-motion:reduce){.bk-scroll-hint{animation:none;}}
 .bk-step{display:none;animation:bkFadeIn .3s cubic-bezier(.16,1,.3,1);}
 .bk-step.on{display:block;}
 @keyframes bkFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -2735,6 +2754,14 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 /* Customer-side floor plan viewer */
 .fp-viewer-wrap{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px;margin-bottom:14px;overflow:hidden;}
 .fp-viewer-svg{width:100%;height:auto;display:block;max-height:60vh;}
+.fp-pz-wrap{position:relative;touch-action:none;cursor:grab;}
+.fp-pz-wrap:active{cursor:grabbing;}
+.fp-pz-wrap .fp-viewer-svg{transform-origin:0 0;will-change:transform;}
+.fp-pz-ctrl{position:absolute;right:9px;bottom:9px;display:flex;flex-direction:column;gap:6px;z-index:8;}
+.fp-pz-ctrl button{width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(18,18,18,.74);color:#fff;font-size:18px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.fp-pz-ctrl button:active{background:rgba(64,64,64,.9);}
+.fp-pz-hint{position:absolute;left:50%;top:9px;transform:translateX(-50%);z-index:8;background:rgba(18,18,18,.74);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;animation:fpPzHint 4.2s ease forwards;}
+@keyframes fpPzHint{0%,72%{opacity:1}100%{opacity:0}}
 .fp-vw-el-shape{transition:opacity .2s;}
 .fp-vw-table{cursor:pointer;}
 /* Functional state colors only — no decoration */
@@ -3132,7 +3159,7 @@ setTimeout(function(){
       <div><div class="c-resto-name" id="cRestoName">Restaurant</div><div class="c-table-tag" id="cTableTag">Table 1</div></div>
     </div>
     <div class="c-topbar-r">
-      <select class="lang-sel" id="langSel" onchange="setLang(this.value)">
+      <select aria-label="Language" class="lang-sel" id="langSel" onchange="setLang(this.value)">
         <option value="en">🇬🇧 EN</option>
         <option value="lo">🇱🇦 ລາວ</option>
         <option value="th">🇹🇭 ไทย</option>
@@ -5506,6 +5533,10 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'Choose a table',
     bk_need_date:'Pick a date first.',
     bk_need_time:'Pick a time first.',
+    bk_scroll_down:'Scroll down',
+    bk_all:'All',
+    bk_zone_full:'Full',
+    bk_zoom_hint:'Pinch or drag to zoom',
     bk_pick_table_sub:'Pick a zone, then select an available table.',
     bk_loading_tables:'Loading tables…',
     bk_no_tables_party:'No tables fit your party size. Try fewer guests.',
@@ -5685,6 +5716,10 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'ເລືອກໂຕະ',
     bk_need_date:'ກະລຸນາເລືອກວັນທີກ່ອນ.',
     bk_need_time:'ກະລຸນາເລືອກເວລາກ່ອນ.',
+    bk_scroll_down:'ເລື່ອນລົງ',
+    bk_all:'ທັງໝົດ',
+    bk_zone_full:'ເຕັມ',
+    bk_zoom_hint:'ບີບ ຫຼື ລາກ ເພື່ອຊູມ',
     bk_pick_table_sub:'ເລືອກພື້ນທີ່ ແລ້ວເລືອກໂຕະທີ່ວ່າງ.',
     bk_loading_tables:'ກຳລັງໂຫຼດໂຕະ…',
     bk_no_tables_party:'ບໍ່ມີໂຕະທີ່ພໍສຳລັບກຸ່ມຂອງທ່ານ. ກະລຸນາລົດຈຳນວນຄົນ.',
@@ -5864,6 +5899,10 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'เลือกโต๊ะ',
     bk_need_date:'กรุณาเลือกวันที่ก่อน',
     bk_need_time:'กรุณาเลือกเวลาก่อน',
+    bk_scroll_down:'เลื่อนลง',
+    bk_all:'ทั้งหมด',
+    bk_zone_full:'เต็ม',
+    bk_zoom_hint:'บีบหรือลากเพื่อซูม',
     bk_pick_table_sub:'เลือกโซน แล้วเลือกโต๊ะที่ว่าง',
     bk_loading_tables:'กำลังโหลดโต๊ะ…',
     bk_no_tables_party:'ไม่มีโต๊ะที่เหมาะกับจำนวนคนของคุณ ลองลดจำนวน',
@@ -6043,6 +6082,10 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'选择桌位',
     bk_need_date:'请先选择日期',
     bk_need_time:'请先选择时间',
+    bk_scroll_down:'向下滚动',
+    bk_all:'全部',
+    bk_zone_full:'已满',
+    bk_zoom_hint:'双指缩放或拖动',
     bk_pick_table_sub:'选择区域，然后选择空闲的桌位。',
     bk_loading_tables:'正在加载桌位…',
     bk_no_tables_party:'没有适合您人数的桌位。请减少人数。',
@@ -6222,6 +6265,10 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'테이블 선택',
     bk_need_date:'먼저 날짜를 선택하세요',
     bk_need_time:'먼저 시간을 선택하세요',
+    bk_scroll_down:'아래로 스크롤',
+    bk_all:'전체',
+    bk_zone_full:'꽉 참',
+    bk_zoom_hint:'손가락을 모으거나 드래그하여 확대',
     bk_pick_table_sub:'구역을 선택한 후 이용 가능한 테이블을 고르세요.',
     bk_loading_tables:'테이블 로딩 중…',
     bk_no_tables_party:'인원에 맞는 테이블이 없습니다. 인원을 줄여보세요.',
@@ -8322,6 +8369,38 @@ let _bkRestoTables = [];       // tables array — used to look up VIP requireme
 let _bkLiveListener = null; // for sound notification
 let _bkLastBookingCount = 0;
 
+function bkScrollMore(){
+  var b=document.querySelector('#mCustBooking .bk-modal-body');
+  if(b) b.scrollBy({top:Math.max(160,Math.round(b.clientHeight*0.7)),behavior:'smooth'});
+}
+function bkUpdateScrollHint(){
+  var shell=document.querySelector('#mCustBooking .bkm-shell');
+  var b=document.querySelector('#mCustBooking .bk-modal-body');
+  var h=document.getElementById('bkScrollHint');
+  if(!b||!h) return;
+  if(shell && shell.classList.contains('fp-fullscreen')){ h.classList.add('hide'); return; }
+  var more=(b.scrollHeight - b.scrollTop - b.clientHeight) > 24;
+  h.classList.toggle('hide', !more);
+}
+function bkInitScrollHint(){
+  var shell=document.querySelector('#mCustBooking .bkm-shell');
+  var b=document.querySelector('#mCustBooking .bk-modal-body');
+  if(!shell||!b) return;
+  if(!document.getElementById('bkScrollHint')){
+    var h=document.createElement('button');
+    h.id='bkScrollHint'; h.type='button'; h.className='bk-scroll-hint';
+    h.setAttribute('aria-label','Scroll down for more');
+    h.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    h.onclick=bkScrollMore;
+    shell.appendChild(h);
+  }
+  if(!b._bkHintBound){
+    b._bkHintBound=true;
+    b.addEventListener('scroll', bkUpdateScrollHint, {passive:true});
+    try{ new MutationObserver(bkUpdateScrollHint).observe(b,{childList:true,subtree:true}); }catch(_){}
+  }
+  setTimeout(bkUpdateScrollHint,60); setTimeout(bkUpdateScrollHint,320);
+}
 function openCustBookingModal(){
   // v5.4: Release any stale lock from a previous abandoned session
   if(typeof bkReleaseLock === 'function') bkReleaseLock();
@@ -8339,6 +8418,7 @@ function openCustBookingModal(){
   const curLang = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
   loadBkRestaurants();
+  setTimeout(bkInitScrollHint,80);
 }
 
 /* booking-v2: open the booking form straight to a chosen restaurant (used by the restaurant page's Reserve button) */
@@ -8352,6 +8432,7 @@ function bkOpenForResto(rid, name){
   var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
   bkEnterBook(rid);
+  setTimeout(bkInitScrollHint,80);
 }
 
 async function loadBkRestaurants(){
@@ -8521,6 +8602,7 @@ async function bkLoadSlotsAndBuild(){
   let totalTables = 0;
   try {
     // Parallel fetches; bookings server-side filtered by date
+    if(typeof ensureAnonAuth==='function'){ try{ await ensureAnonAuth(); }catch(_){} }
     const [r, all] = await Promise.all([
       fbGet('restaurants/'+bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date)
@@ -8677,6 +8759,7 @@ function bkShowView(view){
   var lbl=document.getElementById('bkProgressLbl'); if(lbl) lbl.textContent=(view==='picker')?_lp('bk_pick_resto','Choose a restaurant'):'';
   var bar=document.getElementById('bkProgressBar'); if(bar) bar.style.width=(view==='success')?'100%':(view==='book'?'66%':'12%');
   var body=document.querySelector('#mCustBooking .bk-modal-body'); if(body) body.scrollTop=0;
+  if(typeof _bkScrollCueInit==='function'){ _bkScrollCueInit(); setTimeout(_bkScrollCueUpdate,150); setTimeout(_bkScrollCueUpdate,650); }
 }
 async function bkEnterBook(id){
   bkState.date=null; bkState.slot=null; bkState.tableId=null; bkState.tableNum=null; bkState.tableZone=null; bkState.hours=null; bkState.tables=[];
@@ -8691,6 +8774,7 @@ async function bkEnterBook(id){
   var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
   await bkLoadHoursAndBuildDates();
+  if(typeof _bkEnsureScrollHint==='function') _bkEnsureScrollHint();
 }
 function bkApplyRestoChrome(r){
   var acc=(typeof RFP_ACCENT!=='undefined' && r && RFP_ACCENT[r.theme])||'#c8973a';
@@ -8715,6 +8799,31 @@ function bkConfirm(){
   if(!bkState.slot){ alert(_lp('bk_err_pick_slot','Please select a time slot.')); _bkScrollTo('bkSlotGrid'); return; }
   if(bkState.tables && bkState.tables.length && !bkState.tableId){ alert(_lp('bk_err_pick_table','Please select a table.')); _bkScrollTo('bkTableGrid'); return; }
   submitCustBooking();
+}
+var _bkCueReady=false;
+function _bkScrollCueUpdate(){
+  try{
+    var body=document.querySelector('#mCustBooking .bk-modal-body');
+    var cue=document.getElementById('bkScrollCue');
+    if(!body||!cue) return;
+    var more=(body.scrollHeight - body.scrollTop - body.clientHeight) > 28;
+    cue.classList.toggle('show', !!more);
+  }catch(_){}
+}
+function _bkScrollCueInit(){
+  if(_bkCueReady) return;
+  var body=document.querySelector('#mCustBooking .bk-modal-body');
+  if(!body) return;
+  _bkCueReady=true;
+  try{ body.addEventListener('scroll', _bkScrollCueUpdate, {passive:true}); }catch(_){ try{ body.addEventListener('scroll', _bkScrollCueUpdate); }catch(__){} }
+  try{ window.addEventListener('resize', _bkScrollCueUpdate); }catch(_){}
+  try{ new MutationObserver(_bkScrollCueUpdate).observe(body,{childList:true,subtree:true,attributes:true}); }catch(_){}
+}
+function _bkScrollCueClick(){
+  try{
+    var body=document.querySelector('#mCustBooking .bk-modal-body');
+    if(body) body.scrollBy({top: Math.round(body.clientHeight*0.72), behavior:'smooth'});
+  }catch(_){}
 }
 function bkReturnToRfp(){
   // Booking was opened on top of a restaurant page (/r/<id>) — just close the
@@ -8913,6 +9022,7 @@ const FP_DEFAULT_SIZES = {
   'stage':        { w: 200, h: 80  },
   'door':         { w: 60,  h: 20  },
   'kitchen':      { w: 200, h: 100 },
+  'outside':      { w: 240, h: 200 },
   'wall-block':   { w: 200, h: 12  },
   'wall-line':    { w: 100, h: 0   }  // line uses x1,y1,x2,y2 not w/h
 };
@@ -8932,6 +9042,7 @@ const FP_DEFAULT_LABELS = {
   'stage':   'Stage',
   'door':    'Door',
   'kitchen': 'Kitchen',
+  'outside': 'Outside',
   'wall-block': '',
   'wall-line':  ''
 };
@@ -9226,6 +9337,9 @@ function fpElToSvg(el){
   if(el.kind === 'wall-block'){
     fill = 'url(#fpBrick)';
     stroke = '#3a3a3a';
+  } else if(el.kind === 'outside'){
+    fill = 'url(#fpOutsideHatch)';
+    stroke = 'rgba(255,255,255,.32)';
   } else if(isTable){
     fill = '#c8973a';
     stroke = '#e0b455';
@@ -9273,6 +9387,7 @@ function _fpFixedFill(kind){
     case 'stage':      return '#3d3128'; // stage
     case 'door':       return '#4a3a28'; // entry
     case 'kitchen':    return '#332620'; // kitchen
+    case 'outside':    return '#0a0a0a'; // outside-the-room (carve)
     case 'wall-block': return '#2a2a2a'; // wall
     default:           return '#2e2e2e';
   }
@@ -9834,6 +9949,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   });
   // Render fixed first (under)
   fixed.forEach(el => {
+    if(el.kind === 'outside'){ svgInner += `<rect class="fp-vw-outside" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="#0a0a0a"/>`; return; }
     const cx = el.x + el.w/2, cy = el.y + el.h/2;
     let shape;
     const fill = _fpFixedFill(el.kind);
@@ -9932,6 +10048,7 @@ async function bkLoadTables(){
   tabs.innerHTML = '';
   try {
     // Parallel fetches; bookings server-side filtered by date (see fbGetFiltered for index fallback)
+    if(typeof ensureAnonAuth==='function'){ try{ await ensureAnonAuth(); }catch(_){} }
     const [r, dayBookings, locks] = await Promise.all([
       fbGet('restaurants/'+bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date),
@@ -10296,18 +10413,26 @@ function _bkRenderActiveAreaMap(replaceOnly){
   };
   let mapHtml;
   if(activeSlug === '__all__'){
-    // Stack every zone's floor plan, each under its zone label
+    // Option A: ONE continuous map — all zones merged into a single zoomable canvas
     const slugs = bkState._usableAreaSlugs || Object.keys(bkState._allAreas);
-    mapHtml = slugs.map(slug => {
-      const a = bkState._allAreas[slug];
-      let label = (a && a.area) || _fpAreaLabelFromSlug(slug);
-      const k = 'fp_'+slug; const tr = _lp(k,''); if(tr && tr!==k) label = tr;
-      return `<div class="bk-allzone-block"><div class="bk-allzone-h">${escapeHtml(label)}</div>${_renderOne(slug)}</div>`;
-    }).join('');
-    // Merge all zones' elements so the table-info popup resolves any table's shape in All view
-    const _mergedEls = [];
-    slugs.forEach(slug => { const a = bkState._allAreas[slug]; if(a && a.elements) _mergedEls.push.apply(_mergedEls, a.elements); });
-    bkState._cachedPlan = { elements: _mergedEls };
+    const combined = _bkBuildCombinedPlan(slugs, bkState._allAreas);
+    if(combined && combined.elements && combined.elements.length){
+      const _tooSmall = new Set();
+      combined.elements.forEach(e => {
+        if(e.kind && e.kind.indexOf('table')===0 && e.tableId){
+          const t = bkState._allTablesById[e.tableId];
+          if(t){ const mx=t.maxSeats||t.seats||0, mn=t.minSeats||1; if(bkState.party>mx||bkState.party<mn) _tooSmall.add(e.tableId); }
+        }
+      });
+      const svg = fpRenderCustomerView(combined, _allTablesArr, viewerBooked, bkState._lockedTableIds, bkState.tableId, bkState.walkInTableIds, _tooSmall);
+      mapHtml = `<div class="fp-viewer-wrap">${svg||''}</div>`;
+      bkState._cachedPlan = combined;
+    } else {
+      const _mergedEls = [];
+      slugs.forEach(slug => { const a = bkState._allAreas[slug]; if(a && a.elements) _mergedEls.push.apply(_mergedEls, a.elements); });
+      mapHtml = `<div class="bk-empty">${escapeHtml(_lp('bk_need_time','Pick a time first.'))}</div>`;
+      bkState._cachedPlan = { elements: _mergedEls };
+    }
   } else {
     mapHtml = _renderOne(activeSlug);
   }
@@ -10325,13 +10450,103 @@ function _bkRenderActiveAreaMap(replaceOnly){
   _bkWireMapClicks();
 }
 
+/* ── Option A: combine all zones into ONE continuous canvas (horizontal layout) ── */
+function _bkBuildCombinedPlan(slugs, allAreas){
+  var GAP=120, boxes=[], maxH=0, bg='#0f0f0f';
+  (slugs||[]).forEach(function(slug){
+    var a=allAreas&&allAreas[slug];
+    if(!a||!a.elements||!a.elements.length) return;
+    if(a.bgColor) bg=a.bgColor;
+    var minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+    a.elements.forEach(function(el){
+      if(el.kind==='wall-line'){ minX=Math.min(minX,el.x1,el.x2); maxX=Math.max(maxX,el.x1,el.x2); minY=Math.min(minY,el.y1,el.y2); maxY=Math.max(maxY,el.y1,el.y2); }
+      else { minX=Math.min(minX,el.x||0); maxX=Math.max(maxX,(el.x||0)+(el.w||0)); minY=Math.min(minY,el.y||0); maxY=Math.max(maxY,(el.y||0)+(el.h||0)); }
+    });
+    if(!isFinite(minX)) return;
+    boxes.push({a:a,minX:minX,minY:minY,w:maxX-minX,h:maxY-minY});
+    maxH=Math.max(maxH,maxY-minY);
+  });
+  var merged=[], curX=0;
+  boxes.forEach(function(b){
+    var dx=-b.minX+curX;
+    var dy=-b.minY+(maxH-b.h)/2;
+    b.a.elements.forEach(function(el){
+      var c=Object.assign({},el);
+      if(c.kind==='wall-line'){ c.x1=(c.x1||0)+dx; c.x2=(c.x2||0)+dx; c.y1=(c.y1||0)+dy; c.y2=(c.y2||0)+dy; }
+      else { c.x=(c.x||0)+dx; c.y=(c.y||0)+dy; }
+      merged.push(c);
+    });
+    curX+=b.w+GAP;
+  });
+  return { width:(curX||200)+160, height:(maxH||200)+160, bgColor:bg, elements:merged };
+}
+
+/* ── Pinch-to-zoom + drag-to-pan for the floor-plan map (scoped, no library) ── */
+function _bkAttachPanZoom(svgEl){
+  if(!svgEl || svgEl._pzReady) return;
+  var wrap = svgEl.parentElement; if(!wrap) return;
+  svgEl._pzReady = true;
+  wrap.classList.add('fp-pz-wrap');
+  var st={ s:1, tx:0, ty:0 };
+  function apply(){ svgEl.style.transform='translate('+st.tx+'px,'+st.ty+'px) scale('+st.s+')'; }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function rectXY(e){ var r=wrap.getBoundingClientRect(); return { x:e.clientX-r.left, y:e.clientY-r.top }; }
+  function zoomAt(px,py,f){ var ns=clamp(st.s*f,1,6); if(ns===st.s) return; st.tx=px-(px-st.tx)*(ns/st.s); st.ty=py-(py-st.ty)*(ns/st.s); st.s=ns; if(st.s<=1.002){ st.s=1; st.tx=0; st.ty=0; } apply(); }
+  var pts=new Map(), last=null, startDist=0;
+  svgEl.addEventListener('pointerdown', function(e){
+    svgEl._bkPanMoved=false; pts.set(e.pointerId, rectXY(e));
+    try{ svgEl.setPointerCapture(e.pointerId); }catch(_){}
+    if(pts.size===1){ last=rectXY(e); }
+    else if(pts.size===2){ var a=Array.from(pts.values()); startDist=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); }
+  });
+  svgEl.addEventListener('pointermove', function(e){
+    if(!pts.has(e.pointerId)) return;
+    var p=rectXY(e); pts.set(e.pointerId,p);
+    if(pts.size>=2){
+      var a=Array.from(pts.values()); var d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+      var mx=(a[0].x+a[1].x)/2, my=(a[0].y+a[1].y)/2;
+      if(startDist>0) zoomAt(mx,my,d/startDist);
+      startDist=d; svgEl._bkPanMoved=true; e.preventDefault();
+    } else if(last){
+      var dx=p.x-last.x, dy=p.y-last.y;
+      if(Math.abs(dx)+Math.abs(dy)>8) svgEl._bkPanMoved=true;
+      if(st.s>1){ st.tx+=dx; st.ty+=dy; apply(); e.preventDefault(); }
+      last=p;
+    }
+  });
+  function up(e){ pts.delete(e.pointerId); startDist=0; var v=Array.from(pts.values()); last=v.length?v[0]:null; }
+  svgEl.addEventListener('pointerup',up);
+  svgEl.addEventListener('pointercancel',up);
+  svgEl.addEventListener('wheel', function(e){ var p=rectXY(e); zoomAt(p.x,p.y, e.deltaY<0?1.12:0.9); e.preventDefault(); }, {passive:false});
+  if(!wrap.querySelector('.fp-pz-ctrl')){
+    var ctrl=document.createElement('div'); ctrl.className='fp-pz-ctrl';
+    ctrl.innerHTML='<button type="button" data-z="in" aria-label="Zoom in">+</button>'
+      +'<button type="button" data-z="out" aria-label="Zoom out">−</button>'
+      +'<button type="button" data-z="reset" aria-label="Reset zoom">↻</button>';
+    ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+    ctrl.addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.35); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.35); else { st.s=1; st.tx=0; st.ty=0; apply(); } e.stopPropagation(); });
+    wrap.appendChild(ctrl);
+  }
+  var _hintShown=(typeof bkState!=='undefined' && bkState && bkState._pzHintShown);
+  if(!_hintShown && !wrap.querySelector('.fp-pz-hint')){
+    if(typeof bkState!=='undefined' && bkState) bkState._pzHintShown=true;
+    var hint=document.createElement('div'); hint.className='fp-pz-hint';
+    hint.textContent=(typeof _lp==='function')?_lp('bk_zoom_hint','Pinch or drag to zoom'):'Pinch or drag to zoom';
+    wrap.appendChild(hint);
+    setTimeout(function(){ try{ hint.remove(); }catch(_){} },4200);
+  }
+  apply();
+}
+
 function _bkWireMapClicks(){
   const grid = document.getElementById('bkTableGrid');
   if(!grid) return;
   const svgs = grid.querySelectorAll('svg');
   if(!svgs.length) return;
   svgs.forEach(svgEl => {
+    if(typeof _bkAttachPanZoom==='function'){ try{ _bkAttachPanZoom(svgEl); }catch(_){} }
     svgEl.onclick = function(ev){
+    if(svgEl._bkPanMoved){ svgEl._bkPanMoved=false; return; }
     const tEl = ev.target.closest('.fp-vw-table');
     if(!tEl) return;
     if(tEl.classList.contains('booked') || tEl.classList.contains('locked') || tEl.classList.contains('toosmall')) return;
@@ -10656,19 +10871,38 @@ async function submitCustBooking(){
 }
 
 /* ─── CUSTOMER STATUS CHECK ─── */
+/* Mobile scroll-down hint for the booking modal */
+function _bkScrollBody(){ return document.querySelector('#mCustBooking .bk-modal-body'); }
+function bkScrollMore(){ var b=_bkScrollBody(); if(b) b.scrollBy({top:Math.round(b.clientHeight*0.7),behavior:'smooth'}); }
+function _bkUpdateScrollHint(){ var b=_bkScrollBody(),h=document.getElementById('bkScrollHint'); if(!b||!h) return; var more=(b.scrollHeight-b.scrollTop-b.clientHeight)>24; h.classList.toggle('show',more); }
+function _bkEnsureScrollHint(){
+  var shell=document.querySelector('#mCustBooking .bkm-shell'), b=_bkScrollBody(); if(!shell||!b) return;
+  if(!document.getElementById('bkScrollHint')){
+    var h=document.createElement('button'); h.id='bkScrollHint'; h.className='bk-scroll-hint'; h.type='button';
+    h.setAttribute('aria-label','Scroll down for more'); h.onclick=bkScrollMore;
+    h.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+    shell.appendChild(h);
+    b.addEventListener('scroll',_bkUpdateScrollHint,{passive:true});
+    try{ new MutationObserver(function(){ setTimeout(_bkUpdateScrollHint,60); }).observe(b,{childList:true,subtree:true,attributes:true}); }catch(_){}
+  }
+  setTimeout(_bkUpdateScrollHint,80);
+}
 function bsBackHome(){
-  // If the customer is on a restaurant page (?r=<id>), close the modal and stay on that page.
+  /* Always close the status modal, then return to the restaurant page if one is open
+     (rendered now or present in the URL ?r=). Only fall back to landing if there is none. */
+  try{ if(typeof closeModal==='function') closeModal('mCustBookingStatus'); }catch(_){}
   try{
-    var rid = new URLSearchParams(location.search).get('r');
-    if(rid){
-      if(typeof closeModal==='function') closeModal('mCustBookingStatus');
-      if(typeof showPage==='function') showPage('pg-resto');
-      var pg=document.getElementById('pg-resto');
-      if(pg && !(pg.innerHTML||'').trim() && typeof renderRestoPage==='function'){ renderRestoPage(rid); }
+    var _rid=(typeof _rfpId!=='undefined' && _rfpId) ? _rfpId : new URLSearchParams(location.search||'').get('r');
+    if(_rid){
+      var _p=document.getElementById('pg-resto');
+      var _onResto=_p && (_p.classList.contains('on') || (_p.style && _p.style.display && _p.style.display!=='none'));
+      if(!_onResto){
+        if(typeof showPage==='function') showPage('pg-resto');
+        if(typeof renderRestoPage==='function' && _p && !(_p.innerHTML||'').trim()){ try{ renderRestoPage(_rid); }catch(_){} }
+      }
       return;
     }
   }catch(_){}
-  // No restaurant context (came from the landing "check booking" link) -> main site
   try{ location.href='/'; }catch(_){ try{ location.assign('/'); }catch(__){} }
 }
 function bsTab(which){
@@ -11015,6 +11249,10 @@ if(typeof escapeHtml!=='function'){
             <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><div style="width:24px;height:3px;background:#888;border-radius:1px"></div></div>
             <div class="fp-tool-lbl" data-ts="fp_wall_line">Line</div>
           </div>
+          <div class="fp-tool" data-tool="outside" title="Outside area — carve the room shape (e.g. L-shape) by covering empty space">
+            <div class="fp-tool-ic" style="background:repeating-linear-gradient(45deg,#3a3a3a,#3a3a3a 4px,#1c1c1c 4px,#1c1c1c 8px);border:1px dashed rgba(255,255,255,.4)"></div>
+            <div class="fp-tool-lbl">Outside</div>
+          </div>
         </div>
         <div class="fp-toolbox-help">
           <div data-ts="fp_help1">💡 Drag from here onto canvas</div>
@@ -11036,6 +11274,10 @@ if(typeof escapeHtml!=='function'){
               <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
               <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
             </pattern>
+            <pattern id="fpOutsideHatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="12" height="12" fill="#1a1a1a"/>
+              <line x1="0" y1="0" x2="0" y2="12" stroke="rgba(255,255,255,.12)" stroke-width="4"/>
+            </pattern>
             <linearGradient id="fpVipGradEditor" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#e8c779"/>
               <stop offset="50%" stop-color="#c8973a"/>
@@ -11055,19 +11297,19 @@ if(typeof escapeHtml!=='function'){
           <div class="fp-props-h"><span id="fpPropKindLabel">—</span></div>
           <div class="fp-props-row">
             <label data-ts="fp_label">Label</label>
-            <input type="text" id="fpPropLabel" maxlength="40" oninput="fpPropChange('label', this.value)">
+            <input aria-label="Label" type="text" id="fpPropLabel" maxlength="40" oninput="fpPropChange('label', this.value)">
           </div>
           <div class="fp-props-row" id="fpPropTableRow" style="display:none">
             <label data-ts="fp_link_table">Linked table</label>
-            <select id="fpPropTable" onchange="fpPropChange('tableId', this.value)">
+            <select aria-label="Linked table" id="fpPropTable" onchange="fpPropChange('tableId', this.value)">
               <option value="" data-ts="fp_no_link">— Not linked —</option>
             </select>
           </div>
           <div class="fp-props-grid">
-            <div><label>X</label><input type="number" id="fpPropX" oninput="fpPropChange('x', parseInt(this.value)||0)"></div>
-            <div><label>Y</label><input type="number" id="fpPropY" oninput="fpPropChange('y', parseInt(this.value)||0)"></div>
-            <div><label data-ts="fp_width">W</label><input type="number" id="fpPropW" min="20" oninput="fpPropChange('w', parseInt(this.value)||20)"></div>
-            <div><label data-ts="fp_height">H</label><input type="number" id="fpPropH" min="20" oninput="fpPropChange('h', parseInt(this.value)||20)"></div>
+            <div><label>X</label><input aria-label="X position" type="number" id="fpPropX" oninput="fpPropChange('x', parseInt(this.value)||0)"></div>
+            <div><label>Y</label><input aria-label="Y position" type="number" id="fpPropY" oninput="fpPropChange('y', parseInt(this.value)||0)"></div>
+            <div><label data-ts="fp_width">W</label><input aria-label="Width" type="number" id="fpPropW" min="20" oninput="fpPropChange('w', parseInt(this.value)||20)"></div>
+            <div><label data-ts="fp_height">H</label><input aria-label="Height" type="number" id="fpPropH" min="20" oninput="fpPropChange('h', parseInt(this.value)||20)"></div>
           </div>
           <button class="btn btn-sm btn-red" style="width:100%;margin-top:10px" onclick="fpDeleteSelected()" data-ts="fp_delete">🗑 Delete</button>
         </div>
@@ -11255,6 +11497,7 @@ if(typeof escapeHtml!=='function'){
   <div class="bkm-shell">
     <!-- Progress bar at top -->
     <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
+    <button id="bkScrollCue" class="bk-scroll-cue" type="button" aria-label="Scroll for more" onclick="_bkScrollCueClick()"><span class="bks-cue-txt" data-lp="bk_scroll_down">Scroll down</span><span class="bks-cue-chev"><svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l9 6 9-6"/></svg><svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l9 6 9-6"/></svg></span></button>
     <div class="bkm-head">
       <div style="display:flex;align-items:center;gap:12px">
         <button class="bkm-back" onclick="bkHeaderBack()" aria-label="Back" data-lp="bk_back">← Back</button>
@@ -11615,7 +11858,7 @@ async function renderRestoPage(rid){
     ''+/* menu list removed — menu is shown as a photo via the Menu button (rfpShowMenu) */
     hoursHtml+
     '<div class="rfp-sec" id="rfpMapSec"><div class="rfp-eye">'+_rfpEsc(T.findus)+'</div>'+
-      (hasLoc?'<div class="rfp-map" id="rfpMap">loading map…</div>':'<iframe class="rfp-mapframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q='+encodeURIComponent(_mapQ)+'&z=15&output=embed"></iframe>')+
+      (hasLoc?'<div class="rfp-map" id="rfpMap">loading map…</div>':'<iframe title="Restaurant location map" class="rfp-mapframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q='+encodeURIComponent(_mapQ)+'&z=15&output=embed"></iframe>')+
       (addr?'<div class="rfp-addr"><span style="color:var(--rfp-lt)">⚲</span><div>'+addr+'</div></div>':'')+
       '<a class="rfp-dirbtn" href="'+_dirH+'" target="_blank" rel="noopener">'+_rfpEsc(T.dir)+'</a>'+
     '</div>'+
