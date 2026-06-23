@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782190000 · map legend ຈອງໄວ້ແລ້ວ fix · BOOKING MODAL full-Lao fix · VIP CONDITION · NAME EFFECT (blue butterfly + twinkle) · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782190600 · Lao date names (dow+month) fix · map legend fix · booking full-Lao · VIP CONDITION · NAME EFFECT (blue butterfly + twinkle) · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -12981,6 +12981,7 @@ function _bkLocalISO(d){
 function _lpDow(dayIdx, short){
   // dayIdx: 0=Sun..6=Sat. short=true returns 3-letter abbreviation.
   const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
+  if(lng==='lo'){ return (short?['ອາທິດ','ຈັນ','ອັງຄານ','ພຸດ','ພະຫັດ','ສຸກ','ເສົາ']:['ວັນອາທິດ','ວັນຈັນ','ວັນອັງຄານ','ວັນພຸດ','ວັນພະຫັດ','ວັນສຸກ','ວັນເສົາ'])[dayIdx]; }
   // Try Intl.DateTimeFormat for native long names (with LP locale)
   try {
     const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
@@ -12993,6 +12994,7 @@ function _lpDow(dayIdx, short){
 }
 function _lpMonth(monthIdx, short){
   const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
+  if(lng==='lo'){ return (short?['ມ.ກ.','ກ.ພ.','ມີ.ນາ','ເມ.ສາ','ພ.ພ.','ມິ.ຖ.','ກ.ລ.','ສ.ຫ.','ກ.ຍ.','ຕ.ລ.','ພ.ຈ.','ທ.ວ.']:['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'])[monthIdx]; }
   try {
     const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
     const d = new Date(2024,monthIdx,1);
