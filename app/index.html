@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782200400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782204200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2693,6 +2693,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-status-r{color:rgba(255,255,255,.4);}
 /* v6.6: Area tabs bar in SA editor */
 .fp-areas-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.05);overflow-x:auto;flex-shrink:0;}
+.fp-canvas-size{display:flex;align-items:center;gap:5px;font-size:12px;color:#bbb;flex-shrink:0;margin-left:4px;}
+.fp-canvas-size input{width:62px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#eee;border-radius:6px;padding:4px 6px;font-size:12px;text-align:center;-moz-appearance:textfield;}
+.fp-canvas-size input:focus{outline:none;border-color:#c8973a;}
 .fp-areas-tabs{display:flex;gap:6px;flex:1;min-width:0;}
 .fp-area-tab{position:relative;display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;letter-spacing:.2px;}
 .fp-area-tab:hover{background:rgba(255,255,255,.07);color:#fff;}
@@ -13776,8 +13779,45 @@ const FP_GRID = 20; // snap grid in canvas units
 
 function _fpId(){ return 'el_' + Math.random().toString(36).substr(2,8) + '_' + Date.now().toString(36); }
 function _fpSnap(v){ return Math.round(v / FP_GRID) * FP_GRID; }
-function _fpClampX(x, w){ return Math.max(0, Math.min(1000 - w, x)); }
-function _fpClampY(y, h){ return Math.max(0, Math.min(700 - h, y)); }
+function _fpW(){ return (fpState.plan && fpState.plan.width)  || 1000; }
+function _fpH(){ return (fpState.plan && fpState.plan.height) || 700;  }
+function _fpClampX(x, w){ return Math.max(0, Math.min(_fpW() - w, x)); }
+function _fpClampY(y, h){ return Math.max(0, Math.min(_fpH() - h, y)); }
+
+/* ─── Canvas size: let the owner enlarge the area (more width/height) without re-doing the layout ─── */
+const FP_SIZE_MIN_W = 600, FP_SIZE_MIN_H = 500, FP_SIZE_MAX_W = 4000, FP_SIZE_MAX_H = 3000;
+function _fpContentExtent(dim){
+  // smallest canvas dimension that still fits every existing element (so shrinking can't clip)
+  let need = (dim === 'w') ? FP_SIZE_MIN_W : FP_SIZE_MIN_H;
+  if(!fpState.plan) return need;
+  fpState.plan.elements.forEach(el => {
+    if(el.kind === 'wall-line'){
+      need = Math.max(need, (dim === 'w') ? Math.max(el.x1, el.x2) : Math.max(el.y1, el.y2));
+    } else {
+      need = Math.max(need, (dim === 'w') ? (el.x + (el.w||0)) : (el.y + (el.h||0)));
+    }
+  });
+  return need;
+}
+function fpSetCanvasSize(dim, value){
+  if(!fpState.plan) return;
+  let v = Math.round((+value || 0) / FP_GRID) * FP_GRID;       // snap to grid
+  const minV = _fpContentExtent(dim);
+  const maxV = (dim === 'w') ? FP_SIZE_MAX_W : FP_SIZE_MAX_H;
+  v = Math.max(minV, Math.min(maxV, v));
+  if(dim === 'w') fpState.plan.width = v; else fpState.plan.height = v;
+  fpMarkDirty();
+  _fpSyncCanvasSize();
+  fpRenderAll();
+}
+function _fpSyncCanvasSize(){
+  const W = _fpW(), H = _fpH();
+  const cv = document.getElementById('fpCanvas'); if(cv) cv.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const bg = document.getElementById('fpCanvasBg');   if(bg){ bg.setAttribute('width', W); bg.setAttribute('height', H); }
+  const gr = document.getElementById('fpCanvasGrid');  if(gr){ gr.setAttribute('width', W); gr.setAttribute('height', H); }
+  const wi = document.getElementById('fpCanvasW'); if(wi && document.activeElement !== wi) wi.value = W;
+  const hi = document.getElementById('fpCanvasH'); if(hi && document.activeElement !== hi) hi.value = H;
+}
 
 async function fpOpen(restoId){
   fpState.restoId = restoId;
@@ -14071,6 +14111,7 @@ function _fpWireFloorPicker(){
 function fpRenderAll(){
   const layer = document.getElementById('fpElementsLayer');
   if(!layer || !fpState.plan) return;
+  _fpSyncCanvasSize();
   layer.innerHTML = fpState.plan.elements.map(el => fpElToSvg(el)).join('');
   fpRenderHandles();
   fpSetStatus(fpState.plan.elements.length + ' element(s)');
@@ -14312,8 +14353,8 @@ function fpPropChange(field, value){
     const key = map[field];
     if(!key) return;
     let v = value;
-    if(key === 'x1' || key === 'x2') v = Math.max(0, Math.min(1000, v));
-    if(key === 'y1' || key === 'y2') v = Math.max(0, Math.min(700,  v));
+    if(key === 'x1' || key === 'x2') v = Math.max(0, Math.min(_fpW(), v));
+    if(key === 'y1' || key === 'y2') v = Math.max(0, Math.min(_fpH(), v));
     el[key] = v;
     fpMarkDirty();
     fpRenderAll();
@@ -14321,8 +14362,8 @@ function fpPropChange(field, value){
   }
   if(field === 'x') value = _fpClampX(value, el.w);
   if(field === 'y') value = _fpClampY(value, el.h);
-  if(field === 'w'){ value = Math.max(20, Math.min(1000 - el.x, value)); }
-  if(field === 'h'){ value = Math.max(20, Math.min(700  - el.y, value)); }
+  if(field === 'w'){ value = Math.max(20, Math.min(_fpW() - el.x, value)); }
+  if(field === 'h'){ value = Math.max(20, Math.min(_fpH()  - el.y, value)); }
   el[field] = value;
   fpMarkDirty();
   fpRenderAll();
@@ -14474,11 +14515,11 @@ function fpAddElement(tool, cx, cy){
     let y2 = _fpSnap(cy);
     // Clamp to canvas
     if(x1 < 0){ x2 -= x1; x1 = 0; }
-    if(x2 > 1000){ x1 -= (x2 - 1000); x2 = 1000; }
+    if(x2 > _fpW()){ x1 -= (x2 - _fpW()); x2 = _fpW(); }
     if(y1 < 0) y1 = 0;
-    if(y1 > 700) y1 = 700;
+    if(y1 > _fpH()) y1 = _fpH();
     if(y2 < 0) y2 = 0;
-    if(y2 > 700) y2 = 700;
+    if(y2 > _fpH()) y2 = _fpH();
     el.x1 = x1; el.y1 = y1; el.x2 = x2; el.y2 = y2;
     el.thickness = 4;
   } else {
@@ -14562,9 +14603,9 @@ function _fpStartMove(e, elid){
       const minY = Math.min(cy1, cy2);
       const maxY = Math.max(cy1, cy2);
       if(minX < 0){ cx1 -= minX; cx2 -= minX; }
-      if(maxX > 1000){ cx1 -= (maxX - 1000); cx2 -= (maxX - 1000); }
+      if(maxX > _fpW()){ cx1 -= (maxX - _fpW()); cx2 -= (maxX - _fpW()); }
       if(minY < 0){ cy1 -= minY; cy2 -= minY; }
-      if(maxY > 700){ cy1 -= (maxY - 700); cy2 -= (maxY - 700); }
+      if(maxY > _fpH()){ cy1 -= (maxY - _fpH()); cy2 -= (maxY - _fpH()); }
       el.x1 = cx1; el.y1 = cy1; el.x2 = cx2; el.y2 = cy2;
     } else {
       el.x = _fpClampX(_fpSnap(orig.x + dx), el.w);
@@ -14604,8 +14645,8 @@ function _fpStartResize(e, dir){
     const orig = { x1: el.x1, y1: el.y1, x2: el.x2, y2: el.y2 };
     const onMove = (ev) => {
       const cur = _fpClientToSvg(ev.clientX, ev.clientY);
-      const nx = Math.max(0, Math.min(1000, _fpSnap(cur.x)));
-      const ny = Math.max(0, Math.min(700,  _fpSnap(cur.y)));
+      const nx = Math.max(0, Math.min(_fpW(), _fpSnap(cur.x)));
+      const ny = Math.max(0, Math.min(_fpH(),  _fpSnap(cur.y)));
       if(dir === 'p1'){ el.x1 = nx; el.y1 = ny; }
       else if(dir === 'p2'){ el.x2 = nx; el.y2 = ny; }
       fpRenderAll();
@@ -14646,8 +14687,8 @@ function _fpStartResize(e, dir){
     }
     nx = Math.max(0, nx);
     ny = Math.max(0, ny);
-    if(nx + nw > 1000) nw = 1000 - nx;
-    if(ny + nh > 700)  nh = 700  - ny;
+    if(nx + nw > _fpW()) nw = _fpW() - nx;
+    if(ny + nh > _fpH())  nh = _fpH()  - ny;
     el.x = nx; el.y = ny; el.w = nw; el.h = nh;
     fpRenderAll();
   };
@@ -17058,6 +17099,12 @@ async function cleanupOldBookings(opts){
     <div class="fp-areas-bar" id="fpAreasBar">
       <div class="fp-areas-tabs" id="fpAreasTabs"></div>
       <button class="fp-area-add" id="fpAreaAddBtn" type="button" onclick="fpOpenAddAreaModal()" data-ts="fp_add_area">+ Add area</button>
+      <div class="fp-canvas-size" title="Canvas size — enlarge the area (width × height). Won't move your tables.">
+        <span style="opacity:.8">📐</span>
+        <input id="fpCanvasW" type="number" min="600" max="4000" step="20" onchange="fpSetCanvasSize('w', this.value)" aria-label="Canvas width" title="Width">
+        <span style="opacity:.6">×</span>
+        <input id="fpCanvasH" type="number" min="500" max="3000" step="20" onchange="fpSetCanvasSize('h', this.value)" aria-label="Canvas height" title="Height">
+      </div>
     </div>
     <!-- Body: 3-column layout -->
     <div class="fp-body">
@@ -17163,7 +17210,7 @@ async function cleanupOldBookings(opts){
             </linearGradient>
           </defs>
           <rect id="fpCanvasBg" width="1000" height="700" fill="#0f0f0f"/>
-          <rect width="1000" height="700" fill="url(#fpGrid)"/>
+          <rect id="fpCanvasGrid" width="1000" height="700" fill="url(#fpGrid)"/>
           <g id="fpElementsLayer"></g>
           <g id="fpHandlesLayer"></g>
         </svg>
