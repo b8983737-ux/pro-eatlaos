@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782204200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782208200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -3837,7 +3837,7 @@ const STAFF_T={
     fp_counter:'Counter',
     fp_toilet:'Toilet',
     fp_stage:'Stage',
-    fp_door:'Door',
+    fp_door:'Entry',
     fp_kitchen:'Kitchen',
     fp_wall_block:'Wall',
     fp_wall_line:'Line',
@@ -4019,7 +4019,7 @@ const STAFF_T={
     fp_counter:'ເຄົາເຕີ',
     fp_toilet:'ຫ້ອງນ້ຳ',
     fp_stage:'ເວທີ',
-    fp_door:'ປະຕູ',
+    fp_door:'ທາງເຂົ້າ',
     fp_kitchen:'ເຮືອນຄົວ',
     fp_wall_block:'ກຳແພງ',
     fp_wall_line:'ເສັ້ນ',
@@ -4201,7 +4201,7 @@ const STAFF_T={
     fp_counter:'เคาน์เตอร์',
     fp_toilet:'ห้องน้ำ',
     fp_stage:'เวที',
-    fp_door:'ประตู',
+    fp_door:'ทางเข้า',
     fp_kitchen:'ห้องครัว',
     fp_wall_block:'กำแพง',
     fp_wall_line:'เส้น',
@@ -4383,7 +4383,7 @@ const STAFF_T={
     fp_counter:'柜台',
     fp_toilet:'洗手间',
     fp_stage:'舞台',
-    fp_door:'门',
+    fp_door:'入口',
     fp_kitchen:'厨房',
     fp_wall_block:'墙壁',
     fp_wall_line:'线条',
@@ -4581,7 +4581,7 @@ const STAFF_T={
     fp_counter:'카운터',
     fp_toilet:'화장실',
     fp_stage:'무대',
-    fp_door:'문',
+    fp_door:'입구',
     fp_kitchen:'주방',
     fp_wall_block:'벽',
     fp_wall_line:'선',
@@ -5563,7 +5563,7 @@ const LP_TRANSLATIONS = {
     fp_counter:'Bar',
     fp_toilet:'WC',
     fp_stage:'Stage',
-    fp_door:'Door',
+    fp_door:'Entry',
     fp_kitchen:'Kitchen',
     // v6.6: Floor area names (multi-area)
     fp_indoor:'Indoor',
@@ -5746,7 +5746,7 @@ const LP_TRANSLATIONS = {
     fp_counter:'ບາ',
     fp_toilet:'ຫ້ອງນ້ຳ',
     fp_stage:'ເວທີ',
-    fp_door:'ປະຕູ',
+    fp_door:'ທາງເຂົ້າ',
     fp_kitchen:'ເຮືອນຄົວ',
     // v6.6: Floor area names (multi-area)
     fp_indoor:'ໃນອາຄານ',
@@ -5929,7 +5929,7 @@ const LP_TRANSLATIONS = {
     fp_counter:'บาร์',
     fp_toilet:'ห้องน้ำ',
     fp_stage:'เวที',
-    fp_door:'ประตู',
+    fp_door:'ทางเข้า',
     fp_kitchen:'ห้องครัว',
     // v6.6: Floor area names (multi-area)
     fp_indoor:'ในร่ม',
@@ -6112,7 +6112,7 @@ const LP_TRANSLATIONS = {
     fp_counter:'吧台',
     fp_toilet:'洗手间',
     fp_stage:'舞台',
-    fp_door:'门',
+    fp_door:'入口',
     fp_kitchen:'厨房',
     // v6.6: Floor area names (multi-area)
     fp_indoor:'室内',
@@ -6295,7 +6295,7 @@ const LP_TRANSLATIONS = {
     fp_counter:'바',
     fp_toilet:'화장실',
     fp_stage:'무대',
-    fp_door:'문',
+    fp_door:'입구',
     fp_kitchen:'주방',
     // v6.6: Floor area names (multi-area)
     fp_indoor:'실내',
@@ -9313,6 +9313,17 @@ function _fpFixedFill(kind){
 
 function _fpEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+/* Map a recognized custom label to its translation key so it localizes (e.g. "Entry"→ທາງເຂົ້າ) */
+function _fpLabelAlias(label){
+  const s = String(label||'').trim().toLowerCase();
+  if(/^(entry|entrance|exit|door|way ?in|in|out)$/.test(s)) return 'fp_door';
+  if(/^(bar|counter)$/.test(s)) return 'fp_counter';
+  if(/^(wc|toilet|restroom|bathroom|washroom|rest ?room)$/.test(s)) return 'fp_toilet';
+  if(/^stage$/.test(s)) return 'fp_stage';
+  if(/^kitchen$/.test(s)) return 'fp_kitchen';
+  return '';
+}
+
 /* ─── Resize handles ─── */
 function fpRenderHandles(){
   const layer = document.getElementById('fpHandlesLayer');
@@ -9773,9 +9784,13 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     // v6.1: Translate label if it matches a default — owner/SA custom labels stay as typed
     let lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
     const dflt = FP_DEFAULT_LABELS[el.kind];
-    if(lbl && (!el.label || el.label === dflt)){
-      // Use translation key matching the kind (fp_counter, fp_toilet, fp_stage, fp_door, fp_kitchen)
-      const tKey = 'fp_' + (el.kind === 'curve' ? 'stage' : el.kind);
+    // Localize default labels by kind; also localize recognized custom labels (Entry, Bar, WC…)
+    let tKey = '';
+    if(lbl){
+      if(!el.label || el.label === dflt) tKey = 'fp_' + (el.kind === 'curve' ? 'stage' : el.kind);
+      else tKey = _fpLabelAlias(el.label);
+    }
+    if(tKey){
       const translated = (typeof _lp === 'function') ? _lp(tKey, lbl) : lbl;
       if(translated && translated !== tKey) lbl = translated;
     }
@@ -9820,12 +9835,12 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       hitArea = `<rect class="fp-vw-hit" x="${el.x - 18}" y="${el.y - 18}" width="${el.w + 36}" height="${el.h + 36}" rx="${rx}" fill="transparent"/>`;
     }
     const num = t.num || '';
-    // VIP crown badge — top-right corner of the table
+    // VIP crown badge — top-middle (smaller) so it never covers the table number
     let vipBadge = '';
     if(isVip){
-      const bx = el.x + el.w - 8;
-      const by = el.y + 14;
-      vipBadge = `<text class="fp-vw-vip-crown" x="${bx}" y="${by}">⭐</text>`;
+      const starY = el.y + Math.max(12, el.h*0.24);
+      const starFs = Math.max(11, Math.min(16, el.h*0.27));
+      vipBadge = `<text class="fp-vw-vip-crown" x="${cx}" y="${starY}" style="font-size:${starFs}px">⭐</text>`;
     }
     // Walk-in badge — top-left corner so it doesn't conflict with VIP crown
     let walkInBadge = '';
@@ -9841,7 +9856,8 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     // Shrink the label so long names (e.g. "VIP05") fit inside the table box; short numbers stay big.
     var _numStr = String(num), _tnumFs = 32, _availW = (el.w || 60) - 10;
     if(_numStr.length){ var _estW = _numStr.length * _tnumFs * 0.58; if(_estW > _availW) _tnumFs = Math.max(10, Math.floor(_availW / (_numStr.length * 0.58))); }
-    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
+    const _numY = isVip ? (cy + el.h*0.16) : cy;
+    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${_numY}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
@@ -9959,6 +9975,17 @@ async function bkLoadTables(){
       const lblAvail = _lp('bk_legend_available','Available');
       const lblBooked = _lp('bk_table_booked','Booked');
       const lblLocked = _lp('bk_table_locked_by_other','Reserved');
+      // Total FREE tables (party fits, not booked/locked/walk-in) across all areas — shown in the legend
+      const _legPlacedIds = new Set();
+      Object.values(allAreas).forEach(a => (a.elements||[]).forEach(el => {
+        if(el.kind && el.kind.indexOf('table')===0 && el.tableId) _legPlacedIds.add(el.tableId);
+      }));
+      let _legFree = 0;
+      partyOK.forEach(t => {
+        if(!_legPlacedIds.has(t.id)) return;
+        if(bookedTableIds.has(t.id) || lockedTableIds.has(t.id) || walkInTableIds.has(t.id)) return;
+        _legFree++;
+      });
       // Build area tabs (only when more than one area)
       let tabsHtml = '';
       if(usableAreaSlugs.length > 1){
@@ -10006,7 +10033,7 @@ async function bkLoadTables(){
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
       grid.innerHTML = tabsHtml + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
         <div class="fp-vw-legend">
-          <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
+          <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span> <b style="color:#c8973a;font-weight:800">${_legFree}</b></span>
           <span><i style="background:rgba(220,53,69,.4)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
           <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
@@ -10304,7 +10331,7 @@ function _bkAttachPanZoom(svgEl){
   svgEl._pzReady = true;
   wrap.classList.add('fp-pz-wrap');
   var st={ s:1, tx:0, ty:0 };
-  function apply(){ svgEl.style.transform='translate('+st.tx+'px,'+st.ty+'px) scale('+st.s+')'; }
+  function apply(){ var r=wrap.getBoundingClientRect(); var minTx=Math.min(0,r.width*(1-st.s)), minTy=Math.min(0,r.height*(1-st.s)); st.tx=clamp(st.tx,minTx,0); st.ty=clamp(st.ty,minTy,0); svgEl.style.transform='translate('+st.tx+'px,'+st.ty+'px) scale('+st.s+')'; }
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   function rectXY(e){ var r=wrap.getBoundingClientRect(); return { x:e.clientX-r.left, y:e.clientY-r.top }; }
   function zoomAt(px,py,f){ var ns=clamp(st.s*f,1,6); if(ns===st.s) return; st.tx=px-(px-st.tx)*(ns/st.s); st.ty=py-(py-st.ty)*(ns/st.s); st.s=ns; if(st.s<=1.002){ st.s=1; st.tx=0; st.ty=0; } apply(); }
@@ -10339,8 +10366,7 @@ function _bkAttachPanZoom(svgEl){
     ctrl.innerHTML='<button type="button" data-z="in" aria-label="Zoom in">+</button>'
       +'<button type="button" data-z="out" aria-label="Zoom out">−</button>'
       +'<button type="button" data-z="reset" aria-label="Reset zoom">↻</button>';
-    ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
-    ctrl.addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.35); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.35); else { st.s=1; st.tx=0; st.ty=0; apply(); } e.stopPropagation(); });
+    ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); var b=e.target.closest('button'); if(!b) return; e.preventDefault(); var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.5); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.5); else { st.s=1; st.tx=0; st.ty=0; apply(); } });
     wrap.appendChild(ctrl);
   }
   var _hintShown=(typeof bkState!=='undefined' && bkState && bkState._pzHintShown);
@@ -11148,7 +11174,7 @@ if(typeof escapeHtml!=='function'){
   <div class="bkm-shell">
     <!-- Progress bar at top -->
     <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
-    <button id="bkScrollCue" class="bk-scroll-cue" type="button" aria-label="Scroll for more" onclick="_bkScrollCueClick()"><span class="bks-cue-txt" data-lp="bk_scroll_down">Scroll down</span><span class="bks-cue-chev"><svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l9 6 9-6"/></svg><svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l9 6 9-6"/></svg></span></button>
+    <button id="bkScrollCue" class="bk-scroll-cue" type="button" aria-label="Scroll for more" onclick="_bkScrollCueClick()"><span class="bks-cue-txt" data-lp="bk_scroll_down">Scroll down</span><span class="bks-cue-chev"><svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l9 6 9-6"/></svg></span></button>
     <div class="bkm-head">
       <div style="display:flex;align-items:center;gap:12px">
         <button class="bkm-back" onclick="bkHeaderBack()" aria-label="Back" data-lp="bk_back">← Back</button>
