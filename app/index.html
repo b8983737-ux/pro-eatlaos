@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782194200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782200400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -13746,6 +13746,7 @@ const FP_DEFAULT_SIZES = {
   'door':         { w: 60,  h: 20  },
   'kitchen':      { w: 200, h: 100 },
   'outside':      { w: 240, h: 200 },
+  'curve':        { w: 200, h: 90  },
   'wall-block':   { w: 200, h: 12  },
   'wall-line':    { w: 100, h: 0   }  // line uses x1,y1,x2,y2 not w/h
 };
@@ -13766,6 +13767,7 @@ const FP_DEFAULT_LABELS = {
   'door':    'Door',
   'kitchen': 'Kitchen',
   'outside': 'Outside',
+  'curve': 'Stage',
   'wall-block': '',
   'wall-line':  ''
 };
@@ -14113,7 +14115,10 @@ function fpElToSvg(el){
     fill = 'url(#fpVipGradEditor)';
     stroke = '#f5c976';
   }
-  if(_fpIsRoundTable(el.kind)){
+  if(el.kind === 'curve'){
+    // Half-ellipse (flat top edge, bulges down) — curved stage / divider. Rotate to orient.
+    shape = `<path class="fp-el-shape" d="M ${el.x} ${el.y} L ${el.x+el.w} ${el.y} A ${el.w/2} ${el.h} 0 0 1 ${el.x} ${el.y} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  } else if(_fpIsRoundTable(el.kind)){
     const rx = el.w/2, ry = el.h/2;
     shape = `<ellipse class="fp-el-shape${isVip?' fp-el-vip':''}" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${isVip?2.5:1.5}"/>`;
   } else {
@@ -14135,7 +14140,9 @@ function fpElToSvg(el){
     const by = el.y + 10;
     vipBadge = `<text class="fp-el-vip-crown" x="${bx}" y="${by}">⭐</text>`;
   }
-  return `<g class="${cls}" data-elid="${el.id}">${shape}${textEl}${vipBadge}</g>`;
+  const _rot = +el.rot || 0;
+  const _tf = _rot ? ` transform="rotate(${_rot} ${cx} ${cy})"` : '';
+  return `<g class="${cls}" data-elid="${el.id}"${_tf}>${shape}${textEl}${vipBadge}</g>`;
 }
 
 function _fpFixedFill(kind){
@@ -14148,6 +14155,7 @@ function _fpFixedFill(kind){
     case 'door':       return '#4a3a28'; // entry
     case 'kitchen':    return '#332620'; // kitchen
     case 'outside':    return '#0a0a0a'; // outside-the-room (carve)
+    case 'curve':      return '#3d3128'; // curved stage / divider
     case 'wall-block': return '#2a2a2a'; // wall
     default:           return '#2e2e2e';
   }
@@ -14187,9 +14195,13 @@ function fpRenderHandles(){
     { dir:'sw', x: el.x,       y: el.y+el.h  },
     { dir:'w',  x: el.x,       y: el.y+el.h/2}
   ];
-  layer.innerHTML = positions.map(p =>
+  const handlesHtml = positions.map(p =>
     `<rect class="fp-handle h-${p.dir}" x="${p.x-hh}" y="${p.y-hh}" width="${HS}" height="${HS}" data-handle="${p.dir}"/>`
   ).join('');
+  // Rotation handle: circle above the top edge with a stem (rotate any element)
+  const rcx = el.x + el.w/2, rcy = el.y - 26;
+  const rotHandle = `<line class="fp-rot-stem" x1="${rcx}" y1="${el.y}" x2="${rcx}" y2="${rcy+7}" stroke="rgba(245,201,118,.6)" stroke-width="1.5"/><circle class="fp-handle fp-handle-rot" cx="${rcx}" cy="${rcy}" r="7" data-handle="rotate" style="cursor:grab"/>`;
+  layer.innerHTML = handlesHtml + rotHandle;
 }
 
 /* ─── Properties panel ─── */
@@ -14503,7 +14515,8 @@ function _fpWireCanvas(){
     // Check if clicked on a handle
     const handle = e.target.closest('.fp-handle');
     if(handle){
-      _fpStartResize(e, handle.dataset.handle);
+      if(handle.dataset.handle === 'rotate'){ _fpStartRotate(e); }
+      else { _fpStartResize(e, handle.dataset.handle); }
       return;
     }
     // Check if clicked on an element
@@ -14652,6 +14665,38 @@ function _fpStartResize(e, dir){
   document.addEventListener('pointercancel', onUp);
 }
 
+/* ─── Rotate: drag the rotation handle to spin an element around its centre ─── */
+function _fpStartRotate(e){
+  if(!fpState.selectedId) return;
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el || el.kind === 'wall-line') return;
+  e.preventDefault(); e.stopPropagation();
+  const cx = el.x + el.w/2, cy = el.y + el.h/2;
+  const origRot = +el.rot || 0;
+  const start = _fpClientToSvg(e.clientX, e.clientY);
+  const startAng = Math.atan2(start.y - cy, start.x - cx) * 180 / Math.PI;
+  const onMove = (ev) => {
+    const cur = _fpClientToSvg(ev.clientX, ev.clientY);
+    const ang = Math.atan2(cur.y - cy, cur.x - cx) * 180 / Math.PI;
+    let r = origRot + (ang - startAng);
+    r = Math.round(r / 15) * 15;          // snap to 15°
+    r = ((r % 360) + 360) % 360;
+    el.rot = r;
+    fpRenderAll();
+    fpSetStatus('Rotation: ' + r + '°');
+  };
+  const onUp = () => {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    if((+el.rot || 0) !== origRot) fpMarkDirty();
+    fpRenderProps();
+  };
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+  document.addEventListener('pointercancel', onUp);
+}
+
 /* ─── Customer-side viewer ─── */
 function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId, walkInTableIds, tooSmallIds){
   if(!plan || !plan.elements || !plan.elements.length) return null;
@@ -14713,7 +14758,9 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     const cx = el.x + el.w/2, cy = el.y + el.h/2;
     let shape;
     const fill = _fpFixedFill(el.kind);
-    if(el.kind === 'table-round'){
+    if(el.kind === 'curve'){
+      shape = `<path class="fp-vw-el-shape" d="M ${el.x} ${el.y} L ${el.x+el.w} ${el.y} A ${el.w/2} ${el.h} 0 0 1 ${el.x} ${el.y} Z" fill="${fill}"/>`;
+    } else if(el.kind === 'table-round'){
       shape = `<ellipse class="fp-vw-el-shape" cx="${cx}" cy="${cy}" rx="${el.w/2}" ry="${el.h/2}" fill="${fill}"/>`;
     } else {
       shape = `<rect class="fp-vw-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="3" fill="${fill}"/>`;
@@ -14723,12 +14770,14 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     const dflt = FP_DEFAULT_LABELS[el.kind];
     if(lbl && (!el.label || el.label === dflt)){
       // Use translation key matching the kind (fp_counter, fp_toilet, fp_stage, fp_door, fp_kitchen)
-      const tKey = 'fp_' + el.kind;
+      const tKey = 'fp_' + (el.kind === 'curve' ? 'stage' : el.kind);
       const translated = (typeof _lp === 'function') ? _lp(tKey, lbl) : lbl;
       if(translated && translated !== tKey) lbl = translated;
     }
     const txt = lbl ? `<text class="fp-vw-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>` : '';
-    svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}">${shape}${txt}</g>`;
+    const _rotF = +el.rot || 0;
+    const _tfF = _rotF ? ` transform="rotate(${_rotF} ${cx} ${cy})"` : '';
+    svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}"${_tfF}>${shape}${txt}</g>`;
   });
   // Render walls (above fixed, below tables)
   walls.forEach(el => {
@@ -14782,10 +14831,12 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     }
     // hitArea first so visible shape sits on top (but hit area still catches clicks via parent <g>)
     const groupCls = `fp-vw-table ${stateClass}${isVip?' vip':''}${isWalkIn?' walkin':''}`;
+    const _rotT = +el.rot || 0;
+    const _tfT = _rotT ? ` transform="rotate(${_rotT} ${cx} ${cy})"` : '';
     // Shrink the label so long names (e.g. "VIP05") fit inside the table box; short numbers stay big.
     var _numStr = String(num), _tnumFs = 32, _availW = (el.w || 60) - 10;
     if(_numStr.length){ var _estW = _numStr.length * _tnumFs * 0.58; if(_estW > _availW) _tnumFs = Math.max(10, Math.floor(_availW / (_numStr.length * 0.58))); }
-    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
+    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
@@ -17075,6 +17126,10 @@ async function cleanupOldBookings(opts){
           <div class="fp-tool" data-tool="outside" title="Outside area — carve the room shape (e.g. L-shape) by covering empty space">
             <div class="fp-tool-ic" style="background:repeating-linear-gradient(45deg,#3a3a3a,#3a3a3a 4px,#1c1c1c 4px,#1c1c1c 8px);border:1px dashed rgba(255,255,255,.4)"></div>
             <div class="fp-tool-lbl">Outside</div>
+          </div>
+          <div class="fp-tool" data-tool="curve" title="Curved stage / curved divider — half-circle. Drag the top handle to rotate it any direction">
+            <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><svg width="28" height="16" viewBox="0 0 28 16"><path d="M3 3 L25 3 A11 12 0 0 1 3 3 Z" fill="#3d3128" stroke="#888" stroke-width="1.2"/></svg></div>
+            <div class="fp-tool-lbl">Curve</div>
           </div>
         </div>
         <div class="fp-toolbox-help">
