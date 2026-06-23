@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782208200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782209400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9757,6 +9757,10 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
       <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
     </pattern>
+    <linearGradient id="fpVwWallGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#544c42"/><stop offset="0.45" stop-color="#3a342d"/><stop offset="1" stop-color="#241f1a"/>
+    </linearGradient>
+    <filter id="fpVwWallSh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.3" flood-color="#000" flood-opacity="0.5"/></filter>
   </defs>`;
   // Floor: solid background only — SA's design with no overlays
   svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${_fpEsc(bg)}"/>`;
@@ -9799,13 +9803,15 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     const _tfF = _rotF ? ` transform="rotate(${_rotF} ${cx} ${cy})"` : '';
     svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}"${_tfF}>${shape}${txt}</g>`;
   });
-  // Render walls (above fixed, below tables)
+  // Render walls (above fixed, below tables) — clean architectural style: solid wall + soft shadow + lit top edge
   walls.forEach(el => {
     if(el.kind === 'wall-line'){
-      const t = el.thickness || 4;
-      svgInner += `<line class="fp-vw-wall fp-vw-wall-line" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#888" stroke-width="${t}" stroke-linecap="round"/>`;
+      const t = Math.max(6, el.thickness || 6);
+      svgInner += `<line class="fp-vw-wall fp-vw-wall-line" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#2b2722" stroke-width="${t}" stroke-linecap="round" filter="url(#fpVwWallSh)"/>`;
+      svgInner += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#6e645a" stroke-width="${Math.max(1.5, t*0.26)}" stroke-linecap="round" opacity="0.5"/>`;
     } else if(el.kind === 'wall-block'){
-      svgInner += `<rect class="fp-vw-wall fp-vw-wall-block" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="url(#fpVwBrick)"/>`;
+      svgInner += `<rect class="fp-vw-wall fp-vw-wall-block" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="2.5" fill="url(#fpVwWallGrad)" stroke="#1c1916" stroke-width="1" filter="url(#fpVwWallSh)"/>`;
+      svgInner += `<rect x="${el.x+2}" y="${el.y+2}" width="${Math.max(0, el.w-4)}" height="2" rx="1" fill="#6e645a" opacity="0.4"/>`;
     }
   });
   // Render tables on top — v6.0: invisible bigger hit-area for easier tapping
