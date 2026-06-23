@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782194200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782200400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9043,6 +9043,7 @@ const FP_DEFAULT_LABELS = {
   'door':    'Door',
   'kitchen': 'Kitchen',
   'outside': 'Outside',
+  'curve': 'Stage',
   'wall-block': '',
   'wall-line':  ''
 };
@@ -9304,6 +9305,7 @@ function _fpFixedFill(kind){
     case 'door':       return '#4a3a28'; // entry
     case 'kitchen':    return '#332620'; // kitchen
     case 'outside':    return '#0a0a0a'; // outside-the-room (carve)
+    case 'curve':      return '#3d3128'; // curved stage / divider
     case 'wall-block': return '#2a2a2a'; // wall
     default:           return '#2e2e2e';
   }
@@ -9761,7 +9763,9 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     const cx = el.x + el.w/2, cy = el.y + el.h/2;
     let shape;
     const fill = _fpFixedFill(el.kind);
-    if(el.kind === 'table-round'){
+    if(el.kind === 'curve'){
+      shape = `<path class="fp-vw-el-shape" d="M ${el.x} ${el.y} L ${el.x+el.w} ${el.y} A ${el.w/2} ${el.h} 0 0 1 ${el.x} ${el.y} Z" fill="${fill}"/>`;
+    } else if(el.kind === 'table-round'){
       shape = `<ellipse class="fp-vw-el-shape" cx="${cx}" cy="${cy}" rx="${el.w/2}" ry="${el.h/2}" fill="${fill}"/>`;
     } else {
       shape = `<rect class="fp-vw-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="3" fill="${fill}"/>`;
@@ -9771,12 +9775,14 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     const dflt = FP_DEFAULT_LABELS[el.kind];
     if(lbl && (!el.label || el.label === dflt)){
       // Use translation key matching the kind (fp_counter, fp_toilet, fp_stage, fp_door, fp_kitchen)
-      const tKey = 'fp_' + el.kind;
+      const tKey = 'fp_' + (el.kind === 'curve' ? 'stage' : el.kind);
       const translated = (typeof _lp === 'function') ? _lp(tKey, lbl) : lbl;
       if(translated && translated !== tKey) lbl = translated;
     }
     const txt = lbl ? `<text class="fp-vw-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>` : '';
-    svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}">${shape}${txt}</g>`;
+    const _rotF = +el.rot || 0;
+    const _tfF = _rotF ? ` transform="rotate(${_rotF} ${cx} ${cy})"` : '';
+    svgInner += `<g class="fp-vw-fixed" data-kind="${el.kind}"${_tfF}>${shape}${txt}</g>`;
   });
   // Render walls (above fixed, below tables)
   walls.forEach(el => {
@@ -9830,10 +9836,12 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     }
     // hitArea first so visible shape sits on top (but hit area still catches clicks via parent <g>)
     const groupCls = `fp-vw-table ${stateClass}${isVip?' vip':''}${isWalkIn?' walkin':''}`;
+    const _rotT = +el.rot || 0;
+    const _tfT = _rotT ? ` transform="rotate(${_rotT} ${cx} ${cy})"` : '';
     // Shrink the label so long names (e.g. "VIP05") fit inside the table box; short numbers stay big.
     var _numStr = String(num), _tnumFs = 32, _availW = (el.w || 60) - 10;
     if(_numStr.length){ var _estW = _numStr.length * _tnumFs * 0.58; if(_estW > _availW) _tnumFs = Math.max(10, Math.floor(_availW / (_numStr.length * 0.58))); }
-    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}">${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
+    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${cy}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
