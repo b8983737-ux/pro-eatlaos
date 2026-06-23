@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782210400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782225400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2366,7 +2366,6 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-scroll-cue .bks-cue-chev{display:flex;flex-direction:column;align-items:center;line-height:.5;}
 .bk-scroll-cue .bks-cue-chev svg{width:22px;height:14px;display:block;}
 .bk-scroll-cue.show .bks-cue-chev svg:nth-child(1){animation:bkCueBob 1.3s ease-in-out infinite;}
-.bk-scroll-cue.show .bks-cue-chev svg:nth-child(2){opacity:.55;margin-top:-6px;animation:bkCueBob 1.3s ease-in-out .15s infinite;}
 @keyframes bkCueBob{0%,100%{transform:translateY(0);}50%{transform:translateY(5px);}}
 @media (prefers-reduced-motion:reduce){.bk-scroll-cue .bks-cue-chev svg{animation:none;}}
 .bk-scroll-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:6;width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;padding:0;background:linear-gradient(180deg,#d8a93f,#c8973a);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.28);opacity:1;transition:opacity .3s ease,transform .3s ease;animation:bkScrollNudge 1.5s ease-in-out infinite;}
@@ -2696,6 +2695,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-canvas-size{display:flex;align-items:center;gap:5px;font-size:12px;color:#bbb;flex-shrink:0;margin-left:4px;}
 .fp-canvas-size input{width:62px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#eee;border-radius:6px;padding:4px 6px;font-size:12px;text-align:center;-moz-appearance:textfield;}
 .fp-canvas-size input:focus{outline:none;border-color:#c8973a;}
+.fp-floor-pick{display:flex;align-items:center;gap:5px;font-size:12px;color:#bbb;flex-shrink:0;margin-left:6px;}
+.fp-floor-pick select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#eee;border-radius:6px;padding:4px 6px;font-size:12px;cursor:pointer;}
+.fp-floor-pick select:focus{outline:none;border-color:#c8973a;}
 .fp-areas-tabs{display:flex;gap:6px;flex:1;min-width:0;}
 .fp-area-tab{position:relative;display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;letter-spacing:.2px;}
 .fp-area-tab:hover{background:rgba(255,255,255,.07);color:#fff;}
@@ -2829,9 +2831,15 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:800;}
 .fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:24px;font-weight:700;fill:rgba(255,255,255,.92);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:0;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);}
-.bk-free-top{display:flex;align-items:center;justify-content:center;margin:0 0 9px;flex-shrink:0;}
-.bk-free-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.42);border-radius:999px;padding:4px 15px;font-size:13.5px;font-weight:700;color:#15803d;}
-.bk-free-pill .bk-free-num{font-size:17px;font-weight:800;color:#15803d;}
+.bk-free-top{display:flex;justify-content:center;margin:2px 0 12px;flex-shrink:0;}
+.bk-free-card{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(180deg,rgba(200,151,58,.11),rgba(200,151,58,.035));border:1px solid rgba(200,151,58,.30);border-radius:11px;padding:7px 16px;box-shadow:0 2px 10px rgba(0,0,0,.22);}
+.bk-free-card .bk-free-dot{width:7px;height:7px;border-radius:50%;background:#c8973a;flex-shrink:0;box-shadow:0 0 7px rgba(200,151,58,.9);animation:bkFreePulse 2.2s ease-in-out infinite;}
+@keyframes bkFreePulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.78);}}
+.bk-free-card .bk-free-num{font-size:21px;font-weight:800;color:#e0b55a;line-height:1;}
+.bk-free-card .bk-free-lbl{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.6);}
+.bk-free-card.is-full{background:linear-gradient(180deg,rgba(220,53,69,.10),rgba(220,53,69,.035));border-color:rgba(220,53,69,.32);}
+.bk-free-card.is-full .bk-free-dot{background:#dc3545;box-shadow:0 0 7px rgba(220,53,69,.8);animation:none;}
+.bk-free-card.is-full .bk-free-num{color:#e0686f;}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
 .bk-area-tab{padding:9px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
@@ -4930,6 +4938,18 @@ const STAFF_T={
     fp_door:'Entry',
     fp_kitchen:'Kitchen',
     fp_wall_block:'Wall',
+    fp_wall_thick:'Wall thickness',
+    fp_wall_glass:'Glass',
+    fp_floor_plain:'Plain',
+    fp_floor_wood:'Wood',
+    fp_floor_tile:'Tile',
+    fp_floor_marble:'Marble',
+    fp_floor_void:'Void',
+    fp_floor_deck:'Deck',
+    fp_floor_stone:'Stone',
+    fp_floor_grass:'Grass',
+    fp_plant:'Plant',
+    fp_sofa:'Sofa',
     fp_wall_line:'Line',
     fp_floor:'Floor:',
     // v6.6: Multi-area editor
@@ -5117,6 +5137,18 @@ const STAFF_T={
     fp_door:'ທາງເຂົ້າ',
     fp_kitchen:'ເຮືອນຄົວ',
     fp_wall_block:'ກຳແພງ',
+    fp_wall_thick:'ຄວາມໜາກຳແພງ',
+    fp_wall_glass:'ກະຈົກ',
+    fp_floor_plain:'ພື້ນຮຽບ',
+    fp_floor_wood:'ໄມ້',
+    fp_floor_tile:'ກະເບື້ອງ',
+    fp_floor_marble:'ຫີນອ່ອນ',
+    fp_floor_void:'ຫວ່າງ',
+    fp_floor_deck:'ດາດໄມ້',
+    fp_floor_stone:'ຫີນ',
+    fp_floor_grass:'ຫຍ້າ',
+    fp_plant:'ຕົ້ນໄມ້',
+    fp_sofa:'ໂຊຟາ',
     fp_wall_line:'ເສັ້ນ',
     fp_floor:'ພື້ນ:',
     // v6.6: Multi-area editor
@@ -5299,6 +5331,18 @@ const STAFF_T={
     fp_door:'ทางเข้า',
     fp_kitchen:'ห้องครัว',
     fp_wall_block:'กำแพง',
+    fp_wall_thick:'ความหนากำแพง',
+    fp_wall_glass:'กระจก',
+    fp_floor_plain:'พื้นเรียบ',
+    fp_floor_wood:'ไม้',
+    fp_floor_tile:'กระเบื้อง',
+    fp_floor_marble:'หินอ่อน',
+    fp_floor_void:'ว่าง',
+    fp_floor_deck:'เด็คไม้',
+    fp_floor_stone:'หิน',
+    fp_floor_grass:'หญ้า',
+    fp_plant:'ต้นไม้',
+    fp_sofa:'โซฟา',
     fp_wall_line:'เส้น',
     fp_floor:'พื้น:',
     // v6.6: Multi-area editor
@@ -5481,6 +5525,18 @@ const STAFF_T={
     fp_door:'入口',
     fp_kitchen:'厨房',
     fp_wall_block:'墙壁',
+    fp_wall_thick:'墙壁厚度',
+    fp_wall_glass:'玻璃',
+    fp_floor_plain:'纯色',
+    fp_floor_wood:'木地板',
+    fp_floor_tile:'瓷砖',
+    fp_floor_marble:'大理石',
+    fp_floor_void:'空',
+    fp_floor_deck:'木台',
+    fp_floor_stone:'石材',
+    fp_floor_grass:'草地',
+    fp_plant:'植物',
+    fp_sofa:'沙发',
     fp_wall_line:'线条',
     fp_floor:'地板:',
     // v6.6: Multi-area editor
@@ -5679,6 +5735,18 @@ const STAFF_T={
     fp_door:'입구',
     fp_kitchen:'주방',
     fp_wall_block:'벽',
+    fp_wall_thick:'벽 두께',
+    fp_wall_glass:'유리',
+    fp_floor_plain:'플레인',
+    fp_floor_wood:'나무',
+    fp_floor_tile:'타일',
+    fp_floor_marble:'대리석',
+    fp_floor_void:'없음',
+    fp_floor_deck:'데크',
+    fp_floor_stone:'돌',
+    fp_floor_grass:'잔디',
+    fp_plant:'식물',
+    fp_sofa:'소파',
     fp_wall_line:'선',
     fp_floor:'바닥:',
     // v6.6: Multi-area editor
@@ -7359,7 +7427,7 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'Choose a table',
     bk_need_date:'Pick a date first.',
     bk_need_time:'Pick a time first.',
-    bk_scroll_down:'Scroll down',
+    bk_scroll_down:'See more',
     bk_all:'All',
     bk_zone_full:'Full',
     bk_zoom_hint:'Pinch or drag to zoom',
@@ -7542,7 +7610,7 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'ເລືອກໂຕະ',
     bk_need_date:'ກະລຸນາເລືອກວັນທີກ່ອນ.',
     bk_need_time:'ກະລຸນາເລືອກເວລາກ່ອນ.',
-    bk_scroll_down:'ເລື່ອນລົງ',
+    bk_scroll_down:'ເບິ່ງເພີ່ມເຕີມ',
     bk_all:'ທັງໝົດ',
     bk_zone_full:'ເຕັມ',
     bk_zoom_hint:'ບີບ ຫຼື ລາກ ເພື່ອຊູມ',
@@ -7725,7 +7793,7 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'เลือกโต๊ะ',
     bk_need_date:'กรุณาเลือกวันที่ก่อน',
     bk_need_time:'กรุณาเลือกเวลาก่อน',
-    bk_scroll_down:'เลื่อนลง',
+    bk_scroll_down:'ดูเพิ่มเติม',
     bk_all:'ทั้งหมด',
     bk_zone_full:'เต็ม',
     bk_zoom_hint:'บีบหรือลากเพื่อซูม',
@@ -7908,7 +7976,7 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'选择桌位',
     bk_need_date:'请先选择日期',
     bk_need_time:'请先选择时间',
-    bk_scroll_down:'向下滚动',
+    bk_scroll_down:'查看更多',
     bk_all:'全部',
     bk_zone_full:'已满',
     bk_zoom_hint:'双指缩放或拖动',
@@ -8091,7 +8159,7 @@ const LP_TRANSLATIONS = {
     bk_pick_table:'테이블 선택',
     bk_need_date:'먼저 날짜를 선택하세요',
     bk_need_time:'먼저 시간을 선택하세요',
-    bk_scroll_down:'아래로 스크롤',
+    bk_scroll_down:'더 보기',
     bk_all:'전체',
     bk_zone_full:'꽉 참',
     bk_zoom_hint:'손가락을 모으거나 드래그하여 확대',
@@ -13753,8 +13821,11 @@ const FP_DEFAULT_SIZES = {
   'kitchen':      { w: 200, h: 100 },
   'outside':      { w: 240, h: 200 },
   'curve':        { w: 200, h: 90  },
+  'plant':        { w: 46,  h: 46  },
+  'sofa':         { w: 130, h: 50  },
   'wall-block':   { w: 200, h: 12  },
-  'wall-line':    { w: 100, h: 0   }  // line uses x1,y1,x2,y2 not w/h
+  'wall-line':    { w: 100, h: 0   }, // line uses x1,y1,x2,y2 not w/h
+  'glass-line':   { w: 120, h: 0   }  // glass partition — same line model as wall-line
 };
 
 /* Helper: is this kind a VIP table variant? (table-vip-round, table-vip-square, table-vip-rect) */
@@ -13817,9 +13888,21 @@ function _fpSyncCanvasSize(){
   const W = _fpW(), H = _fpH();
   const cv = document.getElementById('fpCanvas'); if(cv) cv.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const bg = document.getElementById('fpCanvasBg');   if(bg){ bg.setAttribute('width', W); bg.setAttribute('height', H); }
+  const fl = document.getElementById('fpCanvasFloor'); if(fl){ fl.setAttribute('width', W); fl.setAttribute('height', H); fl.setAttribute('fill', _fpFloorFill(fpState.plan && fpState.plan.floor) || 'transparent'); }
   const gr = document.getElementById('fpCanvasGrid');  if(gr){ gr.setAttribute('width', W); gr.setAttribute('height', H); }
   const wi = document.getElementById('fpCanvasW'); if(wi && document.activeElement !== wi) wi.value = W;
   const hi = document.getElementById('fpCanvasH'); if(hi && document.activeElement !== hi) hi.value = H;
+  const ffi = document.getElementById('fpFloorIn');  if(ffi && fpState.plan) ffi.value = fpState.plan.floor || 'plain';
+  const ffo = document.getElementById('fpFloorOut'); if(ffo && fpState.plan) ffo.value = fpState.plan.floorOut || 'void';
+}
+
+/* Floor material picker — indoor (restaurant) + outside. Only affects the look, never the tables. */
+function fpSetFloorMat(which, value){
+  if(!fpState.plan) return;
+  if(which === 'in') fpState.plan.floor = (value === 'plain') ? '' : value;
+  else fpState.plan.floorOut = (value === 'void') ? '' : value;
+  fpMarkDirty();
+  fpRenderAll();
 }
 
 async function fpOpen(restoId){
@@ -14126,16 +14209,21 @@ function fpElToSvg(el){
   const cls = `fp-el${sel}`;
   // Wall-line is special: x1,y1,x2,y2 only (no w/h)
   if(el.kind === 'wall-line'){
-    const _wt = Math.max(6, el.thickness || 6);
+    const _wt = el.thickness || 6;
+    if(el.mat === 'glass'){
+      // Glass partition — translucent pane + bright edge sheen
+      return `<g class="${cls}" data-elid="${el.id}"><line class="fp-el-shape fp-el-wallline" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="rgba(150,205,232,0.30)" stroke-width="${_wt}" stroke-linecap="round"/><line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="rgba(225,245,255,0.9)" stroke-width="${Math.max(1.2,_wt*0.16)}" stroke-linecap="round" pointer-events="none"/></g>`;
+    }
     return `<g class="${cls}" data-elid="${el.id}"><line class="fp-el-shape fp-el-wallline" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#2b2722" stroke-width="${_wt}" stroke-linecap="round" filter="url(#fpWallSh)"/><line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#6e645a" stroke-width="${Math.max(1.5,_wt*0.26)}" stroke-linecap="round" opacity="0.5" pointer-events="none"/></g>`;
   }
   const cx = el.x + el.w/2;
   const cy = el.y + el.h/2;
   // Determine table number for tables
   let tableNum = '';
+  let chairs = '';
   if(isTable && el.tableId){
     const t = fpState.tables.find(x => x.id === el.tableId);
-    if(t) tableNum = t.num || '';
+    if(t){ tableNum = t.num || ''; chairs = _fpChairs(el, +(t.maxSeats||t.seats||0)); }
   }
   // Build shape
   let shape = '';
@@ -14145,7 +14233,7 @@ function fpElToSvg(el){
     fill = 'url(#fpWallGrad)';
     stroke = '#1c1916';
   } else if(el.kind === 'outside'){
-    fill = 'url(#fpOutsideHatch)';
+    fill = _fpFloorOutFill(fpState.plan && fpState.plan.floorOut) || 'url(#fpOutsideHatch)';
     stroke = 'rgba(255,255,255,.32)';
   } else if(isTable){
     fill = '#c8973a';
@@ -14163,6 +14251,10 @@ function fpElToSvg(el){
   if(el.kind === 'curve'){
     // Half-ellipse (flat top edge, bulges down) — curved stage / divider. Rotate to orient.
     shape = `<path class="fp-el-shape" d="M ${el.x} ${el.y} L ${el.x+el.w} ${el.y} A ${el.w/2} ${el.h} 0 0 1 ${el.x} ${el.y} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  } else if(el.kind === 'plant'){
+    shape = `<rect class="fp-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="6" fill="transparent"/>` + _fpPlantSvg(el);
+  } else if(el.kind === 'sofa'){
+    shape = `<rect class="fp-el-shape" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="6" fill="transparent"/>` + _fpSofaSvg(el);
   } else if(_fpIsRoundTable(el.kind)){
     const rx = el.w/2, ry = el.h/2;
     shape = `<ellipse class="fp-el-shape${isVip?' fp-el-vip':''}" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${isVip?2.5:1.5}"/>`;
@@ -14187,7 +14279,7 @@ function fpElToSvg(el){
   }
   const _rot = +el.rot || 0;
   const _tf = _rot ? ` transform="rotate(${_rot} ${cx} ${cy})"` : '';
-  return `<g class="${cls}" data-elid="${el.id}"${_tf}>${shape}${textEl}${vipBadge}</g>`;
+  return `<g class="${cls}" data-elid="${el.id}"${_tf}>${chairs}${shape}${textEl}${vipBadge}</g>`;
 }
 
 function _fpFixedFill(kind){
@@ -14356,12 +14448,31 @@ function fpRenderProps(){
     hInp.value = el.h;
     wInp.min = 20; hInp.min = 20;
   }
+  // Wall thickness slider — only for lines (turns a thin line into a thick wall)
+  const thickRow = document.getElementById('fpPropThickRow');
+  if(thickRow){
+    if(isLine){
+      thickRow.style.display = '';
+      const th = el.thickness || 6;
+      const ti = document.getElementById('fpPropThick'); if(ti) ti.value = th;
+      const tv = document.getElementById('fpPropThickVal'); if(tv) tv.textContent = th;
+    } else {
+      thickRow.style.display = 'none';
+    }
+  }
 }
 
 function fpPropChange(field, value){
   if(!fpState.selectedId) return;
   const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
   if(!el) return;
+  if(field === 'thickness'){
+    el.thickness = Math.max(3, Math.min(50, value || 6));
+    const vEl = document.getElementById('fpPropThickVal'); if(vEl) vEl.textContent = el.thickness;
+    fpMarkDirty();
+    fpRenderAll();
+    return;
+  }
   if(el.kind === 'wall-line'){
     // For lines, the form uses X/Y/W/H inputs but they map to x1/y1/x2/y2
     const map = { x:'x1', y:'y1', w:'x2', h:'y2' };
@@ -14521,8 +14632,11 @@ function fpAddElement(tool, cx, cy){
   if(!fpState.plan) return;
   const sz = FP_DEFAULT_SIZES[tool] || { w:60, h:60 };
   const el = { id: _fpId(), kind: tool };
+  // Glass partition is a wall-line variant (same x1/y1/x2/y2 model) flagged mat='glass'
+  const _isGlass = (tool === 'glass-line');
+  if(_isGlass){ el.kind = 'wall-line'; el.mat = 'glass'; }
   // Wall-line: special — uses x1,y1,x2,y2 (default 100px horizontal)
-  if(tool === 'wall-line'){
+  if(tool === 'wall-line' || _isGlass){
     const halfLen = (sz.w || 100) / 2;
     let x1 = _fpSnap(cx - halfLen);
     let x2 = _fpSnap(cx + halfLen);
@@ -14536,7 +14650,7 @@ function fpAddElement(tool, cx, cy){
     if(y2 < 0) y2 = 0;
     if(y2 > _fpH()) y2 = _fpH();
     el.x1 = x1; el.y1 = y1; el.x2 = x2; el.y2 = y2;
-    el.thickness = 4;
+    el.thickness = _isGlass ? 8 : 4;
   } else {
     const x = _fpSnap(cx - sz.w/2);
     const y = _fpSnap(cy - sz.h/2);
@@ -14754,6 +14868,75 @@ function _fpStartRotate(e){
 }
 
 /* ─── Customer-side viewer ─── */
+/* Floor material → SVG pattern fill (empty string = use plain default, keeps old layouts identical) */
+function _fpFloorFill(v){ return v==='wood'?'url(#fpFloorWood)':v==='tile'?'url(#fpFloorTile)':v==='marble'?'url(#fpFloorMarble)':''; }
+/* Chairs auto-drawn around a table from its seat count — top-down neutral cream (pro plan look) */
+function _fpChairs(el, seats){
+  let n = Math.max(0, seats|0);
+  if(n<=0 || !el.w || !el.h) return '';
+  const base = Math.min(el.w, el.h);
+  const cw = Math.max(9, Math.min(16, base*0.30));
+  const cd = cw*0.82;
+  const slot = cw*1.3;     // space one chair needs along an edge
+  const HARD = 10;         // hard cap so a big table never looks cramped
+  const col='rgba(216,207,191,0.66)', stc='rgba(0,0,0,0.20)';
+  const cx=el.x+el.w/2, cy=el.y+el.h/2;
+  let out='';
+  const seat=(px,py,alongX,ang)=>{
+    const w=alongX?cw:cd, h=alongX?cd:cw;
+    const tf=ang?(' transform="rotate('+ang.toFixed(1)+' '+px.toFixed(1)+' '+py.toFixed(1)+')"'):'';
+    return '<rect x="'+(px-w/2).toFixed(1)+'" y="'+(py-h/2).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="'+(Math.min(w,h)*0.34).toFixed(1)+'" fill="'+col+'" stroke="'+stc+'" stroke-width="0.8"'+tf+'/>';
+  };
+  if(_fpIsRoundTable(el.kind)){
+    const rx=(el.w/2)+cd*0.72, ry=(el.h/2)+cd*0.72;
+    const fit=Math.max(2, Math.floor((Math.PI*(rx+ry))/slot));
+    n=Math.min(n, fit, HARD);
+    for(let i=0;i<n;i++){ const deg=-90+i*(360/n), a=deg*Math.PI/180; out+=seat(cx+rx*Math.cos(a), cy+ry*Math.sin(a), true, deg+90); }
+  } else {
+    const gap=cd*0.62, horiz=(el.w>=el.h);
+    const longLen=horiz?el.w:el.h, shortLen=horiz?el.h:el.w;
+    const perLong=Math.max(1, Math.floor(longLen/slot));   // chairs that fit one long side
+    const endsRoom=(shortLen>=slot*1.1);                   // room for a chair on each short end?
+    const cap=perLong*2 + (endsRoom?2:0);
+    n=Math.min(n, cap, HARD);
+    let remaining=n, leftEnd=0, rightEnd=0;
+    if(endsRoom){
+      if(remaining > perLong*2){ leftEnd=1; remaining--; }
+      if(remaining > perLong*2){ rightEnd=1; remaining--; }
+    }
+    let nA=Math.ceil(remaining/2), nB=remaining-nA;
+    const place=(count,edge)=>{ for(let i=0;i<count;i++){ const f=(i+1)/(count+1);
+      if(edge==='top') out+=seat(el.x+el.w*f, el.y-gap, true,0);
+      else if(edge==='bot') out+=seat(el.x+el.w*f, el.y+el.h+gap, true,0);
+      else if(edge==='lft') out+=seat(el.x-gap, el.y+el.h*f, false,0);
+      else if(edge==='rgt') out+=seat(el.x+el.w+gap, el.y+el.h*f, false,0);
+    } };
+    if(horiz){ place(nA,'top'); place(nB,'bot'); place(leftEnd,'lft'); place(rightEnd,'rgt'); }
+    else { place(nA,'lft'); place(nB,'rgt'); place(leftEnd,'top'); place(rightEnd,'bot'); }
+  }
+  return out;
+}
+function _fpFloorOutFill(v){ return v==='deck'?'url(#fpFloorDeck)':v==='stone'?'url(#fpFloorStone)':v==='grass'?'url(#fpFloorGrass)':''; }
+/* Decor: potted plant (top-down leafy cluster) */
+function _fpPlantSvg(el){
+  const cx=el.x+el.w/2, cy=el.y+el.h/2, R=Math.min(el.w,el.h)/2;
+  const c=(dx,dy,r,f)=>'<circle cx="'+(cx+R*dx).toFixed(1)+'" cy="'+(cy+R*dy).toFixed(1)+'" r="'+(R*r).toFixed(1)+'" fill="'+f+'"/>';
+  return '<g class="fp-vw-plant">'+c(0,0,1,'#22501c')+c(-0.32,-0.18,0.55,'#2f6b27')+c(0.34,-0.08,0.5,'#357a2c')+c(0.05,0.34,0.52,'#3f8a32')+c(0,0,0.3,'#49983c')+'</g>';
+}
+/* Decor: top-down sofa / lounge (grey, backrest + cushions + armrests) */
+function _fpSofaSvg(el){
+  const x=el.x,y=el.y,w=el.w,h=el.h;
+  const arm=Math.max(6,w*0.07), back=Math.max(7,h*0.26);
+  const seatX=x+arm, seatW=w-2*arm, seatY=y+back, seatH=Math.max(4,h-back-2);
+  const cg=2, cw=Math.max(4,(seatW-cg)/2);
+  return '<g class="fp-vw-sofa">'
+    +'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="7" fill="#5b626e"/>'
+    +'<rect x="'+seatX.toFixed(1)+'" y="'+seatY.toFixed(1)+'" width="'+cw.toFixed(1)+'" height="'+seatH.toFixed(1)+'" rx="4" fill="#79808c"/>'
+    +'<rect x="'+(seatX+cw+cg).toFixed(1)+'" y="'+seatY.toFixed(1)+'" width="'+cw.toFixed(1)+'" height="'+seatH.toFixed(1)+'" rx="4" fill="#79808c"/>'
+    +'<rect x="'+x+'" y="'+(y+back*0.4).toFixed(1)+'" width="'+arm.toFixed(1)+'" height="'+(h-back*0.4).toFixed(1)+'" rx="4" fill="#6b7280"/>'
+    +'<rect x="'+(x+w-arm).toFixed(1)+'" y="'+(y+back*0.4).toFixed(1)+'" width="'+arm.toFixed(1)+'" height="'+(h-back*0.4).toFixed(1)+'" rx="4" fill="#6b7280"/>'
+    +'</g>';
+}
 function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId, walkInTableIds, tooSmallIds){
   if(!plan || !plan.elements || !plan.elements.length) return null;
   const W = plan.width  || 1000;
@@ -14797,6 +14980,12 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       <line x1="0" y1="0" x2="0" y2="6" stroke="#3a3a3a" stroke-width="1"/>
       <line x1="12" y1="6" x2="12" y2="12" stroke="#3a3a3a" stroke-width="1"/>
     </pattern>
+    <pattern id="fpFloorWood" width="90" height="46" patternUnits="userSpaceOnUse"><rect width="90" height="46" fill="#241c14"/><rect width="90" height="23" fill="#2b2118"/><rect y="23" width="90" height="23" fill="#251c13"/><line x1="0" y1="23" x2="90" y2="23" stroke="#15100a" stroke-width="1.4"/><line x1="0" y1="0" x2="90" y2="0" stroke="#15100a" stroke-width="1.4"/><line x1="45" y1="0" x2="45" y2="23" stroke="#1c140d" stroke-width="1"/><line x1="0" y1="23" x2="0" y2="46" stroke="#1c140d" stroke-width="1"/></pattern>
+    <pattern id="fpFloorTile" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#191a1e"/><rect x="1" y="1" width="46" height="46" rx="2" fill="#1f2127"/><path d="M0 0H48M0 48H48M0 0V48M48 0V48" stroke="#111216" stroke-width="1.4"/></pattern>
+    <pattern id="fpFloorMarble" width="120" height="120" patternUnits="userSpaceOnUse"><rect width="120" height="120" fill="#1b1920"/><path d="M0 32 Q42 52 72 22 T120 42" stroke="#322d3a" stroke-width="1" fill="none" opacity="0.7"/><path d="M8 92 Q52 72 92 102 T122 82" stroke="#2a2630" stroke-width="0.8" fill="none" opacity="0.55"/></pattern>
+    <pattern id="fpFloorDeck" width="38" height="120" patternUnits="userSpaceOnUse"><rect width="38" height="120" fill="#33271a"/><rect x="2" width="34" height="120" fill="#3b2e1e"/><line x1="0" y1="0" x2="0" y2="120" stroke="#211810" stroke-width="2"/></pattern>
+    <pattern id="fpFloorStone" width="64" height="48" patternUnits="userSpaceOnUse"><rect width="64" height="48" fill="#2a2a2d"/><rect x="1" y="1" width="30" height="22" rx="2" fill="#2f2f32"/><rect x="33" y="1" width="30" height="22" rx="2" fill="#2c2c2f"/><rect x="17" y="25" width="30" height="22" rx="2" fill="#313134"/><rect x="-15" y="25" width="30" height="22" rx="2" fill="#2c2c2f"/><rect x="49" y="25" width="30" height="22" rx="2" fill="#2c2c2f"/></pattern>
+    <pattern id="fpFloorGrass" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#1c2a16"/><path d="M6 30 L8 20 M12 32 L13 22 M20 30 L22 21 M28 32 L29 23 M34 30 L35 22" stroke="#2c3f1f" stroke-width="1.4" stroke-linecap="round" fill="none"/></pattern>
     <linearGradient id="fpVwWallGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#544c42"/><stop offset="0.45" stop-color="#3a342d"/><stop offset="1" stop-color="#241f1a"/>
     </linearGradient>
@@ -14804,6 +14993,8 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   </defs>`;
   // Floor: solid background only — SA's design with no overlays
   svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${_fpEsc(bg)}"/>`;
+  const _floorFill = _fpFloorFill(plan.floor);
+  if(_floorFill){ svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${_floorFill}"/>`; }
   const fixed = []; const tableEls = []; const walls = [];
   plan.elements.forEach(el => {
     const isTable = el.kind && el.kind.indexOf('table') === 0;
@@ -14814,12 +15005,16 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   });
   // Render fixed first (under)
   fixed.forEach(el => {
-    if(el.kind === 'outside'){ svgInner += `<rect class="fp-vw-outside" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="#0a0a0a"/>`; return; }
+    if(el.kind === 'outside'){ const _of = _fpFloorOutFill(plan.floorOut) || '#0a0a0a'; svgInner += `<rect class="fp-vw-outside" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="${_of}"/>`; return; }
     const cx = el.x + el.w/2, cy = el.y + el.h/2;
     let shape;
     const fill = _fpFixedFill(el.kind);
     if(el.kind === 'curve'){
       shape = `<path class="fp-vw-el-shape" d="M ${el.x} ${el.y} L ${el.x+el.w} ${el.y} A ${el.w/2} ${el.h} 0 0 1 ${el.x} ${el.y} Z" fill="${fill}"/>`;
+    } else if(el.kind === 'plant'){
+      shape = _fpPlantSvg(el);
+    } else if(el.kind === 'sofa'){
+      shape = _fpSofaSvg(el);
     } else if(el.kind === 'table-round'){
       shape = `<ellipse class="fp-vw-el-shape" cx="${cx}" cy="${cy}" rx="${el.w/2}" ry="${el.h/2}" fill="${fill}"/>`;
     } else {
@@ -14846,9 +15041,15 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   // Render walls (above fixed, below tables) — clean architectural style: solid wall + soft shadow + lit top edge
   walls.forEach(el => {
     if(el.kind === 'wall-line'){
-      const t = Math.max(6, el.thickness || 6);
-      svgInner += `<line class="fp-vw-wall fp-vw-wall-line" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#2b2722" stroke-width="${t}" stroke-linecap="round" filter="url(#fpVwWallSh)"/>`;
-      svgInner += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#6e645a" stroke-width="${Math.max(1.5, t*0.26)}" stroke-linecap="round" opacity="0.5"/>`;
+      const t = el.thickness || 6;
+      if(el.mat === 'glass'){
+        // Glass partition — translucent pane + bright sheen
+        svgInner += `<line class="fp-vw-wall fp-vw-wall-glass" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="rgba(150,205,232,0.30)" stroke-width="${t}" stroke-linecap="round"/>`;
+        svgInner += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="rgba(225,245,255,0.9)" stroke-width="${Math.max(1.2, t*0.16)}" stroke-linecap="round"/>`;
+      } else {
+        svgInner += `<line class="fp-vw-wall fp-vw-wall-line" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#2b2722" stroke-width="${t}" stroke-linecap="round" filter="url(#fpVwWallSh)"/>`;
+        svgInner += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#6e645a" stroke-width="${Math.max(1.5, t*0.26)}" stroke-linecap="round" opacity="0.5"/>`;
+      }
     } else if(el.kind === 'wall-block'){
       svgInner += `<rect class="fp-vw-wall fp-vw-wall-block" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" rx="2.5" fill="url(#fpVwWallGrad)" stroke="#1c1916" stroke-width="1" filter="url(#fpVwWallSh)"/>`;
       svgInner += `<rect x="${el.x+2}" y="${el.y+2}" width="${Math.max(0, el.w-4)}" height="2" rx="1" fill="#6e645a" opacity="0.4"/>`;
@@ -14903,7 +15104,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     var _numStr = String(num), _tnumFs = 32, _availW = (el.w || 60) - 10;
     if(_numStr.length){ var _estW = _numStr.length * _tnumFs * 0.58; if(_estW > _availW) _tnumFs = Math.max(10, Math.floor(_availW / (_numStr.length * 0.58))); }
     const _numY = isVip ? (cy + el.h*0.16) : cy;
-    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${shape}<text class="fp-vw-tnum" x="${cx}" y="${_numY}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
+    svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${_fpChairs(el, +(t.maxSeats||t.seats||0))}${shape}<text class="fp-vw-tnum" x="${cx}" y="${_numY}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
@@ -15077,7 +15278,8 @@ async function bkLoadTables(){
       _bkRenderActiveAreaMap();
       // Insert tabs (above the wrap) + legend (below the wrap)
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
-      const _freeTop = `<div class="bk-free-top"><span class="bk-free-pill">🟢 <span class="bk-free-num">${_legFree}</span> ${escapeHtml(lblAvail)}</span></div>`;
+      const _isFull = _legFree <= 0;
+      const _freeTop = `<div class="bk-free-top"><span class="bk-free-card${_isFull ? ' is-full' : ''}"><span class="bk-free-dot"></span><span class="bk-free-num">${_legFree}</span><span class="bk-free-lbl">${escapeHtml(lblAvail)}</span></span></div>`;
       grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
         <div class="fp-vw-legend">
           <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
@@ -15403,7 +15605,8 @@ function _bkAttachPanZoom(svgEl){
   function up(e){ pts.delete(e.pointerId); startDist=0; var v=Array.from(pts.values()); last=v.length?v[0]:null; }
   svgEl.addEventListener('pointerup',up);
   svgEl.addEventListener('pointercancel',up);
-  svgEl.addEventListener('wheel', function(e){ var p=rectXY(e); zoomAt(p.x,p.y, e.deltaY<0?1.12:0.9); e.preventDefault(); }, {passive:false});
+  // wheel/trackpad zoom disabled — zoom ONLY via the +/− buttons (no hand zoom)
+  svgEl.addEventListener('wheel', function(e){ if(e.ctrlKey){ e.preventDefault(); } }, {passive:false});
   if(!wrap.querySelector('.fp-pz-ctrl')){
     var ctrl=document.createElement('div'); ctrl.className='fp-pz-ctrl';
     ctrl.innerHTML='<button type="button" data-z="in" aria-label="Zoom in">+</button>'
@@ -17138,6 +17341,22 @@ async function cleanupOldBookings(opts){
         <span style="opacity:.6">×</span>
         <input id="fpCanvasH" type="number" min="500" max="3000" step="20" onchange="fpSetCanvasSize('h', this.value)" aria-label="Canvas height" title="Height">
       </div>
+      <div class="fp-floor-pick" title="Floor material — indoor (restaurant) and outside areas. Only changes the look, not your tables.">
+        <span style="opacity:.8">🟫</span>
+        <select id="fpFloorIn" onchange="fpSetFloorMat('in', this.value)" aria-label="Indoor floor" title="Indoor (restaurant) floor">
+          <option value="plain" data-ts="fp_floor_plain">Plain</option>
+          <option value="wood" data-ts="fp_floor_wood">Wood</option>
+          <option value="tile" data-ts="fp_floor_tile">Tile</option>
+          <option value="marble" data-ts="fp_floor_marble">Marble</option>
+        </select>
+        <span style="opacity:.8">🌳</span>
+        <select id="fpFloorOut" onchange="fpSetFloorMat('out', this.value)" aria-label="Outside floor" title="Outside floor">
+          <option value="void" data-ts="fp_floor_void">Void</option>
+          <option value="deck" data-ts="fp_floor_deck">Deck</option>
+          <option value="stone" data-ts="fp_floor_stone">Stone</option>
+          <option value="grass" data-ts="fp_floor_grass">Grass</option>
+        </select>
+      </div>
     </div>
     <!-- Body: 3-column layout -->
     <div class="fp-body">
@@ -17203,6 +17422,10 @@ async function cleanupOldBookings(opts){
             <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><div style="width:24px;height:3px;background:#888;border-radius:1px"></div></div>
             <div class="fp-tool-lbl" data-ts="fp_wall_line">Line</div>
           </div>
+          <div class="fp-tool" data-tool="glass-line" title="Glass partition — translucent wall. Drag the two ends to any angle; adjust thickness in properties.">
+            <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><div style="width:24px;height:7px;background:linear-gradient(180deg,rgba(200,235,250,.85),rgba(150,205,232,.45));border:1px solid rgba(220,245,255,.9);border-radius:2px"></div></div>
+            <div class="fp-tool-lbl" data-ts="fp_wall_glass">Glass</div>
+          </div>
           <div class="fp-tool" data-tool="outside" title="Outside area — carve the room shape (e.g. L-shape) by covering empty space">
             <div class="fp-tool-ic" style="background:repeating-linear-gradient(45deg,#3a3a3a,#3a3a3a 4px,#1c1c1c 4px,#1c1c1c 8px);border:1px dashed rgba(255,255,255,.4)"></div>
             <div class="fp-tool-lbl">Outside</div>
@@ -17210,6 +17433,14 @@ async function cleanupOldBookings(opts){
           <div class="fp-tool" data-tool="curve" title="Curved stage / curved divider — half-circle. Drag the top handle to rotate it any direction">
             <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><svg width="28" height="16" viewBox="0 0 28 16"><path d="M3 3 L25 3 A11 12 0 0 1 3 3 Z" fill="#3d3128" stroke="#888" stroke-width="1.2"/></svg></div>
             <div class="fp-tool-lbl">Curve</div>
+          </div>
+          <div class="fp-tool" data-tool="plant" title="Plant / greenery — decoration to fill space like a real venue">
+            <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="#22501c"/><circle cx="9.5" cy="11" r="5.5" fill="#2f6b27"/><circle cx="16.5" cy="12" r="5" fill="#357a2c"/><circle cx="13.5" cy="16.5" r="5.2" fill="#3f8a32"/><circle cx="13" cy="13" r="3" fill="#49983c"/></svg></div>
+            <div class="fp-tool-lbl" data-ts="fp_plant">Plant</div>
+          </div>
+          <div class="fp-tool" data-tool="sofa" title="Sofa / lounge — decoration for waiting or lounge areas">
+            <div class="fp-tool-ic" style="display:flex;align-items:center;justify-content:center"><svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="2" width="28" height="14" rx="3" fill="#5b626e"/><rect x="4" y="7" width="9" height="7" rx="2" fill="#79808c"/><rect x="15" y="7" width="9" height="7" rx="2" fill="#79808c"/></svg></div>
+            <div class="fp-tool-lbl" data-ts="fp_sofa">Sofa</div>
           </div>
         </div>
         <div class="fp-toolbox-help">
@@ -17236,6 +17467,12 @@ async function cleanupOldBookings(opts){
               <rect width="12" height="12" fill="#1a1a1a"/>
               <line x1="0" y1="0" x2="0" y2="12" stroke="rgba(255,255,255,.12)" stroke-width="4"/>
             </pattern>
+            <pattern id="fpFloorWood" width="90" height="46" patternUnits="userSpaceOnUse"><rect width="90" height="46" fill="#241c14"/><rect width="90" height="23" fill="#2b2118"/><rect y="23" width="90" height="23" fill="#251c13"/><line x1="0" y1="23" x2="90" y2="23" stroke="#15100a" stroke-width="1.4"/><line x1="0" y1="0" x2="90" y2="0" stroke="#15100a" stroke-width="1.4"/><line x1="45" y1="0" x2="45" y2="23" stroke="#1c140d" stroke-width="1"/><line x1="0" y1="23" x2="0" y2="46" stroke="#1c140d" stroke-width="1"/></pattern>
+            <pattern id="fpFloorTile" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#191a1e"/><rect x="1" y="1" width="46" height="46" rx="2" fill="#1f2127"/><path d="M0 0H48M0 48H48M0 0V48M48 0V48" stroke="#111216" stroke-width="1.4"/></pattern>
+            <pattern id="fpFloorMarble" width="120" height="120" patternUnits="userSpaceOnUse"><rect width="120" height="120" fill="#1b1920"/><path d="M0 32 Q42 52 72 22 T120 42" stroke="#322d3a" stroke-width="1" fill="none" opacity="0.7"/><path d="M8 92 Q52 72 92 102 T122 82" stroke="#2a2630" stroke-width="0.8" fill="none" opacity="0.55"/></pattern>
+            <pattern id="fpFloorDeck" width="38" height="120" patternUnits="userSpaceOnUse"><rect width="38" height="120" fill="#33271a"/><rect x="2" width="34" height="120" fill="#3b2e1e"/><line x1="0" y1="0" x2="0" y2="120" stroke="#211810" stroke-width="2"/></pattern>
+            <pattern id="fpFloorStone" width="64" height="48" patternUnits="userSpaceOnUse"><rect width="64" height="48" fill="#2a2a2d"/><rect x="1" y="1" width="30" height="22" rx="2" fill="#2f2f32"/><rect x="33" y="1" width="30" height="22" rx="2" fill="#2c2c2f"/><rect x="17" y="25" width="30" height="22" rx="2" fill="#313134"/><rect x="-15" y="25" width="30" height="22" rx="2" fill="#2c2c2f"/><rect x="49" y="25" width="30" height="22" rx="2" fill="#2c2c2f"/></pattern>
+            <pattern id="fpFloorGrass" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#1c2a16"/><path d="M6 30 L8 20 M12 32 L13 22 M20 30 L22 21 M28 32 L29 23 M34 30 L35 22" stroke="#2c3f1f" stroke-width="1.4" stroke-linecap="round" fill="none"/></pattern>
             <linearGradient id="fpVipGradEditor" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#e8c779"/>
               <stop offset="50%" stop-color="#c8973a"/>
@@ -17247,6 +17484,7 @@ async function cleanupOldBookings(opts){
             <filter id="fpWallSh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.3" flood-color="#000" flood-opacity="0.5"/></filter>
           </defs>
           <rect id="fpCanvasBg" width="1000" height="700" fill="#0f0f0f"/>
+          <rect id="fpCanvasFloor" width="1000" height="700" fill="transparent"/>
           <rect id="fpCanvasGrid" width="1000" height="700" fill="url(#fpGrid)"/>
           <g id="fpElementsLayer"></g>
           <g id="fpHandlesLayer"></g>
@@ -17272,6 +17510,11 @@ async function cleanupOldBookings(opts){
             <div><label>Y</label><input aria-label="Y position" type="number" id="fpPropY" oninput="fpPropChange('y', parseInt(this.value)||0)"></div>
             <div><label data-ts="fp_width">W</label><input aria-label="Width" type="number" id="fpPropW" min="20" oninput="fpPropChange('w', parseInt(this.value)||20)"></div>
             <div><label data-ts="fp_height">H</label><input aria-label="Height" type="number" id="fpPropH" min="20" oninput="fpPropChange('h', parseInt(this.value)||20)"></div>
+          </div>
+          <div class="fp-props-row" id="fpPropThickRow" style="display:none">
+            <label data-ts="fp_wall_thick">Wall thickness</label>
+            <input aria-label="Wall thickness" type="range" id="fpPropThick" min="3" max="50" step="1" oninput="fpPropChange('thickness', parseInt(this.value)||6)" style="padding:0;cursor:pointer">
+            <div style="text-align:right;font-size:11px;color:#c8973a;margin-top:2px"><span id="fpPropThickVal">6</span>px</div>
           </div>
           <button class="btn btn-sm btn-red" style="width:100%;margin-top:10px" onclick="fpDeleteSelected()" data-ts="fp_delete">🗑 Delete</button>
         </div>
@@ -17513,7 +17756,7 @@ async function cleanupOldBookings(opts){
   <div class="bkm-shell">
     <!-- Progress bar at top -->
     <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
-    <button id="bkScrollCue" class="bk-scroll-cue" type="button" aria-label="Scroll for more" onclick="_bkScrollCueClick()"><span class="bks-cue-txt" data-lp="bk_scroll_down">Scroll down</span><span class="bks-cue-chev"><svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l9 6 9-6"/></svg></span></button>
+    <button id="bkScrollCue" class="bk-scroll-cue" type="button" aria-label="Scroll for more" onclick="_bkScrollCueClick()"><span class="bks-cue-txt" data-lp="bk_scroll_down">See more</span><span class="bks-cue-chev"><svg viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l9 6 9-6"/></svg></span></button>
     <div class="bkm-head">
       <div style="display:flex;align-items:center;gap:12px">
         <button class="bkm-back" onclick="bkHeaderBack()" aria-label="Back" data-lp="bk_back">← Back</button>
