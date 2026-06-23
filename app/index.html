@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782209400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782210400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2829,6 +2829,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:800;}
 .fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:24px;font-weight:700;fill:rgba(255,255,255,.92);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:0;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);}
+.bk-free-top{display:flex;align-items:center;justify-content:center;margin:0 0 9px;flex-shrink:0;}
+.bk-free-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.42);border-radius:999px;padding:4px 15px;font-size:13.5px;font-weight:700;color:#15803d;}
+.bk-free-pill .bk-free-num{font-size:17px;font-weight:800;color:#15803d;}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
 .bk-area-tab{padding:9px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
@@ -15074,9 +15077,10 @@ async function bkLoadTables(){
       _bkRenderActiveAreaMap();
       // Insert tabs (above the wrap) + legend (below the wrap)
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
-      grid.innerHTML = tabsHtml + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
+      const _freeTop = `<div class="bk-free-top"><span class="bk-free-pill">🟢 <span class="bk-free-num">${_legFree}</span> ${escapeHtml(lblAvail)}</span></div>`;
+      grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
         <div class="fp-vw-legend">
-          <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span> <b style="color:#c8973a;font-weight:800">${_legFree}</b></span>
+          <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
           <span><i style="background:rgba(220,53,69,.4)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
           <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
@@ -15388,12 +15392,8 @@ function _bkAttachPanZoom(svgEl){
   svgEl.addEventListener('pointermove', function(e){
     if(!pts.has(e.pointerId)) return;
     var p=rectXY(e); pts.set(e.pointerId,p);
-    if(pts.size>=2){
-      var a=Array.from(pts.values()); var d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
-      var mx=(a[0].x+a[1].x)/2, my=(a[0].y+a[1].y)/2;
-      if(startDist>0) zoomAt(mx,my,d/startDist);
-      startDist=d; svgEl._bkPanMoved=true; e.preventDefault();
-    } else if(last){
+    if(pts.size>=2){ return; } // pinch-zoom disabled — zoom with the +/− buttons instead
+    if(last){
       var dx=p.x-last.x, dy=p.y-last.y;
       if(Math.abs(dx)+Math.abs(dy)>8) svgEl._bkPanMoved=true;
       if(st.s>1){ st.tx+=dx; st.ty+=dy; apply(); e.preventDefault(); }
@@ -15412,8 +15412,8 @@ function _bkAttachPanZoom(svgEl){
     ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); var b=e.target.closest('button'); if(!b) return; e.preventDefault(); var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.5); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.5); else { st.s=1; st.tx=0; st.ty=0; apply(); } });
     wrap.appendChild(ctrl);
   }
-  var _hintShown=(typeof bkState!=='undefined' && bkState && bkState._pzHintShown);
-  if(!_hintShown && !wrap.querySelector('.fp-pz-hint')){
+  var _hintShown=true; // zoom hint removed — +/− buttons are self-explanatory
+  if(false){
     if(typeof bkState!=='undefined' && bkState) bkState._pzHintShown=true;
     var hint=document.createElement('div'); hint.className='fp-pz-hint';
     hint.textContent=(typeof _lp==='function')?_lp('bk_zoom_hint','Pinch or drag to zoom'):'Pinch or drag to zoom';
