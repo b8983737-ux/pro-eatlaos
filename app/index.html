@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782127200 · VIP TABLE CONDITION accept-gate (5-lang incl pro Lao) · NAME EFFECT (blue butterfly + twinkle) · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782190000 · map legend ຈອງໄວ້ແລ້ວ fix · BOOKING MODAL full-Lao fix · VIP CONDITION · NAME EFFECT (blue butterfly + twinkle) · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7324,6 +7324,8 @@ const LP_TRANSLATIONS = {
     bk_min_max:'Minimum 1 · Maximum 30',
     // v5.4: Zone+Table picker
     bk_pick_table:'Choose a table',
+    bk_need_date:'Pick a date first.',
+    bk_need_time:'Pick a time first.',
     bk_pick_table_sub:'Pick a zone, then select an available table.',
     bk_loading_tables:'Loading tables…',
     bk_no_tables_party:'No tables fit your party size. Try fewer guests.',
@@ -7501,12 +7503,14 @@ const LP_TRANSLATIONS = {
     bk_min_max:'ຕໍ່າສຸດ 1 · ສູງສຸດ 30',
     // v5.4: Zone+Table picker
     bk_pick_table:'ເລືອກໂຕະ',
+    bk_need_date:'ກະລຸນາເລືອກວັນທີກ່ອນ.',
+    bk_need_time:'ກະລຸນາເລືອກເວລາກ່ອນ.',
     bk_pick_table_sub:'ເລືອກພື້ນທີ່ ແລ້ວເລືອກໂຕະທີ່ວ່າງ.',
     bk_loading_tables:'ກຳລັງໂຫຼດໂຕະ…',
     bk_no_tables_party:'ບໍ່ມີໂຕະທີ່ພໍສຳລັບກຸ່ມຂອງທ່ານ. ກະລຸນາລົດຈຳນວນຄົນ.',
     bk_table_seats:'ບ່ອນນັ່ງ',
     bk_table_booked:'ຖືກຈອງ',
-    bk_table_locked_by_other:'ຈອງໄວ້',
+    bk_table_locked_by_other:'ຈອງໄວ້ແລ້ວ',
     bk_table_locked:'ໂຕະຈອງໄວ້ສຳລັບທ່ານ',
     bk_lock_msg:'ສຳເລັດການຈອງພາຍໃນ',
     bk_summary_table:'ໂຕະ',
@@ -7678,6 +7682,8 @@ const LP_TRANSLATIONS = {
     bk_min_max:'ขั้นต่ำ 1 · สูงสุด 30',
     // v5.4: Zone+Table picker
     bk_pick_table:'เลือกโต๊ะ',
+    bk_need_date:'กรุณาเลือกวันที่ก่อน',
+    bk_need_time:'กรุณาเลือกเวลาก่อน',
     bk_pick_table_sub:'เลือกโซน แล้วเลือกโต๊ะที่ว่าง',
     bk_loading_tables:'กำลังโหลดโต๊ะ…',
     bk_no_tables_party:'ไม่มีโต๊ะที่เหมาะกับจำนวนคนของคุณ ลองลดจำนวน',
@@ -7855,6 +7861,8 @@ const LP_TRANSLATIONS = {
     bk_min_max:'最少 1 人 · 最多 30 人',
     // v5.4: Zone+Table picker
     bk_pick_table:'选择桌位',
+    bk_need_date:'请先选择日期',
+    bk_need_time:'请先选择时间',
     bk_pick_table_sub:'选择区域，然后选择空闲的桌位。',
     bk_loading_tables:'正在加载桌位…',
     bk_no_tables_party:'没有适合您人数的桌位。请减少人数。',
@@ -8032,6 +8040,8 @@ const LP_TRANSLATIONS = {
     bk_min_max:'최소 1명 · 최대 30명',
     // v5.4: Zone+Table picker
     bk_pick_table:'테이블 선택',
+    bk_need_date:'먼저 날짜를 선택하세요',
+    bk_need_time:'먼저 시간을 선택하세요',
     bk_pick_table_sub:'구역을 선택한 후 이용 가능한 테이블을 고르세요.',
     bk_loading_tables:'테이블 로딩 중…',
     bk_no_tables_party:'인원에 맞는 테이블이 없습니다. 인원을 줄여보세요.',
@@ -13030,7 +13040,7 @@ function bkOpenForResto(rid, name){
   var pn=document.getElementById('bkPartyNum'); if(pn) pn.textContent='2';
   ['bkName','bkPhone','bkNote'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   if(typeof openModal==='function') openModal('mCustBooking');
-  var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'en';
+  var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
   bkEnterBook(rid);
 }
@@ -13369,7 +13379,7 @@ async function bkEnterBook(id){
   var tg=document.getElementById('bkTableGrid'); if(tg){ tg.classList.remove('fp-mode'); tg.innerHTML='<div class="bks-hint">'+escapeHtml(_lp('bk_need_time','Pick a time first.'))+'</div>'; }
   var zt=document.getElementById('bkZoneTabs'); if(zt){ zt.innerHTML=''; zt.style.display='none'; }
   var live=document.getElementById('bksLive'); if(live) live.style.display='none';
-  var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'en';
+  var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
   await bkLoadHoursAndBuildDates();
 }
@@ -17113,7 +17123,7 @@ async function cleanupOldBookings(opts){
     <div class="bkm-progress"><div class="bkm-progress-fill" id="bkProgressBar"></div></div>
     <div class="bkm-head">
       <div style="display:flex;align-items:center;gap:12px">
-        <button class="bkm-back" onclick="bkHeaderBack()" aria-label="Back">‹ Back</button>
+        <button class="bkm-back" onclick="bkHeaderBack()" aria-label="Back" data-lp="bk_back">← Back</button>
         <div>
           <div class="bkm-eyebrow" data-lp="bk_eyebrow">Book a Table</div>
           <div class="bkm-step-of" id="bkProgressLbl">Step 1 of 6</div>
@@ -17223,7 +17233,7 @@ async function cleanupOldBookings(opts){
   <div class="bkm-shell" style="max-width:480px">
     <div class="bkm-head">
       <div style="display:flex;align-items:center;gap:12px">
-        <button class="bkm-back" onclick="bsBackHome()" aria-label="Back">‹ Back</button>
+        <button class="bkm-back" onclick="bsBackHome()" aria-label="Back" data-lp="bk_back">← Back</button>
         <div>
           <div class="bkm-eyebrow" data-lp="bk_status_eyebrow">Check Booking</div>
           <div class="bkm-title" data-lp="bk_status_title">Your Bookings</div>
