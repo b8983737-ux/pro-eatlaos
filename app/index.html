@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782124200 · NAME EFFECT (iridescent BLUE butterfly, flapping + twinkle sparkles, 3s) · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782127200 · VIP TABLE CONDITION accept-gate (5-lang incl pro Lao) · NAME EFFECT (blue butterfly + twinkle) · BOOKING WINDOW setting (owner picks 1wk-3mo ahead, default 1mo) · OWNER LIVE-MAP FIT FIX (svg height:auto + cap, body scroll, no clip) · turnover P1+P2 + bar-leadtime + MAP AUTO-FIT(phone+desktop) · live-map btn · DEBUG PANEL STRIPPED · map ALL+zone buttons · bar-slot midnight-fix · Paid relabel · booking-name row --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7361,6 +7361,10 @@ const LP_TRANSLATIONS = {
     // v5.9: Customer table info popup
     ti_table_label:'Table',
     ti_reserve:'Reserve this table →',
+    bk_req_title:'Table Condition',
+    bk_req_ask:'Do you accept this condition to book this table?',
+    bk_req_no:'No, pick another',
+    bk_req_yes:'Yes, I accept',
     ti_reserving:'Reserving…',
     ti_cancel:'Cancel',
     ti_seats_range:'Seats {min}–{max} people',
@@ -7534,6 +7538,10 @@ const LP_TRANSLATIONS = {
     // v5.9: Customer table info popup
     ti_table_label:'ໂຕະ',
     ti_reserve:'ຈອງໂຕະນີ້ →',
+    bk_req_title:'ເງື່ອນໄຂການຈອງໂຕະ',
+    bk_req_ask:'ທ່ານຍອມຮັບເງື່ອນໄຂນີ້ ເພື່ອຈອງໂຕະນີ້ບໍ່?',
+    bk_req_no:'ບໍ່, ເລືອກໂຕະອື່ນ',
+    bk_req_yes:'ຍອມຮັບ ແລະ ຈອງ',
     ti_reserving:'ກຳລັງຈອງ…',
     ti_cancel:'ຍົກເລີກ',
     ti_seats_range:'ນັ່ງໄດ້ {min}–{max} ຄົນ',
@@ -7707,6 +7715,10 @@ const LP_TRANSLATIONS = {
     // v5.9: Customer table info popup
     ti_table_label:'โต๊ะ',
     ti_reserve:'จองโต๊ะนี้ →',
+    bk_req_title:'เงื่อนไขการจองโต๊ะ',
+    bk_req_ask:'คุณยอมรับเงื่อนไขนี้เพื่อจองโต๊ะนี้หรือไม่?',
+    bk_req_no:'ไม่ เลือกโต๊ะอื่น',
+    bk_req_yes:'ยอมรับและจอง',
     ti_reserving:'กำลังจอง…',
     ti_cancel:'ยกเลิก',
     ti_seats_range:'นั่งได้ {min}–{max} คน',
@@ -7880,6 +7892,10 @@ const LP_TRANSLATIONS = {
     // v5.9: Customer table info popup
     ti_table_label:'桌位',
     ti_reserve:'预订此桌 →',
+    bk_req_title:'订座条件',
+    bk_req_ask:'您是否接受此条件以预订此桌？',
+    bk_req_no:'不，换一桌',
+    bk_req_yes:'接受并预订',
     ti_reserving:'预订中…',
     ti_cancel:'取消',
     ti_seats_range:'可坐 {min}–{max} 人',
@@ -8053,6 +8069,10 @@ const LP_TRANSLATIONS = {
     // v5.9: Customer table info popup
     ti_table_label:'테이블',
     ti_reserve:'이 테이블 예약 →',
+    bk_req_title:'테이블 예약 조건',
+    bk_req_ask:'이 조건에 동의하고 이 테이블을 예약하시겠습니까?',
+    bk_req_no:'아니요, 다른 테이블',
+    bk_req_yes:'동의하고 예약',
     ti_reserving:'예약 중…',
     ti_cancel:'취소',
     ti_seats_range:'{min}–{max}명 좌석',
@@ -15074,6 +15094,46 @@ function _bkWireMapClicks(){
   });
 }
 
+/* ─── VIP / table booking condition — accept-or-cancel popup (returns Promise<bool>) ─── */
+function _bkReqEnsureCss(){
+  if(document.getElementById('bkReqCss')) return;
+  var st=document.createElement('style'); st.id='bkReqCss';
+  st.textContent='.bk-req-ov{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(20,10,25,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);animation:bkReqFade .18s ease;}'
+    +'@keyframes bkReqFade{from{opacity:0}to{opacity:1}}'
+    +'.bk-req-card{background:#fff;border-radius:18px;max-width:360px;width:100%;padding:24px 22px 20px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:bkReqPop .22s cubic-bezier(.34,1.4,.5,1);font-family:inherit}'
+    +'@keyframes bkReqPop{from{transform:scale(.88);opacity:.4}to{transform:scale(1);opacity:1}}'
+    +'.bk-req-ic{font-size:38px;line-height:1;margin-bottom:8px}'
+    +'.bk-req-ttl{font-size:18px;font-weight:800;color:#2a1830;margin-bottom:10px}'
+    +'.bk-req-txt{font-size:14.5px;line-height:1.5;color:#5a4a64;background:#faf4ff;border:1px solid #efe2fb;border-radius:12px;padding:12px 14px;margin-bottom:14px;white-space:pre-wrap;word-break:break-word;text-align:left}'
+    +'.bk-req-ask{font-size:13.5px;color:#7a6a84;margin-bottom:16px}'
+    +'.bk-req-row{display:flex;gap:10px}'
+    +'.bk-req-row button{flex:1;padding:12px 10px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid transparent;font-family:inherit}'
+    +'.bk-req-no{background:#f1edf4;color:#6a5a74}'
+    +'.bk-req-no:active{background:#e6dfeb}'
+    +'.bk-req-yes{background:linear-gradient(135deg,#7c3aed,#b06ae0);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.4)}'
+    +'.bk-req-yes:active{transform:translateY(1px)}';
+  document.head.appendChild(st);
+}
+function _bkAskRequirement(reqText){
+  _bkReqEnsureCss();
+  return new Promise(function(resolve){
+    var ov=document.createElement('div'); ov.className='bk-req-ov';
+    ov.innerHTML='<div class="bk-req-card" role="dialog" aria-modal="true">'
+      +'<div class="bk-req-ic">🥂</div>'
+      +'<div class="bk-req-ttl">'+escapeHtml(_lp('bk_req_title','Table Condition'))+'</div>'
+      +'<div class="bk-req-txt">'+escapeHtml(reqText)+'</div>'
+      +'<div class="bk-req-ask">'+escapeHtml(_lp('bk_req_ask','Do you accept this condition to book this table?'))+'</div>'
+      +'<div class="bk-req-row">'
+      +'<button type="button" class="bk-req-no">'+escapeHtml(_lp('bk_req_no','No, pick another'))+'</button>'
+      +'<button type="button" class="bk-req-yes">'+escapeHtml(_lp('bk_req_yes','Yes, I accept'))+'</button>'
+      +'</div></div>';
+    function done(v){ try{document.body.removeChild(ov);}catch(e){} resolve(v); }
+    ov.addEventListener('click',function(e){ if(e.target===ov) done(false); });
+    ov.querySelector('.bk-req-no').addEventListener('click',function(){ done(false); });
+    ov.querySelector('.bk-req-yes').addEventListener('click',function(){ done(true); });
+    document.body.appendChild(ov);
+  });
+}
 async function bkPickTable(tableId){
   const t = (bkState.tables||[]).find(x => x.id === tableId);
   if(!t) return;
@@ -15081,6 +15141,12 @@ async function bkPickTable(tableId){
   if(bkState.walkInTableIds && bkState.walkInTableIds.has(tableId)){
     alert(_lp('bk_walkin_only','This table is reserved for walk-in customers on this date.\nPlease visit the restaurant directly, or pick another table.'));
     return;
+  }
+  // VIP / booking condition — customer must accept this table's condition before booking
+  const _req = (t.bookingRequirement||'').trim();
+  if(_req){
+    const _ok = await _bkAskRequirement(_req);
+    if(!_ok) return;
   }
   // Release any existing lock first (if customer picks a different table)
   if(bkState.tableId && bkState.tableId !== tableId){
