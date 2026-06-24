@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782243600 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782246000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2248,6 +2248,10 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 /* v5.8: When floor plan mode active, override the bk-table-grid CSS grid (it was forcing 110px cells) */
 .bk-table-grid.fp-mode{display:flex;flex-direction:column;gap:0;grid-template-columns:none;}
 .bkm-shell.fp-fullscreen .bk-table-grid.fp-mode{flex:1;}
+/* [map-bleed] map goes edge-to-edge of the modal for the biggest possible view */
+.bk-table-grid.fp-mode .bk-map-host{margin-left:-24px;margin-right:-24px;}
+.bk-table-grid.fp-mode .bk-map-host .fp-viewer-wrap{border-radius:0;border-left:none;border-right:none;margin-bottom:0;}
+@media(max-width:600px){.bk-table-grid.fp-mode .bk-map-host{margin-left:-18px;margin-right:-18px;}}
 .bk-table-grid.fp-mode .fp-viewer-wrap{
   margin-bottom:8px;
   background:#0a0a0a;
@@ -2755,7 +2759,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 /* Customer-side floor plan viewer */
 .fp-viewer-wrap{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px;margin-bottom:14px;overflow:hidden;}
 .fp-viewer-svg{width:100%;height:auto;display:block;max-height:60vh;}
-.fp-pz-wrap{position:relative;touch-action:none;cursor:grab;overflow:hidden;}
+.fp-pz-wrap{position:relative;touch-action:pan-y;cursor:grab;overflow:hidden;}
 .fp-pz-wrap:active{cursor:grabbing;}
 .fp-pz-wrap .fp-viewer-svg{transform-origin:0 0;will-change:transform;transition:transform .18s ease;}
 .fp-pz-ctrl{position:absolute;right:9px;bottom:9px;display:flex;flex-direction:column;gap:6px;z-index:8;}
@@ -10455,14 +10459,14 @@ function _bkAttachPanZoom(svgEl){
   svgEl._pzReady = true;
   wrap.classList.add('fp-pz-wrap');
   var st={ s:1, tx:0, ty:0 };
-  function apply(){ var r=wrap.getBoundingClientRect(); var minTx=Math.min(0,r.width*(1-st.s)), minTy=Math.min(0,r.height*(1-st.s)); st.tx=clamp(st.tx,minTx,0); st.ty=clamp(st.ty,minTy,0); svgEl.style.transform='translate('+st.tx+'px,'+st.ty+'px) scale('+st.s+')'; }
+  function apply(){ var r=wrap.getBoundingClientRect(); var minTx=Math.min(0,r.width*(1-st.s)), minTy=Math.min(0,r.height*(1-st.s)); st.tx=clamp(st.tx,minTx,0); st.ty=clamp(st.ty,minTy,0); svgEl.style.transform='translate('+st.tx+'px,'+st.ty+'px) scale('+st.s+')'; try{ wrap.style.touchAction = st.s>1 ? 'none' : 'pan-y'; }catch(_){} }
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   function rectXY(e){ var r=wrap.getBoundingClientRect(); return { x:e.clientX-r.left, y:e.clientY-r.top }; }
   function zoomAt(px,py,f){ var ns=clamp(st.s*f,1,6); if(ns===st.s) return; st.tx=px-(px-st.tx)*(ns/st.s); st.ty=py-(py-st.ty)*(ns/st.s); st.s=ns; if(st.s<=1.002){ st.s=1; st.tx=0; st.ty=0; } apply(); }
   var pts=new Map(), last=null, startDist=0;
   svgEl.addEventListener('pointerdown', function(e){
     svgEl._bkPanMoved=false; pts.set(e.pointerId, rectXY(e));
-    try{ svgEl.setPointerCapture(e.pointerId); }catch(_){}
+    if(st.s>1){ try{ svgEl.setPointerCapture(e.pointerId); }catch(_){} }
     if(pts.size===1){ last=rectXY(e); }
     else if(pts.size===2){ var a=Array.from(pts.values()); startDist=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); }
   });
