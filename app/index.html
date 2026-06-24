@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782241200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782243600 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -15098,18 +15098,10 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       maxY = Math.max(maxY, el.y + (el.h || 0));
     }
   });
-  // Add padding so elements aren't flush with edges
-  const PAD = 60;
-  let vbX = Math.max(0, minX - PAD);
-  let vbY = Math.max(0, minY - PAD);
-  let vbX2 = Math.min(W, maxX + PAD);
-  let vbY2 = Math.min(H, maxY + PAD);
-  let vbW = vbX2 - vbX;
-  let vbH = vbY2 - vbY;
-  // Safety: if elements are too tightly packed, fall back to whole canvas
-  if(vbW < 100 || vbH < 100){
-    vbX = 0; vbY = 0; vbW = W; vbH = H;
-  }
+  // WYSIWYG: show the FULL canvas exactly as the SA designed it in the editor
+  // (same width×height + aspect ratio), so the booking map matches the editor 1:1.
+  let vbX = 0, vbY = 0, vbW = W, vbH = H;
+  void minX; void minY; void maxX; void maxY; // (bounds kept for reference, not used for framing)
   // ─── End auto-fit ───
   let svgInner = `<defs>
     <pattern id="fpVwBrick" width="24" height="12" patternUnits="userSpaceOnUse">
@@ -15128,6 +15120,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
       <stop offset="0" stop-color="#544c42"/><stop offset="0.45" stop-color="#3a342d"/><stop offset="1" stop-color="#241f1a"/>
     </linearGradient>
     <filter id="fpVwWallSh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.3" flood-color="#000" flood-opacity="0.5"/></filter>
+    <pattern id="fpVwOutsideHatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="12" fill="#15110c"/><line x1="0" y1="0" x2="0" y2="12" stroke="rgba(200,151,58,.12)" stroke-width="4"/></pattern>
   </defs>`;
   // Floor: solid background only — SA's design with no overlays
   svgInner += `<rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${_fpEsc(bg)}"/>`;
@@ -15143,7 +15136,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   });
   // Render fixed first (under)
   fixed.forEach(el => {
-    if(el.kind === 'outside'){ const _of = _fpFloorOutFill(plan.floorOut) || '#0a0a0a'; svgInner += `<rect class="fp-vw-outside" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="${_of}"/>`; return; }
+    if(el.kind === 'outside'){ const _of = _fpFloorOutFill(plan.floorOut) || 'url(#fpVwOutsideHatch)'; svgInner += `<rect class="fp-vw-outside" x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" fill="${_of}"/>`; return; }
     const cx = el.x + el.w/2, cy = el.y + el.h/2;
     let shape;
     const fill = _fpFixedFill(el.kind);
@@ -15754,6 +15747,7 @@ function _bkAttachPanZoom(svgEl){
     var _zLast=0;
     var _doZoom=function(b){ if(!b) return; var t=Date.now(); if(t-_zLast<300) return; _zLast=t; var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.5); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.5); else { st.s=1; st.tx=0; st.ty=0; apply(); } };
     ctrl.addEventListener('pointerup', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
+    ctrl.addEventListener('touchend', function(e){ var tg=e.target, b=(tg&&tg.closest)?tg.closest('button'):null; if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); }, {passive:false});
     ctrl.addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
     ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
     wrap.appendChild(ctrl);
