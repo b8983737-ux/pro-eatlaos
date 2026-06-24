@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782246000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782284400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2279,10 +2279,14 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
   display:block;
   margin:0 auto;
 }
-/* [map-fit] desktop: use the bigger screen — wider booking modal + taller map */
+/* [map-fit] tablet/iPad + desktop: use the bigger screen — wider booking modal + taller map */
+@media(min-width:768px) and (max-width:1023px){
+  #mCustBooking .bkm-shell{max-width:700px;}
+  #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:66vh;}
+}
 @media(min-width:1024px){
   #mCustBooking .bkm-shell{max-width:760px;}
-  #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:70vh;}
+  #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:74vh;}
 }
 .bkm-progress{
   height:3px;
@@ -2451,6 +2455,24 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-slot.sel{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);border-color:#c8973a;color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.3);}
 .bk-slot.taken{opacity:.25;cursor:not-allowed;text-decoration:line-through;}
 .bk-slot.taken:hover{transform:none;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
+/* Guided flow: numbered step circles (1->2), checkmark when done, subtle chevron + soft glow */
+.bk-rail{position:relative;padding-left:40px;}
+.bk-rail::before{content:"";position:absolute;left:13px;top:14px;bottom:16px;width:2px;background:rgba(200,151,58,.32);border-radius:2px;}
+.bk-rail .bks-sect{position:relative;}
+.bkm-shell{--bks-dotbg:#141414;}
+.bk-rdot{position:absolute;left:-40px;top:-2px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--bks-dotbg,#141414);border:2px solid rgba(200,151,58,.42);color:var(--bks-acc);z-index:2;line-height:1;transition:background .25s,box-shadow .25s,border-color .25s,color .25s;}
+.bks-sect.bk-guide-now .bk-rdot{background:var(--bks-acc);color:#0a0a0a;border-color:var(--bks-acc);animation:bkStepPulse 1.7s ease-in-out infinite;}
+@keyframes bkStepPulse{0%,100%{box-shadow:0 0 0 0 rgba(200,151,58,.34);}50%{box-shadow:0 0 0 6px rgba(200,151,58,.05);}}
+.bks-sect.bk-step-done .bk-rdot{background:var(--bks-acc);color:#0a0a0a;border-color:var(--bks-acc);font-size:0;}
+.bks-sect.bk-step-done .bk-rdot::after{content:"✓";font-size:13px;font-weight:800;color:#0a0a0a;}
+.bks-sect.bk-guide-now .bks-sect-h{color:var(--bks-acc)!important;font-weight:800;}
+/* coachmark bubble that points at the active grid */
+.bk-grid-wrap{position:relative;}
+.bk-coach{position:absolute;right:6px;top:-7px;transform:translateY(-100%);background:var(--bks-acc);color:#1a1206;font-size:11px;font-weight:800;padding:5px 12px;border-radius:16px;white-space:nowrap;box-shadow:0 6px 16px rgba(200,151,58,.42);opacity:0;visibility:hidden;transition:opacity .3s;z-index:6;}
+.bk-coach::after{content:"";position:absolute;right:20px;bottom:-5px;border:6px solid transparent;border-top-color:var(--bks-acc);border-bottom:0;}
+.bks-sect.bk-guide-now .bk-coach{opacity:1;visibility:visible;animation:bkCoachBob 1.5s ease-in-out infinite;}
+@keyframes bkCoachBob{0%,100%{transform:translateY(-100%);}50%{transform:translateY(calc(-100% - 4px));}}
+.bks-sect.bk-guide-now .bk-date-grid,.bks-sect.bk-guide-now .bk-slot-grid{border-radius:11px;box-shadow:0 0 0 1.5px rgba(200,151,58,.6),0 4px 18px rgba(200,151,58,.14);}
 .bk-party{display:flex;align-items:center;justify-content:center;gap:18px;padding:24px 0;}
 .bk-party-btn{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:22px;cursor:pointer;transition:all .2s;font-weight:300;}
 .bk-party-btn:hover{background:rgba(200,151,58,.12);border-color:#c8973a;transform:scale(1.08);}
@@ -7440,6 +7462,8 @@ const LP_TRANSLATIONS = {
     bk_pick_resto:'Choose a restaurant',
     bk_pick_resto_sub:'Select where you would like to dine.',
     bk_pick_date:'Choose a date',
+    bk_coach_date:'Tap a date',
+    bk_coach_time:'Now tap a time',
     bk_pick_date_sub:'Available up to 30 days ahead.',
     bk_pick_time:'Choose a time',
     bk_pick_time_sub:'Available time slots in 30-minute increments.',
@@ -7623,6 +7647,8 @@ const LP_TRANSLATIONS = {
     bk_pick_resto:'ເລືອກຮ້ານອາຫານ',
     bk_pick_resto_sub:'ເລືອກຮ້ານທີ່ທ່ານຕ້ອງການໄປຮັບປະທານອາຫານ.',
     bk_pick_date:'ເລືອກວັນທີ',
+    bk_coach_date:'ແຕະເລືອກວັນທີ',
+    bk_coach_time:'ຕໍ່ໄປ ເລືອກເວລາ',
     bk_pick_date_sub:'ຈອງລ່ວງໜ້າໄດ້ສູງສຸດ 30 ວັນ.',
     bk_pick_time:'ເລືອກເວລາ',
     bk_pick_time_sub:'ຊ່ອງເວລາທີ່ມີ ໃນລະຍະຫ່າງ 30 ນາທີ.',
@@ -7806,6 +7832,8 @@ const LP_TRANSLATIONS = {
     bk_pick_resto:'เลือกร้านอาหาร',
     bk_pick_resto_sub:'เลือกร้านที่คุณต้องการรับประทานอาหาร',
     bk_pick_date:'เลือกวันที่',
+    bk_coach_date:'แตะเลือกวันที่',
+    bk_coach_time:'ต่อไป เลือกเวลา',
     bk_pick_date_sub:'จองล่วงหน้าได้สูงสุด 30 วัน',
     bk_pick_time:'เลือกเวลา',
     bk_pick_time_sub:'ช่วงเวลาที่ว่าง ในช่วง 30 นาที',
@@ -7989,6 +8017,8 @@ const LP_TRANSLATIONS = {
     bk_pick_resto:'选择餐厅',
     bk_pick_resto_sub:'选择您想用餐的餐厅。',
     bk_pick_date:'选择日期',
+    bk_coach_date:'点选日期',
+    bk_coach_time:'接着选时间',
     bk_pick_date_sub:'最多可提前 30 天预订。',
     bk_pick_time:'选择时间',
     bk_pick_time_sub:'每 30 分钟一个时段。',
@@ -8172,6 +8202,8 @@ const LP_TRANSLATIONS = {
     bk_pick_resto:'레스토랑 선택',
     bk_pick_resto_sub:'식사하실 레스토랑을 선택하세요.',
     bk_pick_date:'날짜 선택',
+    bk_coach_date:'날짜 선택',
+    bk_coach_time:'다음 시간 선택',
     bk_pick_date_sub:'최대 30일 후까지 예약 가능합니다.',
     bk_pick_time:'시간 선택',
     bk_pick_time_sub:'30분 단위 시간대.',
@@ -13357,6 +13389,24 @@ function buildBkDateGrid(){
     </div>`;
   }
   grid.innerHTML = html;
+  if(typeof _bkUpdateGuide==='function') _bkUpdateGuide();
+}
+
+function _bkUpdateGuide(){
+  try{
+    var S=window.bkState||{};
+    var hasDate=!!S.date, hasTime=!!S.slot;
+    var needTable=!!(S.tables&&S.tables.length);
+    var hasTable=needTable ? !!S.tableId : hasTime;   // nothing to pick -> done once time is set
+    var nm=((document.getElementById('bkName')||{}).value||'').trim();
+    var ph=((document.getElementById('bkPhone')||{}).value||'').trim();
+    var hasInfo=nm.length>0 && ph.length>0;
+    function _g(id,active,done){var e=document.getElementById(id);if(!e)return;e.classList.toggle('bk-guide-now',!!active);e.classList.toggle('bk-step-done',!!done);}
+    _g('bkSectDate',   !hasDate,                         hasDate);
+    _g('bkSectTime',   hasDate&&!hasTime,                hasTime);
+    _g('bkSectTable',  hasTime&&needTable&&!S.tableId,   hasTable);
+    _g('bkSectDetails',hasTable&&!hasInfo,               hasInfo);
+  }catch(_){}
 }
 
 function bkPickDate(iso){
@@ -13368,6 +13418,7 @@ function bkPickDate(iso){
   var _lv=document.getElementById('bksLive'); if(_lv) _lv.style.display='none';
   if(typeof bkReleaseLock==='function') bkReleaseLock();
   bkLoadSlotsAndBuild();
+  if(typeof _bkUpdateGuide==='function') _bkUpdateGuide();
 }
 
 // ── booking-v2 TURNOVER ── does a booking that STARTS at bSlot still occupy qSlot?
@@ -13496,6 +13547,7 @@ function bkPickSlot(s){
   var _lv2=document.getElementById('bksLive'); if(_lv2) _lv2.style.display='';
   if(typeof bkReleaseLock==='function') bkReleaseLock();
   bkLoadTables();
+  if(typeof _bkUpdateGuide==='function') _bkUpdateGuide();
 }
 
 function bkParty(delta){
@@ -15104,8 +15156,16 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
   });
   // WYSIWYG: show the FULL canvas exactly as the SA designed it in the editor
   // (same width×height + aspect ratio), so the booking map matches the editor 1:1.
+  // AUTO-FIT: crop tight to the placed tables (+ padding) so numbers are big & clear
+  // on phone / computer / iPad. Empty canvas margin is trimmed away.
+  const _fpPad = 30;
   let vbX = 0, vbY = 0, vbW = W, vbH = H;
-  void minX; void minY; void maxX; void maxY; // (bounds kept for reference, not used for framing)
+  if(maxX > minX && maxY > minY){
+    vbX = Math.max(0, minX - _fpPad);
+    vbY = Math.max(0, minY - _fpPad);
+    vbW = Math.min(W - vbX, (maxX - minX) + _fpPad * 2);
+    vbH = Math.min(H - vbY, (maxY - minY) + _fpPad * 2);
+  }
   // ─── End auto-fit ───
   let svgInner = `<defs>
     <pattern id="fpVwBrick" width="24" height="12" patternUnits="userSpaceOnUse">
@@ -15516,6 +15576,7 @@ async function bkLoadTables(){
     console.error('bkLoadTables:', e);
     grid.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_err_load_tables','Could not load tables. Please try again.'))}</div>`;
   }
+  if(typeof _bkUpdateGuide==='function') _bkUpdateGuide();
 }
 
 /* ─── v5.9: Customer table info popup (centered modal over the floor plan map) ─── */
@@ -15861,6 +15922,7 @@ async function bkPickTable(tableId){
   // Show lock countdown UI
   _bkStartLockCountdown();
   bkLoadTables(); // re-render to show selection
+  if(typeof _bkUpdateGuide==='function') _bkUpdateGuide();
 }
 
 async function bkLockTable(tableId){
@@ -17824,9 +17886,9 @@ async function cleanupOldBookings(opts){
 /* ── Light-pink booking skin: matches the restaurant front page exactly.
       Background goes light, so body text + controls flip to dark plum for readability.
       (The cover image area keeps its white-on-scrim look.) ── */
-#mCustBooking .bkm-shell[data-bg="blush"]{background:#f9d6e3;border-color:rgba(120,40,75,.20)}
-#mCustBooking .bkm-shell[data-bg="pink"]{background:#f7b8d2;border-color:rgba(120,40,75,.22)}
-#mCustBooking .bkm-shell[data-bg="rose"]{background:#f48cb6;border-color:rgba(120,40,75,.26)}
+#mCustBooking .bkm-shell[data-bg="blush"]{--bks-dotbg:#f9d6e3;background:#f9d6e3;border-color:rgba(120,40,75,.20)}
+#mCustBooking .bkm-shell[data-bg="pink"]{--bks-dotbg:#f7b8d2;background:#f7b8d2;border-color:rgba(120,40,75,.22)}
+#mCustBooking .bkm-shell[data-bg="rose"]{--bks-dotbg:#f48cb6;background:#f48cb6;border-color:rgba(120,40,75,.26)}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-eyebrow,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-sect-h .bks-i{color:#b8336e}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-title,
@@ -17950,10 +18012,12 @@ async function cleanupOldBookings(opts){
             <div><div class="bks-name" id="bksName">—</div><div class="bks-cui" id="bksCui"></div></div>
           </div>
         </div>
+        <div class="bk-rail">
         <!-- DATE -->
-        <div class="bks-sect">
-          <div class="bks-sect-h"><span class="bks-i">▣</span> <span data-lp="bk_pick_date">Choose a date</span></div>
-          <div class="bk-date-grid" id="bkDateGrid"></div>
+        <div class="bks-sect" id="bkSectDate">
+          <span class="bk-rdot">1</span>
+          <div class="bks-sect-h"><span class="bks-i">📅</span> <span data-lp="bk_pick_date">Choose a date</span></div>
+          <div class="bk-grid-wrap"><div class="bk-coach" data-lp="bk_coach_date">Tap a date</div><div class="bk-date-grid" id="bkDateGrid"></div></div>
         </div>
         <!-- PARTY -->
         <div class="bks-sect">
@@ -17965,12 +18029,14 @@ async function cleanupOldBookings(opts){
           </div>
         </div>
         <!-- TIME -->
-        <div class="bks-sect">
-          <div class="bks-sect-h"><span class="bks-i">◑</span> <span data-lp="bk_pick_time">Choose a time</span></div>
-          <div class="bk-slot-grid" id="bkSlotGrid"><div class="bks-hint" data-lp="bk_need_date">Pick a date first.</div></div>
+        <div class="bks-sect" id="bkSectTime">
+          <span class="bk-rdot">2</span>
+          <div class="bks-sect-h"><span class="bks-i">🕐</span> <span data-lp="bk_pick_time">Choose a time</span></div>
+          <div class="bk-grid-wrap"><div class="bk-coach" data-lp="bk_coach_time">Now tap a time</div><div class="bk-slot-grid" id="bkSlotGrid"><div class="bks-hint" data-lp="bk_need_date">Pick a date first.</div></div></div>
         </div>
         <!-- TABLE (live map) -->
-        <div class="bks-sect">
+        <div class="bks-sect" id="bkSectTable">
+          <span class="bk-rdot">3</span>
           <div class="bks-sect-h"><span class="bks-i">🗺️</span> <span data-lp="bk_pick_table">Choose a table</span><span class="bks-live" id="bksLive" style="display:none"><span class="bks-live-d"></span>LIVE</span></div>
           <div id="bkZoneTabs" class="bk-zone-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
           <div id="bkTableGrid" class="bk-table-grid"><div class="bks-hint" data-lp="bk_need_time">Pick a time first.</div></div>
@@ -17980,12 +18046,14 @@ async function cleanupOldBookings(opts){
           </div>
         </div>
         <!-- DETAILS -->
-        <div class="bks-sect">
+        <div class="bks-sect" id="bkSectDetails">
+          <span class="bk-rdot">4</span>
           <div class="bks-sect-h"><span class="bks-i">✎</span> <span data-lp="bk_contact">Your details</span></div>
-          <input type="text" id="bkName" class="bk-input" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
-          <input type="tel" id="bkPhone" class="bk-input" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]*" style="margin-top:9px">
+          <input type="text" id="bkName" class="bk-input" oninput="if(typeof _bkUpdateGuide==='function')_bkUpdateGuide()" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
+          <input type="tel" id="bkPhone" class="bk-input" oninput="if(typeof _bkUpdateGuide==='function')_bkUpdateGuide()" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]*" style="margin-top:9px">
           <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences…" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:54px;margin-top:9px"></textarea>
         </div>
+        </div><!-- /bk-rail -->
         <div class="bk-summary" id="bkSummary"></div>
         <button class="bks-confirm" id="bkConfirmBtn" onclick="bkConfirm()" data-lp="bk_submit">Submit Booking</button>
         <button class="bk-link" style="margin-top:12px;display:block;width:100%;text-align:center" onclick="bkBackToRestos()" data-lp="bk_change_resto">← Change restaurant</button>
