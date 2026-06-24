@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782284400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782286200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2787,6 +2787,13 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-pz-ctrl{position:absolute;right:9px;bottom:9px;display:flex;flex-direction:column;gap:6px;z-index:8;}
 .fp-pz-ctrl button{width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(18,18,18,.74);color:#fff;font-size:18px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .fp-pz-ctrl button:active{background:rgba(64,64,64,.9);}
+.fp-fs-btn{position:absolute;right:9px;top:9px;width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(18,18,18,.74);color:#fff;font-size:15px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;z-index:9;}
+.fp-fs-btn:active{background:rgba(64,64,64,.9);}
+.fp-viewer-wrap.fp-fs{position:fixed!important;inset:0!important;z-index:9990!important;border:none!important;border-radius:0!important;padding:0!important;margin:0!important;background:#0a0a0a!important;max-height:none!important;overflow:hidden!important;}
+.fp-viewer-wrap.fp-fs .fp-viewer-svg{max-height:100vh!important;height:100vh!important;width:100vw!important;}
+.fp-viewer-wrap.fp-fs .fp-fs-btn{right:14px;top:14px;width:42px;height:42px;font-size:18px;}
+.fp-viewer-wrap.fp-fs .fp-pz-ctrl{right:14px;bottom:26px;gap:10px;}
+.fp-viewer-wrap.fp-fs .fp-pz-ctrl button{width:46px;height:46px;font-size:24px;}
 .fp-pz-hint{position:absolute;left:50%;top:9px;transform:translateX(-50%);z-index:8;background:rgba(18,18,18,.74);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;animation:fpPzHint 4.2s ease forwards;}
 @keyframes fpPzHint{0%,72%{opacity:1}100%{opacity:0}}
 .fp-vw-el-shape{transition:opacity .2s;}
@@ -10554,11 +10561,19 @@ function _bkAttachPanZoom(svgEl){
       +'<button type="button" data-z="reset" aria-label="Reset zoom">↻</button>';
     var _zLast=0;
     var _doZoom=function(b){ if(!b) return; var t=Date.now(); if(t-_zLast<300) return; _zLast=t; var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.5); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.5); else { st.s=1; st.tx=0; st.ty=0; apply(); } };
-    ctrl.addEventListener('pointerup', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
-    ctrl.addEventListener('touchend', function(e){ var tg=e.target, b=(tg&&tg.closest)?tg.closest('button'):null; if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); }, {passive:false});
-    ctrl.addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
+    var _btn=function(e){ var tg=e.target; return (tg&&tg.closest)?tg.closest('button'):null; };
+    ctrl.addEventListener('touchstart', function(e){ var b=_btn(e); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); }, {passive:false});
+    ctrl.addEventListener('click', function(e){ var b=_btn(e); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
     ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
     wrap.appendChild(ctrl);
+    // ── Fullscreen toggle: fills the whole screen so tables/numbers are big & clear ──
+    var fsb=document.createElement('button'); fsb.type='button'; fsb.className='fp-fs-btn'; fsb.setAttribute('aria-label','Fullscreen map'); fsb.innerHTML='⛶';
+    var _fsLast=0;
+    var _toggleFs=function(){ var t=Date.now(); if(t-_fsLast<350) return; _fsLast=t; var on=wrap.classList.toggle('fp-fs'); fsb.innerHTML=on?'✕':'⛶'; try{ document.body.style.overflow=on?'hidden':''; }catch(_){} st.s=1; st.tx=0; st.ty=0; setTimeout(apply,60); };
+    fsb.addEventListener('touchstart', function(e){ e.preventDefault(); e.stopPropagation(); _toggleFs(); }, {passive:false});
+    fsb.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); _toggleFs(); });
+    fsb.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+    wrap.appendChild(fsb);
   }
   var _hintShown=true; // zoom hint removed — +/− buttons are self-explanatory
   if(false){
