@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782225400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782229000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9791,6 +9791,25 @@ function _fpSofaSvg(el){
     +'<rect x="'+(x+w-arm).toFixed(1)+'" y="'+(y+back*0.4).toFixed(1)+'" width="'+arm.toFixed(1)+'" height="'+(h-back*0.4).toFixed(1)+'" rx="4" fill="#6b7280"/>'
     +'</g>';
 }
+/* Auto-contrast text colour (black/white) for a zone pill */
+function _fpTextOn(hex){
+  const h=String(hex||'').replace('#',''); if(h.length<6) return '#fff';
+  const r=parseInt(h.substr(0,2),16), g=parseInt(h.substr(2,2),16), b=parseInt(h.substr(4,2),16);
+  return (0.299*r+0.587*g+0.114*b) > 150 ? '#1a1a1a' : '#fff';
+}
+/* Colored zone label under a table (e.g. VIP / Garden). Name escaped, colour hex-validated (no injection). */
+function _fpZoneLabel(el){
+  const name=String(el && el.zone || '').trim();
+  if(!name || !el.w || !el.h) return '';
+  const col=/^#[0-9a-fA-F]{6}$/.test(el.zoneColor) ? el.zoneColor : '#888';
+  const cx=el.x+el.w/2, ly=el.y+el.h+4, fs=9, ph=13;
+  const pw=Math.max(22, name.length*fs*0.62 + 12);
+  const txt=_fpTextOn(col);
+  return '<g class="fp-vw-zone" pointer-events="none">'
+    +'<rect x="'+(cx-pw/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" width="'+pw.toFixed(1)+'" height="'+ph+'" rx="'+(ph/2)+'" fill="'+col+'" opacity="0.93"/>'
+    +'<text x="'+cx.toFixed(1)+'" y="'+(ly+ph/2+0.5).toFixed(1)+'" text-anchor="middle" dominant-baseline="central" font-size="'+fs+'" font-weight="700" fill="'+txt+'">'+_fpEsc(name)+'</text>'
+    +'</g>';
+}
 function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId, walkInTableIds, tooSmallIds){
   if(!plan || !plan.elements || !plan.elements.length) return null;
   const W = plan.width  || 1000;
@@ -9959,6 +9978,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     if(_numStr.length){ var _estW = _numStr.length * _tnumFs * 0.58; if(_estW > _availW) _tnumFs = Math.max(10, Math.floor(_availW / (_numStr.length * 0.58))); }
     const _numY = isVip ? (cy + el.h*0.16) : cy;
     svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${_fpChairs(el, +(t.maxSeats||t.seats||0))}${shape}<text class="fp-vw-tnum" x="${cx}" y="${_numY}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
+    svgInner += _fpZoneLabel(el);
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
