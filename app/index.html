@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782236400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782237600 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -16101,6 +16101,8 @@ function _bkScrollBody(){ return document.querySelector('#mCustBooking .bk-modal
 function bkScrollMore(){ var b=_bkScrollBody(); if(b) b.scrollBy({top:Math.round(b.clientHeight*0.7),behavior:'smooth'}); }
 function _bkUpdateScrollHint(){ var b=_bkScrollBody(),h=document.getElementById('bkScrollHint'); if(!b||!h) return; var more=(b.scrollHeight-b.scrollTop-b.clientHeight)>24; h.classList.toggle('show',more); }
 function _bkEnsureScrollHint(){
+  try{ var _oldHint=document.getElementById('bkScrollHint'); if(_oldHint) _oldHint.remove(); }catch(_){}
+  return; // gold-circle scroll hint disabled — replaced by #bkScrollCue (text + double chevron)
   var shell=document.querySelector('#mCustBooking .bkm-shell'), b=_bkScrollBody(); if(!shell||!b) return;
   if(!document.getElementById('bkScrollHint')){
     var h=document.createElement('button'); h.id='bkScrollHint'; h.className='bk-scroll-hint'; h.type='button';
