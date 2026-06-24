@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782289800 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782293400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2276,6 +2276,14 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
   #mCustBooking .bkm-shell{max-width:760px;}
   #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:74vh;}
 }
+/* [fullscreen-mobile] booking fills the screen on phones; stays a centered card on tablet/desktop */
+@media(max-width:767px){
+  #mCustBooking.modal-ov{padding:0;align-items:stretch;overflow:hidden;}
+  #mCustBooking .bkm-shell{max-width:100%;width:100%;max-height:100vh;height:100vh;height:100dvh;border-radius:0;border-left:none;border-right:none;}
+  #mCustBooking .bk-modal-body{max-height:none;flex:1;}
+}
+/* lock the page behind an open booking modal so the background can't scroll/touch (iOS-safe) */
+body.modal-locked{position:fixed;left:0;right:0;width:100%;overflow:hidden;}
 .bkm-progress{
   height:3px;
   background:rgba(255,255,255,.04);
@@ -2461,6 +2469,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bks-sect.bk-guide-now .bk-coach{opacity:1;visibility:visible;animation:bkCoachBob 1.5s ease-in-out infinite;}
 @keyframes bkCoachBob{0%,100%{transform:translateY(-100%);}50%{transform:translateY(calc(-100% - 4px));}}
 .bks-sect.bk-guide-now .bk-date-grid,.bks-sect.bk-guide-now .bk-slot-grid{border-radius:11px;box-shadow:0 0 0 1.5px rgba(200,151,58,.6),0 4px 18px rgba(200,151,58,.14);}
+.bk-flabel{display:block;font-size:11px;font-weight:700;color:var(--bks-acc);opacity:.92;margin:12px 0 5px 2px;letter-spacing:.3px;}
+.bk-flabel .bk-req{color:#e0556b;font-weight:800;}
+.bk-flabel .bk-opt{color:#9a9a9a;font-weight:600;font-size:10px;text-transform:lowercase;}
 .bk-party{display:flex;align-items:center;justify-content:center;gap:18px;padding:24px 0;}
 .bk-party-btn{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:22px;cursor:pointer;transition:all .2s;font-weight:300;}
 .bk-party-btn:hover{background:rgba(200,151,58,.12);border-color:#c8973a;transform:scale(1.08);}
@@ -5633,6 +5644,10 @@ const LP_TRANSLATIONS = {
     bk_contact_sub:'You can check your booking status using your phone or code.',
     bk_name:'Full name',
     bk_name_ph:'e.g. Sengphet Vongsa',
+    bk_name_lbl:'Name',
+    bk_phone_lbl:'Phone',
+    bk_note_lbl:'Comment',
+    bk_optional:'optional',
     bk_phone:'Phone number',
     bk_phone_ph:'e.g. 020 5555 1234',
     bk_note:'Special request (optional)',
@@ -5818,6 +5833,10 @@ const LP_TRANSLATIONS = {
     bk_contact_sub:'ທ່ານສາມາດກວດສະຖານະການຈອງໄດ້ໂດຍໃຊ້ເບີໂທ ຫຼື ລະຫັດ.',
     bk_name:'ຊື່ເຕັມ',
     bk_name_ph:'ຕົວຢ່າງ ແສງເພັດ ວົງສາ',
+    bk_name_lbl:'ຊື່',
+    bk_phone_lbl:'ເບີໂທ',
+    bk_note_lbl:'ໝາຍເຫດ',
+    bk_optional:'ບໍ່ບັງຄັບ',
     bk_phone:'ເບີໂທລະສັບ',
     bk_phone_ph:'ຕົວຢ່າງ 020 5555 1234',
     bk_note:'ຄໍາຮ້ອງຂໍພິເສດ (ບໍ່ບັງຄັບ)',
@@ -6003,6 +6022,10 @@ const LP_TRANSLATIONS = {
     bk_contact_sub:'คุณสามารถตรวจสอบสถานะการจองได้โดยใช้เบอร์โทรหรือรหัส',
     bk_name:'ชื่อ-นามสกุล',
     bk_name_ph:'เช่น แสงเพชร วงศ์สา',
+    bk_name_lbl:'ชื่อ',
+    bk_phone_lbl:'เบอร์โทร',
+    bk_note_lbl:'หมายเหตุ',
+    bk_optional:'ไม่บังคับ',
     bk_phone:'เบอร์โทรศัพท์',
     bk_phone_ph:'เช่น 020 5555 1234',
     bk_note:'คำขอพิเศษ (ไม่บังคับ)',
@@ -6188,6 +6211,10 @@ const LP_TRANSLATIONS = {
     bk_contact_sub:'您可以使用电话号码或预订码查询状态。',
     bk_name:'姓名',
     bk_name_ph:'例如：王小明',
+    bk_name_lbl:'姓名',
+    bk_phone_lbl:'电话',
+    bk_note_lbl:'备注',
+    bk_optional:'选填',
     bk_phone:'电话号码',
     bk_phone_ph:'例如：020 5555 1234',
     bk_note:'特殊要求（选填）',
@@ -6373,6 +6400,10 @@ const LP_TRANSLATIONS = {
     bk_contact_sub:'전화번호 또는 예약 코드로 상태를 확인할 수 있습니다.',
     bk_name:'성함',
     bk_name_ph:'예: 김민수',
+    bk_name_lbl:'이름',
+    bk_phone_lbl:'전화',
+    bk_note_lbl:'메모',
+    bk_optional:'선택',
     bk_phone:'전화번호',
     bk_phone_ph:'예: 020 5555 1234',
     bk_note:'특별 요청사항 (선택)',
@@ -8454,6 +8485,9 @@ function bkInitScrollHint(){
   }
   setTimeout(bkUpdateScrollHint,60); setTimeout(bkUpdateScrollHint,320);
 }
+function _bkLockBg(){ try{ if(document.body.classList.contains('modal-locked')) return; window._bkScrollY=window.scrollY||window.pageYOffset||0; document.body.style.top=(-window._bkScrollY)+'px'; document.body.classList.add('modal-locked'); }catch(_){} }
+function _bkUnlockBg(){ try{ if(!document.body.classList.contains('modal-locked')) return; document.body.classList.remove('modal-locked'); document.body.style.top=''; window.scrollTo(0, window._bkScrollY||0); }catch(_){} }
+function _bkEnsureScrollObs(){ try{ if(window._bkScrollObs||typeof MutationObserver==='undefined') return; var ids=['mCustBooking','mCustBookingStatus']; var obs=new MutationObserver(function(){ var anyOpen=ids.some(function(id){ var e=document.getElementById(id); return e&&e.classList.contains('open'); }); if(anyOpen) _bkLockBg(); else _bkUnlockBg(); }); ids.forEach(function(id){ var e=document.getElementById(id); if(e) obs.observe(e,{attributes:true,attributeFilter:['class']}); }); window._bkScrollObs=obs; }catch(_){} }
 function openCustBookingModal(){
   // v5.4: Release any stale lock from a previous abandoned session
   if(typeof bkReleaseLock === 'function') bkReleaseLock();
@@ -8467,6 +8501,7 @@ function openCustBookingModal(){
   document.getElementById('bkPhone').value='';
   document.getElementById('bkNote').value='';
   openModal('mCustBooking');
+  _bkEnsureScrollObs(); _bkLockBg();
   // Re-apply current LP language to the freshly visible modal
   const curLang = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
@@ -8482,6 +8517,7 @@ function bkOpenForResto(rid, name){
   var pn=document.getElementById('bkPartyNum'); if(pn) pn.textContent='2';
   ['bkName','bkPhone','bkNote'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   if(typeof openModal==='function') openModal('mCustBooking');
+  _bkEnsureScrollObs(); _bkLockBg();
   var curLang=(typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang'))||'lo';
   if(typeof applyLpTranslation==='function' && curLang!=='en') applyLpTranslation(curLang);
   bkEnterBook(rid);
@@ -8626,17 +8662,22 @@ function buildBkDateGrid(){
 function _bkUpdateGuide(){
   try{
     var S=(typeof bkState!=='undefined'&&bkState)?bkState:{};
-    var hasDate=!!S.date, hasTime=!!S.slot;
-    var needTable=!!(S.tables&&S.tables.length);
-    var hasTable=needTable ? !!S.tableId : hasTime;   // nothing to pick -> done once time is set
+    var dg=document.getElementById('bkDateGrid'), sg=document.getElementById('bkSlotGrid'), tg=document.getElementById('bkTableGrid');
+    // Read straight from what is selected on screen (most reliable), fall back to state.
+    var hasDate=!!(dg&&dg.querySelector('.bk-date-card.sel')) || !!S.date;
+    var hasTime=!!(sg&&sg.querySelector('.bk-slot.sel'))     || !!S.slot;
+    var tableOpts=!!(tg&&tg.querySelector('.fp-vw-table'));
+    var tableSel =!!(tg&&tg.querySelector('.fp-vw-table.selected')) || !!S.tableId;
+    var needTable=tableOpts;
+    var hasTable=needTable ? tableSel : hasTime;   // no tables to pick -> done once time is set
     var nm=((document.getElementById('bkName')||{}).value||'').trim();
     var ph=((document.getElementById('bkPhone')||{}).value||'').trim();
     var hasInfo=nm.length>0 && ph.length>0;
     function _g(id,active,done){var e=document.getElementById(id);if(!e)return;e.classList.toggle('bk-guide-now',!!active);e.classList.toggle('bk-step-done',!!done);}
-    _g('bkSectDate',   !hasDate,                         hasDate);
-    _g('bkSectTime',   hasDate&&!hasTime,                hasTime);
-    _g('bkSectTable',  hasTime&&needTable&&!S.tableId,   hasTable);
-    _g('bkSectDetails',hasTable&&!hasInfo,               hasInfo);
+    _g('bkSectDate',   !hasDate,                       hasDate);
+    _g('bkSectTime',   hasDate&&!hasTime,              hasTime);
+    _g('bkSectTable',  hasTime&&needTable&&!tableSel, hasTable);
+    _g('bkSectDetails',hasTable&&!hasInfo,            hasInfo);
   }catch(_){}
 }
 
@@ -8833,7 +8874,14 @@ function bkShowView(view){
   var bar=document.getElementById('bkProgressBar'); if(bar) bar.style.width=(view==='success')?'100%':(view==='book'?'66%':'12%');
   var body=document.querySelector('#mCustBooking .bk-modal-body'); if(body) body.scrollTop=0;
   if(typeof _bkScrollCueInit==='function'){ _bkScrollCueInit(); setTimeout(_bkScrollCueUpdate,150); setTimeout(_bkScrollCueUpdate,650); }
-  if(view==='book' && typeof _bkUpdateGuide==='function') _bkUpdateGuide();
+  if(view==='book'){
+    if(typeof _bkUpdateGuide==='function') _bkUpdateGuide();
+    var _mb=document.querySelector('#mCustBooking .bk-modal-body');
+    if(_mb && !_mb._bkGuideWired){ _mb._bkGuideWired=true;
+      var _sync=function(){ if(typeof _bkUpdateGuide==='function') setTimeout(_bkUpdateGuide,40); };
+      _mb.addEventListener('click',_sync); _mb.addEventListener('input',_sync);
+    }
+  }
 }
 async function bkEnterBook(id){
   bkState.date=null; bkState.slot=null; bkState.tableId=null; bkState.tableNum=null; bkState.tableZone=null; bkState.hours=null; bkState.tables=[];
@@ -10556,10 +10604,13 @@ function _bkAttachPanZoom(svgEl){
       +'<button type="button" data-z="reset" aria-label="Reset zoom">↻</button>';
     var _zLast=0;
     var _doZoom=function(b){ if(!b) return; var t=Date.now(); if(t-_zLast<300) return; _zLast=t; var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.5); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.5); else { st.s=1; st.tx=0; st.ty=0; apply(); } };
-    var _btn=function(e){ var tg=e.target; return (tg&&tg.closest)?tg.closest('button'):null; };
-    ctrl.addEventListener('touchstart', function(e){ var b=_btn(e); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); }, {passive:false});
-    ctrl.addEventListener('click', function(e){ var b=_btn(e); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
+    Array.prototype.forEach.call(ctrl.querySelectorAll('button'), function(b){
+      var fire=function(e){ e.preventDefault(); e.stopPropagation(); _doZoom(b); };
+      b.addEventListener('click', fire);
+      b.addEventListener('touchstart', fire, {passive:false});
+    });
     ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+    ctrl.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:false});
     wrap.appendChild(ctrl);
     // ── Fullscreen toggle: fills the whole screen so tables/numbers are big & clear ──
     var fsb=document.createElement('button'); fsb.type='button'; fsb.className='fp-fs-btn'; fsb.setAttribute('aria-label','Fullscreen map'); fsb.innerHTML='⛶';
@@ -11294,6 +11345,7 @@ if(typeof escapeHtml!=='function'){
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-dow,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-mo,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-step-of,
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-flabel,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-hint{color:rgba(74,23,48,.62)}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-back,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-x,
@@ -11443,8 +11495,11 @@ if(typeof escapeHtml!=='function'){
         <div class="bks-sect" id="bkSectDetails">
           <span class="bk-rdot">4</span>
           <div class="bks-sect-h"><span class="bks-i">✎</span> <span data-lp="bk_contact">Your details</span></div>
+          <label class="bk-flabel"><span data-lp="bk_name_lbl">Name</span> <b class="bk-req">*</b></label>
           <input type="text" id="bkName" class="bk-input" oninput="if(typeof _bkUpdateGuide==='function')_bkUpdateGuide()" placeholder="e.g. Sengphet Vongsa" data-lp-ph="bk_name_ph" autocomplete="name">
+          <label class="bk-flabel"><span data-lp="bk_phone_lbl">Phone</span> <b class="bk-req">*</b></label>
           <input type="tel" id="bkPhone" class="bk-input" oninput="if(typeof _bkUpdateGuide==='function')_bkUpdateGuide()" placeholder="e.g. 020 5555 1234" data-lp-ph="bk_phone_ph" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]*" style="margin-top:9px">
+          <label class="bk-flabel"><span data-lp="bk_note_lbl">Comment</span> <span class="bk-opt" data-lp="bk_optional">optional</span></label>
           <textarea id="bkNote" class="bk-input" rows="2" placeholder="Birthday, allergies, seating preferences…" data-lp-ph="bk_note_ph" style="resize:vertical;min-height:54px;margin-top:9px"></textarea>
         </div>
         </div><!-- /bk-rail -->
@@ -11825,5 +11880,6 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
+<div id="elBuildBadge" style="position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782293400</div>
 </body>
 </html>
