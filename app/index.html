@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782225400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782230400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2698,6 +2698,13 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-floor-pick{display:flex;align-items:center;gap:5px;font-size:12px;color:#bbb;flex-shrink:0;margin-left:6px;}
 .fp-floor-pick select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#eee;border-radius:6px;padding:4px 6px;font-size:12px;cursor:pointer;}
 .fp-floor-pick select:focus{outline:none;border-color:#c8973a;}
+.fp-fill-out{flex-shrink:0;margin-left:6px;background:rgba(39,174,96,.14);border:1px solid rgba(39,174,96,.45);color:#7bd88f;border-radius:7px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s;}
+.fp-fill-out:hover{background:rgba(39,174,96,.24);}
+.fp-zone-colors{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.fp-zsw{width:19px;height:19px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.22);box-sizing:border-box;transition:transform .1s,border-color .1s;}
+.fp-zsw:hover{transform:scale(1.18);border-color:#fff;}
+#fpPropZone{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#eee;border-radius:6px;padding:6px 8px;font-size:12px;box-sizing:border-box;}
+#fpPropZone:focus{outline:none;border-color:#c8973a;}
 .fp-areas-tabs{display:flex;gap:6px;flex:1;min-width:0;}
 .fp-area-tab{position:relative;display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;letter-spacing:.2px;}
 .fp-area-tab:hover{background:rgba(255,255,255,.07);color:#fff;}
@@ -4950,6 +4957,8 @@ const STAFF_T={
     fp_floor_grass:'Grass',
     fp_plant:'Plant',
     fp_sofa:'Sofa',
+    fp_zone:'Zone',
+    fp_fill_outside:'⤵ Fill outside',
     fp_wall_line:'Line',
     fp_floor:'Floor:',
     // v6.6: Multi-area editor
@@ -5149,6 +5158,8 @@ const STAFF_T={
     fp_floor_grass:'ຫຍ້າ',
     fp_plant:'ຕົ້ນໄມ້',
     fp_sofa:'ໂຊຟາ',
+    fp_zone:'ໂຊນ',
+    fp_fill_outside:'⤵ ຕື່ມຂ້າງນອກ',
     fp_wall_line:'ເສັ້ນ',
     fp_floor:'ພື້ນ:',
     // v6.6: Multi-area editor
@@ -5343,6 +5354,8 @@ const STAFF_T={
     fp_floor_grass:'หญ้า',
     fp_plant:'ต้นไม้',
     fp_sofa:'โซฟา',
+    fp_zone:'โซน',
+    fp_fill_outside:'⤵ เติมด้านนอก',
     fp_wall_line:'เส้น',
     fp_floor:'พื้น:',
     // v6.6: Multi-area editor
@@ -5537,6 +5550,8 @@ const STAFF_T={
     fp_floor_grass:'草地',
     fp_plant:'植物',
     fp_sofa:'沙发',
+    fp_zone:'区域',
+    fp_fill_outside:'⤵ 填充外部',
     fp_wall_line:'线条',
     fp_floor:'地板:',
     // v6.6: Multi-area editor
@@ -5747,6 +5762,8 @@ const STAFF_T={
     fp_floor_grass:'잔디',
     fp_plant:'식물',
     fp_sofa:'소파',
+    fp_zone:'구역',
+    fp_fill_outside:'⤵ 외부 채우기',
     fp_wall_line:'선',
     fp_floor:'바닥:',
     // v6.6: Multi-area editor
@@ -13905,6 +13922,78 @@ function fpSetFloorMat(which, value){
   fpRenderAll();
 }
 
+/* One-tap "Fill outside": auto-fill the area around the building (outside its bounding edge) with the outside floor. Toggles on/off. */
+function fpFillOutside(){
+  if(!fpState.plan) return;
+  const hadAuto = fpState.plan.elements.some(e => e._autoOut);
+  // always clear previous auto strips first (so re-run replaces, not stacks)
+  fpState.plan.elements = fpState.plan.elements.filter(e => !e._autoOut);
+  if(hadAuto){ fpMarkDirty(); fpRenderAll(); fpSetStatus('Removed outside fill'); return; }
+  // building bounding box from everything except outside regions
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity, any=false;
+  fpState.plan.elements.forEach(e => {
+    if(e.kind === 'outside') return;
+    any = true;
+    if(e.kind === 'wall-line'){
+      minX=Math.min(minX,e.x1,e.x2); maxX=Math.max(maxX,e.x1,e.x2);
+      minY=Math.min(minY,e.y1,e.y2); maxY=Math.max(maxY,e.y1,e.y2);
+    } else {
+      minX=Math.min(minX,e.x); maxX=Math.max(maxX,e.x+(e.w||0));
+      minY=Math.min(minY,e.y); maxY=Math.max(maxY,e.y+(e.h||0));
+    }
+  });
+  if(!any){ fpSetStatus('Add walls or tables first'); return; }
+  const W=_fpW(), H=_fpH();
+  minX=Math.max(0,Math.round(minX)); minY=Math.max(0,Math.round(minY));
+  maxX=Math.min(W,Math.round(maxX)); maxY=Math.min(H,Math.round(maxY));
+  const strips=[
+    {x:0,    y:0,    w:W,      h:minY},        // top
+    {x:0,    y:maxY, w:W,      h:H-maxY},      // bottom
+    {x:0,    y:minY, w:minX,   h:maxY-minY},   // left
+    {x:maxX, y:minY, w:W-maxX, h:maxY-minY}    // right
+  ];
+  strips.forEach(s => {
+    if(s.w>2 && s.h>2){
+      fpState.plan.elements.unshift({ id:_fpId(), kind:'outside', x:s.x, y:s.y, w:s.w, h:s.h, _autoOut:true });
+    }
+  });
+  // make sure an outside material is set so the fill is visible
+  if(!fpState.plan.floorOut){ fpState.plan.floorOut='grass'; const fo=document.getElementById('fpFloorOut'); if(fo) fo.value='grass'; }
+  fpMarkDirty();
+  fpRenderAll();
+  fpSetStatus('Filled outside area');
+}
+
+/* Table sub-zone (VIP / Garden / Bar...) — colored label under the table. Availability colour stays. */
+function fpSetZone(name){
+  if(!fpState.selectedId) return;
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el) return;
+  el.zone = String(name||'').slice(0,14);
+  if(el.zone){
+    // inherit colour of an existing same-named zone for consistency
+    const match = fpState.plan.elements.find(x => x!==el && x.zone && x.zoneColor && String(x.zone).toLowerCase()===String(el.zone).toLowerCase());
+    if(match) el.zoneColor = match.zoneColor;
+    else if(!el.zoneColor) el.zoneColor = '#c8973a';
+  } else { el.zoneColor = undefined; }
+  fpMarkDirty();
+  fpRenderAll();
+}
+function fpSetZoneColor(color){
+  if(!fpState.selectedId) return;
+  if(!/^#[0-9a-fA-F]{6}$/.test(color)) return;   // hex only — no injection
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el) return;
+  if(!el.zone) el.zone = 'Zone';
+  el.zoneColor = color;
+  // keep zone consistent: every table with the same zone name gets this colour
+  const zl = String(el.zone).toLowerCase();
+  fpState.plan.elements.forEach(x => { if(x.zone && String(x.zone).toLowerCase()===zl) x.zoneColor = color; });
+  fpMarkDirty();
+  fpRenderAll();
+  fpRenderProps();
+}
+
 async function fpOpen(restoId){
   fpState.restoId = restoId;
   fpState.selectedId = null;
@@ -14248,6 +14337,13 @@ function fpElToSvg(el){
     fill = 'url(#fpVipGradEditor)';
     stroke = '#f5c976';
   }
+  // Zone colours the table in the editor so zones are visible at a glance (number stays readable)
+  let _znTxt = '';
+  if(isTable && el.zone && /^#[0-9a-fA-F]{6}$/.test(el.zoneColor)){
+    fill = el.zoneColor;
+    stroke = el.zoneColor;
+    _znTxt = _fpTextOn(el.zoneColor);
+  }
   if(el.kind === 'curve'){
     // Half-ellipse (flat top edge, bulges down) — curved stage / divider. Rotate to orient.
     shape = `<path class="fp-el-shape" d="M ${el.x} ${el.y} L ${el.x+el.w} ${el.y} A ${el.w/2} ${el.h} 0 0 1 ${el.x} ${el.y} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
@@ -14265,7 +14361,7 @@ function fpElToSvg(el){
   // Label / table number
   let textEl = '';
   if(isTable){
-    if(tableNum) textEl = `<text class="fp-el-tnum" x="${cx}" y="${cy}">${_fpEsc(tableNum)}</text>`;
+    if(tableNum) textEl = `<text class="fp-el-tnum" x="${cx}" y="${cy}"${_znTxt?` fill="${_znTxt}"`:''}>${_fpEsc(tableNum)}</text>`;
   } else if(el.kind !== 'wall-block' && el.kind !== 'wall-line') {
     const lbl = el.label || FP_DEFAULT_LABELS[el.kind] || '';
     if(lbl) textEl = `<text class="fp-el-label" x="${cx}" y="${cy}">${_fpEsc(lbl)}</text>`;
@@ -14279,7 +14375,7 @@ function fpElToSvg(el){
   }
   const _rot = +el.rot || 0;
   const _tf = _rot ? ` transform="rotate(${_rot} ${cx} ${cy})"` : '';
-  return `<g class="${cls}" data-elid="${el.id}"${_tf}>${chairs}${shape}${textEl}${vipBadge}</g>`;
+  return `<g class="${cls}" data-elid="${el.id}"${_tf}>${chairs}${shape}${textEl}${vipBadge}</g>` + (isTable ? _fpZoneLabel(el) : '');
 }
 
 function _fpFixedFill(kind){
@@ -14458,6 +14554,16 @@ function fpRenderProps(){
       const tv = document.getElementById('fpPropThickVal'); if(tv) tv.textContent = th;
     } else {
       thickRow.style.display = 'none';
+    }
+  }
+  // Zone label — only for tables (custom sub-zone: VIP / Garden / Bar...)
+  const zoneRow = document.getElementById('fpPropZoneRow');
+  if(zoneRow){
+    const isTbl = el.kind && el.kind.indexOf('table') === 0;
+    zoneRow.style.display = isTbl ? '' : 'none';
+    if(isTbl){
+      const zi = document.getElementById('fpPropZone');
+      if(zi && document.activeElement !== zi) zi.value = el.zone || '';
     }
   }
 }
@@ -14937,6 +15043,25 @@ function _fpSofaSvg(el){
     +'<rect x="'+(x+w-arm).toFixed(1)+'" y="'+(y+back*0.4).toFixed(1)+'" width="'+arm.toFixed(1)+'" height="'+(h-back*0.4).toFixed(1)+'" rx="4" fill="#6b7280"/>'
     +'</g>';
 }
+/* Auto-contrast text colour (black/white) for a zone pill */
+function _fpTextOn(hex){
+  const h=String(hex||'').replace('#',''); if(h.length<6) return '#fff';
+  const r=parseInt(h.substr(0,2),16), g=parseInt(h.substr(2,2),16), b=parseInt(h.substr(4,2),16);
+  return (0.299*r+0.587*g+0.114*b) > 150 ? '#1a1a1a' : '#fff';
+}
+/* Colored zone label under a table (e.g. VIP / Garden). Name escaped, colour hex-validated (no injection). */
+function _fpZoneLabel(el){
+  const name=String(el && el.zone || '').trim();
+  if(!name || !el.w || !el.h) return '';
+  const col=/^#[0-9a-fA-F]{6}$/.test(el.zoneColor) ? el.zoneColor : '#888';
+  const cx=el.x+el.w/2, ly=el.y+el.h+4, fs=9, ph=13;
+  const pw=Math.max(22, name.length*fs*0.62 + 12);
+  const txt=_fpTextOn(col);
+  return '<g class="fp-vw-zone" pointer-events="none">'
+    +'<rect x="'+(cx-pw/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" width="'+pw.toFixed(1)+'" height="'+ph+'" rx="'+(ph/2)+'" fill="'+col+'" opacity="0.93"/>'
+    +'<text x="'+cx.toFixed(1)+'" y="'+(ly+ph/2+0.5).toFixed(1)+'" text-anchor="middle" dominant-baseline="central" font-size="'+fs+'" font-weight="700" fill="'+txt+'">'+_fpEsc(name)+'</text>'
+    +'</g>';
+}
 function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, selectedTableId, walkInTableIds, tooSmallIds){
   if(!plan || !plan.elements || !plan.elements.length) return null;
   const W = plan.width  || 1000;
@@ -15105,6 +15230,7 @@ function fpRenderCustomerView(plan, tables, bookedTableIds, lockedTableIds, sele
     if(_numStr.length){ var _estW = _numStr.length * _tnumFs * 0.58; if(_estW > _availW) _tnumFs = Math.max(10, Math.floor(_availW / (_numStr.length * 0.58))); }
     const _numY = isVip ? (cy + el.h*0.16) : cy;
     svgInner += `<g class="${groupCls}" data-tid="${_fpEsc(el.tableId)}"${_tfT}>${hitArea}${_fpChairs(el, +(t.maxSeats||t.seats||0))}${shape}<text class="fp-vw-tnum" x="${cx}" y="${_numY}" style="font-size:${_tnumFs}px">${_fpEsc(num)}</text>${vipBadge}${walkInBadge}</g>`;
+    svgInner += _fpZoneLabel(el);
   });
   return `<svg class="fp-viewer-svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${svgInner}</svg>`;
 }
@@ -17356,6 +17482,7 @@ async function cleanupOldBookings(opts){
           <option value="stone" data-ts="fp_floor_stone">Stone</option>
           <option value="grass" data-ts="fp_floor_grass">Grass</option>
         </select>
+        <button class="fp-fill-out" type="button" onclick="fpFillOutside()" data-ts="fp_fill_outside" title="One-tap: fill the area around your building with the outside floor. Tap again to remove.">⤵ Fill outside</button>
       </div>
     </div>
     <!-- Body: 3-column layout -->
@@ -17515,6 +17642,20 @@ async function cleanupOldBookings(opts){
             <label data-ts="fp_wall_thick">Wall thickness</label>
             <input aria-label="Wall thickness" type="range" id="fpPropThick" min="3" max="50" step="1" oninput="fpPropChange('thickness', parseInt(this.value)||6)" style="padding:0;cursor:pointer">
             <div style="text-align:right;font-size:11px;color:#c8973a;margin-top:2px"><span id="fpPropThickVal">6</span>px</div>
+          </div>
+          <div class="fp-props-row" id="fpPropZoneRow" style="display:none">
+            <label data-ts="fp_zone">Zone</label>
+            <input type="text" id="fpPropZone" placeholder="VIP, Garden, Bar…" maxlength="14" oninput="fpSetZone(this.value)">
+            <div class="fp-zone-colors" id="fpZoneColors">
+              <span class="fp-zsw" style="background:#c0392b" onclick="fpSetZoneColor('#c0392b')" title="Red"></span>
+              <span class="fp-zsw" style="background:#e67e22" onclick="fpSetZoneColor('#e67e22')" title="Orange"></span>
+              <span class="fp-zsw" style="background:#c8973a" onclick="fpSetZoneColor('#c8973a')" title="Gold"></span>
+              <span class="fp-zsw" style="background:#27ae60" onclick="fpSetZoneColor('#27ae60')" title="Green"></span>
+              <span class="fp-zsw" style="background:#16a085" onclick="fpSetZoneColor('#16a085')" title="Teal"></span>
+              <span class="fp-zsw" style="background:#2980b9" onclick="fpSetZoneColor('#2980b9')" title="Blue"></span>
+              <span class="fp-zsw" style="background:#8e44ad" onclick="fpSetZoneColor('#8e44ad')" title="Purple"></span>
+              <span class="fp-zsw" style="background:#d6336c" onclick="fpSetZoneColor('#d6336c')" title="Pink"></span>
+            </div>
           </div>
           <button class="btn btn-sm btn-red" style="width:100%;margin-top:10px" onclick="fpDeleteSelected()" data-ts="fp_delete">🗑 Delete</button>
         </div>
