@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782237600 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782241200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2271,14 +2271,14 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bk-table-grid.fp-mode .fp-viewer-svg{
   width:100%;
   height:auto;
-  max-height:52vh;
+  max-height:64vh;
   display:block;
   margin:0 auto;
 }
 /* [map-fit] desktop: use the bigger screen — wider booking modal + taller map */
 @media(min-width:1024px){
   #mCustBooking .bkm-shell{max-width:760px;}
-  #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:62vh;}
+  #mCustBooking .bk-table-grid.fp-mode .fp-viewer-svg{max-height:70vh;}
 }
 .bkm-progress{
   height:3px;
@@ -2785,7 +2785,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-pz-wrap:active{cursor:grabbing;}
 .fp-pz-wrap .fp-viewer-svg{transform-origin:0 0;will-change:transform;transition:transform .18s ease;}
 .fp-pz-ctrl{position:absolute;right:9px;bottom:9px;display:flex;flex-direction:column;gap:6px;z-index:8;}
-.fp-pz-ctrl button{width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(18,18,18,.74);color:#fff;font-size:18px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.fp-pz-ctrl button{width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(18,18,18,.74);color:#fff;font-size:18px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .fp-pz-ctrl button:active{background:rgba(64,64,64,.9);}
 .fp-pz-hint{position:absolute;left:50%;top:9px;transform:translateX(-50%);z-index:8;background:rgba(18,18,18,.74);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;animation:fpPzHint 4.2s ease forwards;}
 @keyframes fpPzHint{0%,72%{opacity:1}100%{opacity:0}}
@@ -2839,14 +2839,14 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
 .fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:800;}
 .fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:24px;font-weight:700;fill:rgba(255,255,255,.92);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:0;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;stroke-linejoin:round;}
-.fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);}
+.fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.85);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 16px;background:linear-gradient(180deg,rgba(30,26,20,.92),rgba(20,17,12,.92));border-radius:10px;border:1px solid rgba(200,151,58,.22);}
 .bk-free-top{display:flex;justify-content:center;margin:2px 0 12px;flex-shrink:0;}
-.bk-free-card{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(180deg,rgba(200,151,58,.11),rgba(200,151,58,.035));border:1px solid rgba(200,151,58,.30);border-radius:11px;padding:7px 16px;box-shadow:0 2px 10px rgba(0,0,0,.22);}
+.bk-free-card{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(180deg,rgba(30,26,20,.94),rgba(20,17,12,.94));border:1px solid rgba(200,151,58,.42);border-radius:11px;padding:8px 18px;box-shadow:0 4px 14px rgba(0,0,0,.30);}
 .bk-free-card .bk-free-dot{width:7px;height:7px;border-radius:50%;background:#c8973a;flex-shrink:0;box-shadow:0 0 7px rgba(200,151,58,.9);animation:bkFreePulse 2.2s ease-in-out infinite;}
 @keyframes bkFreePulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.78);}}
 .bk-free-card .bk-free-num{font-size:21px;font-weight:800;color:#e0b55a;line-height:1;}
 .bk-free-card .bk-free-lbl{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.6);}
-.bk-free-card.is-full{background:linear-gradient(180deg,rgba(220,53,69,.10),rgba(220,53,69,.035));border-color:rgba(220,53,69,.32);}
+.bk-free-card.is-full{background:linear-gradient(180deg,rgba(44,22,24,.94),rgba(28,14,16,.94));border-color:rgba(220,53,69,.48);}
 .bk-free-card.is-full .bk-free-dot{background:#dc3545;box-shadow:0 0 7px rgba(220,53,69,.8);animation:none;}
 .bk-free-card.is-full .bk-free-num{color:#e0686f;}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
@@ -13985,7 +13985,7 @@ function fpSetZone(name){
     const match = fpState.plan.elements.find(x => x!==el && x.zone && x.zoneColor && String(x.zone).toLowerCase()===String(el.zone).toLowerCase());
     if(match) el.zoneColor = match.zoneColor;
     else if(!el.zoneColor) el.zoneColor = '#c8973a';
-  } else { el.zoneColor = undefined; }
+  } else { delete el.zone; delete el.zoneColor; }
   fpMarkDirty();
   fpRenderAll();
 }
@@ -14683,7 +14683,10 @@ async function fpSave(){
       };
     });
     if(typeof loadFirebaseSDK==='function') await loadFirebaseSDK();
-    await fbSet('restaurants/'+fpState.restoId+'/floorPlans', out);
+    // Firebase rejects undefined values anywhere in the tree (e.g. an unset zoneColor)
+    // — JSON round-trip drops every undefined property so the save can't fail on it.
+    const _clean = JSON.parse(JSON.stringify(out));
+    await fbSet('restaurants/'+fpState.restoId+'/floorPlans', _clean);
     // Clean up legacy single-plan field once successfully migrated to floorPlans
     try { await fbSet('restaurants/'+fpState.restoId+'/floorPlan', null); } catch(e){}
     fpState.dirty = false;
@@ -15748,7 +15751,10 @@ function _bkAttachPanZoom(svgEl){
     ctrl.innerHTML='<button type="button" data-z="in" aria-label="Zoom in">+</button>'
       +'<button type="button" data-z="out" aria-label="Zoom out">−</button>'
       +'<button type="button" data-z="reset" aria-label="Reset zoom">↻</button>';
-    ctrl.addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); e.stopPropagation(); var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.5); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.5); else { st.s=1; st.tx=0; st.ty=0; apply(); } });
+    var _zLast=0;
+    var _doZoom=function(b){ if(!b) return; var t=Date.now(); if(t-_zLast<300) return; _zLast=t; var r=wrap.getBoundingClientRect(); if(b.dataset.z==='in') zoomAt(r.width/2,r.height/2,1.5); else if(b.dataset.z==='out') zoomAt(r.width/2,r.height/2,1/1.5); else { st.s=1; st.tx=0; st.ty=0; apply(); } };
+    ctrl.addEventListener('pointerup', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
+    ctrl.addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); e.stopPropagation(); _doZoom(b); });
     ctrl.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
     wrap.appendChild(ctrl);
   }
@@ -17898,7 +17904,7 @@ async function cleanupOldBookings(opts){
 #bkStepBook #bkDateGrid::-webkit-scrollbar{display:none}
 #bkStepBook .bk-date-card{flex:0 0 auto;min-width:56px}
 #bkStepBook .bk-date-card.sel,#bkStepBook .bk-slot.sel{background:var(--bks-acc)!important;border-color:var(--bks-acc)!important}
-#bkStepBook .bk-table-grid.fp-mode{border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:visible;background:#070707}
+#bkStepBook .bk-table-grid.fp-mode{border:none;border-radius:0;overflow:visible;background:transparent}
 #bkStepBook .bks-confirm{width:100%;background:var(--bks-acc);color:#1a1206;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s}
 #bkStepBook .bks-confirm:active{transform:translateY(1px)}
 #bkStepBook .bks-sect+.bks-sect{border-top:1px solid rgba(255,255,255,.06);padding-top:16px}
