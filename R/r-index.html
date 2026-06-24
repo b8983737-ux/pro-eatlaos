@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782313200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782316800 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2627,8 +2627,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .ow-tm-legend{display:flex;gap:18px;font-size:11.5px;color:var(--s-muted);font-family:var(--fb);letter-spacing:.4px;justify-content:center;padding-top:4px;border-top:1px solid var(--s-border);margin-top:2px;padding-top:10px;}
 .ow-tm-leg-i{display:inline-flex;align-items:center;gap:7px;}
 .ow-tm-dot{width:11px;height:11px;border-radius:3px;border:1.5px solid;display:inline-block;}
-.ow-tm-dot.ow-tm-free{background:#c8973a;border-color:#f5c976;}
-.ow-tm-dot.ow-tm-bk{background:rgba(220,53,69,.22);border-color:rgba(220,53,69,.5);}
+.ow-tm-dot.ow-tm-free{background:#2980b9;border-color:#7fbce4;}
+.ow-tm-dot.ow-tm-vip{background:#c0392b;border-color:#ec9085;}
+.ow-tm-dot.ow-tm-bk{background:rgba(120,124,130,.4);border-color:rgba(160,165,170,.65);}
 .ow-tm-dot.ow-tm-walkin{background:rgba(96,165,250,.22);border-color:rgba(96,165,250,.7);border-style:dashed;}
 @media(max-width:600px){
   .ow-tm-shell{max-width:100vw;width:100vw;max-height:100dvh;height:100dvh;border-radius:0;}
@@ -10206,7 +10207,7 @@ async function bkLoadTables(){
     const _sMode = (r && r.seatingMode) || 'open';   // booking-v2 turnover mode
     Object.values(allBookings).forEach(b => {
       // a table is taken for the chosen slot if ANY booking still occupies it then (turnover-aware)
-      if(b && b.date===bkState.date && b.status!=='rejected' && b.tableId && _bkOccupies(b.slot, bkState.slot, _sMode)){
+      if(b && b.date===bkState.date && (b.status==='pending' || b.status==='accepted') && b.tableId && _bkOccupies(b.slot, bkState.slot, _sMode)){
         bookedTableIds.add(b.tableId);
       }
     });
@@ -11931,7 +11932,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782313200</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782316800</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
