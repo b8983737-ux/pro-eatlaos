@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782307800 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782313200 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2279,7 +2279,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 /* [mobile sheet] phones: a tall, rounded sheet rising from the bottom — polished, not a raw full-screen takeover. Tablet/desktop stay centered cards. */
 @media(max-width:767px){
   #mCustBooking.modal-ov{padding:0;align-items:flex-end;}
-  #mCustBooking .bkm-shell{max-width:100%;width:100%;min-height:80dvh;max-height:92dvh;border-radius:20px 20px 0 0;border-bottom:none;box-shadow:0 -12px 40px rgba(0,0,0,.45);}
+  #mCustBooking .bkm-shell{max-width:100%;width:100%;height:100dvh;min-height:100dvh;max-height:100dvh;border-radius:16px 16px 0 0;border-bottom:none;box-shadow:0 -12px 40px rgba(0,0,0,.45);}
   #mCustBooking .bk-modal-body{max-height:none;flex:1;}
 }
 /* lock the page behind an open booking modal so the background can't scroll/touch (iOS-safe) */
@@ -2477,6 +2477,10 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-party-btn:hover{background:rgba(200,151,58,.12);border-color:#c8973a;transform:scale(1.08);}
 .bk-party-btn:active{transform:scale(.96);}
 .bk-party-num{font-size:48px;font-weight:800;color:#c8973a;font-family:var(--ff,'Plus Jakarta Sans');min-width:80px;text-align:center;letter-spacing:-1px;line-height:1;}
+.bk-party-box{display:flex;align-items:baseline;gap:7px;background:rgba(255,255,255,.04);border:1.5px solid rgba(200,151,58,.4);border-radius:12px;padding:8px 18px;justify-content:center;min-width:120px;}
+.bk-party-input{width:54px;background:transparent;border:none;outline:none;color:#c8973a;font-size:40px;font-weight:800;text-align:center;font-family:var(--ff,'Plus Jakarta Sans');letter-spacing:-1px;line-height:1;-moz-appearance:textfield;}
+.bk-party-input::-webkit-outer-spin-button,.bk-party-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.bk-party-unit{font-size:14px;font-weight:600;color:rgba(255,255,255,.6);white-space:nowrap;}
 .bk-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:14px;font-family:inherit;margin-bottom:12px;box-sizing:border-box;transition:all .2s;}
 .bk-input:focus{outline:none;border-color:#c8973a;background:rgba(200,151,58,.04);box-shadow:0 0 0 3px rgba(200,151,58,.08);}
 .bk-input::placeholder{color:rgba(255,255,255,.3);}
@@ -2823,11 +2827,11 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-el-shape{transition:opacity .2s;}
 .fp-vw-table{cursor:pointer;}
 /* Functional state colors only — no decoration */
-.fp-vw-table.available .fp-vw-el-shape{fill:#c8973a;stroke:#f5c976;stroke-width:1.5;}
-.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(180,90,90,.2);stroke:rgba(248,113,113,.4);stroke-width:1;}
+.fp-vw-table.available .fp-vw-el-shape{fill:#2980b9;stroke:#7fbce4;stroke-width:1.5;}
+.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(120,124,130,.25);stroke:rgba(160,165,170,.45);stroke-width:1;}
 .fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.2);stroke:rgba(251,191,36,.5);stroke-width:1;}
 .fp-vw-table.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
-.fp-vw-table.selected .fp-vw-el-shape{fill:#fff;stroke:#c8973a;stroke-width:3;}
+.fp-vw-table.selected .fp-vw-el-shape{fill:#16a34a;stroke:#bbf7d0;stroke-width:3;}
 .fp-vw-table.toosmall .fp-vw-el-shape{fill:rgba(150,150,150,.16);stroke:rgba(180,180,180,.35);stroke-width:1;}
 .fp-vw-table.toosmall{opacity:.5;cursor:not-allowed;}
 /* Subtle "breathing" halo on AVAILABLE tables — soft white glow that fades in/out every 3s.
@@ -2856,19 +2860,19 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-tnum{font-family:var(--ff,sans-serif);font-size:32px;font-weight:800;fill:#1a1209;pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:-.5px;}
 .fp-vw-hit{cursor:pointer;}
 .fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
-.fp-vw-table.selected .fp-vw-tnum{fill:#1a1209;}
+.fp-vw-table.selected .fp-vw-tnum{fill:#fff;}
 .fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.45);}
 .fp-vw-table.walkin .fp-vw-tnum{fill:rgba(255,255,255,.7);}
 .fp-vw-walkin-badge{font-size:26px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 /* VIP — keeps amber state color + crown badge (functional indicator), no animations */
-.fp-vw-table.vip.available .fp-vw-el-shape{fill:#f59e0b;stroke:#fef3c7;stroke-width:2;}
-.fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.5);stroke-width:1.5;}
+.fp-vw-table.vip.available .fp-vw-el-shape{fill:#c0392b;stroke:#ec9085;stroke-width:2;}
+.fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(120,124,130,.25);stroke:rgba(160,165,170,.45);stroke-width:1.5;}
 .fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.7);stroke-width:1.5;}
 .fp-vw-table.vip.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
-.fp-vw-table.vip.selected .fp-vw-el-shape{fill:#fff;stroke:#f59e0b;stroke-width:3;}
+.fp-vw-table.vip.selected .fp-vw-el-shape{fill:#16a34a;stroke:#bbf7d0;stroke-width:3;}
 .fp-vw-vip-crown{font-size:26px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 .fp-vw-table.vip.booked .fp-vw-vip-crown,.fp-vw-table.vip.locked .fp-vw-vip-crown{opacity:.5;}
-.fp-vw-table.vip.available .fp-vw-tnum{fill:#1a1209;font-weight:800;}
+.fp-vw-table.available .fp-vw-tnum,.fp-vw-table.vip.available .fp-vw-tnum{fill:#fff;font-weight:800;}
 .fp-vw-label{font-family:var(--fb,'Inter',sans-serif);font-size:24px;font-weight:700;fill:rgba(255,255,255,.92);pointer-events:none;text-anchor:middle;dominant-baseline:central;letter-spacing:0;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;stroke-linejoin:round;}
 .fp-vw-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.85);margin-top:12px;flex-wrap:wrap;letter-spacing:.3px;flex-shrink:0;padding:10px 16px;background:linear-gradient(180deg,rgba(30,26,20,.92),rgba(20,17,12,.92));border-radius:10px;border:1px solid rgba(200,151,58,.22);}
 .bk-free-top{display:flex;justify-content:center;margin:2px 0 12px;flex-shrink:0;}
@@ -5625,6 +5629,7 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'Could not reserve this table. Try another.',
     bk_lock_expired:'Your table reservation expired. Please pick another table.',
     bk_legend_available:'Available',
+    bk_people_word:'people',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'Only {n} left',
     bk_few_left:'Few left',
@@ -5816,6 +5821,7 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ບໍ່ສາມາດຈອງໂຕະນີ້ໄດ້. ກະລຸນາລອງໂຕະອື່ນ.',
     bk_lock_expired:'ການຈອງໂຕະຂອງທ່ານໝົດເວລາ. ກະລຸນາເລືອກໂຕະອື່ນ.',
     bk_legend_available:'ວ່າງ',
+    bk_people_word:'ຄົນ',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'ເຫຼືອພຽງ {n}',
     bk_few_left:'ເຫຼືອໜ້ອຍ',
@@ -6007,6 +6013,7 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'ไม่สามารถจองโต๊ะนี้ได้ กรุณาเลือกโต๊ะอื่น',
     bk_lock_expired:'การจองโต๊ะของคุณหมดเวลาแล้ว กรุณาเลือกโต๊ะใหม่',
     bk_legend_available:'ว่าง',
+    bk_people_word:'คน',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'เหลือเพียง {n}',
     bk_few_left:'เหลือน้อย',
@@ -6198,6 +6205,7 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'无法保留此桌位，请尝试其他。',
     bk_lock_expired:'您的桌位保留已过期。请选择其他桌位。',
     bk_legend_available:'空闲',
+    bk_people_word:'人',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'仅剩 {n} 个',
     bk_few_left:'仅剩少量',
@@ -6389,6 +6397,7 @@ const LP_TRANSLATIONS = {
     bk_lock_failed:'이 테이블을 예약할 수 없습니다. 다른 테이블을 선택하세요.',
     bk_lock_expired:'테이블 예약이 만료되었습니다. 다른 테이블을 선택해주세요.',
     bk_legend_available:'이용 가능',
+    bk_people_word:'명',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'{n}개 남음',
     bk_few_left:'잔여 적음',
@@ -8519,7 +8528,7 @@ function openCustBookingModal(){
   const _bkShellInit = document.querySelector('#mCustBooking .bkm-shell');
   if(_bkShellInit) _bkShellInit.classList.remove('fp-fullscreen');
   bkShowView('picker');
-  document.getElementById('bkPartyNum').textContent='2';
+  var _pi0=document.getElementById('bkPartyNum'); if(_pi0) _pi0.value='2';
   document.getElementById('bkName').value='';
   document.getElementById('bkPhone').value='';
   document.getElementById('bkNote').value='';
@@ -8537,7 +8546,7 @@ function bkOpenForResto(rid, name){
   if(typeof bkReleaseLock === 'function') bkReleaseLock();
   bkState = { restoId:rid, fromRfp:true, restoName:name||'', date:null, slot:null, party:2, step:1, allRestos:[], hours:null, taken:[], tables:[], tableId:null, tableNum:null, tableZone:null, lockSessionId:null, lockExpiresAt:0 };
   var _sh=document.querySelector('#mCustBooking .bkm-shell'); if(_sh) _sh.classList.remove('fp-fullscreen');
-  var pn=document.getElementById('bkPartyNum'); if(pn) pn.textContent='2';
+  var pn=document.getElementById('bkPartyNum'); if(pn) pn.value='2';
   ['bkName','bkPhone','bkNote'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   if(typeof openModal==='function') openModal('mCustBooking');
   _bkEnsureScrollObs(); _bkLockBg();
@@ -8850,8 +8859,22 @@ function bkParty(delta){
   let n = bkState.party + delta;
   if(n<1) n=1; if(n>30) n=30;
   bkState.party = n;
-  document.getElementById('bkPartyNum').textContent = n;
+  var _pi=document.getElementById('bkPartyNum'); if(_pi) _pi.value = n;
   // booking-v2: party size changes which tables fit → refresh the live map if we're already at table stage
+  if(bkState.date && bkState.slot){ bkState.tableId=null; if(typeof bkReleaseLock==='function') bkReleaseLock(); if(typeof bkLoadTables==='function') bkLoadTables(); }
+}
+// manual typing in the people box: update state live (clamped), refresh the map on commit/blur
+function bkPartyType(val){
+  var n = parseInt(val,10);
+  if(isNaN(n)) return;
+  if(n>30){ n=30; var _pi=document.getElementById('bkPartyNum'); if(_pi) _pi.value=30; }
+  if(n<1) n=1;
+  bkState.party = n;
+}
+function bkPartyCommit(){
+  var _pi=document.getElementById('bkPartyNum'); if(!_pi) return;
+  var n=parseInt(_pi.value,10); if(isNaN(n)||n<1) n=1; if(n>30) n=30;
+  bkState.party=n; _pi.value=n;
   if(bkState.date && bkState.slot){ bkState.tableId=null; if(typeof bkReleaseLock==='function') bkReleaseLock(); if(typeof bkLoadTables==='function') bkLoadTables(); }
 }
 
@@ -10295,8 +10318,9 @@ async function bkLoadTables(){
       const _freeTop = `<div class="bk-free-top"><span class="bk-free-card${_isFull ? ' is-full' : ''}"><span class="bk-free-dot"></span><span class="bk-free-num">${_legFree}</span><span class="bk-free-lbl">${escapeHtml(lblAvail)}</span></span></div>`;
       grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
         <div class="fp-vw-legend">
-          <span><i style="background:#c8973a"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
-          <span><i style="background:rgba(220,53,69,.4)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
+          <span><i style="background:#2980b9"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
+          <span><i style="background:#c0392b"></i><span>VIP</span></span>
+          <span><i style="background:rgba(120,124,130,.6)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
           <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
         </div>
       `;
@@ -11360,6 +11384,9 @@ if(typeof escapeHtml!=='function'){
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-step-h,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-day{color:#4a1730}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-num{color:#fff;text-shadow:0 1px 5px rgba(110,25,65,.5)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-box{background:rgba(255,255,255,.6);border-color:rgba(120,40,75,.3)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-input{color:#4a1730}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-unit{color:#7a2d52}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-sect-h,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-step-sub,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-dow,
@@ -11491,7 +11518,10 @@ if(typeof escapeHtml!=='function'){
           <div class="bks-sect-h"><span class="bks-i">◷</span> <span data-lp="bk_party">How many people?</span></div>
           <div class="bk-party">
             <button class="bk-party-btn" onclick="bkParty(-1)" aria-label="Decrease">−</button>
-            <div class="bk-party-num" id="bkPartyNum">2</div>
+            <div class="bk-party-box">
+              <input class="bk-party-input" id="bkPartyNum" type="number" inputmode="numeric" min="1" max="30" value="2" oninput="bkPartyType(this.value)" onblur="bkPartyCommit()" onfocus="this.select()" aria-label="Number of people">
+              <span class="bk-party-unit" data-lp="bk_people_word">people</span>
+            </div>
             <button class="bk-party-btn" onclick="bkParty(1)" aria-label="Increase">+</button>
           </div>
         </div>
@@ -11901,7 +11931,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782307800</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782313200</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
