@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782316800 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782320400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2855,7 +2855,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-table{cursor:pointer;}
 /* Functional state colors only — no decoration */
 .fp-vw-table.available .fp-vw-el-shape{fill:#2980b9;stroke:#7fbce4;stroke-width:1.5;}
-.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(120,124,130,.25);stroke:rgba(160,165,170,.45);stroke-width:1;}
+.fp-vw-table.booked .fp-vw-el-shape{fill:rgba(122,126,132,.55);stroke:rgba(150,155,162,.78);stroke-width:1.5;}
 .fp-vw-table.locked .fp-vw-el-shape{fill:rgba(180,140,40,.2);stroke:rgba(251,191,36,.5);stroke-width:1;}
 .fp-vw-table.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
 .fp-vw-table.selected .fp-vw-el-shape{fill:#16a34a;stroke:#bbf7d0;stroke-width:3;}
@@ -2880,7 +2880,8 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
   .fp-vw-table.vip.available:not(.selected) .fp-vw-el-shape{animation:none;}
 }
 .fp-vw-table.booked,.fp-vw-table.locked{cursor:not-allowed;}
-.fp-vw-table.booked,.fp-vw-table.locked{opacity:.5;}
+.fp-vw-table.locked{opacity:.55;}
+.fp-vw-table.booked{opacity:.92;}
 .fp-vw-table.walkin{opacity:.85;cursor:help;}
 /* Fixed elements — minimal styling, recede slightly */
 .fp-vw-fixed .fp-vw-el-shape{stroke:rgba(255,255,255,.08);stroke-width:1;opacity:.9;}
@@ -2888,12 +2889,12 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-vw-hit{cursor:pointer;}
 .fp-vw-table.booked .fp-vw-hit,.fp-vw-table.locked .fp-vw-hit{cursor:not-allowed;}
 .fp-vw-table.selected .fp-vw-tnum{fill:#fff;}
-.fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.45);}
+.fp-vw-table.booked .fp-vw-tnum,.fp-vw-table.locked .fp-vw-tnum{fill:rgba(255,255,255,.85);}
 .fp-vw-table.walkin .fp-vw-tnum{fill:rgba(255,255,255,.7);}
 .fp-vw-walkin-badge{font-size:26px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
 /* VIP — keeps amber state color + crown badge (functional indicator), no animations */
 .fp-vw-table.vip.available .fp-vw-el-shape{fill:#c0392b;stroke:#ec9085;stroke-width:2;}
-.fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(120,124,130,.25);stroke:rgba(160,165,170,.45);stroke-width:1.5;}
+.fp-vw-table.vip.booked .fp-vw-el-shape{fill:rgba(122,126,132,.55);stroke:rgba(150,155,162,.78);stroke-width:1.5;}
 .fp-vw-table.vip.locked .fp-vw-el-shape{fill:rgba(245,158,11,.2);stroke:rgba(251,191,36,.7);stroke-width:1.5;}
 .fp-vw-table.vip.walkin .fp-vw-el-shape{fill:rgba(96,165,250,.18);stroke:rgba(96,165,250,.7);stroke-width:1.5;stroke-dasharray:4 3;}
 .fp-vw-table.vip.selected .fp-vw-el-shape{fill:#16a34a;stroke:#bbf7d0;stroke-width:3;}
@@ -7571,6 +7572,7 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'Comment',
     bk_optional:'optional',
     bk_fullscreen:'Full screen',
+    bk_free_tables:'tables available',
     bk_exit_full:'Close',
     bk_phone:'Phone number',
     bk_phone_ph:'e.g. 020 5555 1234',
@@ -7763,6 +7765,7 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'ໝາຍເຫດ',
     bk_optional:'ບໍ່ບັງຄັບ',
     bk_fullscreen:'ເຕັມຈໍ',
+    bk_free_tables:'ໂຕະວ່າງ',
     bk_exit_full:'ປິດ',
     bk_phone:'ເບີໂທລະສັບ',
     bk_phone_ph:'ຕົວຢ່າງ 020 5555 1234',
@@ -7955,6 +7958,7 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'หมายเหตุ',
     bk_optional:'ไม่บังคับ',
     bk_fullscreen:'เต็มจอ',
+    bk_free_tables:'โต๊ะว่าง',
     bk_exit_full:'ปิด',
     bk_phone:'เบอร์โทรศัพท์',
     bk_phone_ph:'เช่น 020 5555 1234',
@@ -8147,6 +8151,7 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'备注',
     bk_optional:'选填',
     bk_fullscreen:'全屏',
+    bk_free_tables:'张桌可用',
     bk_exit_full:'关闭',
     bk_phone:'电话号码',
     bk_phone_ph:'例如：020 5555 1234',
@@ -8339,6 +8344,7 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'메모',
     bk_optional:'선택',
     bk_fullscreen:'전체화면',
+    bk_free_tables:'개 테이블 가능',
     bk_exit_full:'닫기',
     bk_phone:'전화번호',
     bk_phone_ph:'예: 020 5555 1234',
@@ -15573,7 +15579,7 @@ async function bkLoadTables(){
       // Insert tabs (above the wrap) + legend (below the wrap)
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
       const _isFull = _legFree <= 0;
-      const _freeTop = `<div class="bk-free-top"><span class="bk-free-card${_isFull ? ' is-full' : ''}"><span class="bk-free-dot"></span><span class="bk-free-num">${_legFree}</span><span class="bk-free-lbl">${escapeHtml(lblAvail)}</span></span></div>`;
+      const _freeTop = `<div class="bk-free-top"><span class="bk-free-card${_isFull ? ' is-full' : ''}"><span class="bk-free-dot"></span><span class="bk-free-num">${_legFree}</span><span class="bk-free-lbl">${escapeHtml(_lp('bk_free_tables','tables available'))}</span></span></div>`;
       grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
         <div class="fp-vw-legend">
           <span><i style="background:#2980b9"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
@@ -15920,7 +15926,7 @@ function _bkAttachPanZoom(svgEl){
     bar.innerHTML='<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;out&#39;)" aria-label="Zoom out">−</button>'
       +'<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;in&#39;)" aria-label="Zoom in">+</button>'
       +'<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;reset&#39;)" aria-label="Reset">↻</button>'
-      +'<button type="button" class="fp-cbtn fp-cbtn-full" onclick="bkMapZoom(this,&#39;full&#39;)" aria-label="Full screen">⛶ <span data-lp="bk_fullscreen">Full screen</span></button>';
+      +'<button type="button" class="fp-cbtn fp-cbtn-full" onclick="bkMapZoom(this,&#39;full&#39;)" aria-label="Full screen">⛶ <span data-lp="bk_fullscreen">'+((typeof _lp==='function')?_lp('bk_fullscreen','Full screen'):'Full screen')+'</span></button>';
     if(wrap.nextSibling) _mh.insertBefore(bar, wrap.nextSibling); else _mh.appendChild(bar);
   }
   apply();
@@ -16122,10 +16128,15 @@ function _bkBuildSummaryHtml(opts){
   const lng = (typeof localStorage!=='undefined' && localStorage.getItem('el_lp_lang')) || 'lo';
   const localeMap = {en:'en-US',lo:'lo-LA',th:'th-TH',zh:'zh-CN',ko:'ko-KR'};
   let dateStr;
-  try {
-    dateStr = new Intl.DateTimeFormat(localeMap[lng]||'en-US',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);
-  } catch(e){
+  if(lng==='lo' || lng==='th'){
+    // Intl 'lo-LA'/'th-TH' silently falls back to English on most devices -> build with localized names
     dateStr = `${_lpDow(d.getDay(),false)}, ${d.getDate()} ${_lpMonth(d.getMonth(),false)} ${d.getFullYear()}`;
+  } else {
+    try {
+      dateStr = new Intl.DateTimeFormat(localeMap[lng]||'en-US',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);
+    } catch(e){
+      dateStr = `${_lpDow(d.getDay(),false)}, ${d.getDate()} ${_lpMonth(d.getMonth(),false)} ${d.getFullYear()}`;
+    }
   }
   const lblResto = _lp('bk_summary_resto','Restaurant');
   const lblDate  = _lp('bk_summary_date','Date');
@@ -17997,13 +18008,16 @@ async function cleanupOldBookings(opts){
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-box{background:rgba(255,255,255,.6);border-color:rgba(120,40,75,.3)}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-input{color:#4a1730}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-unit{color:#7a2d52}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-code-lbl{color:#9a4a6e}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-code-hint{color:#7a2d52}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-code-box{border-color:rgba(120,40,75,.4)}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-sect-h,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-step-sub,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-dow,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-date-mo,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-step-of,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-flabel,
-#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-hint{color:rgba(74,23,48,.62)}
+#mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bks-hint{color:rgba(74,23,48,.82)}
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-back,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bkm-x,
 #mCustBooking .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-party-btn{background:rgba(255,255,255,.55);border-color:rgba(120,40,75,.22);color:#7a2d52}
@@ -18541,7 +18555,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782316800</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782320400</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
