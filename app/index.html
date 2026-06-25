@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782363600 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782365400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7553,6 +7553,7 @@ const LP_TRANSLATIONS = {
     bk_table_booked:'Booked',
     bk_zone_booked:'Booked',
     bk_zone_general:'General',
+    bk_tables_unit:'tables',
     bk_table_locked_by_other:'Reserved',
     bk_table_locked:'TABLE RESERVED FOR YOU',
     bk_lock_msg:'Complete booking in',
@@ -7752,6 +7753,7 @@ const LP_TRANSLATIONS = {
     bk_table_booked:'ຖືກຈອງ',
     bk_zone_booked:'ຖືກຈອງໄວ້ແລ້ວ',
     bk_zone_general:'ທົ່ວໄປ',
+    bk_tables_unit:'ໂຕະ',
     bk_table_locked_by_other:'ຈອງໄວ້ແລ້ວ',
     bk_table_locked:'ໂຕະຈອງໄວ້ສຳລັບທ່ານ',
     bk_lock_msg:'ສຳເລັດການຈອງພາຍໃນ',
@@ -7951,6 +7953,7 @@ const LP_TRANSLATIONS = {
     bk_table_booked:'ถูกจอง',
     bk_zone_booked:'ถูกจองแล้ว',
     bk_zone_general:'ทั่วไป',
+    bk_tables_unit:'โต๊ะ',
     bk_table_locked_by_other:'จองไว้',
     bk_table_locked:'โต๊ะถูกจองไว้สำหรับคุณ',
     bk_lock_msg:'ทำการจองให้เสร็จภายใน',
@@ -8150,6 +8153,7 @@ const LP_TRANSLATIONS = {
     bk_table_booked:'已预订',
     bk_zone_booked:'已预订',
     bk_zone_general:'普通',
+    bk_tables_unit:'桌',
     bk_table_locked_by_other:'已保留',
     bk_table_locked:'桌位已为您保留',
     bk_lock_msg:'请在以下时间内完成预订',
@@ -8349,6 +8353,7 @@ const LP_TRANSLATIONS = {
     bk_table_booked:'예약됨',
     bk_zone_booked:'예약 완료',
     bk_zone_general:'일반',
+    bk_tables_unit:'개',
     bk_table_locked_by_other:'예약 중',
     bk_table_locked:'테이블이 예약되었습니다',
     bk_lock_msg:'다음 시간 내에 예약 완료',
@@ -15686,10 +15691,10 @@ async function bkLoadTables(){
         const free = _zFree[k] || 0;
         _zCardsHtml += `<div class="bk-zcard" style="--zc:${col}"><div class="bk-zc-tag">${tag}</div><div class="bk-zc-body"><div class="bk-zc-num">${free}</div><div class="bk-zc-lbl">${_zLblFree}</div></div></div>`;
       });
-      if(_zBookedN > 0) _zCardsHtml += `<div class="bk-zcard bk-zc-bk" style="--zc:#6b7077"><div class="bk-zc-tag">${escapeHtml(_lp('bk_zone_booked','Booked'))}</div><div class="bk-zc-body"><div class="bk-zc-num">${_zBookedN}</div></div></div>`;
+      if(_zBookedN > 0) _zCardsHtml += `<div class="bk-zcard bk-zc-bk" style="--zc:#6b7077"><div class="bk-zc-tag">${escapeHtml(_lp('bk_zone_booked','Booked'))}</div><div class="bk-zc-body"><div class="bk-zc-num">${_zBookedN}</div><div class="bk-zc-lbl">${escapeHtml(_lp('bk_tables_unit','tables'))}</div></div></div>`;
       const _zoneSummary = _zCardsHtml ? ('<div class="bk-zsum">' + _zCardsHtml + '</div>') : '';
       const _freeTop = `<div class="bk-free-top"><span class="bk-free-card${_isFull ? ' is-full' : ''}"><span class="bk-free-dot"></span><span class="bk-free-num">${_legFree}</span><span class="bk-free-lbl">${escapeHtml(_lp('bk_free_tables','tables available'))}</span></span></div>`;
-      grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + _zoneSummary;
+      grid.innerHTML = tabsHtml + '<div class="bk-map-host">' + wrapHtml + '</div>' + _zoneSummary;
       // Wire up zone buttons — tap All or a zone to switch the map
       const zoneBar = grid.querySelector('#bkZoneBar');
       if(zoneBar){
@@ -18706,7 +18711,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782363600</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782365400</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
