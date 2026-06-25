@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782352800 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782360000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2962,11 +2962,11 @@ body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,bod
 .ti-x{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.05);border:none;color:rgba(255,255,255,.5);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .ti-x:hover{background:rgba(255,255,255,.1);color:#fff;}
 .ti-shape-wrap{display:flex;justify-content:center;margin-bottom:14px;}
-.ti-shape{width:64px;height:64px;background:#c8973a;border:2px solid #e0b455;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#1a1a1a;font-family:var(--ff,'Plus Jakarta Sans');font-weight:900;font-size:24px;letter-spacing:-.5px;box-shadow:0 0 24px rgba(200,151,58,.4);}
+.ti-shape{width:64px;height:64px;background:var(--bks-acc,#c8973a);border:2px solid var(--bks-acc,#e0b455);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--bks-acc-fg,#1a1a1a);font-family:var(--ff,'Plus Jakarta Sans');font-weight:900;font-size:24px;letter-spacing:-.5px;box-shadow:0 6px 20px rgba(0,0,0,.35);}
 .ti-shape.round{border-radius:50%;}
 .ti-shape.rect{width:88px;height:48px;}
 /* VIP shape in popup — gold gradient + crown corner badge */
-.ti-shape.vip{background:linear-gradient(135deg,#f5d987 0%,#e0b455 50%,#c8973a 100%);border:2px solid #fff8dc;box-shadow:0 0 24px rgba(245,201,118,.6),inset 0 0 12px rgba(255,255,255,.2);position:relative;color:#1a1209;}
+.ti-shape.vip{background:var(--bks-acc,#c8973a);border:2px solid rgba(255,255,255,.55);box-shadow:0 6px 20px rgba(0,0,0,.4),inset 0 0 12px rgba(255,255,255,.2);position:relative;color:var(--bks-acc-fg,#1a1209);}
 .ti-shape.vip::after{content:'⭐';position:absolute;top:-6px;right:-6px;font-size:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));}
 .ti-num{font-family:var(--ff,sans-serif);font-size:24px;font-weight:800;color:#fff;text-align:center;margin-bottom:18px;letter-spacing:-.4px;}
 .ti-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;padding:14px 16px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:10px;}
@@ -2976,8 +2976,8 @@ body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,bod
 #tiFitIcon{color:#4ade80;font-weight:700;}
 .ti-actions{display:flex;flex-direction:column;gap:8px;}
 .ti-btn{padding:14px 18px;border-radius:10px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.2px;}
-.ti-btn-confirm{background:linear-gradient(135deg,#c8973a,#e0b455);color:#000;box-shadow:0 6px 20px rgba(200,151,58,.35);}
-.ti-btn-confirm:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(200,151,58,.5);}
+.ti-btn-confirm{background:var(--bks-acc,#c8973a);color:var(--bks-acc-fg,#000);box-shadow:0 6px 20px rgba(0,0,0,.3);}
+.ti-btn-confirm:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.42);}
 .ti-btn-confirm:disabled{opacity:.6;cursor:wait;transform:none;}
 .ti-btn-cancel{background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.08);}
 .ti-btn-cancel:hover{background:rgba(255,255,255,.08);color:#fff;}
@@ -7545,6 +7545,7 @@ const LP_TRANSLATIONS = {
     bk_table_seats:'seats',
     bk_table_booked:'Booked',
     bk_zone_booked:'Booked',
+    bk_zone_general:'General',
     bk_table_locked_by_other:'Reserved',
     bk_table_locked:'TABLE RESERVED FOR YOU',
     bk_lock_msg:'Complete booking in',
@@ -7739,6 +7740,7 @@ const LP_TRANSLATIONS = {
     bk_table_seats:'ບ່ອນນັ່ງ',
     bk_table_booked:'ຖືກຈອງ',
     bk_zone_booked:'ຖືກຈອງໄວ້ແລ້ວ',
+    bk_zone_general:'ທົ່ວໄປ',
     bk_table_locked_by_other:'ຈອງໄວ້ແລ້ວ',
     bk_table_locked:'ໂຕະຈອງໄວ້ສຳລັບທ່ານ',
     bk_lock_msg:'ສຳເລັດການຈອງພາຍໃນ',
@@ -7933,6 +7935,7 @@ const LP_TRANSLATIONS = {
     bk_table_seats:'ที่นั่ง',
     bk_table_booked:'ถูกจอง',
     bk_zone_booked:'ถูกจองแล้ว',
+    bk_zone_general:'ทั่วไป',
     bk_table_locked_by_other:'จองไว้',
     bk_table_locked:'โต๊ะถูกจองไว้สำหรับคุณ',
     bk_lock_msg:'ทำการจองให้เสร็จภายใน',
@@ -8127,6 +8130,7 @@ const LP_TRANSLATIONS = {
     bk_table_seats:'座位',
     bk_table_booked:'已预订',
     bk_zone_booked:'已预订',
+    bk_zone_general:'普通',
     bk_table_locked_by_other:'已保留',
     bk_table_locked:'桌位已为您保留',
     bk_lock_msg:'请在以下时间内完成预订',
@@ -8321,6 +8325,7 @@ const LP_TRANSLATIONS = {
     bk_table_seats:'좌석',
     bk_table_booked:'예약됨',
     bk_zone_booked:'예약 완료',
+    bk_zone_general:'일반',
     bk_table_locked_by_other:'예약 중',
     bk_table_locked:'테이블이 예약되었습니다',
     bk_lock_msg:'다음 시간 내에 예약 완료',
@@ -15612,28 +15617,50 @@ async function bkLoadTables(){
       // Insert tabs (above the wrap) + legend (below the wrap)
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
       const _isFull = _legFree <= 0;
-      // ── Professional zone summary cards (venue key + live counts) ──
+      // ── Zone summary: real zone name + VIP/general category, live counts matching the total ──
       const _zsTaken = new Set();
       [bookedTableIds, lockedTableIds, walkInTableIds].forEach(st => { if(st && st.forEach) st.forEach(id => _zsTaken.add(id)); });
-      const _zAgg = {}; const _zOrder = [];
+      const _zKeyOf = (zname, vip) => (zname || (vip ? '\u0000v' : '\u0000g'));
+      // Per placed table: VIP flag (same rule the map uses) + its floor-plan zone name
+      const _tInfo = {}; const _zNature = {};
+      Object.values(allAreas||{}).forEach(a => (a.elements||[]).forEach(el => {
+        if(!(el && el.tableId && el.kind && el.kind.indexOf('table')===0)) return;
+        const t = tableMap[el.tableId];
+        const vip = _fpIsVipKind(el.kind) || !!(t && t.bookingRequirement && String(t.bookingRequirement).trim());
+        const zname = (el.zone!=null && String(el.zone).trim()) ? String(el.zone).trim() : '';
+        _tInfo[el.tableId] = { vip:vip, zname:zname };
+        const k = _zKeyOf(zname, vip);
+        if(!_zNature[k]) _zNature[k] = { name:zname, vip:0, gen:0 };
+        if(vip) _zNature[k].vip++; else _zNature[k].gen++;
+      }));
+      // Available (party-fits, not taken) counted per zone — sums to the 'available' total
+      const _zFree = {};
       partyOK.forEach(t => {
-        const z = (t.zone != null && String(t.zone).trim()) ? String(t.zone).trim() : 'Indoor';
-        if(!_zAgg[z]){ _zAgg[z] = { free:0, vip:false }; _zOrder.push(z); }
-        if(typeof _isVipTable==='function' && _isVipTable(t)) _zAgg[z].vip = true;
-        if(!_zsTaken.has(t.id)) _zAgg[z].free++;
+        if(!_legPlacedIds.has(t.id) || _zsTaken.has(t.id)) return;
+        const inf = _tInfo[t.id]; if(!inf) return;
+        const k = _zKeyOf(inf.zname, inf.vip);
+        _zFree[k] = (_zFree[k]||0) + 1;
       });
-      let _zBookedN = 0; tables.forEach(t => { if(_zsTaken.has(t.id)) _zBookedN++; });
-      _zOrder.sort((a,b)=>{ const av=_zAgg[a].vip?0:1, bv=_zAgg[b].vip?0:1; return av-bv || String(a).localeCompare(String(b)); });
+      let _zBookedN = 0;
+      _legPlacedIds.forEach(id => { if(_zsTaken.has(id)) _zBookedN++; });
       const _zLblFree = escapeHtml(_lp('bk_free_tables','tables available'));
-      let _zCardsHtml = _zOrder.map(z => {
-        const v = _zAgg[z]; const col = v.vip ? '#c0392b' : '#2980b9';
-        const tag = escapeHtml(z) + (v.vip ? ' · VIP' : '');
-        return `<div class="bk-zcard" style="--zc:${col}"><div class="bk-zc-tag">${tag}</div><div class="bk-zc-body"><div class="bk-zc-num">${v.free}</div><div class="bk-zc-lbl">${_zLblFree}</div></div></div>`;
-      }).join('');
-      if(_zBookedN > 0){
-        _zCardsHtml += `<div class="bk-zcard bk-zc-bk" style="--zc:#6b7077"><div class="bk-zc-tag">${escapeHtml(_lp('bk_zone_booked','Booked'))}</div><div class="bk-zc-body"><div class="bk-zc-num">${_zBookedN}</div></div></div>`;
-      }
-      const _zoneSummary = '<div class="bk-zsum">' + _zCardsHtml + '</div>';
+      const _lblGen = escapeHtml(_lp('bk_zone_general','General'));
+      const _zKeys = Object.keys(_zNature).sort((a,b)=>{
+        const av=(_zNature[a].vip>=_zNature[a].gen)?0:1, bv=(_zNature[b].vip>=_zNature[b].gen)?0:1;
+        return av-bv || String(_zNature[a].name).localeCompare(String(_zNature[b].name));
+      });
+      let _zCardsHtml = '';
+      _zKeys.forEach(k => {
+        const nat = _zNature[k];
+        const isVip = nat.vip > 0 && nat.vip >= nat.gen;
+        const col = isVip ? '#c0392b' : '#2980b9';
+        const cat = isVip ? 'VIP' : _lblGen;
+        const tag = nat.name ? (escapeHtml(nat.name) + ' - ' + cat) : cat;
+        const free = _zFree[k] || 0;
+        _zCardsHtml += `<div class="bk-zcard" style="--zc:${col}"><div class="bk-zc-tag">${tag}</div><div class="bk-zc-body"><div class="bk-zc-num">${free}</div><div class="bk-zc-lbl">${_zLblFree}</div></div></div>`;
+      });
+      if(_zBookedN > 0) _zCardsHtml += `<div class="bk-zcard bk-zc-bk" style="--zc:#6b7077"><div class="bk-zc-tag">${escapeHtml(_lp('bk_zone_booked','Booked'))}</div><div class="bk-zc-body"><div class="bk-zc-num">${_zBookedN}</div></div></div>`;
+      const _zoneSummary = _zCardsHtml ? ('<div class="bk-zsum">' + _zCardsHtml + '</div>') : '';
       const _freeTop = `<div class="bk-free-top"><span class="bk-free-card${_isFull ? ' is-full' : ''}"><span class="bk-free-dot"></span><span class="bk-free-num">${_legFree}</span><span class="bk-free-lbl">${escapeHtml(_lp('bk_free_tables','tables available'))}</span></span></div>`;
       grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + _zoneSummary;
       // Wire up zone buttons — tap All or a zone to switch the map
@@ -15753,6 +15780,14 @@ function tiOpen(tableId){
       }
     }
   } catch(e){}
+  // Accent: make the popup badge + reserve button follow the restaurant's accent colour
+  try{
+    var _accSrcEl = document.querySelector('#mCustBooking .bkm-shell');
+    var _accVal = _accSrcEl ? (getComputedStyle(_accSrcEl).getPropertyValue('--bks-acc')||'').trim() : '';
+    if(!_accVal) _accVal = '#c8973a';
+    var _tiPop = document.getElementById('mTableInfo');
+    if(_tiPop){ _tiPop.style.setProperty('--bks-acc', _accVal); if(typeof _accFg==='function') _tiPop.style.setProperty('--bks-acc-fg', _accFg(_accVal)); }
+  }catch(_){}
   // Set shape icon — add 'vip' class so the popup shape itself shows premium styling
   const shapeEl = document.getElementById('tiShape');
   if(shapeEl){
@@ -18630,7 +18665,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782352800</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782360000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
