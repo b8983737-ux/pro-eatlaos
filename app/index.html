@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782365400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782371400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -13412,16 +13412,23 @@ async function loadBkRestaurants(){
   const list = document.getElementById('bkRestoList');
   list.innerHTML = `<div class="bk-empty">${escapeHtml(_lp('bk_loading_restos','Loading restaurants…'))}</div>`;
   try {
-    const data = await fbGet('restaurants');
-    const arr = [];
-    if(data) Object.keys(data).forEach(id=>{
-      const r = data[id];
-      if(!r || !r.name || r.active===false) return;
-      // v6.8: Skip restaurants where booking feature is disabled by SA
-      const feats = _resGetFeatures(r);
-      if(!feats.booking) return;
-      arr.push({id, name:r.name, logo:r.logo||'', emoji:r.emoji||'', icon:r.icon||'', tag:r.tagline||r.cuisine||''});
-    });
+    let arr = null;
+    // Bandwidth: the picker only needs names/logos, which rarely change. Reuse a lite list for a few
+    // minutes so reopening the booking page does NOT re-download every restaurant's full record.
+    try{ var _plc = JSON.parse(sessionStorage.getItem('bkRestoLite')||'null'); if(_plc && Array.isArray(_plc.a) && (Date.now()-_plc.t) < 300000) arr = _plc.a; }catch(_){}
+    if(!arr){
+      const data = await fbGet('restaurants');
+      arr = [];
+      if(data) Object.keys(data).forEach(id=>{
+        const r = data[id];
+        if(!r || !r.name || r.active===false) return;
+        // v6.8: Skip restaurants where booking feature is disabled by SA
+        const feats = _resGetFeatures(r);
+        if(!feats.booking) return;
+        arr.push({id, name:r.name, logo:r.logo||'', emoji:r.emoji||'', icon:r.icon||'', tag:r.tagline||r.cuisine||''});
+      });
+      try{ sessionStorage.setItem('bkRestoLite', JSON.stringify({t:Date.now(), a:arr})); }catch(_){}
+    }
     bkState.allRestos = arr;
     if(!arr.length){ list.innerHTML=`<div class="bk-empty">${escapeHtml(_lp('bk_no_restos','No restaurants available right now.'))}</div>`; return; }
     // Always show search bar — looks more professional, scales with growth
@@ -13785,7 +13792,10 @@ function bkShowView(view){
 async function bkEnterBook(id){
   bkState.date=null; bkState.slot=null; bkState.tableId=null; bkState.tableNum=null; bkState.tableZone=null; bkState.hours=null; bkState.tables=[];
   if(typeof bkReleaseLock==='function') bkReleaseLock();
-  var r=null; try{ r=await fbGet('restaurants/'+id); }catch(_){}
+  var r=null;
+  // Bandwidth: booking opened from the menu page already loaded this exact record — reuse it (no re-download, no staleness).
+  if(bkState && bkState.fromRfp && typeof _rfpResto!=='undefined' && _rfpResto && _rfpId===id){ r=_rfpResto; }
+  else { try{ r=await fbGet('restaurants/'+id); }catch(_){} }
   bkApplyRestoChrome(r||{});
   bkShowView('book');
   var sg=document.getElementById('bkSlotGrid'); if(sg) sg.innerHTML='<div class="bks-hint">'+escapeHtml(_lp('bk_need_date','Pick a date first.'))+'</div>';
@@ -15499,7 +15509,7 @@ async function bkLoadTables(){
     // Parallel fetches; bookings server-side filtered by date (see fbGetFiltered for index fallback)
     if(typeof ensureAnonAuth==='function'){ try{ await ensureAnonAuth(); }catch(_){} }
     const [r, dayBookings, locks] = await Promise.all([
-      fbGet('restaurants/'+bkState.restoId),
+      ((bkState.fromRfp && typeof _rfpResto!=='undefined' && _rfpResto && _rfpId===bkState.restoId) ? Promise.resolve(_rfpResto) : fbGet('restaurants/'+bkState.restoId)),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date),
       fbGet('tableLocks/'+bkState.restoId)
     ]);
@@ -18711,7 +18721,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782365400</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782371400</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
