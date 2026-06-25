@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782360000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782362400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2262,7 +2262,7 @@ body.lang-lo h1,body.lang-lo h2,body.lang-lo h3{
 .bkm-shell.fp-fullscreen .bk-table-grid.fp-mode{flex:1;}
 /* [map-bleed] map goes edge-to-edge of the modal for the biggest possible view */
 /* map + toolbar = ONE connected rounded card */
-.bk-table-grid.fp-mode .bk-map-host{margin:0;border:1px solid rgba(0,0,0,.22);border-radius:14px;overflow:hidden;background:#0d0d0d;box-shadow:0 6px 20px rgba(0,0,0,.16);}
+.bk-table-grid.fp-mode .bk-map-host{margin:0;border:1px solid rgba(0,0,0,.22);border-radius:14px;overflow:hidden;background:#0d0d0d;box-shadow:0 6px 20px rgba(0,0,0,.16);position:relative;}
 .bk-table-grid.fp-mode .bk-map-host .fp-viewer-wrap{border:none;border-radius:0;margin:0;padding:0;background:#0d0d0d;}
 .bk-table-grid.fp-mode .fp-viewer-wrap{
   margin-bottom:8px;
@@ -2846,6 +2846,13 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-cbtn:active{background:rgba(200,151,58,.32);transform:scale(.96);}
 .fp-cbtn-full{background:var(--bks-acc);color:var(--bks-acc-fg,#1a1206);border-color:var(--bks-acc);font-size:14px;}
 .fp-cbtn-full span{font-size:13px;font-weight:800;}
+.fp-cbtn .fp-cb-ic{font-size:19px;line-height:1;}
+.fp-cbtn .fp-cb-tx{font-size:12px;font-weight:700;line-height:1;letter-spacing:.2px;}
+body.lang-lo .fp-cbtn,body.lang-th .fp-cbtn,body.el-lang-lo .fp-cbtn,body.el-lang-th .fp-cbtn,body.lang-lo .fp-drag-hint,body.lang-th .fp-drag-hint{letter-spacing:0 !important;}
+.fp-drag-hint{position:absolute;left:50%;top:12px;transform:translate(-50%,-8px);background:rgba(20,17,12,.94);color:#fff;font-size:12.5px;font-weight:600;line-height:1.35;padding:9px 15px;border-radius:16px;display:flex;align-items:center;gap:9px;text-align:left;box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:opacity .25s ease,transform .25s ease;z-index:9;pointer-events:none;border:1px solid var(--bks-acc,rgba(200,151,58,.55));max-width:90%;}
+.fp-drag-hint.show{opacity:1;visibility:visible;transform:translate(-50%,0);}
+.fp-drag-emoji{font-size:18px;flex-shrink:0;animation:fpHandMove 1.05s ease-in-out infinite;}
+@keyframes fpHandMove{0%,100%{transform:translateX(-4px) rotate(-8deg);}50%{transform:translateX(4px) rotate(8deg);}}
 /* fullscreen: whole card fills the screen, map on top + toolbar at the bottom */
 .bk-map-host.fp-fs{position:fixed!important;inset:0!important;z-index:9990!important;background:#0a0a0a!important;margin:0!important;border:none!important;border-radius:0!important;box-shadow:none!important;display:flex!important;flex-direction:column!important;}
 .bk-map-host.fp-fs .fp-viewer-wrap{flex:1!important;min-height:0!important;border-radius:0!important;border:none!important;margin:0!important;overflow:hidden!important;}
@@ -7598,6 +7605,10 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'Comment',
     bk_optional:'optional',
     bk_fullscreen:'Full screen',
+    bk_zoom_in:'Zoom in',
+    bk_zoom_out:'Zoom out',
+    bk_zoom_reset:'Reset',
+    bk_drag_hint:'Use your finger to move the map',
     bk_free_tables:'tables available',
     bk_exit_full:'Close',
     bk_phone:'Phone number',
@@ -7793,6 +7804,10 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'ໝາຍເຫດ',
     bk_optional:'ບໍ່ບັງຄັບ',
     bk_fullscreen:'ເຕັມຈໍ',
+    bk_zoom_in:'ຂະຫຍາຍ',
+    bk_zoom_out:'ຫຍໍ້ລົງ',
+    bk_zoom_reset:'ຕັ້ງຄືນ',
+    bk_drag_hint:'ໃຊ້ນິ້ວເລື່ອນແຜນທີ່ ເພື່ອເລືອກໂຕະ',
     bk_free_tables:'ໂຕະວ່າງ',
     bk_exit_full:'ປິດ',
     bk_phone:'ເບີໂທລະສັບ',
@@ -7988,6 +8003,10 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'หมายเหตุ',
     bk_optional:'ไม่บังคับ',
     bk_fullscreen:'เต็มจอ',
+    bk_zoom_in:'ขยาย',
+    bk_zoom_out:'ย่อ',
+    bk_zoom_reset:'รีเซ็ต',
+    bk_drag_hint:'ใช้นิ้วเลื่อนแผนที่เพื่อเลือกโต๊ะ',
     bk_free_tables:'โต๊ะว่าง',
     bk_exit_full:'ปิด',
     bk_phone:'เบอร์โทรศัพท์',
@@ -8183,6 +8202,10 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'备注',
     bk_optional:'选填',
     bk_fullscreen:'全屏',
+    bk_zoom_in:'放大',
+    bk_zoom_out:'缩小',
+    bk_zoom_reset:'重置',
+    bk_drag_hint:'用手指移动地图选择桌位',
     bk_free_tables:'张桌可用',
     bk_exit_full:'关闭',
     bk_phone:'电话号码',
@@ -8378,6 +8401,10 @@ const LP_TRANSLATIONS = {
     bk_note_lbl:'메모',
     bk_optional:'선택',
     bk_fullscreen:'전체화면',
+    bk_zoom_in:'확대',
+    bk_zoom_out:'축소',
+    bk_zoom_reset:'초기화',
+    bk_drag_hint:'손가락으로 지도를 움직여 좌석을 선택하세요',
     bk_free_tables:'개 테이블 가능',
     bk_exit_full:'닫기',
     bk_phone:'전화번호',
@@ -15995,8 +16022,21 @@ function _bkAttachPanZoom(svgEl){
   // Controls bar BELOW the map. Buttons use INLINE onclick -> a global handler. This is the most
   // bulletproof method possible: no listener timing, no delegation, nothing a re-render can detach.
   var _mh=wrap.parentNode||wrap;
+  function _bkShowDragHint(){
+    try{
+      if(!st || st.s<=1 || !_mh) return;
+      var h=_mh.querySelector('.fp-drag-hint');
+      if(!h){ h=document.createElement('div'); h.className='fp-drag-hint'; _mh.appendChild(h); }
+      var _lpv=(typeof _lp==='function')?_lp:function(k,d){return d;};
+      var txt=_lpv('bk_drag_hint','Use your finger to move the map');
+      h.innerHTML='<span class="fp-drag-emoji">👆</span><span>'+((typeof escapeHtml==='function')?escapeHtml(txt):txt)+'</span>';
+      h.classList.add('show');
+      clearTimeout(_mh._bkHintT);
+      _mh._bkHintT=setTimeout(function(){ if(h) h.classList.remove('show'); }, 2900);
+    }catch(_){}
+  }
   _mh._bkZoomApi={
-    in:function(){ var r=wrap.getBoundingClientRect(); zoomAt(r.width/2,r.height/2,1.5); },
+    in:function(){ var r=wrap.getBoundingClientRect(); zoomAt(r.width/2,r.height/2,1.5); _bkShowDragHint(); },
     out:function(){ var r=wrap.getBoundingClientRect(); zoomAt(r.width/2,r.height/2,1/1.5); },
     reset:function(){ st.s=1; st.tx=0; st.ty=0; apply(); },
     full:function(){ var on=_mh.classList.toggle('fp-fs'); var fb=_mh.querySelector('.fp-cbtn-full'); if(fb){ var tt=(typeof _lp==='function')?(on?_lp('bk_exit_full','Close'):_lp('bk_fullscreen','Full screen')):(on?'Close':'Full screen'); fb.innerHTML=(on?'✕ ':'⛶ ')+'<span>'+tt+'</span>'; } try{ document.body.style.overflow=on?'hidden':''; }catch(_){} st.s=1; st.tx=0; st.ty=0; setTimeout(apply,60); }
@@ -16006,10 +16046,11 @@ function _bkAttachPanZoom(svgEl){
   }
   if(_mh && !_mh.querySelector('.fp-ctrl-bar')){
     var bar=document.createElement('div'); bar.className='fp-ctrl-bar';
-    bar.innerHTML='<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;out&#39;)" aria-label="Zoom out">−</button>'
-      +'<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;in&#39;)" aria-label="Zoom in">+</button>'
-      +'<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;reset&#39;)" aria-label="Reset">↻</button>'
-      +'<button type="button" class="fp-cbtn fp-cbtn-full" onclick="bkMapZoom(this,&#39;full&#39;)" aria-label="Full screen">⛶ <span data-lp="bk_fullscreen">'+((typeof _lp==='function')?_lp('bk_fullscreen','Full screen'):'Full screen')+'</span></button>';
+    var _lpv=(typeof _lp==='function')?_lp:function(k,d){return d;};
+    bar.innerHTML='<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;out&#39;)" aria-label="Zoom out"><span class="fp-cb-ic">−</span><span class="fp-cb-tx" data-lp="bk_zoom_out">'+_lpv('bk_zoom_out','Zoom out')+'</span></button>'
+      +'<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;in&#39;)" aria-label="Zoom in"><span class="fp-cb-ic">+</span><span class="fp-cb-tx" data-lp="bk_zoom_in">'+_lpv('bk_zoom_in','Zoom in')+'</span></button>'
+      +'<button type="button" class="fp-cbtn" onclick="bkMapZoom(this,&#39;reset&#39;)" aria-label="Reset"><span class="fp-cb-ic">↻</span><span class="fp-cb-tx" data-lp="bk_zoom_reset">'+_lpv('bk_zoom_reset','Reset')+'</span></button>'
+      +'<button type="button" class="fp-cbtn fp-cbtn-full" onclick="bkMapZoom(this,&#39;full&#39;)" aria-label="Full screen">⛶ <span data-lp="bk_fullscreen">'+_lpv('bk_fullscreen','Full screen')+'</span></button>';
     if(wrap.nextSibling) _mh.insertBefore(bar, wrap.nextSibling); else _mh.appendChild(bar);
   }
   apply();
@@ -18665,7 +18706,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782360000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782362400</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
