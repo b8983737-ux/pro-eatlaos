@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782320400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782352800 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2432,7 +2432,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-date-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px;max-height:300px;overflow-y:auto;padding:4px;}
 .bk-date-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;}
 .bk-date-card:hover{background:rgba(200,151,58,.06);border-color:rgba(200,151,58,.25);transform:translateY(-1px);}
-.bk-date-card.sel{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);border-color:#c8973a;color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.3);}
+.bk-date-card.sel{background:var(--bks-acc);border-color:var(--bks-acc);color:var(--bks-acc-fg,#0a0a0a);box-shadow:0 4px 16px rgba(0,0,0,.18);}
 .bk-date-card.closed{opacity:.3;cursor:not-allowed;}
 .bk-date-card.closed:hover{transform:none;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
 .bk-date-dow{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:700;}
@@ -2457,14 +2457,14 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-rail .bks-sect{position:relative;}
 .bkm-shell{--bks-dotbg:#141414;}
 .bk-rdot{position:absolute;left:-40px;top:-2px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--bks-dotbg,#141414);border:2px solid rgba(200,151,58,.42);color:var(--bks-acc);z-index:2;line-height:1;transition:background .25s,box-shadow .25s,border-color .25s,color .25s;}
-.bks-sect.bk-guide-now .bk-rdot{background:var(--bks-acc);color:#0a0a0a;border-color:var(--bks-acc);animation:bkStepPulse 1.7s ease-in-out infinite;}
+.bks-sect.bk-guide-now .bk-rdot{background:var(--bks-acc);color:var(--bks-acc-fg,#0a0a0a);border-color:var(--bks-acc);animation:bkStepPulse 1.7s ease-in-out infinite;}
 @keyframes bkStepPulse{0%,100%{box-shadow:0 0 0 0 rgba(200,151,58,.34);}50%{box-shadow:0 0 0 6px rgba(200,151,58,.05);}}
 .bks-sect.bk-step-done .bk-rdot{background:#2e9e5b;color:#fff;border-color:#2e9e5b;font-size:0;box-shadow:0 2px 8px rgba(46,158,91,.35);}
 .bks-sect.bk-step-done .bk-rdot::after{content:"✓";font-size:14px;font-weight:800;color:#fff;}
 .bks-sect.bk-guide-now .bks-sect-h{color:var(--bks-acc)!important;font-weight:800;}
 /* coachmark bubble that points at the active grid */
 .bk-grid-wrap{position:relative;}
-.bk-coach{position:absolute;right:6px;top:-7px;transform:translateY(-100%);background:var(--bks-acc);color:#1a1206;font-size:11px;font-weight:800;padding:5px 12px;border-radius:16px;white-space:nowrap;box-shadow:0 6px 16px rgba(200,151,58,.42);opacity:0;visibility:hidden;transition:opacity .3s;z-index:6;}
+.bk-coach{position:absolute;right:6px;top:-7px;transform:translateY(-100%);background:var(--bks-acc);color:var(--bks-acc-fg,#1a1206);font-size:11px;font-weight:800;padding:5px 12px;border-radius:16px;white-space:nowrap;box-shadow:0 6px 16px rgba(200,151,58,.42);opacity:0;visibility:hidden;transition:opacity .3s;z-index:6;}
 .bk-coach::after{content:"";position:absolute;right:20px;bottom:-5px;border:6px solid transparent;border-top-color:var(--bks-acc);border-bottom:0;}
 .bks-sect.bk-guide-now .bk-coach{opacity:1;visibility:visible;animation:bkCoachBob 1.5s ease-in-out infinite;}
 @keyframes bkCoachBob{0%,100%{transform:translateY(-100%);}50%{transform:translateY(calc(-100% - 4px));}}
@@ -2532,6 +2532,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-pill-accepted{background:rgba(76,175,80,.12);color:#66bb6a;border:1px solid rgba(76,175,80,.3);}
 .bk-pill-rejected{background:rgba(244,67,54,.12);color:#ef5350;border:1px solid rgba(244,67,54,.3);}
 .bk-pill-expired{background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);}
+.bk-pill-completed{background:rgba(76,175,80,.14);color:#6cc070;border:1px solid rgba(76,175,80,.32);}
+.bk-pill-cancelled{background:rgba(255,255,255,.06);color:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.13);}
+.bk-pill-noshow{background:rgba(244,67,54,.12);color:#ef5350;border:1px solid rgba(244,67,54,.3);}
 /* v6.4: Date filter on owner bookings panel */
 .bk-datefilter{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .bk-datefilter-lbl{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.5);}
@@ -2815,7 +2818,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .fp-cbtn{min-width:46px;height:40px;padding:0 14px;border-radius:9px;border:1px solid rgba(200,151,58,.45);background:rgba(200,151,58,.12);color:#f0e2c4;font-size:19px;font-weight:700;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .15s;}
 .fp-cbtn{pointer-events:auto;}
 .fp-cbtn:active{background:rgba(200,151,58,.32);transform:scale(.96);}
-.fp-cbtn-full{background:var(--bks-acc);color:#1a1206;border-color:var(--bks-acc);font-size:14px;}
+.fp-cbtn-full{background:var(--bks-acc);color:var(--bks-acc-fg,#1a1206);border-color:var(--bks-acc);font-size:14px;}
 .fp-cbtn-full span{font-size:13px;font-weight:800;}
 /* fullscreen: whole card fills the screen, map on top + toolbar at the bottom */
 .bk-map-host.fp-fs{position:fixed!important;inset:0!important;z-index:9990!important;background:#0a0a0a!important;margin:0!important;border:none!important;border-radius:0!important;box-shadow:none!important;display:flex!important;flex-direction:column!important;}
@@ -2886,6 +2889,14 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-free-card.is-full{background:linear-gradient(180deg,rgba(44,22,24,.94),rgba(28,14,16,.94));border-color:rgba(220,53,69,.48);}
 .bk-free-card.is-full .bk-free-dot{background:#dc3545;box-shadow:0 0 7px rgba(220,53,69,.8);animation:none;}
 .bk-free-card.is-full .bk-free-num{color:#e0686f;}
+.bk-zsum{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 6px;flex-shrink:0;}
+.bk-zcard{flex:1 1 calc(50% - 5px);min-width:140px;max-width:250px;display:flex;align-items:stretch;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(30,28,26,.94),rgba(18,16,14,.94));border:1px solid rgba(255,255,255,.08);box-shadow:0 4px 14px rgba(0,0,0,.28);}
+.bk-zcard .bk-zc-tag{background:var(--zc,#2980b9);color:#fff;font-weight:800;font-size:12.5px;letter-spacing:.4px;padding:0 13px;display:flex;align-items:center;min-width:70px;line-height:1.18;}
+.bk-zcard .bk-zc-body{flex:1;padding:9px 13px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+.bk-zcard .bk-zc-num{font-size:20px;font-weight:800;color:#fff;line-height:1;}
+.bk-zcard .bk-zc-lbl{font-size:10px;font-weight:600;letter-spacing:.3px;color:rgba(255,255,255,.62);}
+.bk-zcard.bk-zc-bk .bk-zc-num{color:#d6d9dd;}
+body.lang-lo .bk-zcard,body.lang-th .bk-zcard{letter-spacing:0 !important;}
 /* v6.6: Customer-side area tabs (Indoor/Outdoor/Garden) */
 .bk-area-tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0;}
 .bk-area-tab{padding:9px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);border-radius:22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
@@ -3082,8 +3093,8 @@ body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,bod
 #pg-resto .rfp-qa .qi{font-size:26px;line-height:1;color:var(--rfp-lt)}
 #rfpToast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(10px);background:#17120a;color:#f4ecdd;padding:12px 20px;border-radius:13px;font-size:15px;font-weight:600;letter-spacing:.3px;box-shadow:0 10px 30px rgba(0,0,0,.34);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99999;max-width:84vw;text-align:center}
 #rfpToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#pg-resto .rfp-qa.primary{background:var(--rfp-a);border-color:var(--rfp-a);color:#17120a;font-weight:600}
-#pg-resto .rfp-qa.primary .qi{color:#17120a}
+#pg-resto .rfp-qa.primary{background:var(--rfp-a);border-color:var(--rfp-a);color:var(--rfp-a-fg,#17120a);font-weight:600}
+#pg-resto .rfp-qa.primary .qi{color:var(--rfp-a-fg,#17120a)}
 #pg-resto .rfp-sec{padding:14px 22px}
 #pg-resto .rfp-eye{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--rfp-a);margin-bottom:12px;font-weight:600}
 #pg-resto .rfp-about{color:var(--rfp-mut);font-size:14.5px;line-height:1.7}
@@ -5617,6 +5628,7 @@ const LP_TRANSLATIONS = {
     bk_no_tables_party:'No tables fit your party size. Try fewer guests.',
     bk_table_seats:'seats',
     bk_table_booked:'Booked',
+    bk_zone_booked:'Booked',
     bk_table_locked_by_other:'Reserved',
     bk_table_locked:'TABLE RESERVED FOR YOU',
     bk_lock_msg:'Complete booking in',
@@ -5810,6 +5822,7 @@ const LP_TRANSLATIONS = {
     bk_no_tables_party:'ບໍ່ມີໂຕະທີ່ພໍສຳລັບກຸ່ມຂອງທ່ານ. ກະລຸນາລົດຈຳນວນຄົນ.',
     bk_table_seats:'ບ່ອນນັ່ງ',
     bk_table_booked:'ຖືກຈອງ',
+    bk_zone_booked:'ຖືກຈອງໄວ້ແລ້ວ',
     bk_table_locked_by_other:'ຈອງໄວ້ແລ້ວ',
     bk_table_locked:'ໂຕະຈອງໄວ້ສຳລັບທ່ານ',
     bk_lock_msg:'ສຳເລັດການຈອງພາຍໃນ',
@@ -6003,6 +6016,7 @@ const LP_TRANSLATIONS = {
     bk_no_tables_party:'ไม่มีโต๊ะที่เหมาะกับจำนวนคนของคุณ ลองลดจำนวน',
     bk_table_seats:'ที่นั่ง',
     bk_table_booked:'ถูกจอง',
+    bk_zone_booked:'ถูกจองแล้ว',
     bk_table_locked_by_other:'จองไว้',
     bk_table_locked:'โต๊ะถูกจองไว้สำหรับคุณ',
     bk_lock_msg:'ทำการจองให้เสร็จภายใน',
@@ -6196,6 +6210,7 @@ const LP_TRANSLATIONS = {
     bk_no_tables_party:'没有适合您人数的桌位。请减少人数。',
     bk_table_seats:'座位',
     bk_table_booked:'已预订',
+    bk_zone_booked:'已预订',
     bk_table_locked_by_other:'已保留',
     bk_table_locked:'桌位已为您保留',
     bk_lock_msg:'请在以下时间内完成预订',
@@ -6389,6 +6404,7 @@ const LP_TRANSLATIONS = {
     bk_no_tables_party:'인원에 맞는 테이블이 없습니다. 인원을 줄여보세요.',
     bk_table_seats:'좌석',
     bk_table_booked:'예약됨',
+    bk_zone_booked:'예약 완료',
     bk_table_locked_by_other:'예약 중',
     bk_table_locked:'테이블이 예약되었습니다',
     bk_lock_msg:'다음 시간 내에 예약 완료',
@@ -8952,9 +8968,10 @@ async function bkEnterBook(id){
   await bkLoadHoursAndBuildDates();
   if(typeof _bkEnsureScrollHint==='function') _bkEnsureScrollHint();
 }
+function _accFg(hex){ try{ var h=String(hex||'').replace('#',''); if(h.length===3) h=h.split('').map(function(c){return c+c;}).join(''); var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); if(isNaN(r)) return '#1a1206'; return (0.299*r+0.587*g+0.114*b)>148?'#1a1206':'#ffffff'; }catch(_){ return '#1a1206'; } }
 function bkApplyRestoChrome(r){
-  var acc=(typeof RFP_ACCENT!=='undefined' && r && RFP_ACCENT[r.theme])||'#c8973a';
-  var shell=document.querySelector('#mCustBooking .bkm-shell'); if(shell){ shell.style.setProperty('--bks-acc', acc); shell.setAttribute('data-bg',(r&&r.bg)||'dark'); }
+  var acc=(r&&r.accent)||(typeof RFP_ACCENT!=='undefined' && r && RFP_ACCENT[r.theme])||'#c8973a';
+  var shell=document.querySelector('#mCustBooking .bkm-shell'); if(shell){ shell.style.setProperty('--bks-acc', acc); shell.style.setProperty('--bks-acc-fg', _accFg(acc)); shell.setAttribute('data-bg',(r&&r.bg)||'dark'); }
   var safe=(typeof _rfpSafeUrl==='function')?_rfpSafeUrl:function(u){return String(u||'').replace(/["'()\\]/g,'');};
   var cover=document.getElementById('bksCover');
   if(cover){ if(r && r.cover){ cover.style.backgroundImage='url('+safe(r.cover)+')'; cover.classList.remove('noimg'); } else { cover.style.backgroundImage=''; cover.classList.add('noimg'); } }
@@ -10322,15 +10339,30 @@ async function bkLoadTables(){
       // Insert tabs (above the wrap) + legend (below the wrap)
       const wrapHtml = grid.innerHTML; // will be set by _bkRenderActiveAreaMap
       const _isFull = _legFree <= 0;
+      // ── Professional zone summary cards (venue key + live counts) ──
+      const _zsTaken = new Set();
+      [bookedTableIds, lockedTableIds, walkInTableIds].forEach(st => { if(st && st.forEach) st.forEach(id => _zsTaken.add(id)); });
+      const _zAgg = {}; const _zOrder = [];
+      partyOK.forEach(t => {
+        const z = (t.zone != null && String(t.zone).trim()) ? String(t.zone).trim() : 'Indoor';
+        if(!_zAgg[z]){ _zAgg[z] = { free:0, vip:false }; _zOrder.push(z); }
+        if(typeof _isVipTable==='function' && _isVipTable(t)) _zAgg[z].vip = true;
+        if(!_zsTaken.has(t.id)) _zAgg[z].free++;
+      });
+      let _zBookedN = 0; tables.forEach(t => { if(_zsTaken.has(t.id)) _zBookedN++; });
+      _zOrder.sort((a,b)=>{ const av=_zAgg[a].vip?0:1, bv=_zAgg[b].vip?0:1; return av-bv || String(a).localeCompare(String(b)); });
+      const _zLblFree = escapeHtml(_lp('bk_free_tables','tables available'));
+      let _zCardsHtml = _zOrder.map(z => {
+        const v = _zAgg[z]; const col = v.vip ? '#c0392b' : '#2980b9';
+        const tag = escapeHtml(z) + (v.vip ? ' · VIP' : '');
+        return `<div class="bk-zcard" style="--zc:${col}"><div class="bk-zc-tag">${tag}</div><div class="bk-zc-body"><div class="bk-zc-num">${v.free}</div><div class="bk-zc-lbl">${_zLblFree}</div></div></div>`;
+      }).join('');
+      if(_zBookedN > 0){
+        _zCardsHtml += `<div class="bk-zcard bk-zc-bk" style="--zc:#6b7077"><div class="bk-zc-tag">${escapeHtml(_lp('bk_zone_booked','Booked'))}</div><div class="bk-zc-body"><div class="bk-zc-num">${_zBookedN}</div></div></div>`;
+      }
+      const _zoneSummary = '<div class="bk-zsum">' + _zCardsHtml + '</div>';
       const _freeTop = `<div class="bk-free-top"><span class="bk-free-card${_isFull ? ' is-full' : ''}"><span class="bk-free-dot"></span><span class="bk-free-num">${_legFree}</span><span class="bk-free-lbl">${escapeHtml(_lp('bk_free_tables','tables available'))}</span></span></div>`;
-      grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + `
-        <div class="fp-vw-legend">
-          <span><i style="background:#2980b9"></i><span data-lp="bk_legend_available">${escapeHtml(lblAvail)}</span></span>
-          <span><i style="background:#c0392b"></i><span>VIP</span></span>
-          <span><i style="background:rgba(120,124,130,.6)"></i><span data-lp="bk_table_booked">${escapeHtml(lblBooked)}</span></span>
-          <span><i style="background:rgba(255,193,7,.35)"></i><span data-lp="bk_table_locked_by_other">${escapeHtml(lblLocked)}</span></span>
-        </div>
-      `;
+      grid.innerHTML = tabsHtml + _freeTop + '<div class="bk-map-host">' + wrapHtml + '</div>' + _zoneSummary;
       // Wire up zone buttons — tap All or a zone to switch the map
       const zoneBar = grid.querySelector('#bkZoneBar');
       if(zoneBar){
@@ -10946,6 +10978,7 @@ function genBookingCode(){
   return s;
 }
 
+function _bkPhoneKey(p){ var d=String(p||'').replace(/\D/g,''); if(d.length>8 && d.indexOf('856')===0) d=d.slice(3); return d.length>8 ? d.slice(-8) : d; }
 async function submitCustBooking(){
   const name = document.getElementById('bkName').value.trim();
   const phone = document.getElementById('bkPhone').value.trim();
@@ -10987,6 +11020,7 @@ async function submitCustBooking(){
       name, phone, note,
       code,
       status: 'pending',
+      phoneKey: _bkPhoneKey(phone),
       createdAt: Date.now()
     };
     // v5.4: Include table info if customer picked one
@@ -11107,11 +11141,18 @@ async function bsLookup(by){
     // customer typed (server-side filter) instead of downloading the whole list and filtering here.
     // The customer's browser now only ever receives bookings that match their own phone/code.
     // Requires bookings .indexOn 'phone' and 'code'.
+    const phoneKeyQ = (by==='phone') ? _bkPhoneKey(phoneQ) : '';
     const allRestoBookings = await Promise.all(
-      restoIds.map(rId => (by==='code'
-        ? fbGetFiltered('bookings/'+rId, 'code', codeQ)
-        : fbGetFiltered('bookings/'+rId, 'phone', phoneQ)
-      ).catch(()=>null))
+      restoIds.map(async rId => {
+        if(by==='code') return await fbGetFiltered('bookings/'+rId, 'code', codeQ).catch(()=>null);
+        // Phone: match by normalized key (works in any format) AND raw phone (older bookings), then merge by id
+        const parts = await Promise.all([
+          phoneKeyQ ? fbGetFiltered('bookings/'+rId, 'phoneKey', phoneKeyQ).catch(()=>null) : null,
+          fbGetFiltered('bookings/'+rId, 'phone', phoneQ).catch(()=>null)
+        ]);
+        if(!parts[0] && !parts[1]) return null;
+        return Object.assign({}, parts[1]||{}, parts[0]||{});
+      })
     );
     allRestoBookings.forEach(restoBookings => {
       if(!restoBookings) return;
@@ -11119,7 +11160,7 @@ async function bsLookup(by){
         const b = restoBookings[bId];
         if(!b) return;
         if(by==='phone'){
-          if(_bsPhoneMatch(b.phone, phoneQ)) found.push(b);
+          if(_bsPhoneMatch(b.phone, phoneQ) || (phoneKeyQ && _bkPhoneKey(b.phone)===phoneKeyQ)) found.push(b);
         } else {
           if(b.code === codeQ) found.push(b);
         }
@@ -11448,6 +11489,11 @@ if(typeof escapeHtml!=='function'){
 #mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input::placeholder{color:rgba(74,23,48,.42)}
 #mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-input:focus{border-color:#b8336e;background:#fff;box-shadow:0 0 0 3px rgba(184,51,110,.14)}
 #mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-card{background:rgba(255,255,255,.5);border-color:rgba(120,40,75,.18)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-pill{background:rgba(120,40,75,.10);color:#7a2d52;border:1px solid rgba(120,40,75,.24)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-pill-completed,#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-pill-accepted{background:rgba(20,122,67,.16);color:#0f7a40;border-color:rgba(20,122,67,.36)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-pill-pending{background:rgba(176,118,0,.18);color:#8f5e00;border-color:rgba(176,118,0,.4)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-pill-expired,#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-pill-cancelled{background:rgba(90,90,104,.16);color:#54545f;border-color:rgba(90,90,104,.34)}
+#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-pill-rejected,#mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-pill-noshow{background:rgba(190,40,55,.14);color:#a3273a;border-color:rgba(190,40,55,.34)}
 #mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-info{color:rgba(74,23,48,.7)}
 #mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-status-info b{color:rgba(74,23,48,.5)}
 #mCustBookingStatus .bkm-shell:is([data-bg="blush"],[data-bg="pink"],[data-bg="rose"]) .bk-empty{color:rgba(74,23,48,.5)}
@@ -11473,7 +11519,7 @@ if(typeof escapeHtml!=='function'){
 #bkStepBook .bk-date-card{flex:0 0 auto;min-width:56px}
 #bkStepBook .bk-date-card.sel,#bkStepBook .bk-slot.sel{background:var(--bks-acc)!important;border-color:var(--bks-acc)!important}
 #bkStepBook .bk-table-grid.fp-mode{border:none;border-radius:0;overflow:visible;background:transparent}
-#bkStepBook .bks-confirm{width:100%;background:var(--bks-acc);color:#1a1206;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s}
+#bkStepBook .bks-confirm{width:100%;background:var(--bks-acc);color:var(--bks-acc-fg,#1a1206);border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s}
 #bkStepBook .bks-confirm:active{transform:translateY(1px)}
 #bkStepBook .bks-sect+.bks-sect{border-top:1px solid rgba(255,255,255,.06);padding-top:16px}
 #bkStepBook .bk-party{display:flex;align-items:center;justify-content:center;gap:26px}
@@ -11789,8 +11835,9 @@ async function renderRestoPage(rid){
   _rfpResto=r;
   var hrs=null; try{ hrs=await fbGet('restoHours/'+rid); }catch(_){}
   var openSt=_rfpOpenStatus(hrs);
-  var acc=RFP_ACCENT[r.theme]||'#c8973a';
+  var acc=(r&&r.accent)||RFP_ACCENT[r.theme]||'#c8973a';
   host.style.setProperty('--rfp-a', acc);
+  host.style.setProperty('--rfp-a-fg', _accFg(acc));
 
   var menu=Array.isArray(r.menu)?r.menu.filter(m=>m&&m.status!=='inactive'):[];
   var priceFrom=null; if(menu.length){ var _pp=[]; menu.forEach(m=>{ if(m.sizes&&m.sizes.length) m.sizes.forEach(s=>{ if(s.price) _pp.push(s.price); }); else if(m.price) _pp.push(m.price); }); if(_pp.length) priceFrom=Math.min.apply(null,_pp); }
@@ -11946,7 +11993,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782320400</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782352800</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
