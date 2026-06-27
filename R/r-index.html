@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782540000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782548000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2449,11 +2449,15 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-slot-badge-warn{color:#ffc107;}
 .bk-slot:hover{background:rgba(200,151,58,.06);border-color:rgba(200,151,58,.25);transform:translateY(-1px);}
 .bk-slot.sel{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);border-color:#c8973a;color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.3);}
-.bk-slot.taken{opacity:.25;cursor:not-allowed;text-decoration:line-through;}
+.bk-slot.taken{opacity:.5;cursor:not-allowed;}
+.bk-slot.taken .bk-slot-time{text-decoration:line-through;}
+.bk-slot-past{color:#9a7b6a;font-weight:700;}
+.bk-slot-full{color:#c2607a;font-weight:700;}
 .bk-slot.taken:hover{transform:none;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
 .bk-slot.r2lock{opacity:.6;cursor:not-allowed;border-style:dashed;}
 .bk-slot.r2lock:hover{transform:none;background:rgba(255,255,255,.03);}
 .bk-slot-r2lock{color:var(--bks-acc,#c8973a);font-weight:700;}
+.bk-slot-open{color:#1e9e5a;font-weight:700;}
 /* Guided flow: numbered step circles (1->2), checkmark when done, subtle chevron + soft glow */
 .bk-rail{position:relative;padding-left:40px;}
 .bk-rail::before{content:"";position:absolute;left:13px;top:14px;bottom:16px;width:2px;background:rgba(200,151,58,.32);border-radius:2px;}
@@ -5662,7 +5666,7 @@ const LP_TRANSLATIONS = {
     bk_people_word:'people',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'Only {n} left',
-    bk_round2_opens:'Opens {t}',
+    bk_round2_opens:'Opens for booking {t}',bk_round_open_now:'Open for booking',bk_slot_passed:'Booking closed',bk_slot_full:'Fully booked',
     bk_r2_title:'Two-round seating (release 2nd round later)',
     bk_r2_help:'Round 2 stays locked until its release time on the booking day. Slots at/after "Round 2 starts" count as Round 2.',
     bk_r2_from:'Round 2 starts at',
@@ -5867,13 +5871,13 @@ const LP_TRANSLATIONS = {
     bk_legend_available:'ວ່າງ',
     bk_people_word:'ຄົນ',
     // v6.3: Custom booking time slots — capacity badges
-    bk_only_n_left:'ເຫຼືອພຽງ {n}',
-    bk_round2_opens:'ເປີດ {t}',
+    bk_only_n_left:'ຍັງເຫຼືອ {n} ໂຕະ',
+    bk_round2_opens:'ຈະເປີດໃຫ້ຈອງ {t}',bk_round_open_now:'ເປີດໃຫ້ຈອງແລ້ວ',bk_slot_passed:'ໝົດເວລາຈອງ',bk_slot_full:'ເຕັມແລ້ວ',
     bk_r2_title:'ການຈອງສອງຮອບ (ປ່ອຍຮອບ 2 ພາຍຫຼັງ)',
     bk_r2_help:'ຮອບ 2 ຈະຖືກລັອກໄວ້ ຈົນກວ່າຈະຮອດເວລາປ່ອຍໃນມື້ທີ່ຈອງ. ໂມງຕັ້ງແຕ່ “ຮອບ 2 ເລີ່ມ” ຂຶ້ນໄປ ຖືເປັນຮອບ 2.',
     bk_r2_from:'ຮອບ 2 ເລີ່ມເວລາ',
     bk_r2_open:'ຮອບ 2 ເປີດເວລາ',
-    bk_few_left:'ເຫຼືອໜ້ອຍ',
+    bk_few_left:'ຍັງເຫຼືອໜ້ອຍ',
     // v6.1: Floor plan map labels
     fp_counter:'ບາ',
     fp_toilet:'ຫ້ອງນ້ຳ',
@@ -6074,7 +6078,7 @@ const LP_TRANSLATIONS = {
     bk_people_word:'คน',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'เหลือเพียง {n}',
-    bk_round2_opens:'เปิด {t}',
+    bk_round2_opens:'จะเปิดให้จอง {t}',bk_round_open_now:'เปิดให้จองแล้ว',bk_slot_passed:'หมดเวลาจอง',bk_slot_full:'เต็มแล้ว',
     bk_r2_title:'จองสองรอบ (ปล่อยรอบ 2 ทีหลัง)',
     bk_r2_help:'รอบ 2 จะถูกล็อกจนกว่าจะถึงเวลาปล่อยในวันที่จอง เวลาตั้งแต่ “รอบ 2 เริ่ม” ขึ้นไปนับเป็นรอบ 2',
     bk_r2_from:'รอบ 2 เริ่มเวลา',
@@ -6280,7 +6284,7 @@ const LP_TRANSLATIONS = {
     bk_people_word:'人',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'仅剩 {n} 个',
-    bk_round2_opens:'{t} 开放',
+    bk_round2_opens:'{t} 开放预订',bk_round_open_now:'已开放预订',bk_slot_passed:'已过时间',bk_slot_full:'已订满',
     bk_r2_title:'两轮订座（稍后开放第二轮）',
     bk_r2_help:'第二轮在预订当天到达开放时间前锁定。“第二轮开始”及之后的时段计为第二轮。',
     bk_r2_from:'第二轮开始时间',
@@ -6486,7 +6490,7 @@ const LP_TRANSLATIONS = {
     bk_people_word:'명',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'{n}개 남음',
-    bk_round2_opens:'{t} 오픈',
+    bk_round2_opens:'{t} 예약 오픈',bk_round_open_now:'예약 가능',bk_slot_passed:'예약 종료',bk_slot_full:'예약 마감',
     bk_r2_title:'2부 예약 (2부는 나중에 오픈)',
     bk_r2_help:'2부는 예약 당일 오픈 시간 전까지 잠깁니다. “2부 시작” 이후 시간대가 2부로 간주됩니다.',
     bk_r2_from:'2부 시작 시간',
@@ -8949,7 +8953,10 @@ function buildBkSlotGrid(){
   const _slotOpen={};
   _roundList.forEach(function(rd){ const op=(rd&&_rdRe.test(rd.openAt))?rd.openAt:'20:30'; (rd&&Array.isArray(rd.slots)?rd.slots:[]).forEach(function(s){ if(_rdRe.test(s)) _slotOpen[s]=op; }); });
   const _roundSlots=Object.keys(_slotOpen);
-  const lblR2=_lp('bk_round2_opens','Opens {t}');
+  const lblR2=_lp('bk_round2_opens','Opens for booking {t}');
+  const lblOpenNow=_lp('bk_round_open_now','Open for booking');
+  const lblPast=_lp('bk_slot_passed','Booking closed');
+  const lblFull=_lp('bk_slot_full','Fully booked');
   if(_roundSlots.length){
     const _r2FromMin=(dayHours&&dayHours.from)?_r2min(dayHours.from):360;
     const _r2Key=m=>(m<_r2FromMin?m+1440:m);
@@ -8975,12 +8982,19 @@ function buildBkSlotGrid(){
     let badge = '';
     if(_r2locked){
       badge = `<div class="bk-slot-badge bk-slot-r2lock">🔒 ${escapeHtml(lblR2.replace('{t}', _rOpen||'20:30'))}</div>`;
-    } else if(!isFull && total > 1){
-      if(remaining === 1){
+    } else if(!isFull){
+      // every open & bookable slot (Round 1 day slots + opened rounds) confirms it's open for booking
+      if(total > 1 && remaining === 1){
         badge = `<div class="bk-slot-badge bk-slot-badge-warn">${escapeHtml(lblOnly.replace('{n}', 1))}</div>`;
-      } else if(remaining <= Math.max(2, Math.floor(total * 0.3))){
+      } else if(total > 1 && remaining <= Math.max(2, Math.floor(total * 0.3))){
         badge = `<div class="bk-slot-badge">${escapeHtml(lblFew)}</div>`;
+      } else {
+        badge = `<div class="bk-slot-badge bk-slot-open">✅ ${escapeHtml(lblOpenNow)}</div>`;
       }
+    } else if(isPast){
+      badge = `<div class="bk-slot-badge bk-slot-past">${escapeHtml(lblPast)}</div>`;
+    } else {
+      badge = `<div class="bk-slot-badge bk-slot-full">${escapeHtml(lblFull)}</div>`;
     }
     html += `<div class="bk-slot ${cls}" data-s="${slot}" ${onclick}><div class="bk-slot-time">${slot}</div>${badge}</div>`;
   });
@@ -12159,7 +12173,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782540000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782548000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
