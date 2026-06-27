@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782371400 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782452000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2463,6 +2463,9 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-slot.sel{background:linear-gradient(135deg,#c8973a 0%,#e0b455 100%);border-color:#c8973a;color:#0a0a0a;box-shadow:0 4px 16px rgba(200,151,58,.3);}
 .bk-slot.taken{opacity:.25;cursor:not-allowed;text-decoration:line-through;}
 .bk-slot.taken:hover{transform:none;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
+.bk-slot.r2lock{opacity:.6;cursor:not-allowed;border-style:dashed;}
+.bk-slot.r2lock:hover{transform:none;background:rgba(255,255,255,.03);}
+.bk-slot-r2lock{color:var(--bks-acc,#c8973a);font-weight:700;}
 /* Guided flow: numbered step circles (1->2), checkmark when done, subtle chevron + soft glow */
 .bk-rail{position:relative;padding-left:40px;}
 .bk-rail::before{content:"";position:absolute;left:13px;top:14px;bottom:16px;width:2px;background:rgba(200,151,58,.32);border-radius:2px;}
@@ -2479,6 +2482,10 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-coach{position:absolute;right:6px;top:-7px;transform:translateY(-100%);background:var(--bks-acc);color:var(--bks-acc-fg,#1a1206);font-size:11px;font-weight:800;padding:5px 12px;border-radius:16px;white-space:nowrap;box-shadow:0 6px 16px rgba(200,151,58,.42);opacity:0;visibility:hidden;transition:opacity .3s;z-index:6;}
 .bk-coach::after{content:"";position:absolute;right:20px;bottom:-5px;border:6px solid transparent;border-top-color:var(--bks-acc);border-bottom:0;}
 .bks-sect.bk-guide-now .bk-coach{opacity:1;visibility:visible;animation:bkCoachBob 1.5s ease-in-out infinite;}
+.bk-swipe-coach{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;background:rgba(18,8,13,.82);color:#fff;border:1.5px solid var(--bks-acc,#c8973a);padding:8px 14px;border-radius:999px;white-space:nowrap;font-size:12.5px;font-weight:700;letter-spacing:0;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .35s;z-index:7;}
+.bk-swipe-coach.show{opacity:1;visibility:visible;}
+.bk-swipe-coach .bk-swipe-hand{font-size:20px;display:inline-block;animation:bkSwipeHand 1.3s ease-in-out infinite;}
+@keyframes bkSwipeHand{0%,100%{transform:translateX(7px) rotate(0)}50%{transform:translateX(-7px) rotate(-14deg)}}
 @keyframes bkCoachBob{0%,100%{transform:translateY(-100%);}50%{transform:translateY(calc(-100% - 4px));}}
 .bks-sect.bk-guide-now .bk-date-grid,.bks-sect.bk-guide-now .bk-slot-grid{border-radius:11px;box-shadow:0 0 0 1.5px rgba(200,151,58,.6),0 4px 18px rgba(200,151,58,.14);}
 .bk-flabel{display:block;font-size:11px;font-weight:700;color:var(--bks-acc);opacity:.92;margin:12px 0 5px 2px;letter-spacing:.3px;}
@@ -7571,6 +7578,11 @@ const LP_TRANSLATIONS = {
     bk_people_word:'people',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'Only {n} left',
+    bk_round2_opens:'Opens {t}',
+    bk_r2_title:'Two-round seating (release 2nd round later)',
+    bk_r2_help:'Round 2 stays locked until its release time on the booking day. Slots at/after "Round 2 starts" count as Round 2.',
+    bk_r2_from:'Round 2 starts at',
+    bk_r2_open:'Round 2 opens at',
     bk_few_left:'Few left',
     // v6.1: Floor plan map labels (translated for customer view)
     fp_counter:'Bar',
@@ -7610,6 +7622,7 @@ const LP_TRANSLATIONS = {
     bk_zoom_out:'Zoom out',
     bk_zoom_reset:'Reset',
     bk_drag_hint:'Use your finger to move the map',
+    bk_date_swipe:'Slide left for more dates',
     bk_free_tables:'tables available',
     bk_exit_full:'Close',
     bk_phone:'Phone number',
@@ -7771,6 +7784,11 @@ const LP_TRANSLATIONS = {
     bk_people_word:'ຄົນ',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'ເຫຼືອພຽງ {n}',
+    bk_round2_opens:'ເປີດ {t}',
+    bk_r2_title:'ການຈອງສອງຮອບ (ປ່ອຍຮອບ 2 ພາຍຫຼັງ)',
+    bk_r2_help:'ຮອບ 2 ຈະຖືກລັອກໄວ້ ຈົນກວ່າຈະຮອດເວລາປ່ອຍໃນມື້ທີ່ຈອງ. ໂມງຕັ້ງແຕ່ “ຮອບ 2 ເລີ່ມ” ຂຶ້ນໄປ ຖືເປັນຮອບ 2.',
+    bk_r2_from:'ຮອບ 2 ເລີ່ມເວລາ',
+    bk_r2_open:'ຮອບ 2 ເປີດເວລາ',
     bk_few_left:'ເຫຼືອໜ້ອຍ',
     // v6.1: Floor plan map labels
     fp_counter:'ບາ',
@@ -7810,6 +7828,7 @@ const LP_TRANSLATIONS = {
     bk_zoom_out:'ຫຍໍ້ລົງ',
     bk_zoom_reset:'ຕັ້ງຄືນ',
     bk_drag_hint:'ໃຊ້ນິ້ວເລື່ອນແຜນທີ່ ເພື່ອເລືອກໂຕະ',
+    bk_date_swipe:'ເລື່ອນໄປຊ້າຍ ເພື່ອເບິ່ງວັນທີເພີ່ມເຕີມ',
     bk_free_tables:'ໂຕະວ່າງ',
     bk_exit_full:'ປິດ',
     bk_phone:'ເບີໂທລະສັບ',
@@ -7971,6 +7990,11 @@ const LP_TRANSLATIONS = {
     bk_people_word:'คน',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'เหลือเพียง {n}',
+    bk_round2_opens:'เปิด {t}',
+    bk_r2_title:'จองสองรอบ (ปล่อยรอบ 2 ทีหลัง)',
+    bk_r2_help:'รอบ 2 จะถูกล็อกจนกว่าจะถึงเวลาปล่อยในวันที่จอง เวลาตั้งแต่ “รอบ 2 เริ่ม” ขึ้นไปนับเป็นรอบ 2',
+    bk_r2_from:'รอบ 2 เริ่มเวลา',
+    bk_r2_open:'รอบ 2 เปิดเวลา',
     bk_few_left:'เหลือน้อย',
     // v6.1: Floor plan map labels
     fp_counter:'บาร์',
@@ -8010,6 +8034,7 @@ const LP_TRANSLATIONS = {
     bk_zoom_out:'ย่อ',
     bk_zoom_reset:'รีเซ็ต',
     bk_drag_hint:'ใช้นิ้วเลื่อนแผนที่เพื่อเลือกโต๊ะ',
+    bk_date_swipe:'เลื่อนไปทางซ้ายเพื่อดูวันที่เพิ่มเติม',
     bk_free_tables:'โต๊ะว่าง',
     bk_exit_full:'ปิด',
     bk_phone:'เบอร์โทรศัพท์',
@@ -8171,6 +8196,11 @@ const LP_TRANSLATIONS = {
     bk_people_word:'人',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'仅剩 {n} 个',
+    bk_round2_opens:'{t} 开放',
+    bk_r2_title:'两轮订座（稍后开放第二轮）',
+    bk_r2_help:'第二轮在预订当天到达开放时间前锁定。“第二轮开始”及之后的时段计为第二轮。',
+    bk_r2_from:'第二轮开始时间',
+    bk_r2_open:'第二轮开放时间',
     bk_few_left:'仅剩少量',
     // v6.1: Floor plan map labels
     fp_counter:'吧台',
@@ -8210,6 +8240,7 @@ const LP_TRANSLATIONS = {
     bk_zoom_out:'缩小',
     bk_zoom_reset:'重置',
     bk_drag_hint:'用手指移动地图选择桌位',
+    bk_date_swipe:'向左滑动查看更多日期',
     bk_free_tables:'张桌可用',
     bk_exit_full:'关闭',
     bk_phone:'电话号码',
@@ -8371,6 +8402,11 @@ const LP_TRANSLATIONS = {
     bk_people_word:'명',
     // v6.3: Custom booking time slots — capacity badges
     bk_only_n_left:'{n}개 남음',
+    bk_round2_opens:'{t} 오픈',
+    bk_r2_title:'2부 예약 (2부는 나중에 오픈)',
+    bk_r2_help:'2부는 예약 당일 오픈 시간 전까지 잠깁니다. “2부 시작” 이후 시간대가 2부로 간주됩니다.',
+    bk_r2_from:'2부 시작 시간',
+    bk_r2_open:'2부 오픈 시간',
     bk_few_left:'잔여 적음',
     // v6.1: Floor plan map labels
     fp_counter:'바',
@@ -8410,6 +8446,7 @@ const LP_TRANSLATIONS = {
     bk_zoom_out:'축소',
     bk_zoom_reset:'초기화',
     bk_drag_hint:'손가락으로 지도를 움직여 좌석을 선택하세요',
+    bk_date_swipe:'왼쪽으로 밀어 더 많은 날짜 보기',
     bk_free_tables:'개 테이블 가능',
     bk_exit_full:'닫기',
     bk_phone:'전화번호',
@@ -13547,6 +13584,21 @@ function buildBkDateGrid(){
     </div>`;
   }
   grid.innerHTML = html;
+  // Swipe-left coach: show once if the date row is scrollable; auto-hide on first scroll or after a few seconds
+  try{
+    var _dg=grid;
+    setTimeout(function(){
+      var _sc=document.getElementById('bkDateSwipeCoach');
+      if(!_sc||!_dg) return;
+      if(_dg.scrollWidth > _dg.clientWidth + 8 && !_dg.dataset.swipeHinted){
+        _dg.dataset.swipeHinted='1';
+        _sc.classList.add('show');
+        var _hide=function(){ _sc.classList.remove('show'); _dg.removeEventListener('scroll',_hide); };
+        _dg.addEventListener('scroll',_hide,{passive:true});
+        setTimeout(_hide,4500);
+      }
+    },400);
+  }catch(_){}
   if(typeof _bkUpdateGuide==='function') _bkUpdateGuide();
 }
 
@@ -13679,6 +13731,11 @@ function buildBkSlotGrid(){
   const bookedCount = bkState.bookedCount || {};
   const lblOnly = _lp('bk_only_n_left','Only {n} left');
   const lblFew  = _lp('bk_few_left','Few left');
+  // booking-v2 ROUND-2: same-night release — R2 slots stay locked until openAt on the booking day
+  const _r2c=(bkState.hours&&bkState.hours.round2)||{}; const _r2en=!!_r2c.enabled;
+  const _r2min=function(t){var p=String(t||'').split(':');return (parseInt(p[0],10)||0)*60+(parseInt(p[1],10)||0);};
+  const _r2fromMin=_r2min(_r2c.from||'21:00'), _r2openMin=_r2min(_r2c.openAt||'20:30');
+  const lblR2=_lp('bk_round2_opens','Opens {t}');
   let html = '';
   slotList.forEach(slot => {
     const [sh, sm] = slot.split(':').map(Number);
@@ -13688,11 +13745,17 @@ function buildBkSlotGrid(){
     const used = bookedCount[slot] || 0;
     const remaining = total - used;
     const isFull = remaining <= 0 || isPast;
-    const cls = isFull ? 'taken' : '';
-    const onclick = isFull ? '' : `onclick="bkPickSlot('${slot}')"`;
+    // ROUND-2: locked unless it's today AND the clock has passed the release time
+    const _isR2 = _r2en && slotMin >= _r2fromMin;
+    const _r2locked = _isR2 && !(isToday && nowMin >= _r2openMin);
+    const locked = isFull || _r2locked;
+    const cls = _r2locked ? 'r2lock' : (isFull ? 'taken' : '');
+    const onclick = locked ? '' : `onclick="bkPickSlot('${slot}')"`;
     // Capacity badge — only shown for non-full, low-availability slots
     let badge = '';
-    if(!isFull && total > 1){
+    if(_r2locked){
+      badge = `<div class="bk-slot-badge bk-slot-r2lock">🔒 ${escapeHtml(lblR2.replace('{t}', _r2c.openAt||'20:30'))}</div>`;
+    } else if(!isFull && total > 1){
       if(remaining === 1){
         badge = `<div class="bk-slot-badge bk-slot-badge-warn">${escapeHtml(lblOnly.replace('{n}', 1))}</div>`;
       } else if(remaining <= Math.max(2, Math.floor(total * 0.3))){
@@ -17376,6 +17439,18 @@ async function loadOwnerHours(){
   const lblTo = _ts('bk_to','to');
   const lblClosed = _ts('bk_closed_all_day','Closed all day');
   let html = '';
+  // booking-v2 ROUND-2: restaurant-level second-seating release (owner-set)
+  var _r2=(h&&h.round2)||{};
+  html += `<div class="oh-r2" style="background:rgba(200,151,58,.07);border:1px solid rgba(200,151,58,.25);border-radius:10px;padding:14px 16px;margin-bottom:16px">`+
+    `<label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;font-weight:700;color:#e0b455">`+
+      `<input type="checkbox" id="ohR2en" ${_r2.enabled?'checked':''} style="width:16px;height:16px;accent-color:#c8973a"> ${escapeHtml(_ts('bk_r2_title','Two-round seating (release 2nd round later)'))}</label>`+
+    `<div style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.5;margin:7px 0 10px">${escapeHtml(_ts('bk_r2_help','Round 2 stays locked until its release time on the booking day.'))}</div>`+
+    `<div style="display:flex;gap:14px;flex-wrap:wrap">`+
+      `<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:4px">${escapeHtml(_ts('bk_r2_from','Round 2 starts at'))}</div>`+
+        `<input type="time" id="ohR2from" value="${escapeHtml(_r2.from||'21:00')}" style="width:120px;padding:7px 9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:inherit;font-size:13px;color-scheme:dark"></div>`+
+      `<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:4px">${escapeHtml(_ts('bk_r2_open','Round 2 opens at'))}</div>`+
+        `<input type="time" id="ohR2open" value="${escapeHtml(_r2.openAt||'20:30')}" style="width:120px;padding:7px 9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:inherit;font-size:13px;color-scheme:dark"></div>`+
+    `</div></div>`;
   // v5.1: Show review banner if hours haven't been confirmed by owner yet
   if(h && h.needsReview === true){
     const bannerTitle = _ts('bk_hours_review_title','⚠ Please review your opening hours');
@@ -17525,6 +17600,12 @@ async function saveOwnerHours(){
     if(st.mode === 'custom') dayObj.customSlots = st.slots.slice();
     out[i] = dayObj;
   }
+  // ROUND-2 release config (restaurant-level)
+  try{ var _r2en=document.getElementById('ohR2en');
+    if(_r2en){ out.round2={ enabled:!!_r2en.checked,
+      from:(document.getElementById('ohR2from')&&document.getElementById('ohR2from').value)||'21:00',
+      openAt:(document.getElementById('ohR2open')&&document.getElementById('ohR2open').value)||'20:30' }; }
+  }catch(_){}
   try {
     await fbSet('restoHours/'+restoId, out);
     alert(_ts('bk_hours_saved','✅ Opening hours saved.'));
@@ -18299,7 +18380,7 @@ async function cleanupOldBookings(opts){
         <div class="bks-sect" id="bkSectDate">
           <span class="bk-rdot">1</span>
           <div class="bks-sect-h"><span class="bks-i">📅</span> <span data-lp="bk_pick_date">Choose a date</span></div>
-          <div class="bk-grid-wrap"><div class="bk-coach" data-lp="bk_coach_date">Tap a date</div><div class="bk-date-grid" id="bkDateGrid"></div></div>
+          <div class="bk-grid-wrap"><div class="bk-coach" data-lp="bk_coach_date">Tap a date</div><div class="bk-date-grid" id="bkDateGrid"></div><div class="bk-swipe-coach" id="bkDateSwipeCoach" aria-hidden="true"><span class="bk-swipe-hand">👈</span><span class="bk-swipe-txt" data-lp="bk_date_swipe">Slide left for more dates</span></div></div>
         </div>
         <!-- PARTY -->
         <div class="bks-sect" id="bkSectParty">
@@ -18721,7 +18802,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782371400</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782452000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
