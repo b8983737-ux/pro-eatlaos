@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782530000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782540000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -5105,7 +5105,7 @@ const STAFF_T={
     bk_date_label:'Date',bk_time_label:'Time',
     bk_save_hours:'💾 Save Hours',
     bk_hours_intro:'Set your weekly opening hours. Customers can only book during these hours, in 30-minute slots.',
-    bk_open:'Open',bk_closed_all_day:'Closed all day',bk_r2_title:'Two-round seating',bk_r2_help:'Type the 2nd-round times (24h, e.g. 21:00, 21:30). They stay locked for customers until the open time, on the booking day.',bk_r2_times:'Round 2 times (24h)',bk_r2_open:'Opens at (24h)',
+    bk_open:'Open',bk_closed_all_day:'Closed all day',bk_r2_title:'Multi-round seating',bk_r2_help:'Add seating rounds. Times (24h) for each round stay locked for customers until that round opens, on the booking day.',bk_r2_times:'Times (24h)',bk_r2_open:'Opens at (24h)',bk_r2_add:'Add round',bk_r2_round:'Round',
     bk_to:'to',
     bk_hours_saved:'✅ Opening hours saved.',
     bk_hours_review_title:'⚠ Please review your opening hours',
@@ -5306,7 +5306,7 @@ const STAFF_T={
     bk_date_label:'ວັນທີ',bk_time_label:'ເວລາ',
     bk_save_hours:'💾 ບັນທຶກຊົ່ວໂມງ',
     bk_hours_intro:'ຕັ້ງຊົ່ວໂມງເປີດປະຈຳອາທິດ. ລູກຄ້າຈະຈອງໄດ້ສະເພາະໃນຊົ່ວໂມງເປີດ ໃນຊ່ອງເວລາ 30 ນາທີ.',
-    bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',bk_r2_title:'ການຈອງສອງຮອບ',bk_r2_help:'ໃສ່ເວລາຮອບ 2 (ຮູບແບບ 24 ຊົ່ວໂມງ ເຊັ່ນ 21:00, 21:30). ມັນຈະຖືກລັອກສຳລັບລູກຄ້າ ຈົນກວ່າຈະຮອດເວລາເປີດ ໃນມື້ທີ່ຈອງ.',bk_r2_times:'ເວລາຮອບ 2 (24 ຊມ)',bk_r2_open:'ເປີດເວລາ (24 ຊມ)',
+    bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',bk_r2_title:'ການຈອງຫຼາຍຮອບ',bk_r2_help:'ເພີ່ມຮອບການນັ່ງ. ເວລາ (24 ຊມ) ຂອງແຕ່ລະຮອບ ຈະຖືກລັອກສຳລັບລູກຄ້າ ຈົນກວ່າຮອບນັ້ນຈະເປີດ ໃນມື້ທີ່ຈອງ.',bk_r2_times:'ເວລາ (24 ຊມ)',bk_r2_open:'ເປີດເວລາ (24 ຊມ)',bk_r2_add:'ເພີ່ມຮອບ',bk_r2_round:'ຮອບ',
     bk_to:'ຫາ',
     bk_hours_saved:'✅ ບັນທຶກຊົ່ວໂມງເປີດແລ້ວ.',
     bk_hours_review_title:'⚠ ກະລຸນາກວດສອບຊົ່ວໂມງເປີດຂອງທ່ານ',
@@ -5502,7 +5502,7 @@ const STAFF_T={
     bk_date_label:'วันที่',bk_time_label:'เวลา',
     bk_save_hours:'💾 บันทึกเวลา',
     bk_hours_intro:'ตั้งเวลาเปิดประจำสัปดาห์ ลูกค้าจะจองได้เฉพาะในเวลาเปิด ในช่วง 30 นาที',
-    bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',bk_r2_title:'จองสองรอบ',bk_r2_help:'ใส่เวลารอบ 2 (24 ชม. เช่น 21:00, 21:30) จะถูกล็อกสำหรับลูกค้าจนกว่าจะถึงเวลาเปิดในวันที่จอง',bk_r2_times:'เวลารอบ 2 (24 ชม.)',bk_r2_open:'เปิดเวลา (24 ชม.)',
+    bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',bk_r2_title:'จองหลายรอบ',bk_r2_help:'เพิ่มรอบที่นั่ง เวลา (24 ชม.) ของแต่ละรอบจะถูกล็อกสำหรับลูกค้าจนกว่ารอบนั้นจะเปิดในวันที่จอง',bk_r2_times:'เวลา (24 ชม.)',bk_r2_open:'เปิดเวลา (24 ชม.)',bk_r2_add:'เพิ่มรอบ',bk_r2_round:'รอบ',
     bk_to:'ถึง',
     bk_hours_saved:'✅ บันทึกเวลาเปิดเรียบร้อย',
     bk_hours_review_title:'⚠ กรุณาตรวจสอบเวลาเปิดของคุณ',
@@ -5698,7 +5698,7 @@ const STAFF_T={
     bk_date_label:'日期',bk_time_label:'时间',
     bk_save_hours:'💾 保存营业时间',
     bk_hours_intro:'设置每周营业时间。客户只能在营业时间内预订，每 30 分钟一个时段。',
-    bk_open:'营业',bk_closed_all_day:'全天休息',bk_r2_title:'两轮订座',bk_r2_help:'输入第二轮时间（24小时制，如 21:00, 21:30）。在预订当天到达开放时间前对顾客锁定。',bk_r2_times:'第二轮时间（24小时）',bk_r2_open:'开放时间（24小时）',
+    bk_open:'营业',bk_closed_all_day:'全天休息',bk_r2_title:'多轮订座',bk_r2_help:'添加订座轮次。每轮时间（24小时制）在预订当天该轮开放时间前对顾客锁定。',bk_r2_times:'时间（24小时）',bk_r2_open:'开放时间（24小时）',bk_r2_add:'添加轮次',bk_r2_round:'轮次',
     bk_to:'至',
     bk_hours_saved:'✅ 营业时间已保存。',
     bk_hours_review_title:'⚠ 请检查您的营业时间',
@@ -5910,7 +5910,7 @@ const STAFF_T={
     bk_date_label:'날짜',bk_time_label:'시간',
     bk_save_hours:'💾 영업 시간 저장',
     bk_hours_intro:'주간 영업 시간을 설정하세요. 고객은 영업 시간 내 30분 단위로만 예약할 수 있습니다.',
-    bk_open:'영업',bk_closed_all_day:'종일 휴무',bk_r2_title:'2부 예약',bk_r2_help:'2부 시간을 입력하세요 (24시간제, 예: 21:00, 21:30). 예약 당일 오픈 시간 전까지 고객에게 잠깁니다.',bk_r2_times:'2부 시간 (24시간)',bk_r2_open:'오픈 시간 (24시간)',
+    bk_open:'영업',bk_closed_all_day:'종일 휴무',bk_r2_title:'다회차 예약',bk_r2_help:'예약 회차를 추가하세요. 각 회차 시간(24시간제)은 예약 당일 해당 회차가 열리기 전까지 고객에게 잠깁니다.',bk_r2_times:'시간 (24시간)',bk_r2_open:'오픈 시간 (24시간)',bk_r2_add:'회차 추가',bk_r2_round:'회차',
     bk_to:'~',
     bk_hours_saved:'✅ 영업 시간이 저장되었습니다.',
     bk_hours_review_title:'⚠ 영업 시간을 확인해 주세요',
@@ -13731,16 +13731,21 @@ function buildBkSlotGrid(){
   const bookedCount = bkState.bookedCount || {};
   const lblOnly = _lp('bk_only_n_left','Only {n} left');
   const lblFew  = _lp('bk_few_left','Few left');
-  // booking-v2 ROUND-2: explicit 2nd-round times, merged into the list + locked until openAt on the booking day
-  const _r2c=(bkState.hours&&bkState.hours.round2)||{}; const _r2en=!!_r2c.enabled;
+  // booking-v2 ROUNDS: multiple seating rounds, each with its own times + release time (same-night lock)
   const _r2min=function(t){var p=String(t||'').split(':');return (parseInt(p[0],10)||0)*60+(parseInt(p[1],10)||0);};
-  const _r2slots=(_r2en && Array.isArray(_r2c.slots))?_r2c.slots.filter(s=>/^([01]\d|2[0-3]):[0-5]\d$/.test(s)):[];
-  const _r2openMin=_r2min(_r2c.openAt||'20:30');
+  const _rdRe=/^([01]\d|2[0-3]):[0-5]\d$/;
+  let _roundList=[];
+  { const _rd=(bkState.hours&&bkState.hours.rounds);
+    if(_rd&&_rd.enabled&&Array.isArray(_rd.list)) _roundList=_rd.list;
+    else { const _old=(bkState.hours&&bkState.hours.round2)||{}; if(_old.enabled&&Array.isArray(_old.slots)) _roundList=[{slots:_old.slots,openAt:_old.openAt}]; } }
+  const _slotOpen={};
+  _roundList.forEach(function(rd){ const op=(rd&&_rdRe.test(rd.openAt))?rd.openAt:'20:30'; (rd&&Array.isArray(rd.slots)?rd.slots:[]).forEach(function(s){ if(_rdRe.test(s)) _slotOpen[s]=op; }); });
+  const _roundSlots=Object.keys(_slotOpen);
   const lblR2=_lp('bk_round2_opens','Opens {t}');
-  if(_r2slots.length){
+  if(_roundSlots.length){
     const _r2FromMin=(dayHours&&dayHours.from)?_r2min(dayHours.from):360;
     const _r2Key=m=>(m<_r2FromMin?m+1440:m);
-    _r2slots.forEach(s=>{ if(slotList.indexOf(s)<0) slotList.push(s); });
+    _roundSlots.forEach(s=>{ if(slotList.indexOf(s)<0) slotList.push(s); });
     slotList=slotList.slice().sort((a,b)=>_r2Key(_r2min(a))-_r2Key(_r2min(b)));
   }
   let html = '';
@@ -13752,16 +13757,16 @@ function buildBkSlotGrid(){
     const used = bookedCount[slot] || 0;
     const remaining = total - used;
     const isFull = remaining <= 0 || isPast;
-    // ROUND-2: locked unless it's today AND the clock has passed the release time
-    const _isR2 = _r2en && _r2slots.indexOf(slot) >= 0;
-    const _r2locked = _isR2 && !(isToday && nowMin >= _r2openMin);
+    // ROUNDS: a round slot is locked unless it's today AND the clock passed that round's open time
+    const _rOpen = _slotOpen.hasOwnProperty(slot) ? _slotOpen[slot] : null;
+    const _r2locked = (_rOpen!==null) && !(isToday && nowMin >= _r2min(_rOpen));
     const locked = isFull || _r2locked;
     const cls = _r2locked ? 'r2lock' : (isFull ? 'taken' : '');
     const onclick = locked ? '' : `onclick="bkPickSlot('${slot}')"`;
     // Capacity badge — only shown for non-full, low-availability slots
     let badge = '';
     if(_r2locked){
-      badge = `<div class="bk-slot-badge bk-slot-r2lock">🔒 ${escapeHtml(lblR2.replace('{t}', _r2c.openAt||'20:30'))}</div>`;
+      badge = `<div class="bk-slot-badge bk-slot-r2lock">🔒 ${escapeHtml(lblR2.replace('{t}', _rOpen||'20:30'))}</div>`;
     } else if(!isFull && total > 1){
       if(remaining === 1){
         badge = `<div class="bk-slot-badge bk-slot-badge-warn">${escapeHtml(lblOnly.replace('{n}', 1))}</div>`;
@@ -17446,18 +17451,20 @@ async function loadOwnerHours(){
   const lblTo = _ts('bk_to','to');
   const lblClosed = _ts('bk_closed_all_day','Closed all day');
   let html = '';
-  // booking-v2 ROUND-2: self-contained second-seating release (owner types the times, 24h)
-  var _r2=(h&&h.round2)||{}; var _r2t=Array.isArray(_r2.slots)?_r2.slots.join(', '):'';
+  // booking-v2 ROUNDS: owner adds multiple seating rounds (each = times + its own release time)
+  (function(){ var _rd=(h&&h.rounds); var lst=[];
+    if(_rd&&Array.isArray(_rd.list)) lst=_rd.list.map(function(x){return {slots:(x&&Array.isArray(x.slots)?x.slots.join(', '):''), openAt:(x&&x.openAt)||'20:30'};});
+    else { var _o=(h&&h.round2)||{}; if(Array.isArray(_o.slots)&&_o.slots.length) lst=[{slots:_o.slots.join(', '), openAt:_o.openAt||'20:30'}]; }
+    if(!lst.length) lst=[{slots:'', openAt:'20:30'}];
+    _ohRounds=lst; _ohRoundsEnabled=!!((_rd&&_rd.enabled)||((h&&h.round2)||{}).enabled);
+  })();
   html += `<div class="oh-r2" style="background:rgba(200,151,58,.07);border:1px solid rgba(200,151,58,.25);border-radius:10px;padding:14px 16px;margin-bottom:16px">`+
     `<label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;font-weight:700;color:#e0b455">`+
-      `<input type="checkbox" id="ohR2en" ${_r2.enabled?'checked':''} style="width:16px;height:16px;accent-color:#c8973a"> ${escapeHtml(_ts('bk_r2_title','Two-round seating'))}</label>`+
-    `<div style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.5;margin:7px 0 10px">${escapeHtml(_ts('bk_r2_help','Type the 2nd-round times (24h). They stay locked for customers until the open time, on the booking day.'))}</div>`+
-    `<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">`+
-      `<div style="flex:1;min-width:170px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:4px">${escapeHtml(_ts('bk_r2_times','Round 2 times (24h)'))}</div>`+
-        `<input type="text" id="ohR2slots" value="${escapeHtml(_r2t)}" placeholder="21:00, 21:30" style="width:100%;padding:8px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:inherit;font-size:13px"></div>`+
-      `<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:4px">${escapeHtml(_ts('bk_r2_open','Opens at (24h)'))}</div>`+
-        `<input type="text" id="ohR2open" value="${escapeHtml(_r2.openAt||'20:30')}" placeholder="20:30" style="width:96px;padding:8px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:inherit;font-size:13px"></div>`+
-    `</div></div>`;
+      `<input type="checkbox" id="ohR2en" ${_ohRoundsEnabled?'checked':''} style="width:16px;height:16px;accent-color:#c8973a"> ${escapeHtml(_ts('bk_r2_title','Multi-round seating'))}</label>`+
+    `<div style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.5;margin:7px 0 10px">${escapeHtml(_ts('bk_r2_help','Add seating rounds. Times (24h) for each round stay locked for customers until that round opens, on the booking day.'))}</div>`+
+    `<div id="ohRoundsList">${_ohRoundsHTML()}</div>`+
+    `<button type="button" onclick="ohAddRound()" style="margin-top:4px;padding:7px 14px;background:rgba(200,151,58,.18);border:1px solid rgba(200,151,58,.45);border-radius:8px;color:#e0b455;font-weight:700;font-size:12px;cursor:pointer">+ ${escapeHtml(_ts('bk_r2_add','Add round'))}</button>`+
+  `</div>`;
   // v5.1: Show review banner if hours haven't been confirmed by owner yet
   if(h && h.needsReview === true){
     const bannerTitle = _ts('bk_hours_review_title','⚠ Please review your opening hours');
@@ -17583,6 +17590,21 @@ function _ohRerenderSlots(i){
   wrap.innerHTML = chips + `<button type="button" class="oh-slot-add" onclick="ohAddSlot(${i})">${escapeHtml(lblBkAddSlot)}</button>`;
 }
 
+var _ohRounds=[]; var _ohRoundsEnabled=false;
+function _ohRdInput(id,val,ph,w){ return '<input type="text" id="'+id+'" value="'+escapeHtml(val||'')+'" placeholder="'+ph+'" style="width:'+w+';padding:8px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:inherit;font-size:13px">'; }
+function _ohRoundsHTML(){
+  var lbT=escapeHtml(_ts('bk_r2_times','Times (24h)')), lbO=escapeHtml(_ts('bk_r2_open','Opens at (24h)')), lbR=escapeHtml(_ts('bk_r2_round','Round'));
+  return (_ohRounds||[]).map(function(rd,i){
+    return '<div class="oh-rd-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.06)">'
+      +'<div style="flex:1;min-width:150px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#e0b455;margin-bottom:4px">'+lbR+' '+(i+2)+' — '+lbT+'</div>'+_ohRdInput('ohRdSlots-'+i, rd.slots, '21:00, 21:30', '100%')+'</div>'
+      +'<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:4px">'+lbO+'</div>'+_ohRdInput('ohRdOpen-'+i, rd.openAt, '20:30', '92px')+'</div>'
+      +'<button type="button" onclick="ohRemoveRound('+i+')" title="remove" style="width:34px;height:34px;border-radius:8px;background:rgba(220,80,80,.15);border:1px solid rgba(220,80,80,.4);color:#ff8a8a;font-size:17px;font-weight:700;cursor:pointer">×</button>'
+    +'</div>';
+  }).join('');
+}
+function _ohSyncRounds(){ for(var i=0;i<(_ohRounds||[]).length;i++){ var a=document.getElementById('ohRdSlots-'+i), b=document.getElementById('ohRdOpen-'+i); if(a)_ohRounds[i].slots=a.value; if(b)_ohRounds[i].openAt=b.value; } }
+function ohAddRound(){ _ohSyncRounds(); _ohRounds.push({slots:'',openAt:'20:30'}); var c=document.getElementById('ohRoundsList'); if(c)c.innerHTML=_ohRoundsHTML(); }
+function ohRemoveRound(i){ _ohSyncRounds(); _ohRounds.splice(i,1); if(!_ohRounds.length)_ohRounds.push({slots:'',openAt:'20:30'}); var c=document.getElementById('ohRoundsList'); if(c)c.innerHTML=_ohRoundsHTML(); }
 async function saveOwnerHours(){
   if(typeof restoId==='undefined' || !restoId){
     alert(_ts('bk_no_bookings','No restaurant context.'));
@@ -17607,14 +17629,17 @@ async function saveOwnerHours(){
     if(st.mode === 'custom') dayObj.customSlots = st.slots.slice();
     out[i] = dayObj;
   }
-  // ROUND-2 config (restaurant-level) — parse the typed 2nd-round times (24h)
+  // ROUNDS config (restaurant-level) — collect every round row (each = times + its release time)
   try{ var _r2en=document.getElementById('ohR2en');
     if(_r2en){
-      var _rawT=(document.getElementById('ohR2slots')&&document.getElementById('ohR2slots').value)||'';
-      var _r2slots=_rawT.split(',').map(function(x){return x.trim();}).filter(function(x){return /^([01]\d|2[0-3]):[0-5]\d$/.test(x);});
-      var _r2op=((document.getElementById('ohR2open')&&document.getElementById('ohR2open').value)||'20:30').trim();
-      if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(_r2op)) _r2op='20:30';
-      out.round2={ enabled:!!_r2en.checked, slots:_r2slots, openAt:_r2op };
+      if(typeof _ohSyncRounds==='function') _ohSyncRounds();
+      var _rdList=[];
+      (_ohRounds||[]).forEach(function(rd){
+        var _ss=String(rd.slots||'').split(',').map(function(x){return x.trim();}).filter(function(x){return /^([01]\d|2[0-3]):[0-5]\d$/.test(x);});
+        var _op=String(rd.openAt||'20:30').trim(); if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(_op)) _op='20:30';
+        if(_ss.length) _rdList.push({slots:_ss, openAt:_op});
+      });
+      out.rounds={ enabled:!!_r2en.checked, list:_rdList };
     }
   }catch(_){}
   try {
@@ -18813,7 +18838,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782530000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782540000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;try{console.log('EATLAOS '+(b.textContent||'').trim());}catch(_){}if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
