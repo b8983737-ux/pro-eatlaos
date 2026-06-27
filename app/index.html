@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782570000 · owTm seat-detail (capacity+VIP note) + full-width map control bar · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782575000 · owTm seated→booked-grey + visible ⛶fullscreen btn · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2649,6 +2649,7 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .ow-tm-map{flex:0 0 auto;background:var(--s-surf3);border:1px solid var(--s-border);border-radius:8px;overflow:visible;display:flex;align-items:center;justify-content:center;min-height:200px;position:relative;}
 .ow-tm-map .fp-viewer-svg{width:100%;height:auto;max-height:50vh;display:block;margin:0 auto;}
 /* owTm live map: host must fill the full modal width or the zoom/reset/⛶fullscreen bar gets clipped on the right (matches the customer floor-map card) */
+.ow-tm-map{--bks-acc:#c8973a;--bks-acc-fg:#1a1206;}
 .ow-tm-map .bk-map-host{align-self:stretch;width:100%;background:#0d0d0d;border:1px solid var(--s-border);border-radius:8px;overflow:hidden;position:relative;}
 .ow-tm-map .bk-map-host .fp-viewer-wrap{border:none;border-radius:8px 8px 0 0;margin:0;padding:8px;background:#0d0d0d;}
 .ow-tm-map .fp-ctrl-bar{width:100%;box-sizing:border-box;border-radius:0 0 8px 8px;}
@@ -16987,9 +16988,10 @@ async function _owTmFetchAndRender(silent){
       walkInTableIds.add(t.id);
     }
   });
-  // staff tap-to-seat: seated tables (today) count as occupied on the live map + remember party/time
+  // staff tap-to-seat: seated tables (today) render as BOOKED (grey, not available) — same look as an online booking.
+  // Tap still offers "Free this table?" because _owTmTapTable checks _owTmState.seated FIRST (before the booked branch).
   const _seatedMap = (isToday && seatedNow && typeof seatedNow==='object') ? seatedNow : {};
-  Object.keys(_seatedMap).forEach(tid=>{ if(tid) walkInTableIds.add(tid); });
+  Object.keys(_seatedMap).forEach(tid=>{ if(tid) bookedTableIds.add(tid); });
   _owTmState.seated = _seatedMap;
   _owTmState.areas = areas;
   _owTmState.tables = tables;
@@ -18984,7 +18986,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782570000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782575000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
