@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782575000 · owTm seated→booked-grey + visible ⛶fullscreen btn · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782585000 · owTm pro tap-cards (no native alert/confirm) + phone/party info · SA edit re-auth gate · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -5114,7 +5114,7 @@ const STAFF_T={
     bk_date_label:'Date',bk_time_label:'Time',
     bk_save_hours:'💾 Save Hours',
     bk_hours_intro:'Set your weekly opening hours. Customers can only book during these hours, in 30-minute slots.',
-    bk_open:'Open',bk_closed_all_day:'Closed all day',bk_r2_title:'Multi-round seating',bk_r2_help:'Add seating rounds. Times (24h) for each round stay locked for customers until that round opens, on the booking day.',bk_r2_times:'Times (24h)',bk_r2_open:'Opens at (24h)',bk_r2_add:'Add round',bk_r2_round:'Round',autoseat_title:'Auto-seat walk-ins on QR scan',owtm_seat_title:'Seat walk-in',owtm_table:'Table',owtm_how_many:'How many people?',owtm_seat_btn:'Seat',owtm_seated:'Table seated',owtm_free_confirm:'Free this table?',owtm_reserved:'This table is reserved by an online booking.',owtm_pax:'ppl',owtm_seats:'seats',owtm_seats_upto:'up to',owtm_vip_note:'VIP requirement',owtm_seat_err:'Could not seat table',owtm_free_err:'Could not free table',autoseat_help:'Guest scans a table QR → that table is blocked from online bookings until staff taps Paid.',
+    bk_open:'Open',bk_closed_all_day:'Closed all day',bk_r2_title:'Multi-round seating',bk_r2_help:'Add seating rounds. Times (24h) for each round stay locked for customers until that round opens, on the booking day.',bk_r2_times:'Times (24h)',bk_r2_open:'Opens at (24h)',bk_r2_add:'Add round',bk_r2_round:'Round',autoseat_title:'Auto-seat walk-ins on QR scan',owtm_seat_title:'Seat walk-in',owtm_table:'Table',owtm_how_many:'How many people?',owtm_seat_btn:'Seat',owtm_seated:'Table seated',owtm_free_confirm:'Free this table?',owtm_reserved:'This table is reserved by an online booking.',owtm_pax:'ppl',owtm_seats:'seats',owtm_seats_upto:'up to',owtm_vip_note:'VIP requirement',sa_lock_title:'Super Admin password',sa_lock_sub:'Re-enter your password to open this restaurant',sa_lock_btn:'Unlock',sa_lock_wrong:'Wrong password',sa_lock_err:'Could not verify, try again',owtm_seated_now:'Seated walk-in',owtm_free_table:'Free table',owtm_close:'Close',owtm_resv:'Online reservation',owtm_seat_err:'Could not seat table',owtm_free_err:'Could not free table',autoseat_help:'Guest scans a table QR → that table is blocked from online bookings until staff taps Paid.',
     bk_to:'to',
     bk_hours_saved:'✅ Opening hours saved.',
     bk_hours_review_title:'⚠ Please review your opening hours',
@@ -5315,7 +5315,7 @@ const STAFF_T={
     bk_date_label:'ວັນທີ',bk_time_label:'ເວລາ',
     bk_save_hours:'💾 ບັນທຶກຊົ່ວໂມງ',
     bk_hours_intro:'ຕັ້ງຊົ່ວໂມງເປີດປະຈຳອາທິດ. ລູກຄ້າຈະຈອງໄດ້ສະເພາະໃນຊົ່ວໂມງເປີດ ໃນຊ່ອງເວລາ 30 ນາທີ.',
-    bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',bk_r2_title:'ການຈອງຫຼາຍຮອບ',bk_r2_help:'ເພີ່ມຮອບການນັ່ງ. ເວລາ (24 ຊມ) ຂອງແຕ່ລະຮອບ ຈະຖືກລັອກສຳລັບລູກຄ້າ ຈົນກວ່າຮອບນັ້ນຈະເປີດ ໃນມື້ທີ່ຈອງ.',bk_r2_times:'ເວລາ (24 ຊມ)',bk_r2_open:'ເປີດເວລາ (24 ຊມ)',bk_r2_add:'ເພີ່ມຮອບ',bk_r2_round:'ຮອບ',autoseat_title:'ນັ່ງໂຕະອັດຕະໂນມັດເມື່ອສະແກນ QR',owtm_seat_title:'ນັ່ງລູກຄ້າ Walk-in',owtm_table:'ໂຕະ',owtm_how_many:'ມີຈັກຄົນ',owtm_seat_btn:'ນັ່ງ',owtm_seated:'ນັ່ງໂຕະແລ້ວ',owtm_free_confirm:'ປ່ອຍໂຕະນີ້ບໍ?',owtm_reserved:'ໂຕະນີ້ຖືກຈອງອອນລາຍແລ້ວ.',owtm_pax:'ຄົນ',owtm_seats:'ບ່ອນນັ່ງ',owtm_seats_upto:'ສູງສຸດ',owtm_vip_note:'ເງື່ອນໄຂ VIP',owtm_seat_err:'ນັ່ງໂຕະບໍ່ໄດ້',owtm_free_err:'ປ່ອຍໂຕະບໍ່ໄດ້',autoseat_help:'ລູກຄ້າສະແກນ QR ໂຕະ → ໂຕະນັ້ນຈະຖືກບລັອກຈາກການຈອງອອນລາຍ ຈົນກວ່າພະນັກງານກົດ ຈ່າຍແລ້ວ.',
+    bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',bk_r2_title:'ການຈອງຫຼາຍຮອບ',bk_r2_help:'ເພີ່ມຮອບການນັ່ງ. ເວລາ (24 ຊມ) ຂອງແຕ່ລະຮອບ ຈະຖືກລັອກສຳລັບລູກຄ້າ ຈົນກວ່າຮອບນັ້ນຈະເປີດ ໃນມື້ທີ່ຈອງ.',bk_r2_times:'ເວລາ (24 ຊມ)',bk_r2_open:'ເປີດເວລາ (24 ຊມ)',bk_r2_add:'ເພີ່ມຮອບ',bk_r2_round:'ຮອບ',autoseat_title:'ນັ່ງໂຕະອັດຕະໂນມັດເມື່ອສະແກນ QR',owtm_seat_title:'ນັ່ງລູກຄ້າ Walk-in',owtm_table:'ໂຕະ',owtm_how_many:'ມີຈັກຄົນ',owtm_seat_btn:'ນັ່ງ',owtm_seated:'ນັ່ງໂຕະແລ້ວ',owtm_free_confirm:'ປ່ອຍໂຕະນີ້ບໍ?',owtm_reserved:'ໂຕະນີ້ຖືກຈອງອອນລາຍແລ້ວ.',owtm_pax:'ຄົນ',owtm_seats:'ບ່ອນນັ່ງ',owtm_seats_upto:'ສູງສຸດ',owtm_vip_note:'ເງື່ອນໄຂ VIP',sa_lock_title:'ລະຫັດຜ່ານ Super Admin',sa_lock_sub:'ໃສ່ລະຫັດຜ່ານອີກຄັ້ງເພື່ອເປີດຮ້ານນີ້',sa_lock_btn:'ປົດລັອກ',sa_lock_wrong:'ລະຫັດຜ່ານບໍ່ຖືກ',sa_lock_err:'ກວດສອບບໍ່ໄດ້ ລອງໃໝ່',owtm_seated_now:'ນັ່ງ Walk-in ແລ້ວ',owtm_free_table:'ປ່ອຍໂຕະ',owtm_close:'ປິດ',owtm_resv:'ການຈອງອອນລາຍ',owtm_seat_err:'ນັ່ງໂຕະບໍ່ໄດ້',owtm_free_err:'ປ່ອຍໂຕະບໍ່ໄດ້',autoseat_help:'ລູກຄ້າສະແກນ QR ໂຕະ → ໂຕະນັ້ນຈະຖືກບລັອກຈາກການຈອງອອນລາຍ ຈົນກວ່າພະນັກງານກົດ ຈ່າຍແລ້ວ.',
     bk_to:'ຫາ',
     bk_hours_saved:'✅ ບັນທຶກຊົ່ວໂມງເປີດແລ້ວ.',
     bk_hours_review_title:'⚠ ກະລຸນາກວດສອບຊົ່ວໂມງເປີດຂອງທ່ານ',
@@ -5511,7 +5511,7 @@ const STAFF_T={
     bk_date_label:'วันที่',bk_time_label:'เวลา',
     bk_save_hours:'💾 บันทึกเวลา',
     bk_hours_intro:'ตั้งเวลาเปิดประจำสัปดาห์ ลูกค้าจะจองได้เฉพาะในเวลาเปิด ในช่วง 30 นาที',
-    bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',bk_r2_title:'จองหลายรอบ',bk_r2_help:'เพิ่มรอบที่นั่ง เวลา (24 ชม.) ของแต่ละรอบจะถูกล็อกสำหรับลูกค้าจนกว่ารอบนั้นจะเปิดในวันที่จอง',bk_r2_times:'เวลา (24 ชม.)',bk_r2_open:'เปิดเวลา (24 ชม.)',bk_r2_add:'เพิ่มรอบ',bk_r2_round:'รอบ',autoseat_title:'จองโต๊ะอัตโนมัติเมื่อสแกน QR',owtm_seat_title:'นั่งลูกค้า Walk-in',owtm_table:'โต๊ะ',owtm_how_many:'กี่คน?',owtm_seat_btn:'นั่ง',owtm_seated:'นั่งโต๊ะแล้ว',owtm_free_confirm:'ปล่อยโต๊ะนี้?',owtm_reserved:'โต๊ะนี้ถูกจองออนไลน์แล้ว',owtm_pax:'คน',owtm_seats:'ที่นั่ง',owtm_seats_upto:'สูงสุด',owtm_vip_note:'เงื่อนไข VIP',owtm_seat_err:'นั่งโต๊ะไม่ได้',owtm_free_err:'ปล่อยโต๊ะไม่ได้',autoseat_help:'ลูกค้าสแกน QR โต๊ะ → โต๊ะนั้นถูกบล็อกจากการจองออนไลน์จนกว่าพนักงานจะกดจ่ายแล้ว',
+    bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',bk_r2_title:'จองหลายรอบ',bk_r2_help:'เพิ่มรอบที่นั่ง เวลา (24 ชม.) ของแต่ละรอบจะถูกล็อกสำหรับลูกค้าจนกว่ารอบนั้นจะเปิดในวันที่จอง',bk_r2_times:'เวลา (24 ชม.)',bk_r2_open:'เปิดเวลา (24 ชม.)',bk_r2_add:'เพิ่มรอบ',bk_r2_round:'รอบ',autoseat_title:'จองโต๊ะอัตโนมัติเมื่อสแกน QR',owtm_seat_title:'นั่งลูกค้า Walk-in',owtm_table:'โต๊ะ',owtm_how_many:'กี่คน?',owtm_seat_btn:'นั่ง',owtm_seated:'นั่งโต๊ะแล้ว',owtm_free_confirm:'ปล่อยโต๊ะนี้?',owtm_reserved:'โต๊ะนี้ถูกจองออนไลน์แล้ว',owtm_pax:'คน',owtm_seats:'ที่นั่ง',owtm_seats_upto:'สูงสุด',owtm_vip_note:'เงื่อนไข VIP',sa_lock_title:'รหัสผ่าน Super Admin',sa_lock_sub:'กรอกรหัสผ่านอีกครั้งเพื่อเปิดร้านนี้',sa_lock_btn:'ปลดล็อก',sa_lock_wrong:'รหัสผ่านไม่ถูกต้อง',sa_lock_err:'ตรวจสอบไม่ได้ ลองอีกครั้ง',owtm_seated_now:'นั่ง Walk-in แล้ว',owtm_free_table:'ปล่อยโต๊ะ',owtm_close:'ปิด',owtm_resv:'การจองออนไลน์',owtm_seat_err:'นั่งโต๊ะไม่ได้',owtm_free_err:'ปล่อยโต๊ะไม่ได้',autoseat_help:'ลูกค้าสแกน QR โต๊ะ → โต๊ะนั้นถูกบล็อกจากการจองออนไลน์จนกว่าพนักงานจะกดจ่ายแล้ว',
     bk_to:'ถึง',
     bk_hours_saved:'✅ บันทึกเวลาเปิดเรียบร้อย',
     bk_hours_review_title:'⚠ กรุณาตรวจสอบเวลาเปิดของคุณ',
@@ -5707,7 +5707,7 @@ const STAFF_T={
     bk_date_label:'日期',bk_time_label:'时间',
     bk_save_hours:'💾 保存营业时间',
     bk_hours_intro:'设置每周营业时间。客户只能在营业时间内预订，每 30 分钟一个时段。',
-    bk_open:'营业',bk_closed_all_day:'全天休息',bk_r2_title:'多轮订座',bk_r2_help:'添加订座轮次。每轮时间（24小时制）在预订当天该轮开放时间前对顾客锁定。',bk_r2_times:'时间（24小时）',bk_r2_open:'开放时间（24小时）',bk_r2_add:'添加轮次',bk_r2_round:'轮次',autoseat_title:'扫码自动占座',owtm_seat_title:'安排堂食入座',owtm_table:'桌台',owtm_how_many:'多少人？',owtm_seat_btn:'入座',owtm_seated:'已入座',owtm_free_confirm:'释放此桌？',owtm_reserved:'此桌已被在线预订。',owtm_pax:'人',owtm_seats:'座位',owtm_seats_upto:'最多',owtm_vip_note:'VIP 要求',owtm_seat_err:'无法入座',owtm_free_err:'无法释放',autoseat_help:'客人扫描桌台二维码 → 该桌位被锁定不可在线预订，直到员工点击已付款。',
+    bk_open:'营业',bk_closed_all_day:'全天休息',bk_r2_title:'多轮订座',bk_r2_help:'添加订座轮次。每轮时间（24小时制）在预订当天该轮开放时间前对顾客锁定。',bk_r2_times:'时间（24小时）',bk_r2_open:'开放时间（24小时）',bk_r2_add:'添加轮次',bk_r2_round:'轮次',autoseat_title:'扫码自动占座',owtm_seat_title:'安排堂食入座',owtm_table:'桌台',owtm_how_many:'多少人？',owtm_seat_btn:'入座',owtm_seated:'已入座',owtm_free_confirm:'释放此桌？',owtm_reserved:'此桌已被在线预订。',owtm_pax:'人',owtm_seats:'座位',owtm_seats_upto:'最多',owtm_vip_note:'VIP 要求',sa_lock_title:'超级管理员密码',sa_lock_sub:'重新输入密码以打开此餐厅',sa_lock_btn:'解锁',sa_lock_wrong:'密码错误',sa_lock_err:'无法验证，请重试',owtm_seated_now:'已入座(堂食)',owtm_free_table:'释放桌台',owtm_close:'关闭',owtm_resv:'在线预订',owtm_seat_err:'无法入座',owtm_free_err:'无法释放',autoseat_help:'客人扫描桌台二维码 → 该桌位被锁定不可在线预订，直到员工点击已付款。',
     bk_to:'至',
     bk_hours_saved:'✅ 营业时间已保存。',
     bk_hours_review_title:'⚠ 请检查您的营业时间',
@@ -5919,7 +5919,7 @@ const STAFF_T={
     bk_date_label:'날짜',bk_time_label:'시간',
     bk_save_hours:'💾 영업 시간 저장',
     bk_hours_intro:'주간 영업 시간을 설정하세요. 고객은 영업 시간 내 30분 단위로만 예약할 수 있습니다.',
-    bk_open:'영업',bk_closed_all_day:'종일 휴무',bk_r2_title:'다회차 예약',bk_r2_help:'예약 회차를 추가하세요. 각 회차 시간(24시간제)은 예약 당일 해당 회차가 열리기 전까지 고객에게 잠깁니다.',bk_r2_times:'시간 (24시간)',bk_r2_open:'오픈 시간 (24시간)',bk_r2_add:'회차 추가',bk_r2_round:'회차',autoseat_title:'QR 스캔 시 자동 착석',owtm_seat_title:'워크인 착석',owtm_table:'테이블',owtm_how_many:'몇 명?',owtm_seat_btn:'착석',owtm_seated:'착석 완료',owtm_free_confirm:'이 테이블을 비울까요?',owtm_reserved:'이 테이블은 온라인 예약됨.',owtm_pax:'명',owtm_seats:'좌석',owtm_seats_upto:'최대',owtm_vip_note:'VIP 요건',owtm_seat_err:'착석 실패',owtm_free_err:'비우기 실패',autoseat_help:'손님이 테이블 QR을 스캔하면 직원이 결제 완료를 누를 때까지 해당 테이블은 온라인 예약에서 차단됩니다.',
+    bk_open:'영업',bk_closed_all_day:'종일 휴무',bk_r2_title:'다회차 예약',bk_r2_help:'예약 회차를 추가하세요. 각 회차 시간(24시간제)은 예약 당일 해당 회차가 열리기 전까지 고객에게 잠깁니다.',bk_r2_times:'시간 (24시간)',bk_r2_open:'오픈 시간 (24시간)',bk_r2_add:'회차 추가',bk_r2_round:'회차',autoseat_title:'QR 스캔 시 자동 착석',owtm_seat_title:'워크인 착석',owtm_table:'테이블',owtm_how_many:'몇 명?',owtm_seat_btn:'착석',owtm_seated:'착석 완료',owtm_free_confirm:'이 테이블을 비울까요?',owtm_reserved:'이 테이블은 온라인 예약됨.',owtm_pax:'명',owtm_seats:'좌석',owtm_seats_upto:'최대',owtm_vip_note:'VIP 요건',sa_lock_title:'슈퍼 관리자 비밀번호',sa_lock_sub:'이 매장을 열려면 비밀번호를 다시 입력하세요',sa_lock_btn:'잠금 해제',sa_lock_wrong:'비밀번호가 틀렸습니다',sa_lock_err:'확인할 수 없습니다 다시 시도하세요',owtm_seated_now:'워크인 착석됨',owtm_free_table:'테이블 비우기',owtm_close:'닫기',owtm_resv:'온라인 예약',owtm_seat_err:'착석 실패',owtm_free_err:'비우기 실패',autoseat_help:'손님이 테이블 QR을 스캔하면 직원이 결제 완료를 누를 때까지 해당 테이블은 온라인 예약에서 차단됩니다.',
     bk_to:'~',
     bk_hours_saved:'✅ 영업 시간이 저장되었습니다.',
     bk_hours_review_title:'⚠ 영업 시간을 확인해 주세요',
@@ -7248,6 +7248,7 @@ function logout(){
   // Capture role BEFORE clearing me — used to pick the correct destination
   const wasRole = me?.role || null;
   me=null;restoId=null;cachedOrders=[];
+  _saEditUnlocked=0;   // re-lock SA edit gate on logout
   // PERF: Clear request cache so next user doesn't see stale data
   if(typeof _fbGetCache !== 'undefined') _fbGetCache.clear();
   // Also clear feature cache
@@ -9882,7 +9883,59 @@ async function saveResto(){
   }
 }
 
-async function editResto(id){
+// ── SA EDIT LOCK ── Re-authenticate the Super Admin before opening a restaurant to edit.
+// ZERO hardcoded secret: verifies the SA's OWN password via Firebase reauthenticateWithCredential (server-side).
+// Unlocks for the session with a 15-min TTL; re-locks on logout or page refresh.
+var _saEditUnlocked = 0;                 // timestamp of last successful unlock (0 = locked)
+var _SA_EDIT_TTL = 15 * 60 * 1000;       // 15 minutes
+function _saEditIsUnlocked(){ return _saEditUnlocked && (Date.now() - _saEditUnlocked) < _SA_EDIT_TTL; }
+function _saEditGate(){
+  return new Promise(function(resolve){
+    if(_saEditIsUnlocked()){ resolve(true); return; }
+    var user = (typeof fbAuth !== 'undefined' && fbAuth) ? fbAuth.currentUser : null;
+    if(!user || !user.email){ if(typeof notifyD==='function') notifyD('⚠ '+_ts('sa_lock_err','Could not verify, try again')); resolve(false); return; }
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,6,12,.72)';
+    ov.innerHTML = '<div style="background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,#333);border-radius:18px;max-width:360px;width:100%;padding:24px;color:#fff;font-family:inherit">'
+      + '<div style="font-size:32px;line-height:1;text-align:center">🔐</div>'
+      + '<div style="font-size:17px;font-weight:800;text-align:center;margin:8px 0 2px">'+escapeHtml(_ts('sa_lock_title','Super Admin password'))+'</div>'
+      + '<div style="font-size:12px;color:var(--s-muted,#999);text-align:center;margin-bottom:16px">'+escapeHtml(_ts('sa_lock_sub','Re-enter your password to open this restaurant'))+'</div>'
+      + '<input id="_saLockPw" type="password" autocomplete="current-password" placeholder="'+escapeHtml(_ts('sa_lock_title','Super Admin password'))+'" style="width:100%;box-sizing:border-box;padding:13px 14px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid var(--s-border,#333);color:#fff;font-size:15px;font-family:inherit;outline:none">'
+      + '<div id="_saLockErr" style="display:none;color:#ec9085;font-size:12px;margin-top:8px;text-align:center"></div>'
+      + '<div style="display:flex;gap:10px;margin-top:16px">'
+        + '<button id="_saLockCancel" style="flex:1;padding:12px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid var(--s-border,#333);color:#ccc;font-weight:700;cursor:pointer;font-family:inherit">'+escapeHtml(_ts('cancel','Cancel'))+'</button>'
+        + '<button id="_saLockGo" style="flex:1;padding:12px;border-radius:11px;background:var(--s-gold,#c8973a);border:none;color:#1a1208;font-weight:800;cursor:pointer;font-family:inherit">'+escapeHtml(_ts('sa_lock_btn','Unlock'))+'</button>'
+      + '</div></div>';
+    document.body.appendChild(ov);
+    var pw = ov.querySelector('#_saLockPw'), err = ov.querySelector('#_saLockErr'), go = ov.querySelector('#_saLockGo');
+    setTimeout(function(){ try{ pw.focus(); }catch(_){} }, 40);
+    var done = false;
+    function close(ok){ if(done) return; done = true; try{ document.body.removeChild(ov); }catch(_){} resolve(ok); }
+    ov.querySelector('#_saLockCancel').onclick = function(){ close(false); };
+    ov.onclick = function(e){ if(e.target === ov) close(false); };
+    function showErr(msg){ err.textContent = msg; err.style.display = ''; go.disabled = false; go.style.opacity = ''; try{ pw.focus(); pw.select(); }catch(_){} }
+    async function submit(){
+      var val = pw.value || '';
+      if(!val){ showErr(_ts('sa_lock_wrong','Wrong password')); return; }
+      go.disabled = true; go.style.opacity = '.6';
+      try{
+        var cred = firebase.auth.EmailAuthProvider.credential(user.email, val);
+        await user.reauthenticateWithCredential(cred);
+        _saEditUnlocked = Date.now();
+        close(true);
+      }catch(e){
+        var code = (e && e.code) || '';
+        showErr((code.indexOf('wrong-password') >= 0 || code.indexOf('invalid-cred') >= 0 || code.indexOf('invalid-login') >= 0)
+          ? _ts('sa_lock_wrong','Wrong password')
+          : _ts('sa_lock_err','Could not verify, try again'));
+      }
+    }
+    go.onclick = submit;
+    pw.onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); submit(); } };
+  });
+}
+async function editResto(id){ if(await _saEditGate()) _editRestoOpen(id); }
+async function _editRestoOpen(id){
   const r=await fbGet('restaurants/'+id);if(!r) return;
   document.getElementById('mRestoTitle').textContent='Edit Restaurant';
   document.getElementById('mRestoId').value=id;
@@ -16975,7 +17028,7 @@ async function _owTmFetchAndRender(silent){
       // Defensive date check (in case fbGetFiltered fell back to full fetch)
       if(b && b.date===targetDate && (b.status==='pending' || b.status==='accepted') && b.tableId){
         bookedTableIds.add(b.tableId);
-        activeBookings.push({ bid, tableId:b.tableId, slot:b.slot||'', name:b.name||'', party:(b.party||b.guests||b.pax||0), status:b.status });
+        activeBookings.push({ bid, tableId:b.tableId, slot:b.slot||'', name:b.name||'', phone:(b.phone||b.tel||''), party:(b.party||b.guests||b.pax||0), status:b.status });
       }
     });
   }
@@ -17141,18 +17194,68 @@ function _owTmTapTable(tid){
   if(!tid) return;
   const seated=_owTmState.seated||{};
   const booked=_owTmState.bookedTableIds;
-  if(seated[tid]){
-    const sObj=seated[tid]; const p=(sObj&&sObj.party)?(' · '+sObj.party+' '+_ts('owtm_pax','ppl')):'';
-    if(confirm(_ts('owtm_free_confirm','Free this table?')+p)) owTmUnseat(tid);
-    return;
-  }
-  if(booked&&booked.has&&booked.has(tid)){
-    const b=(_owTmState.activeBookings||[]).find(x=>x.tableId===tid);
-    const info=b?((b.name||'—')+' · '+(b.party||'?')+' '+_ts('owtm_pax','ppl')+(b.slot?(' · '+b.slot):'')):'';
-    alert(_ts('owtm_reserved','This table is reserved by an online booking.')+(info?('\n\n'+info):''));
-    return;
-  }
+  if(seated[tid]){ _owTmSeatedCard(tid, seated[tid]); return; }
+  if(booked&&booked.has&&booked.has(tid)){ _owTmBookedCard(tid); return; }
   _owTmSeatPrompt(tid);
+}
+function _owTmHHMM(ms){ try{ const d=new Date(+ms); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }catch(_){ return ''; } }
+function _owTmCard(innerHtml){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,6,12,.62)';
+  ov.innerHTML='<div style="background:var(--s-surf,#1a1a1a);border:1px solid var(--s-border,#333);border-radius:18px;max-width:360px;width:100%;padding:22px;text-align:center;color:#fff;font-family:inherit">'+innerHtml+'</div>';
+  document.body.appendChild(ov);
+  const close=function(){ try{document.body.removeChild(ov);}catch(_){} };
+  ov.onclick=function(e){ if(e.target===ov) close(); };
+  return { ov, close };
+}
+function _owTmInfoChip(icon, txt){
+  return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#dcd2bd;background:rgba(255,255,255,.05);border:1px solid var(--s-border,#333);border-radius:20px;padding:5px 13px">'+icon+' '+escapeHtml(String(txt))+'</span>';
+}
+// Professional styled card for a SEATED walk-in table (replaces native confirm)
+function _owTmSeatedCard(tid, sObj){
+  const t=(_owTmState.tables||[]).find(x=>x.id===tid)||{};
+  const num=t.num||tid;
+  const party=(sObj&&sObj.party)?(+sObj.party||0):0;
+  const chips=[];
+  if(party) chips.push(_owTmInfoChip('👥', party+' '+_ts('owtm_pax','ppl')));
+  if(sObj&&sObj.at) chips.push(_owTmInfoChip('🕐', _owTmHHMM(sObj.at)));
+  const inner='<div style="font-size:34px;line-height:1">🪑</div>'
+    +'<div style="font-size:17px;font-weight:800;margin:6px 0 2px">'+escapeHtml(_ts('owtm_seated_now','Seated walk-in'))+'</div>'
+    +'<div style="font-size:12px;color:var(--s-muted,#999);margin-bottom:14px">'+escapeHtml(_ts('owtm_table','Table'))+' '+escapeHtml(String(num))+'</div>'
+    +(chips.length?'<div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:18px">'+chips.join('')+'</div>':'')
+    +'<div style="display:flex;gap:10px">'
+      +'<button id="_owtmClose" style="flex:1;padding:12px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid var(--s-border,#333);color:#ccc;font-weight:700;cursor:pointer;font-family:inherit">'+escapeHtml(_ts('owtm_close','Close'))+'</button>'
+      +'<button id="_owtmFree" style="flex:1;padding:12px;border-radius:11px;background:var(--s-green,#1db954);border:none;color:#04210f;font-weight:800;cursor:pointer;font-family:inherit">'+escapeHtml(_ts('owtm_free_table','Free table'))+'</button>'
+    +'</div>';
+  const c=_owTmCard(inner);
+  c.ov.querySelector('#_owtmClose').onclick=c.close;
+  c.ov.querySelector('#_owtmFree').onclick=function(){ c.close(); owTmUnseat(tid); };
+}
+// Professional styled card for an ONLINE-BOOKED table (replaces native alert)
+function _owTmBookedCard(tid){
+  const t=(_owTmState.tables||[]).find(x=>x.id===tid)||{};
+  const num=t.num||tid;
+  const b=(_owTmState.activeBookings||[]).find(x=>x.tableId===tid);
+  const rows=[];
+  if(b){
+    if(b.name) rows.push(_owTmInfoChip('👤', b.name));
+    if(b.party) rows.push(_owTmInfoChip('👥', b.party+' '+_ts('owtm_pax','ppl')));
+    if(b.slot) rows.push(_owTmInfoChip('🕐', b.slot));
+  }
+  const phoneRow=(b&&b.phone)?('<div style="margin-bottom:16px"><a href="tel:'+encodeURIComponent(b.phone)+'" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#7fbce4;text-decoration:none">📞 '+escapeHtml(String(b.phone))+'</a></div>'):'';
+  const inner='<div style="font-size:34px;line-height:1">📋</div>'
+    +'<div style="font-size:17px;font-weight:800;margin:6px 0 2px">'+escapeHtml(_ts('owtm_resv','Online reservation'))+'</div>'
+    +'<div style="font-size:12px;color:var(--s-muted,#999);margin-bottom:14px">'+escapeHtml(_ts('owtm_table','Table'))+' '+escapeHtml(String(num))+'</div>'
+    +(rows.length?'<div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:'+(phoneRow?'12px':'18px')+'">'+rows.join('')+'</div>':'')
+    +phoneRow
+    +'<div style="display:flex;gap:10px">'
+      +'<button id="_owtmClose" style="flex:1;padding:12px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid var(--s-border,#333);color:#ccc;font-weight:700;cursor:pointer;font-family:inherit">'+escapeHtml(_ts('owtm_close','Close'))+'</button>'
+      +((b&&b.bid)?'<button id="_owtmPaid" style="flex:1;padding:12px;border-radius:11px;background:var(--s-green,#1db954);border:none;color:#04210f;font-weight:800;cursor:pointer;font-family:inherit">'+escapeHtml(_ts('owtm_free_btn','💵 Paid'))+'</button>':'')
+    +'</div>';
+  const c=_owTmCard(inner);
+  c.ov.querySelector('#_owtmClose').onclick=c.close;
+  const paidBtn=c.ov.querySelector('#_owtmPaid');
+  if(paidBtn) paidBtn.onclick=function(){ c.close(); owTmFreeTable(b.bid, true); };
 }
 function _owTmSeatPrompt(tid){
   const t=(_owTmState.tables||[]).find(x=>x.id===tid)||{};
@@ -17251,9 +17354,9 @@ function _owTmRenderReserved(){
   box.innerHTML = `<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--s-muted);margin:14px 0 8px">${title}</div>${rows}`;
 }
 
-async function owTmFreeTable(bid){
+async function owTmFreeTable(bid, skipConfirm){
   if(!bid) return;
-  if(!confirm(_ts('owtm_free_confirm','Free this table now? The reservation is marked completed and the table reopens for later bookings.'))) return;
+  if(!skipConfirm && !confirm(_ts('owtm_free_confirm','Free this table now? The reservation is marked completed and the table reopens for later bookings.'))) return;
   try{
     await fbUpdate('bookings/'+restoId+'/'+bid, { status:'completed', freedAt:Date.now() });
     if(typeof notifyC==='function') notifyC(_ts('owtm_freed','Table freed'), true);
@@ -18986,7 +19089,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782575000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782585000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
