@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782585000 · owTm pro tap-cards (no native alert/confirm) + phone/party info · SA edit re-auth gate · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782590000 · owTm clear stats: Booked vs Walk-in vs Free vs Total (separated, always add up) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -17041,11 +17041,11 @@ async function _owTmFetchAndRender(silent){
       walkInTableIds.add(t.id);
     }
   });
-  // staff tap-to-seat: seated tables (today) render as BOOKED (grey, not available) — same look as an online booking.
-  // Tap still offers "Free this table?" because _owTmTapTable checks _owTmState.seated FIRST (before the booked branch).
+  // staff tap-to-seat: seated walk-ins are tracked SEPARATELY from online bookings, so the live-map stats can show
+  // a clear breakdown (Booked vs Walk-in). They still render grey/occupied via the union set built in _owTmRenderAll.
   const _seatedMap = (isToday && seatedNow && typeof seatedNow==='object') ? seatedNow : {};
-  Object.keys(_seatedMap).forEach(tid=>{ if(tid) bookedTableIds.add(tid); });
   _owTmState.seated = _seatedMap;
+  _owTmState.seatedTableIds = new Set(Object.keys(_seatedMap).filter(Boolean));
   _owTmState.areas = areas;
   _owTmState.tables = tables;
   _owTmState.bookedTableIds = bookedTableIds;
@@ -17102,6 +17102,7 @@ function _owTmRenderAll(){
     _owTmState.tables.forEach(t => {
       if(!tableIdsInArea.has(t.id)) return;
       if(_owTmState.bookedTableIds.has(t.id)) return;
+      if(_owTmState.seatedTableIds && _owTmState.seatedTableIds.has(t.id)) return;
       if(_owTmState.walkInTableIds && _owTmState.walkInTableIds.has(t.id)) return;
       free++;
     });
@@ -17124,6 +17125,7 @@ function _owTmRenderAll(){
   let tablesInArea = [];
   let bookedInArea = 0;
   let walkInInArea = 0;
+  let seatedInArea = 0;
   if(activeArea){
     const tableIdsInArea = new Set();
     (activeArea.elements || []).forEach(el => {
@@ -17134,23 +17136,24 @@ function _owTmRenderAll(){
     tablesInArea = _owTmState.tables.filter(t => tableIdsInArea.has(t.id));
     tablesInArea.forEach(t => {
       if(_owTmState.bookedTableIds.has(t.id)) bookedInArea++;
+      else if(_owTmState.seatedTableIds && _owTmState.seatedTableIds.has(t.id)) seatedInArea++;
       else if(_owTmState.walkInTableIds && _owTmState.walkInTableIds.has(t.id)) walkInInArea++;
     });
   }
-  const freeInArea = Math.max(0, tablesInArea.length - bookedInArea - walkInInArea);
+  // Walk-in total = seated-now + any tables held as walk-in-only (date-locked). Both are "walk-in" to the owner.
+  const walkInTotal = seatedInArea + walkInInArea;
+  const freeInArea = Math.max(0, tablesInArea.length - bookedInArea - walkInTotal);
   // FIX: Translate stat labels (was hardcoded English)
   const lblBk = _ts('owtm_stat_booked','Booked');
   const lblFree = _ts('owtm_stat_free','Free');
   const lblWalkIn = _ts('owtm_stat_walkin','Walk-in');
   const lblTotal = _ts('owtm_stat_total','Total tables in area');
   // Only show walk-in count if there are any (keeps the bar clean when no walk-ins)
-  const walkInChunk = walkInInArea > 0
-    ? `<div class="ow-tm-stat-walkin">${escapeHtml(lblWalkIn)}: <b>${walkInInArea}</b></div>`
-    : '';
+  const walkInChunk = `<div class="ow-tm-stat-walkin">🪑 ${escapeHtml(lblWalkIn)}: <b>${walkInTotal}</b></div>`;
   stats.innerHTML = `
-    <div class="ow-tm-stat-bk">${escapeHtml(lblBk)}: <b>${bookedInArea}</b></div>
-    <div class="ow-tm-stat-free">${escapeHtml(lblFree)}: <b>${freeInArea}</b></div>
+    <div class="ow-tm-stat-bk">📋 ${escapeHtml(lblBk)}: <b>${bookedInArea}</b></div>
     ${walkInChunk}
+    <div class="ow-tm-stat-free">🟢 ${escapeHtml(lblFree)}: <b>${freeInArea}</b></div>
     <div>${escapeHtml(lblTotal)}: <b>${tablesInArea.length}</b></div>
   `;
   _owTmRenderReserved();
@@ -17159,7 +17162,11 @@ function _owTmRenderAll(){
     map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">🗺️</span>${escapeHtml(_ts('owtm_no_floorplan','No floor plan set up yet. Ask your administrator to design the table map.'))}</div>`;
     return;
   }
-  const svg = fpRenderCustomerView(activeArea, _owTmState.tables, _owTmState.bookedTableIds, new Set(), null, _owTmState.walkInTableIds);
+  // Grey/occupied render set = online bookings + seated walk-ins (both look "booked"). bookedTableIds stays
+  // online-only so taps route correctly: seated→seated card, online→booking card.
+  const _greyIds = new Set(_owTmState.bookedTableIds);
+  if(_owTmState.seatedTableIds) _owTmState.seatedTableIds.forEach(id => _greyIds.add(id));
+  const svg = fpRenderCustomerView(activeArea, _owTmState.tables, _greyIds, new Set(), null, _owTmState.walkInTableIds);
   if(!svg){
     map.innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">🗺️</span>${escapeHtml(_ts('owtm_empty_area','This area has no tables placed on the map.'))}</div>`;
     return;
@@ -19089,7 +19096,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782585000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782590000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
