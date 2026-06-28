@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782590000 · owTm clear stats: Booked vs Walk-in vs Free vs Total (separated, always add up) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782605000 · DATA-USAGE: per-session restaurant-config cache (customer booking re-pulls eliminated) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -5114,7 +5114,7 @@ const STAFF_T={
     bk_date_label:'Date',bk_time_label:'Time',
     bk_save_hours:'💾 Save Hours',
     bk_hours_intro:'Set your weekly opening hours. Customers can only book during these hours, in 30-minute slots.',
-    bk_open:'Open',bk_closed_all_day:'Closed all day',bk_r2_title:'Multi-round seating',bk_r2_help:'Add seating rounds. Times (24h) for each round stay locked for customers until that round opens, on the booking day.',bk_r2_times:'Times (24h)',bk_r2_open:'Opens at (24h)',bk_r2_add:'Add round',bk_r2_round:'Round',autoseat_title:'Auto-seat walk-ins on QR scan',owtm_seat_title:'Seat walk-in',owtm_table:'Table',owtm_how_many:'How many people?',owtm_seat_btn:'Seat',owtm_seated:'Table seated',owtm_free_confirm:'Free this table?',owtm_reserved:'This table is reserved by an online booking.',owtm_pax:'ppl',owtm_seats:'seats',owtm_seats_upto:'up to',owtm_vip_note:'VIP requirement',sa_lock_title:'Super Admin password',sa_lock_sub:'Re-enter your password to open this restaurant',sa_lock_btn:'Unlock',sa_lock_wrong:'Wrong password',sa_lock_err:'Could not verify, try again',owtm_seated_now:'Seated walk-in',owtm_free_table:'Free table',owtm_close:'Close',owtm_resv:'Online reservation',owtm_seat_err:'Could not seat table',owtm_free_err:'Could not free table',autoseat_help:'Guest scans a table QR → that table is blocked from online bookings until staff taps Paid.',
+    bk_open:'Open',bk_closed_all_day:'Closed all day',bk_r2_title:'Multi-round seating',bk_r2_help:'Add seating rounds. Times (24h) for each round stay locked for customers until that round opens, on the booking day.',bk_r2_times:'Times (24h)',bk_r2_open:'Opens at (24h)',bk_r2_add:'Add round',bk_r2_round:'Round',autoseat_title:'Auto-seat walk-ins on QR scan',owtm_seat_title:'Seat walk-in',owtm_table:'Table',owtm_how_many:'How many people?',owtm_seat_btn:'Seat',owtm_seated:'Table seated',owtm_free_confirm:'Free this table?',owtm_reserved:'This table is reserved by an online booking.',owtm_pax:'ppl',owtm_seats:'seats',owtm_seats_upto:'up to',owtm_vip_note:'VIP requirement',sa_lock_title:'Super Admin password',sa_lock_sub:'Re-enter your password to open this restaurant',sa_lock_btn:'Unlock',sa_lock_wrong:'Wrong password',sa_lock_err:'Could not verify, try again',owtm_seated_now:'Seated walk-in',owtm_free_table:'Free table',owtm_close:'Close',owtm_resv:'Online reservation',sess_expired:'Your 8-hour session has expired. Please log in again.',owtm_seat_err:'Could not seat table',owtm_free_err:'Could not free table',autoseat_help:'Guest scans a table QR → that table is blocked from online bookings until staff taps Paid.',
     bk_to:'to',
     bk_hours_saved:'✅ Opening hours saved.',
     bk_hours_review_title:'⚠ Please review your opening hours',
@@ -5315,7 +5315,7 @@ const STAFF_T={
     bk_date_label:'ວັນທີ',bk_time_label:'ເວລາ',
     bk_save_hours:'💾 ບັນທຶກຊົ່ວໂມງ',
     bk_hours_intro:'ຕັ້ງຊົ່ວໂມງເປີດປະຈຳອາທິດ. ລູກຄ້າຈະຈອງໄດ້ສະເພາະໃນຊົ່ວໂມງເປີດ ໃນຊ່ອງເວລາ 30 ນາທີ.',
-    bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',bk_r2_title:'ການຈອງຫຼາຍຮອບ',bk_r2_help:'ເພີ່ມຮອບການນັ່ງ. ເວລາ (24 ຊມ) ຂອງແຕ່ລະຮອບ ຈະຖືກລັອກສຳລັບລູກຄ້າ ຈົນກວ່າຮອບນັ້ນຈະເປີດ ໃນມື້ທີ່ຈອງ.',bk_r2_times:'ເວລາ (24 ຊມ)',bk_r2_open:'ເປີດເວລາ (24 ຊມ)',bk_r2_add:'ເພີ່ມຮອບ',bk_r2_round:'ຮອບ',autoseat_title:'ນັ່ງໂຕະອັດຕະໂນມັດເມື່ອສະແກນ QR',owtm_seat_title:'ນັ່ງລູກຄ້າ Walk-in',owtm_table:'ໂຕະ',owtm_how_many:'ມີຈັກຄົນ',owtm_seat_btn:'ນັ່ງ',owtm_seated:'ນັ່ງໂຕະແລ້ວ',owtm_free_confirm:'ປ່ອຍໂຕະນີ້ບໍ?',owtm_reserved:'ໂຕະນີ້ຖືກຈອງອອນລາຍແລ້ວ.',owtm_pax:'ຄົນ',owtm_seats:'ບ່ອນນັ່ງ',owtm_seats_upto:'ສູງສຸດ',owtm_vip_note:'ເງື່ອນໄຂ VIP',sa_lock_title:'ລະຫັດຜ່ານ Super Admin',sa_lock_sub:'ໃສ່ລະຫັດຜ່ານອີກຄັ້ງເພື່ອເປີດຮ້ານນີ້',sa_lock_btn:'ປົດລັອກ',sa_lock_wrong:'ລະຫັດຜ່ານບໍ່ຖືກ',sa_lock_err:'ກວດສອບບໍ່ໄດ້ ລອງໃໝ່',owtm_seated_now:'ນັ່ງ Walk-in ແລ້ວ',owtm_free_table:'ປ່ອຍໂຕະ',owtm_close:'ປິດ',owtm_resv:'ການຈອງອອນລາຍ',owtm_seat_err:'ນັ່ງໂຕະບໍ່ໄດ້',owtm_free_err:'ປ່ອຍໂຕະບໍ່ໄດ້',autoseat_help:'ລູກຄ້າສະແກນ QR ໂຕະ → ໂຕະນັ້ນຈະຖືກບລັອກຈາກການຈອງອອນລາຍ ຈົນກວ່າພະນັກງານກົດ ຈ່າຍແລ້ວ.',
+    bk_open:'ເປີດ',bk_closed_all_day:'ປິດທັງວັນ',bk_r2_title:'ການຈອງຫຼາຍຮອບ',bk_r2_help:'ເພີ່ມຮອບການນັ່ງ. ເວລາ (24 ຊມ) ຂອງແຕ່ລະຮອບ ຈະຖືກລັອກສຳລັບລູກຄ້າ ຈົນກວ່າຮອບນັ້ນຈະເປີດ ໃນມື້ທີ່ຈອງ.',bk_r2_times:'ເວລາ (24 ຊມ)',bk_r2_open:'ເປີດເວລາ (24 ຊມ)',bk_r2_add:'ເພີ່ມຮອບ',bk_r2_round:'ຮອບ',autoseat_title:'ນັ່ງໂຕະອັດຕະໂນມັດເມື່ອສະແກນ QR',owtm_seat_title:'ນັ່ງລູກຄ້າ Walk-in',owtm_table:'ໂຕະ',owtm_how_many:'ມີຈັກຄົນ',owtm_seat_btn:'ນັ່ງ',owtm_seated:'ນັ່ງໂຕະແລ້ວ',owtm_free_confirm:'ປ່ອຍໂຕະນີ້ບໍ?',owtm_reserved:'ໂຕະນີ້ຖືກຈອງອອນລາຍແລ້ວ.',owtm_pax:'ຄົນ',owtm_seats:'ບ່ອນນັ່ງ',owtm_seats_upto:'ສູງສຸດ',owtm_vip_note:'ເງື່ອນໄຂ VIP',sa_lock_title:'ລະຫັດຜ່ານ Super Admin',sa_lock_sub:'ໃສ່ລະຫັດຜ່ານອີກຄັ້ງເພື່ອເປີດຮ້ານນີ້',sa_lock_btn:'ປົດລັອກ',sa_lock_wrong:'ລະຫັດຜ່ານບໍ່ຖືກ',sa_lock_err:'ກວດສອບບໍ່ໄດ້ ລອງໃໝ່',owtm_seated_now:'ນັ່ງ Walk-in ແລ້ວ',owtm_free_table:'ປ່ອຍໂຕະ',owtm_close:'ປິດ',owtm_resv:'ການຈອງອອນລາຍ',sess_expired:'ເຊດຊັນ 8 ຊົ່ວໂມງ ໝົດອາຍຸແລ້ວ. ກະລຸນາເຂົ້າສູ່ລະບົບໃໝ່.',owtm_seat_err:'ນັ່ງໂຕະບໍ່ໄດ້',owtm_free_err:'ປ່ອຍໂຕະບໍ່ໄດ້',autoseat_help:'ລູກຄ້າສະແກນ QR ໂຕະ → ໂຕະນັ້ນຈະຖືກບລັອກຈາກການຈອງອອນລາຍ ຈົນກວ່າພະນັກງານກົດ ຈ່າຍແລ້ວ.',
     bk_to:'ຫາ',
     bk_hours_saved:'✅ ບັນທຶກຊົ່ວໂມງເປີດແລ້ວ.',
     bk_hours_review_title:'⚠ ກະລຸນາກວດສອບຊົ່ວໂມງເປີດຂອງທ່ານ',
@@ -5511,7 +5511,7 @@ const STAFF_T={
     bk_date_label:'วันที่',bk_time_label:'เวลา',
     bk_save_hours:'💾 บันทึกเวลา',
     bk_hours_intro:'ตั้งเวลาเปิดประจำสัปดาห์ ลูกค้าจะจองได้เฉพาะในเวลาเปิด ในช่วง 30 นาที',
-    bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',bk_r2_title:'จองหลายรอบ',bk_r2_help:'เพิ่มรอบที่นั่ง เวลา (24 ชม.) ของแต่ละรอบจะถูกล็อกสำหรับลูกค้าจนกว่ารอบนั้นจะเปิดในวันที่จอง',bk_r2_times:'เวลา (24 ชม.)',bk_r2_open:'เปิดเวลา (24 ชม.)',bk_r2_add:'เพิ่มรอบ',bk_r2_round:'รอบ',autoseat_title:'จองโต๊ะอัตโนมัติเมื่อสแกน QR',owtm_seat_title:'นั่งลูกค้า Walk-in',owtm_table:'โต๊ะ',owtm_how_many:'กี่คน?',owtm_seat_btn:'นั่ง',owtm_seated:'นั่งโต๊ะแล้ว',owtm_free_confirm:'ปล่อยโต๊ะนี้?',owtm_reserved:'โต๊ะนี้ถูกจองออนไลน์แล้ว',owtm_pax:'คน',owtm_seats:'ที่นั่ง',owtm_seats_upto:'สูงสุด',owtm_vip_note:'เงื่อนไข VIP',sa_lock_title:'รหัสผ่าน Super Admin',sa_lock_sub:'กรอกรหัสผ่านอีกครั้งเพื่อเปิดร้านนี้',sa_lock_btn:'ปลดล็อก',sa_lock_wrong:'รหัสผ่านไม่ถูกต้อง',sa_lock_err:'ตรวจสอบไม่ได้ ลองอีกครั้ง',owtm_seated_now:'นั่ง Walk-in แล้ว',owtm_free_table:'ปล่อยโต๊ะ',owtm_close:'ปิด',owtm_resv:'การจองออนไลน์',owtm_seat_err:'นั่งโต๊ะไม่ได้',owtm_free_err:'ปล่อยโต๊ะไม่ได้',autoseat_help:'ลูกค้าสแกน QR โต๊ะ → โต๊ะนั้นถูกบล็อกจากการจองออนไลน์จนกว่าพนักงานจะกดจ่ายแล้ว',
+    bk_open:'เปิด',bk_closed_all_day:'ปิดทั้งวัน',bk_r2_title:'จองหลายรอบ',bk_r2_help:'เพิ่มรอบที่นั่ง เวลา (24 ชม.) ของแต่ละรอบจะถูกล็อกสำหรับลูกค้าจนกว่ารอบนั้นจะเปิดในวันที่จอง',bk_r2_times:'เวลา (24 ชม.)',bk_r2_open:'เปิดเวลา (24 ชม.)',bk_r2_add:'เพิ่มรอบ',bk_r2_round:'รอบ',autoseat_title:'จองโต๊ะอัตโนมัติเมื่อสแกน QR',owtm_seat_title:'นั่งลูกค้า Walk-in',owtm_table:'โต๊ะ',owtm_how_many:'กี่คน?',owtm_seat_btn:'นั่ง',owtm_seated:'นั่งโต๊ะแล้ว',owtm_free_confirm:'ปล่อยโต๊ะนี้?',owtm_reserved:'โต๊ะนี้ถูกจองออนไลน์แล้ว',owtm_pax:'คน',owtm_seats:'ที่นั่ง',owtm_seats_upto:'สูงสุด',owtm_vip_note:'เงื่อนไข VIP',sa_lock_title:'รหัสผ่าน Super Admin',sa_lock_sub:'กรอกรหัสผ่านอีกครั้งเพื่อเปิดร้านนี้',sa_lock_btn:'ปลดล็อก',sa_lock_wrong:'รหัสผ่านไม่ถูกต้อง',sa_lock_err:'ตรวจสอบไม่ได้ ลองอีกครั้ง',owtm_seated_now:'นั่ง Walk-in แล้ว',owtm_free_table:'ปล่อยโต๊ะ',owtm_close:'ปิด',owtm_resv:'การจองออนไลน์',sess_expired:'เซสชัน 8 ชั่วโมงหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง',owtm_seat_err:'นั่งโต๊ะไม่ได้',owtm_free_err:'ปล่อยโต๊ะไม่ได้',autoseat_help:'ลูกค้าสแกน QR โต๊ะ → โต๊ะนั้นถูกบล็อกจากการจองออนไลน์จนกว่าพนักงานจะกดจ่ายแล้ว',
     bk_to:'ถึง',
     bk_hours_saved:'✅ บันทึกเวลาเปิดเรียบร้อย',
     bk_hours_review_title:'⚠ กรุณาตรวจสอบเวลาเปิดของคุณ',
@@ -5707,7 +5707,7 @@ const STAFF_T={
     bk_date_label:'日期',bk_time_label:'时间',
     bk_save_hours:'💾 保存营业时间',
     bk_hours_intro:'设置每周营业时间。客户只能在营业时间内预订，每 30 分钟一个时段。',
-    bk_open:'营业',bk_closed_all_day:'全天休息',bk_r2_title:'多轮订座',bk_r2_help:'添加订座轮次。每轮时间（24小时制）在预订当天该轮开放时间前对顾客锁定。',bk_r2_times:'时间（24小时）',bk_r2_open:'开放时间（24小时）',bk_r2_add:'添加轮次',bk_r2_round:'轮次',autoseat_title:'扫码自动占座',owtm_seat_title:'安排堂食入座',owtm_table:'桌台',owtm_how_many:'多少人？',owtm_seat_btn:'入座',owtm_seated:'已入座',owtm_free_confirm:'释放此桌？',owtm_reserved:'此桌已被在线预订。',owtm_pax:'人',owtm_seats:'座位',owtm_seats_upto:'最多',owtm_vip_note:'VIP 要求',sa_lock_title:'超级管理员密码',sa_lock_sub:'重新输入密码以打开此餐厅',sa_lock_btn:'解锁',sa_lock_wrong:'密码错误',sa_lock_err:'无法验证，请重试',owtm_seated_now:'已入座(堂食)',owtm_free_table:'释放桌台',owtm_close:'关闭',owtm_resv:'在线预订',owtm_seat_err:'无法入座',owtm_free_err:'无法释放',autoseat_help:'客人扫描桌台二维码 → 该桌位被锁定不可在线预订，直到员工点击已付款。',
+    bk_open:'营业',bk_closed_all_day:'全天休息',bk_r2_title:'多轮订座',bk_r2_help:'添加订座轮次。每轮时间（24小时制）在预订当天该轮开放时间前对顾客锁定。',bk_r2_times:'时间（24小时）',bk_r2_open:'开放时间（24小时）',bk_r2_add:'添加轮次',bk_r2_round:'轮次',autoseat_title:'扫码自动占座',owtm_seat_title:'安排堂食入座',owtm_table:'桌台',owtm_how_many:'多少人？',owtm_seat_btn:'入座',owtm_seated:'已入座',owtm_free_confirm:'释放此桌？',owtm_reserved:'此桌已被在线预订。',owtm_pax:'人',owtm_seats:'座位',owtm_seats_upto:'最多',owtm_vip_note:'VIP 要求',sa_lock_title:'超级管理员密码',sa_lock_sub:'重新输入密码以打开此餐厅',sa_lock_btn:'解锁',sa_lock_wrong:'密码错误',sa_lock_err:'无法验证，请重试',owtm_seated_now:'已入座(堂食)',owtm_free_table:'释放桌台',owtm_close:'关闭',owtm_resv:'在线预订',sess_expired:'8小时会话已过期，请重新登录。',owtm_seat_err:'无法入座',owtm_free_err:'无法释放',autoseat_help:'客人扫描桌台二维码 → 该桌位被锁定不可在线预订，直到员工点击已付款。',
     bk_to:'至',
     bk_hours_saved:'✅ 营业时间已保存。',
     bk_hours_review_title:'⚠ 请检查您的营业时间',
@@ -5919,7 +5919,7 @@ const STAFF_T={
     bk_date_label:'날짜',bk_time_label:'시간',
     bk_save_hours:'💾 영업 시간 저장',
     bk_hours_intro:'주간 영업 시간을 설정하세요. 고객은 영업 시간 내 30분 단위로만 예약할 수 있습니다.',
-    bk_open:'영업',bk_closed_all_day:'종일 휴무',bk_r2_title:'다회차 예약',bk_r2_help:'예약 회차를 추가하세요. 각 회차 시간(24시간제)은 예약 당일 해당 회차가 열리기 전까지 고객에게 잠깁니다.',bk_r2_times:'시간 (24시간)',bk_r2_open:'오픈 시간 (24시간)',bk_r2_add:'회차 추가',bk_r2_round:'회차',autoseat_title:'QR 스캔 시 자동 착석',owtm_seat_title:'워크인 착석',owtm_table:'테이블',owtm_how_many:'몇 명?',owtm_seat_btn:'착석',owtm_seated:'착석 완료',owtm_free_confirm:'이 테이블을 비울까요?',owtm_reserved:'이 테이블은 온라인 예약됨.',owtm_pax:'명',owtm_seats:'좌석',owtm_seats_upto:'최대',owtm_vip_note:'VIP 요건',sa_lock_title:'슈퍼 관리자 비밀번호',sa_lock_sub:'이 매장을 열려면 비밀번호를 다시 입력하세요',sa_lock_btn:'잠금 해제',sa_lock_wrong:'비밀번호가 틀렸습니다',sa_lock_err:'확인할 수 없습니다 다시 시도하세요',owtm_seated_now:'워크인 착석됨',owtm_free_table:'테이블 비우기',owtm_close:'닫기',owtm_resv:'온라인 예약',owtm_seat_err:'착석 실패',owtm_free_err:'비우기 실패',autoseat_help:'손님이 테이블 QR을 스캔하면 직원이 결제 완료를 누를 때까지 해당 테이블은 온라인 예약에서 차단됩니다.',
+    bk_open:'영업',bk_closed_all_day:'종일 휴무',bk_r2_title:'다회차 예약',bk_r2_help:'예약 회차를 추가하세요. 각 회차 시간(24시간제)은 예약 당일 해당 회차가 열리기 전까지 고객에게 잠깁니다.',bk_r2_times:'시간 (24시간)',bk_r2_open:'오픈 시간 (24시간)',bk_r2_add:'회차 추가',bk_r2_round:'회차',autoseat_title:'QR 스캔 시 자동 착석',owtm_seat_title:'워크인 착석',owtm_table:'테이블',owtm_how_many:'몇 명?',owtm_seat_btn:'착석',owtm_seated:'착석 완료',owtm_free_confirm:'이 테이블을 비울까요?',owtm_reserved:'이 테이블은 온라인 예약됨.',owtm_pax:'명',owtm_seats:'좌석',owtm_seats_upto:'최대',owtm_vip_note:'VIP 요건',sa_lock_title:'슈퍼 관리자 비밀번호',sa_lock_sub:'이 매장을 열려면 비밀번호를 다시 입력하세요',sa_lock_btn:'잠금 해제',sa_lock_wrong:'비밀번호가 틀렸습니다',sa_lock_err:'확인할 수 없습니다 다시 시도하세요',owtm_seated_now:'워크인 착석됨',owtm_free_table:'테이블 비우기',owtm_close:'닫기',owtm_resv:'온라인 예약',sess_expired:'8시간 세션이 만료되었습니다. 다시 로그인하세요.',owtm_seat_err:'착석 실패',owtm_free_err:'비우기 실패',autoseat_help:'손님이 테이블 QR을 스캔하면 직원이 결제 완료를 누를 때까지 해당 테이블은 온라인 예약에서 차단됩니다.',
     bk_to:'~',
     bk_hours_saved:'✅ 영업 시간이 저장되었습니다.',
     bk_hours_review_title:'⚠ 영업 시간을 확인해 주세요',
@@ -7160,6 +7160,8 @@ async function doOwnerLogin(){
   sessionStorage.setItem('el_session',JSON.stringify({role:'owner',restoId:found.id,name:u,restoName:found.name}));
   // Initialize activity timestamp (cross-tab, used by 8h idle timeout)
   try { localStorage.setItem('el_last_activity', String(Date.now())); } catch(e){}
+  // Record login time — used by the absolute 8h session cap (forces re-login 8h after login)
+  try { localStorage.setItem('el_login_at', String(Date.now())); } catch(e){}
   // Save (or clear) "Remember me" credentials based on checkbox state
   _owSaveRememberOnLogin(u, p);
   document.getElementById('owSbN').textContent=found.name;
@@ -7225,6 +7227,7 @@ async function doSALogin(){
     me={name:'Super Admin',role:'superadmin',uid};
     sessionStorage.setItem('el_session',JSON.stringify({role:'superadmin',uid}));
     try { localStorage.setItem('el_last_activity', String(Date.now())); } catch(e){}
+    try { localStorage.setItem('el_login_at', String(Date.now())); } catch(e){}
     errEl.textContent='';
     showPage('pg-sa');
     saP('dashboard',document.querySelector('#pg-sa .sb-item'));
@@ -7258,6 +7261,7 @@ function logout(){
   // SECURITY: clear per-tab session, activity timestamp, AND broadcast logout to other tabs
   sessionStorage.removeItem('el_session');
   try { localStorage.removeItem('el_last_activity'); } catch(e){}
+  try { localStorage.removeItem('el_login_at'); } catch(e){}
   try {
     // Cross-tab logout sync — other tabs listening via 'storage' event will logout too
     localStorage.setItem('el_logout_broadcast', String(Date.now()));
@@ -7278,6 +7282,27 @@ function logout(){
 /* ─── Session security: 8h idle timeout + cross-tab logout sync ─────── */
 const _SESSION_IDLE_MS = 8 * 60 * 60 * 1000; // 8 hours
 let _idleCheckInterval = null;
+
+/* Absolute session cap: force re-login 8h after LOGIN (not just idle). Applies to BOTH SA and owner,
+   including legacy plaintext owners (anchored on el_login_at, so it works without a Firebase user). */
+const _SESSION_MAX_MS = 8 * 60 * 60 * 1000; // 8 hours from login
+function _checkSessionMaxAge(){
+  if(!sessionStorage.getItem('el_session')) return; // not logged in
+  let loginAt = 0;
+  try { loginAt = parseInt(localStorage.getItem('el_login_at') || '0', 10); } catch(e){ loginAt = 0; }
+  if(!loginAt){
+    // Older session with no login stamp — start the 8h clock from now (one-time migration)
+    try { localStorage.setItem('el_login_at', String(Date.now())); } catch(e){}
+    return;
+  }
+  if(Date.now() - loginAt >= _SESSION_MAX_MS){
+    // Clear session FIRST so a focus+interval double-fire can't double-alert, then log out.
+    try { sessionStorage.removeItem('el_session'); } catch(e){}
+    try { localStorage.removeItem('el_login_at'); } catch(e){}
+    try { alert(_ts('sess_expired','Your 8-hour session has expired. Please log in again.')); } catch(e){}
+    if(typeof logout === 'function') logout();
+  }
+}
 
 // Refresh activity timestamp on user interaction (cross-tab via localStorage)
 function _refreshActivity(){
@@ -7321,9 +7346,13 @@ function _initSessionSecurity(){
     }
   });
 
-  // Idle timer — check every 60 seconds (cheap)
+  // Idle timer — check every 60 seconds (cheap). Also checks the absolute 8h-from-login cap.
   if(_idleCheckInterval) clearInterval(_idleCheckInterval);
-  _idleCheckInterval = setInterval(_checkIdleTimeout, 60 * 1000);
+  _idleCheckInterval = setInterval(function(){ _checkIdleTimeout(); _checkSessionMaxAge(); }, 60 * 1000);
+  // Catch the 8h cap immediately and whenever the tab regains focus (a backgrounded tab can drift past 8h)
+  _checkSessionMaxAge();
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) _checkSessionMaxAge(); });
+  window.addEventListener('focus', _checkSessionMaxAge);
 
   // Refresh activity on real user interaction (throttled to 1× per 30s — cheap)
   let _lastRefreshMs = 0;
@@ -8842,15 +8871,32 @@ async function startSAListeners(){
   // Poll orders every 30s instead of live stream (saves massive bandwidth).
   // DATA-USAGE FIX: only poll when SA is actively on a panel that needs orders data.
   // If SA is on Settings/Restaurants/Sessions/Contacts panels, no polling = no bandwidth.
-  async function pollSAOrders(){
+  // DATA-USAGE FIX v2: full-fetch ONCE, then poll only the last 2 days and merge.
+  // Old code re-downloaded the ENTIRE orders node every 30s (the daily-egress spike).
+  let _saOrdersLoaded = false;
+  async function pollSAOrders(forceFull){
     // Skip if no panel needs orders data right now (saves bandwidth massively)
     const activePanel=document.querySelector('#pg-sa .panel.on');
     const id = activePanel?.id || '';
     const needsOrders = (id==='sa-dashboard' || id==='sa-orders' || id==='sa-revenue');
     if(!needsOrders) return;
-    const snap=await fbGet('orders');
-    if(!snap) return;
-    cachedOrders=Object.entries(snap).map(([k,v])=>({...v,fbKey:k}));
+    if(forceFull || !_saOrdersLoaded || !Array.isArray(cachedOrders) || !cachedOrders.length){
+      // First load (or forced): pull everything once so all-time revenue/stats are complete.
+      const snap=await fbGet('orders');
+      cachedOrders = snap ? Object.entries(snap).map(([k,v])=>({...v,fbKey:k})) : [];
+      _saOrdersLoaded = true;
+    } else {
+      // Incremental: only fetch orders from the last 2 days and merge by key (covers new orders
+      // + recent status changes, which always happen within hours). 'ts' is indexed.
+      const cutoff = Date.now() - 2*24*60*60*1000;
+      let recent = null;
+      try { recent = await fbGetFiltered('orders','ts', cutoff, {rangeMode:'startAt'}); } catch(_){ recent = null; }
+      if(recent && typeof recent==='object'){
+        const byKey = new Map(cachedOrders.map(o=>[o.fbKey,o]));
+        Object.entries(recent).forEach(([k,v])=>{ byKey.set(k, {...v, fbKey:k}); });
+        cachedOrders = Array.from(byKey.values());
+      }
+    }
     cachedOrders.sort((a,b)=>(b.ts||0)-(a.ts||0));
     if(id==='sa-dashboard'){saStats();saRecentOrders();}
     if(id==='sa-orders') saOrders();
@@ -8861,7 +8907,7 @@ async function startSAListeners(){
   window._saPollOrdersNow = pollSAOrders;
   pollSAOrders(); // load immediately
   if(window._saOrdersPoll) clearInterval(window._saOrdersPoll);
-  window._saOrdersPoll=setInterval(pollSAOrders,30000); // refresh every 30s
+  window._saOrdersPoll=setInterval(pollSAOrders,60000); // refresh every 60s (was 30s)
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -13735,6 +13781,21 @@ function _bkOccupies(bSlot, qSlot, seatingMode){
   return qs < bs + dur;               // fixed seating: occupies [start, start+duration)
 }
 
+// DATA-USAGE: per-session restaurant CONFIG cache. The floor plan / tables / hours / theme don't change
+// while a customer is booking, so the (heavy) restaurant doc is fetched once and reused across date/slot/zone
+// changes. Bookings, seated tables and locks are NEVER cached here — they're always fetched fresh below,
+// so live availability stays correct.
+var _restoCfgCache = {};            // { rId: { data, at } }
+var _RESTO_CFG_TTL = 5*60*1000;     // 5 min
+async function _restoCfg(rId){
+  if(!rId) return null;
+  try{ if(typeof _rfpResto!=='undefined' && _rfpResto && _rfpId===rId){ _restoCfgCache[rId]={data:_rfpResto, at:Date.now()}; } }catch(_){}
+  var c = _restoCfgCache[rId];
+  if(c && c.data && (Date.now()-c.at) < _RESTO_CFG_TTL) return c.data;
+  var d = await fbGet('restaurants/'+rId);
+  if(d) _restoCfgCache[rId] = { data:d, at:Date.now() };
+  return d;
+}
 async function bkLoadSlotsAndBuild(){
   // v6.3: Count bookings PER slot (not just which slots are touched) so we can show capacity
   const bookedCount = {};  // { '20:00': 3, '21:00': 1 }
@@ -13743,7 +13804,7 @@ async function bkLoadSlotsAndBuild(){
     // Parallel fetches; bookings server-side filtered by date
     if(typeof ensureAnonAuth==='function'){ try{ await ensureAnonAuth(); }catch(_){} }
     const [r, all] = await Promise.all([
-      fbGet('restaurants/'+bkState.restoId),
+      _restoCfg(bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date)
     ]);
     if(r && Array.isArray(r.tables)) totalTables = r.tables.length;
@@ -15676,7 +15737,7 @@ async function bkLoadTables(){
     // Parallel fetches; bookings server-side filtered by date (see fbGetFiltered for index fallback)
     if(typeof ensureAnonAuth==='function'){ try{ await ensureAnonAuth(); }catch(_){} }
     const [r, dayBookings, locks, seatedNow] = await Promise.all([
-      ((bkState.fromRfp && typeof _rfpResto!=='undefined' && _rfpResto && _rfpId===bkState.restoId) ? Promise.resolve(_rfpResto) : fbGet('restaurants/'+bkState.restoId)),
+      _restoCfg(bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date),
       fbGet('tableLocks/'+bkState.restoId),
       fbGet('seatedTables/'+bkState.restoId)
@@ -17009,11 +17070,24 @@ async function _owTmFetchAndRender(silent){
   const todayStr = (typeof _bkLocalISO === 'function') ? _bkLocalISO(new Date()) : new Date().toISOString().slice(0,10);
   const targetDate = (typeof _bkOwnerDateFilter === 'string' && _bkOwnerDateFilter) ? _bkOwnerDateFilter : todayStr;
   const isToday = (targetDate === todayStr);
-  const [r, dayBookings, seatedNow] = await Promise.all([
-    fbGet('restaurants/'+restoId),
-    fbGetFiltered('bookings/'+restoId, 'date', targetDate),
-    fbGet('seatedTables/'+restoId)
-  ]);
+  // DATA-USAGE FIX: the floor plan / areas / tables don't change while the map is open.
+  // On auto-refresh ticks (silent), reuse the cached restaurant and only re-fetch the small
+  // live data (bookings + seatedTables). First/manual render fetches the restaurant fresh.
+  let r, dayBookings, seatedNow;
+  if(silent && _owTmState.resto){
+    r = _owTmState.resto;
+    [dayBookings, seatedNow] = await Promise.all([
+      fbGetFiltered('bookings/'+restoId, 'date', targetDate),
+      fbGet('seatedTables/'+restoId)
+    ]);
+  } else {
+    [r, dayBookings, seatedNow] = await Promise.all([
+      fbGet('restaurants/'+restoId),
+      fbGetFiltered('bookings/'+restoId, 'date', targetDate),
+      fbGet('seatedTables/'+restoId)
+    ]);
+    if(r) _owTmState.resto = r;
+  }
   if(!r){
     document.getElementById('owTmMap').innerHTML = `<div class="ow-tm-empty"><span class="ow-tm-empty-emoji">⚠️</span>Could not load restaurant data.</div>`;
     return;
@@ -19096,7 +19170,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782590000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782605000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
