@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782565000 · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782605000 · DATA-USAGE: per-session restaurant-config cache (booking re-pulls eliminated) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8869,6 +8869,21 @@ function _bkOccupies(bSlot, qSlot, seatingMode){
   return qs < bs + dur;               // fixed seating: occupies [start, start+duration)
 }
 
+// DATA-USAGE: per-session restaurant CONFIG cache. The floor plan / tables / hours / theme don't change
+// while a customer is booking, so the (heavy) restaurant doc is fetched once and reused across date/slot/zone
+// changes. Bookings, seated tables and locks are NEVER cached here — they're always fetched fresh below,
+// so live availability stays correct.
+var _restoCfgCache = {};            // { rId: { data, at } }
+var _RESTO_CFG_TTL = 5*60*1000;     // 5 min
+async function _restoCfg(rId){
+  if(!rId) return null;
+  try{ if(typeof _rfpResto!=='undefined' && _rfpResto && _rfpId===rId){ _restoCfgCache[rId]={data:_rfpResto, at:Date.now()}; } }catch(_){}
+  var c = _restoCfgCache[rId];
+  if(c && c.data && (Date.now()-c.at) < _RESTO_CFG_TTL) return c.data;
+  var d = await fbGet('restaurants/'+rId);
+  if(d) _restoCfgCache[rId] = { data:d, at:Date.now() };
+  return d;
+}
 async function bkLoadSlotsAndBuild(){
   // v6.3: Count bookings PER slot (not just which slots are touched) so we can show capacity
   const bookedCount = {};  // { '20:00': 3, '21:00': 1 }
@@ -8877,7 +8892,7 @@ async function bkLoadSlotsAndBuild(){
     // Parallel fetches; bookings server-side filtered by date
     if(typeof ensureAnonAuth==='function'){ try{ await ensureAnonAuth(); }catch(_){} }
     const [r, all] = await Promise.all([
-      fbGet('restaurants/'+bkState.restoId),
+      _restoCfg(bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date)
     ]);
     if(r && Array.isArray(r.tables)) totalTables = r.tables.length;
@@ -10329,7 +10344,7 @@ async function bkLoadTables(){
     // Parallel fetches; bookings server-side filtered by date (see fbGetFiltered for index fallback)
     if(typeof ensureAnonAuth==='function'){ try{ await ensureAnonAuth(); }catch(_){} }
     const [r, dayBookings, locks, seatedNow] = await Promise.all([
-      ((bkState.fromRfp && typeof _rfpResto!=='undefined' && _rfpResto && _rfpId===bkState.restoId) ? Promise.resolve(_rfpResto) : fbGet('restaurants/'+bkState.restoId)),
+      _restoCfg(bkState.restoId),
       fbGetFiltered('bookings/'+bkState.restoId, 'date', bkState.date),
       fbGet('tableLocks/'+bkState.restoId),
       fbGet('seatedTables/'+bkState.restoId)
@@ -12182,7 +12197,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782565000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782605000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
