@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782610000 · SA: click restaurant row to open (password-gated) + config cache · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782615000 · SA: Restaurants nav also password-gated (desktop+mobile) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -3569,7 +3569,7 @@ setTimeout(function(){
         <button class="sb-item on" onclick="saP('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
         <button class="sb-item" onclick="saP('revenue',this)"><span class="sb-ico">💰</span>Revenue</button>
         <div class="sb-sec">Management</div>
-        <button class="sb-item" onclick="saP('restaurants',this)"><span class="sb-ico">🏪</span>Restaurants<span class="sb-num" id="pendNum" style="display:none">!</span></button>
+        <button class="sb-item" onclick="saGateRestaurants(this)"><span class="sb-ico">🏪</span>Restaurants<span class="sb-num" id="pendNum" style="display:none">!</span></button>
         <button class="sb-item" onclick="saP('orders',this)"><span class="sb-ico">🧾</span>All Orders</button>
         <button class="sb-item" onclick="saP('sessions',this)"><span class="sb-ico">📱</span>Active Sessions</button>
         <div class="sb-sec">System</div>
@@ -3762,7 +3762,7 @@ setTimeout(function(){
       </div>
     </main>
   </div>
-  <nav class="mob-sb"><div class="mob-sb-inner"><button class="mob-sb-btn on" onclick="saP('dashboard',this)"><span class="mob-sb-ico">📊</span>Home</button><button class="mob-sb-btn" onclick="saP('restaurants',this)"><span class="mob-sb-ico">🏪</span>Restos</button><button class="mob-sb-btn" onclick="saP('orders',this)"><span class="mob-sb-ico">🧾</span>Orders</button><button class="mob-sb-btn" onclick="saP('revenue',this)"><span class="mob-sb-ico">💰</span>Revenue</button></div></nav>
+  <nav class="mob-sb"><div class="mob-sb-inner"><button class="mob-sb-btn on" onclick="saP('dashboard',this)"><span class="mob-sb-ico">📊</span>Home</button><button class="mob-sb-btn" onclick="saGateRestaurants(this)"><span class="mob-sb-ico">🏪</span>Restos</button><button class="mob-sb-btn" onclick="saP('orders',this)"><span class="mob-sb-ico">🧾</span>Orders</button><button class="mob-sb-btn" onclick="saP('revenue',this)"><span class="mob-sb-ico">💰</span>Revenue</button></div></nav>
 </div>
 
 <!-- OWNER -->
@@ -8913,6 +8913,8 @@ async function startSAListeners(){
 // ═══════════════════════════════════════════════════════════════
 // SUPER ADMIN PANELS
 // ═══════════════════════════════════════════════════════════════
+// SA: require the Super Admin password before opening the Restaurants section (same 15-min unlock as edit).
+async function saGateRestaurants(btn){ if(await _saEditGate()) saP('restaurants', btn); }
 function saP(panel,btn){
   document.querySelectorAll('#pg-sa .panel').forEach(p=>p.classList.remove('on'));
   document.getElementById('sa-'+panel).classList.add('on');
@@ -19170,7 +19172,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782610000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782615000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
