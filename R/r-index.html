@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782625000 · zone description subtitle + release-time note · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782630000 · debug cleanup: 0 console.log on customer path · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7793,7 +7793,7 @@ async function startCustomerSession(rId,tId,sessId){
   document.title=titleStr+' | EATLAOS';
   const ogT=document.getElementById('ogTitle');if(ogT)ogT.setAttribute('content',titleStr);
   const appT=document.getElementById('appTitle');if(appT)appT.setAttribute('content',r.name);
-  }catch(e){console.log('URL update skipped:',e);}
+  }catch(_){}
   startSessTimer();
   // Load Firebase SDK in background for real-time order updates
   // Page already shows — SDK loads silently in background
@@ -12225,7 +12225,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782625000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782630000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
