@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782615000 · SA: Restaurants nav also password-gated (desktop+mobile) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782625000 · zone description subtitle (owner sets, customer sees) + release-time note · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2470,6 +2470,8 @@ html.el-lang-lo .rfp-hours, html.el-lang-th .rfp-hours{ line-height:1.55; }
 .bk-slot.r2lock:hover{transform:none;background:rgba(255,255,255,.03);}
 .bk-slot-r2lock{color:var(--bks-acc,#c8973a);font-weight:700;}
 .bk-slot-open{color:#1e9e5a;font-weight:700;}
+.bk-slot-note{margin-top:9px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;line-height:1.45;color:var(--bks-acc,#c8973a);background:color-mix(in srgb,var(--bks-acc,#c8973a) 10%,transparent);border:1px solid color-mix(in srgb,var(--bks-acc,#c8973a) 34%,transparent);border-radius:10px;padding:9px 12px;font-family:var(--fb,'Inter');}
+.bk-slot-note .bk-note-ic{font-size:14px;line-height:1;flex-shrink:0;}
 /* Guided flow: numbered step circles (1->2), checkmark when done, subtle chevron + soft glow */
 .bk-rail{position:relative;padding-left:40px;}
 .bk-rail::before{content:"";position:absolute;left:13px;top:14px;bottom:16px;width:2px;background:rgba(200,151,58,.32);border-radius:2px;}
@@ -2940,7 +2942,8 @@ body.lang-lo .fp-cbtn,body.lang-th .fp-cbtn,body.el-lang-lo .fp-cbtn,body.el-lan
 .bk-free-card.is-full .bk-free-num{color:#e0686f;}
 .bk-zsum{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 6px;flex-shrink:0;}
 .bk-zcard{flex:1 1 calc(50% - 5px);min-width:140px;max-width:250px;display:flex;align-items:stretch;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(30,28,26,.94),rgba(18,16,14,.94));border:1px solid rgba(255,255,255,.08);box-shadow:0 4px 14px rgba(0,0,0,.28);}
-.bk-zcard .bk-zc-tag{background:var(--zc,#2980b9);color:#fff;font-weight:800;font-size:12.5px;letter-spacing:.4px;padding:0 13px;display:flex;align-items:center;min-width:70px;line-height:1.18;}
+.bk-zcard .bk-zc-tag{background:var(--zc,#2980b9);color:#fff;font-weight:800;font-size:12.5px;letter-spacing:.4px;padding:6px 13px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2px;min-width:70px;line-height:1.18;}
+.bk-zcard .bk-zc-desc{font-size:9.5px;font-weight:600;letter-spacing:.2px;line-height:1.15;color:rgba(255,255,255,.85);max-width:130px;}
 .bk-zcard .bk-zc-body{flex:1;padding:9px 13px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
 .bk-zcard .bk-zc-num{font-size:20px;font-weight:800;color:#fff;line-height:1;}
 .bk-zcard .bk-zc-lbl{font-size:10px;font-weight:600;letter-spacing:.3px;color:rgba(255,255,255,.62);}
@@ -7587,6 +7590,7 @@ const LP_TRANSLATIONS = {
     // v5.4: Zone+Table picker
     bk_pick_table:'Choose a table',
     bk_need_date:'Pick a date first.',
+    bk_release_note:'Note: the table will be released at {t}',
     bk_need_time:'Pick a time first.',
     bk_scroll_down:'See more',
     bk_all:'All',
@@ -7793,6 +7797,7 @@ const LP_TRANSLATIONS = {
     // v5.4: Zone+Table picker
     bk_pick_table:'ເລືອກໂຕະ',
     bk_need_date:'ກະລຸນາເລືອກວັນທີກ່ອນ.',
+    bk_release_note:'ໝາຍເຫດ: ຈະປ່ອຍໂຕະເວລາ {t}',
     bk_need_time:'ກະລຸນາເລືອກເວລາກ່ອນ.',
     bk_scroll_down:'ເບິ່ງເພີ່ມເຕີມ',
     bk_all:'ທັງໝົດ',
@@ -7999,6 +8004,7 @@ const LP_TRANSLATIONS = {
     // v5.4: Zone+Table picker
     bk_pick_table:'เลือกโต๊ะ',
     bk_need_date:'กรุณาเลือกวันที่ก่อน',
+    bk_release_note:'หมายเหตุ: โต๊ะจะถูกปล่อยเวลา {t}',
     bk_need_time:'กรุณาเลือกเวลาก่อน',
     bk_scroll_down:'ดูเพิ่มเติม',
     bk_all:'ทั้งหมด',
@@ -8205,6 +8211,7 @@ const LP_TRANSLATIONS = {
     // v5.4: Zone+Table picker
     bk_pick_table:'选择桌位',
     bk_need_date:'请先选择日期',
+    bk_release_note:'备注：餐桌将于 {t} 释放',
     bk_need_time:'请先选择时间',
     bk_scroll_down:'查看更多',
     bk_all:'全部',
@@ -8411,6 +8418,7 @@ const LP_TRANSLATIONS = {
     // v5.4: Zone+Table picker
     bk_pick_table:'테이블 선택',
     bk_need_date:'먼저 날짜를 선택하세요',
+    bk_release_note:'참고: 테이블은 {t}에 해제됩니다',
     bk_need_time:'먼저 시간을 선택하세요',
     bk_scroll_down:'더 보기',
     bk_all:'전체',
@@ -13757,6 +13765,7 @@ function _bkUpdateGuide(){
 
 function bkPickDate(iso){
   bkState.date = iso;
+  var _sn0=document.getElementById('bkSlotNote'); if(_sn0) _sn0.style.display='none';
   document.querySelectorAll('#bkDateGrid .bk-date-card').forEach(c=>c.classList.toggle('sel', c.dataset.d===iso));
   bkState.slot=null; bkState.tableId=null;
   var _tg=document.getElementById('bkTableGrid'); if(_tg){ _tg.classList.remove('fp-mode'); _tg.innerHTML='<div class="bks-hint">'+escapeHtml(_lp('bk_need_time','Pick a time first.'))+'</div>'; }
@@ -13934,9 +13943,26 @@ function buildBkSlotGrid(){
   grid.innerHTML = html || `<div class="bk-empty" style="grid-column:1/-1">${escapeHtml(_lp('bk_no_slots','No slots available.'))}</div>`;
 }
 
+function _bkReleaseTime(slot){
+  var p=String(slot||'').split(':'); if(p.length<2) return '';
+  var h=parseInt(p[0],10), m=parseInt(p[1],10);
+  if(isNaN(h)||isNaN(m)) return '';
+  var tot=(h*60+m+30)%1440;
+  return ('0'+Math.floor(tot/60)).slice(-2)+':'+('0'+(tot%60)).slice(-2);
+}
 function bkPickSlot(s){
   bkState.slot = s;
   document.querySelectorAll('#bkSlotGrid .bk-slot').forEach(c=>c.classList.toggle('sel', c.dataset.s===s));
+  // Professional release-time note: tells the customer when their held table is released (slot + 30 min grace)
+  var _bkNote=document.getElementById('bkSlotNote');
+  if(_bkNote){
+    var _rt=_bkReleaseTime(s);
+    if(_rt){
+      _bkNote.innerHTML='<span class="bk-note-ic" aria-hidden="true">🕐</span><span class="bk-note-tx"></span>';
+      _bkNote.querySelector('.bk-note-tx').textContent=_lp('bk_release_note','Note: the table will be released at {t}').replace('{t}', _rt);
+      _bkNote.style.display='';
+    } else { _bkNote.style.display='none'; }
+  }
   bkState.tableId=null;
   var _lv2=document.getElementById('bksLive'); if(_lv2) _lv2.style.display='';
   if(typeof bkReleaseLock==='function') bkReleaseLock();
@@ -14464,6 +14490,18 @@ function fpSetZone(name){
   } else { delete el.zone; delete el.zoneColor; }
   fpMarkDirty();
   fpRenderAll();
+}
+function fpSetZoneDesc(desc){
+  if(!fpState.selectedId) return;
+  const el = fpState.plan.elements.find(x => x.id === fpState.selectedId);
+  if(!el) return;
+  const d = String(desc||'').slice(0,40).trim();
+  const zl = el.zone ? String(el.zone).toLowerCase() : '';
+  // propagate the description to every table sharing this zone name (consistent like zoneColor)
+  if(zl){
+    fpState.plan.elements.forEach(x => { if(x.zone && String(x.zone).toLowerCase()===zl){ if(d) x.zoneDesc = d; else delete x.zoneDesc; } });
+  } else { if(d) el.zoneDesc = d; else delete el.zoneDesc; }
+  fpMarkDirty();
 }
 function fpSetZoneColor(color){
   if(!fpState.selectedId) return;
@@ -15050,6 +15088,8 @@ function fpRenderProps(){
     if(isTbl){
       const zi = document.getElementById('fpPropZone');
       if(zi && document.activeElement !== zi) zi.value = el.zone || '';
+      const zd = document.getElementById('fpPropZoneDesc');
+      if(zd && document.activeElement !== zd) zd.value = el.zoneDesc || '';
     }
   }
 }
@@ -15907,7 +15947,8 @@ async function bkLoadTables(){
         const zname = (el.zone!=null && String(el.zone).trim()) ? String(el.zone).trim() : '';
         _tInfo[el.tableId] = { vip:vip, zname:zname };
         const k = _zKeyOf(zname, vip);
-        if(!_zNature[k]) _zNature[k] = { name:zname, vip:0, gen:0 };
+        if(!_zNature[k]) _zNature[k] = { name:zname, vip:0, gen:0, desc:'' };
+        if(!_zNature[k].desc && el.zoneDesc && String(el.zoneDesc).trim()) _zNature[k].desc = String(el.zoneDesc).trim();
         if(vip) _zNature[k].vip++; else _zNature[k].gen++;
       }));
       // Available (party-fits, not taken) counted per zone — sums to the 'available' total
@@ -15934,7 +15975,8 @@ async function bkLoadTables(){
         const cat = isVip ? 'VIP' : _lblGen;
         const tag = nat.name ? (escapeHtml(nat.name) + ' - ' + cat) : cat;
         const free = _zFree[k] || 0;
-        _zCardsHtml += `<div class="bk-zcard" style="--zc:${col}"><div class="bk-zc-tag">${tag}</div><div class="bk-zc-body"><div class="bk-zc-num">${free}</div><div class="bk-zc-lbl">${_zLblFree}</div></div></div>`;
+        const _zd = nat.desc ? `<div class="bk-zc-desc">${escapeHtml(nat.desc)}</div>` : '';
+        _zCardsHtml += `<div class="bk-zcard" style="--zc:${col}"><div class="bk-zc-tag">${tag}${_zd}</div><div class="bk-zc-body"><div class="bk-zc-num">${free}</div><div class="bk-zc-lbl">${_zLblFree}</div></div></div>`;
       });
       if(_zBookedN > 0) _zCardsHtml += `<div class="bk-zcard bk-zc-bk" style="--zc:#6b7077"><div class="bk-zc-tag">${escapeHtml(_lp('bk_zone_booked','Booked'))}</div><div class="bk-zc-body"><div class="bk-zc-num">${_zBookedN}</div><div class="bk-zc-lbl">${escapeHtml(_lp('bk_tables_unit','tables'))}</div></div></div>`;
       const _zoneSummary = _zCardsHtml ? ('<div class="bk-zsum">' + _zCardsHtml + '</div>') : '';
@@ -18456,6 +18498,8 @@ async function cleanupOldBookings(opts){
               <span class="fp-zsw" style="background:#8e44ad" onclick="fpSetZoneColor('#8e44ad')" title="Purple"></span>
               <span class="fp-zsw" style="background:#d6336c" onclick="fpSetZoneColor('#d6336c')" title="Pink"></span>
             </div>
+            <label style="display:block;margin-top:8px;font-size:11px;color:#c8973a">ຄຳອະທິບາຍ (optional)</label>
+            <input type="text" id="fpPropZoneDesc" placeholder="ໂຕະເຫຼົ້າ, ໂຊນສ່ວນຕົວ…" maxlength="40" oninput="fpSetZoneDesc(this.value)" style="width:100%;margin-top:3px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#eee;border-radius:6px;padding:6px 8px;font-size:12px;box-sizing:border-box">
           </div>
           <button class="btn btn-sm btn-red" style="width:100%;margin-top:10px" onclick="fpDeleteSelected()" data-ts="fp_delete">🗑 Delete</button>
         </div>
@@ -18769,7 +18813,7 @@ async function cleanupOldBookings(opts){
         <div class="bks-sect" id="bkSectTime">
           <span class="bk-rdot">3</span>
           <div class="bks-sect-h"><span class="bks-i">🕐</span> <span data-lp="bk_pick_time">Choose a time</span></div>
-          <div class="bk-grid-wrap"><div class="bk-coach" data-lp="bk_coach_time">Now tap a time</div><div class="bk-slot-grid" id="bkSlotGrid"><div class="bks-hint" data-lp="bk_need_date">Pick a date first.</div></div></div>
+          <div class="bk-grid-wrap"><div class="bk-coach" data-lp="bk_coach_time">Now tap a time</div><div class="bk-slot-grid" id="bkSlotGrid"><div class="bks-hint" data-lp="bk_need_date">Pick a date first.</div></div><div id="bkSlotNote" class="bk-slot-note" style="display:none"></div></div>
         </div>
         <!-- TABLE (live map) -->
         <div class="bks-sect" id="bkSectTable">
@@ -19172,7 +19216,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782615000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782625000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
