@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782625000 · zone description subtitle (owner sets, customer sees) + release-time note · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782630000 · debug cleanup: silenced catch-handler + auto-cleanup/migration logs (0 on customer path) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6695,13 +6695,13 @@ async function init(){
     dbg('Firebase SDK loaded');
     await loadCFG();
     dbg('Config loaded');
-    seedFirebaseIfEmpty().catch(e=>console.log('Seed skipped:',e));
+    seedFirebaseIfEmpty().catch(()=>{});
     // Only run cleanup once per day to save bandwidth
     const _lastClean=localStorage.getItem('el_last_clean');
     const _oneWeekAgo=Date.now()-(7*86400000); // once per week is enough
     if(!_lastClean||parseInt(_lastClean)<_oneWeekAgo){
       localStorage.setItem('el_last_clean',Date.now());
-      autoCleanOldData().catch(e=>console.log('Cleanup skipped:',e));
+      autoCleanOldData().catch(()=>{});
     }
     if(p.get('admin')==='EatLaos2026SecretAdmin'){
       showPage('pg-sa-login');
@@ -6765,7 +6765,6 @@ async function autoCleanOldData(){
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify(deletes)
         });
-        console.log('🗑 Auto-cleaned '+deletedOrders+' orders older than 1 year');
       }
     }
 
@@ -6785,7 +6784,6 @@ async function autoCleanOldData(){
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify(deletes)
         });
-        console.log('🗑 Auto-cleaned '+deletedSessions+' expired sessions');
       }
     }
 
@@ -6810,12 +6808,7 @@ async function autoCleanOldData(){
       }
     }
 
-    if(deletedOrders>0||deletedSessions>0||deletedContacts>0){
-      console.log('✅ Auto-cleanup: '+deletedOrders+' orders + '+deletedSessions+' sessions + '+deletedContacts+' contacts removed');
-    }
-  }catch(e){
-    console.log('Auto-cleanup error (non-critical):', e);
-  }
+  }catch(_){}
 }
 
 async function migrateAllRestaurants(){
@@ -6934,13 +6927,11 @@ async function migrateAllRestaurants(){
         try {
           const _ouid = await _authCreateOwner(_uname, _plain);
           updates.authMigrated = true; updates.ownerUid = _ouid || null; updates.pass = null; updates.ownerPass = null;
-          console.log('🔐 Auth-migrated owner (SA):', _uname);
         } catch(e){
           if(e && e.code === 'auth/email-already-in-use'){
             let _ouid = null;
             try { const _c = await _ownerCreatorAuth().signInWithEmailAndPassword(_ownerEmail(_uname), _plain); _ouid = _c.user && _c.user.uid; await _ownerCreatorAuth().signOut(); } catch(_){}
             updates.authMigrated = true; updates.ownerUid = _ouid || null; updates.pass = null; updates.ownerPass = null;
-            console.log('🔐 Auth-migrated owner (SA, account existed):', _uname);
           }
           // else (e.g. password <6 chars): leave as legacy; SA can reset the password to migrate.
         }
@@ -6948,7 +6939,6 @@ async function migrateAllRestaurants(){
     }
     if(Object.keys(updates).length > 0){
       await fbUpdate('restaurants/'+id, updates);
-      console.log('Migrated restaurant "'+r.name+'": added', Object.keys(updates).join(', '));
     }
   }
 }
@@ -7237,7 +7227,7 @@ async function doSALogin(){
     startSAListeners();
     setTimeout(()=>initSACharts(),300);
     // Auto-migrate all restaurants on SA login
-    migrateAllRestaurants().catch(e=>console.log('Migration:',e));
+    migrateAllRestaurants().catch(()=>{});
   } catch(e){
     const code=(e&&e.code)||'';
     if(typeof dbg==='function') dbg('❌ SA login failed: '+code,'err');
@@ -12659,7 +12649,7 @@ async function startCustomerSession(rId,tId,sessId){
   document.title=titleStr+' | EATLAOS';
   const ogT=document.getElementById('ogTitle');if(ogT)ogT.setAttribute('content',titleStr);
   const appT=document.getElementById('appTitle');if(appT)appT.setAttribute('content',r.name);
-  }catch(e){console.log('URL update skipped:',e);}
+  }catch(_){}
   startSessTimer();
   // Load Firebase SDK in background for real-time order updates
   // Page already shows — SDK loads silently in background
@@ -19216,7 +19206,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782625000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782630000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
