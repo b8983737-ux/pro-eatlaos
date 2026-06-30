@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782670000 · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782675000 · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -16920,9 +16920,9 @@ async function loadOwnerBookings(){
       return d.toISOString().slice(0,10);
     })();
     // PERF: Parallel fetch — bookings + restaurant (was sequential, ~2x faster)
-    const [data, r] = await Promise.all([
+    const [data, tbls] = await Promise.all([
       fbGetFiltered('bookings/'+restoId, 'date', cutoffDate, { rangeMode: 'startAt' }),
-      fbGet('restaurants/'+restoId)
+      fbGet('restaurants/'+restoId+'/tables')
     ]);
     const arr = [];
     if(data) Object.keys(data).forEach(k=>{ arr.push({id:k, ...data[k]}); });
@@ -16930,7 +16930,7 @@ async function loadOwnerBookings(){
     _bkOwnerCache = arr;
     try{ _bkBackfillPhoneKeys(restoId, arr); }catch(_){}
     // Store tables array so renderOwnerBookings can show VIP requirement details
-    _bkRestoTables = (r && Array.isArray(r.tables)) ? r.tables : [];
+    _bkRestoTables = Array.isArray(tbls) ? tbls : [];
     _bkRestoTableCount = _bkRestoTables.length;
     _bkUpdateDateFilterButtons();
     renderOwnerBookings();
@@ -19322,7 +19322,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782670000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782675000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
