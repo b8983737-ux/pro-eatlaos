@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782655000 · MENU IMAGE + dish hand-pinch zoom (no buttons) · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom (menu photos only) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782660000 · MENU IMAGE + dish hand-pinch zoom (no buttons) · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom (menu photos only) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -3134,6 +3134,7 @@ body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,bod
 #rfpMenuOv .rfp-mov-x{background:rgba(255,255,255,.1);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;flex-shrink:0}
 #rfpMenuOv .rfp-mov-imgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;align-items:center}
 #rfpMenuOv .rfp-mov-imgs img{width:100%;max-width:680px;border-radius:12px;display:block;border:1px solid rgba(255,255,255,.08)}
+#rfpMenuOv .rfp-mov-hint{color:rgba(255,255,255,.55);font-size:12px;text-align:center;padding:0 0 4px;width:100%}
 #rfpMenuOv .rfp-mov-empty{color:rgba(255,255,255,.4);font-size:14px;margin:auto}
 #pg-resto .rfp-dimg{height:152px;border-radius:16px;background:#241a0f;background-size:cover;background-position:center;position:relative;border:1px solid var(--rfp-line2)}
 #pg-resto .rfp-dimg .z{position:absolute;bottom:9px;right:9px;width:28px;height:28px;border-radius:50%;background:rgba(10,7,3,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--rfp-cream)}
@@ -12237,7 +12238,7 @@ function rfpShowMenu(){
   var ov=document.getElementById('rfpMenuOv'), box=document.getElementById('rfpMenuOvImgs');
   if(!ov||!box) return;
   var photos=(_rfpResto&&Array.isArray(_rfpResto.menuPhotos))?_rfpResto.menuPhotos.filter(Boolean):[];
-  box.innerHTML=photos.length?photos.map(function(p){return '<img loading="lazy" src="'+_rfpSafeUrl(p)+'">';}).join(''):'<div class="rfp-mov-empty">'+_rfpEsc(_rfpT().noMenu)+'</div>';
+  box.innerHTML=photos.length?('<div class="rfp-mov-hint">🔍 ກົດທີ່ຮູບເພື່ອຊູມ · tap image, then pinch to zoom</div>'+photos.map(function(p){return '<img loading="lazy" src="'+_rfpSafeUrl(p)+'" onclick="cMenuZoomOpen(this.src)" style="cursor:zoom-in">';}).join('')):'<div class="rfp-mov-empty">'+_rfpEsc(_rfpT().noMenu)+'</div>';
   var _mt=ov.querySelector('.rfp-mov-bar span'); if(_mt) _mt.textContent=_rfpT().menu;
   ov.classList.add('show'); document.body.style.overflow='hidden';
 }
@@ -12289,7 +12290,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782655000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782660000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
