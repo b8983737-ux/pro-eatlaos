@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782630000 · debug cleanup: silenced catch-handler + auto-cleanup/migration logs (0 on customer path) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782645000 · dish-photo hand-pinch zoom (no buttons) · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1600,6 +1600,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .c-modal-ov.open{display:flex;}
 .c-detail-modal{background:var(--c-surf);width:480px;max-width:100%;max-height:90vh;overflow-y:auto;border-radius:12px;box-shadow:0 32px 80px rgba(26,18,9,.3);animation:fadeUp .35s cubic-bezier(.16,1,.3,1);}
 .c-detail-img{height:210px;background:var(--c-surf2);display:flex;align-items:center;justify-content:center;font-size:88px;position:relative;overflow:hidden;}
+.c-det-zoom{position:absolute;bottom:10px;right:10px;z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;pointer-events:none;}
+.c-mz{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;touch-action:none;overflow:hidden;}
+.c-mz-img{max-width:96vw;max-height:90vh;object-fit:contain;transform-origin:center center;user-select:none;-webkit-user-drag:none;cursor:grab;}
+.c-mz-x{position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;border:none;font-size:17px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;}
 .c-detail-body{padding:22px;}
 .c-detail-cat{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--c-gold);margin-bottom:6px;}
 .c-detail-name{font-family:var(--ff);font-size:26px;font-weight:900;color:var(--c-text);margin-bottom:8px;line-height:1.1;}
@@ -3210,7 +3214,12 @@ body.lang-lo .fp-vw-label,body.lang-th .fp-vw-label,body.lang-lo .fp-vw-tnum,bod
 }
 #rfpLb{position:fixed;inset:0;z-index:300;background:rgba(6,4,2,.94);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
 #rfpLb.show{display:flex}
-#rfpLb .lbi{width:100%;max-width:430px;height:60vh;border-radius:20px;background:#2a1d0e;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:rgba(255,240,220,.25);font-size:13px}
+#rfpLb .lbi{width:100%;max-width:430px;height:60vh;border-radius:20px;background:#2a1d0e;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:rgba(255,240,220,.25);font-size:13px;transform-origin:center center;transition:transform .12s ease;will-change:transform}
+#rfpLb.lb-zoomable .lbi{background-size:contain;background-repeat:no-repeat;touch-action:none}
+#rfpLb .lb-zoom{display:none;position:absolute;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);gap:10px;z-index:3}
+#rfpLb.lb-zoomable .lb-zoom{display:flex}
+#rfpLb .lb-zoom button{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:22px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#rfpLb .lb-zoom button:active{background:rgba(255,255,255,.26)}
 #rfpLb .lbc{margin-top:18px;text-align:center}
 #rfpLb .lbc .n{font-family:'Fraunces',serif;font-size:22px;color:var(--rfp-cream)}
 #rfpLb .lbc .p{color:var(--rfp-lt);margin-top:5px}
@@ -4038,7 +4047,7 @@ setTimeout(function(){
   </div>
 </div>
 <div id="pg-resto" class="page"></div>
-<div id="rfpLb" onclick="rfpCloseLb(event)"><div class="lbx" onclick="rfpCloseLb(event,true)">✕</div><div class="lbi" id="rfpLbImg"></div><div class="lbc"><div class="n" id="rfpLbName"></div><div class="p" id="rfpLbPrice"></div></div></div>
+<div id="rfpLb" onclick="rfpCloseLb(event)"><div class="lbx" onclick="rfpCloseLb(event,true)">✕</div><div class="lbi" id="rfpLbImg"></div><div class="lbc"><div class="n" id="rfpLbName"></div><div class="p" id="rfpLbPrice"></div></div><div class="lb-zoom"><button type="button" onclick="rfpZoomBtn(-1,event)" aria-label="Zoom out">−</button><button type="button" onclick="rfpZoomReset(event)" aria-label="Reset zoom">⟲</button><button type="button" onclick="rfpZoomBtn(1,event)" aria-label="Zoom in">+</button></div></div>
 <div id="rfpMenuOv" onclick="rfpCloseMenu(event)"><div class="rfp-mov-bar"><span>Menu</span><button class="rfp-mov-x" onclick="rfpCloseMenu(event,true)">✕</button></div><div class="rfp-mov-imgs" id="rfpMenuOvImgs"></div></div>
 
 <div id="pg-customer" class="page" data-theme="classic">
@@ -12878,6 +12887,32 @@ function renderMenu(cat,r){
 }
 
 // Item detail
+// Customer dish-photo zoom — hand pinch only, NO zoom buttons (scoped to the menu)
+var _mzS={s:1,x:0,y:0,pd:0,ps:1,drag:false,lx:0,ly:0};
+function _mzEnsure(){
+  var ov=document.getElementById('cMenuZoom');if(ov)return ov;
+  ov=document.createElement('div');ov.id='cMenuZoom';ov.className='c-mz';ov.style.display='none';
+  ov.innerHTML='<button type="button" class="c-mz-x" aria-label="Close" onclick="cMenuZoomClose()">\u2715</button><img id="cMzImg" class="c-mz-img" alt="" draggable="false">';
+  document.body.appendChild(ov);
+  var img=ov.querySelector('#cMzImg');
+  function dist(t){var dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
+  function apply(){img.style.transform='translate('+_mzS.x+'px,'+_mzS.y+'px) scale('+_mzS.s+')';}
+  ov._apply=apply;
+  ov.addEventListener('click',function(e){if(e.target===ov)cMenuZoomClose();});
+  var lastTap=0;
+  img.addEventListener('click',function(e){e.stopPropagation();var n=Date.now();if(n-lastTap<300){_mzS.s=_mzS.s>1?1:2.5;if(_mzS.s===1){_mzS.x=0;_mzS.y=0;}apply();}lastTap=n;});
+  img.addEventListener('touchstart',function(e){if(e.touches.length===2){_mzS.pd=dist(e.touches);_mzS.ps=_mzS.s;}else if(e.touches.length===1&&_mzS.s>1){_mzS.drag=true;_mzS.lx=e.touches[0].clientX;_mzS.ly=e.touches[0].clientY;}},{passive:false});
+  img.addEventListener('touchmove',function(e){if(e.touches.length===2){e.preventDefault();var nd=dist(e.touches);if(_mzS.pd>0){_mzS.s=Math.max(1,Math.min(5,_mzS.ps*(nd/_mzS.pd)));if(_mzS.s<=1.02){_mzS.s=1;_mzS.x=0;_mzS.y=0;}apply();}}else if(_mzS.drag&&e.touches.length===1&&_mzS.s>1){e.preventDefault();var t=e.touches[0];_mzS.x+=t.clientX-_mzS.lx;_mzS.y+=t.clientY-_mzS.ly;_mzS.lx=t.clientX;_mzS.ly=t.clientY;apply();}},{passive:false});
+  img.addEventListener('touchend',function(e){if(e.touches.length===0){_mzS.drag=false;_mzS.pd=0;}});
+  img.addEventListener('mousedown',function(e){if(_mzS.s>1){e.preventDefault();_mzS.drag=true;_mzS.lx=e.clientX;_mzS.ly=e.clientY;}});
+  window.addEventListener('mousemove',function(e){if(_mzS.drag&&ov.style.display!=='none'){_mzS.x+=e.clientX-_mzS.lx;_mzS.y+=e.clientY-_mzS.ly;_mzS.lx=e.clientX;_mzS.ly=e.clientY;apply();}});
+  window.addEventListener('mouseup',function(){_mzS.drag=false;});
+  img.addEventListener('wheel',function(e){e.preventDefault();_mzS.s=Math.max(1,Math.min(5,_mzS.s+(e.deltaY<0?0.3:-0.3)));if(_mzS.s===1){_mzS.x=0;_mzS.y=0;}apply();},{passive:false});
+  return ov;
+}
+function cMenuZoomOpen(src){if(!src)return;var ov=_mzEnsure();document.getElementById('cMzImg').src=src;_mzS.s=1;_mzS.x=0;_mzS.y=0;ov._apply();ov.style.display='flex';document.body.style.overflow='hidden';}
+function cMenuZoomOpenDetail(){if(window.detItem&&detItem.img)cMenuZoomOpen(detItem.img);}
+function cMenuZoomClose(){var ov=document.getElementById('cMenuZoom');if(ov)ov.style.display='none';document.body.style.overflow='';}
 function openDetail(itemId){
   loadRestoForCustomer().then(r=>{
     const item=(r?.menu||[]).find(m=>(m.id===itemId||m.name===itemId));if(!item) return;
@@ -12885,7 +12920,7 @@ function openDetail(itemId){
     // Show photo if available, otherwise show emoji
     const detImgEl=document.getElementById('detEmoji');
     if(item.img){
-      detImgEl.innerHTML=`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover;border-radius:0;display:block;" alt="${item.name}">`;
+      detImgEl.innerHTML=`<img src="${item.img}" onclick="cMenuZoomOpenDetail()" style="width:100%;height:100%;object-fit:cover;border-radius:0;display:block;cursor:zoom-in;" alt="${item.name}"><span class="c-det-zoom" aria-hidden="true">🔍</span>`;
     } else {
       detImgEl.innerHTML=item.emoji||'🍽️';
     }
@@ -19156,10 +19191,10 @@ function rfpOpenLb(i){
   document.getElementById('rfpLbName').textContent=d.name||'';
   var price=(d.sizes&&d.sizes.length)?('from '+_rfpKip(Math.min.apply(null,d.sizes.map(s=>s.price)))):_rfpKip(d.price);
   document.getElementById('rfpLbPrice').textContent=price;
-  document.getElementById('rfpLb').classList.add('show');
+  var _lbD=document.getElementById('rfpLb');_lbD.classList.add('show');_lbD.classList.remove('lb-zoomable');
   document.body.style.overflow='hidden';
 }
-function rfpCloseLb(e,force){ if(force||e.target.id==='rfpLb'){ document.getElementById('rfpLb').classList.remove('show'); document.body.style.overflow=''; } }
+function rfpCloseLb(e,force){ if(force||e.target.id==='rfpLb'){ var _lb=document.getElementById('rfpLb'); _lb.classList.remove('show'); _lb.classList.remove('lb-zoomable'); document.body.style.overflow=''; _rfpZReset(); } }
 
 function rfpScrollMap(){
   var m=document.getElementById('rfpMapSec')||document.getElementById('rfpMap');
@@ -19192,13 +19227,42 @@ function rfpCloseMenu(e,force){
   var ov=document.getElementById('rfpMenuOv'); if(ov) ov.classList.remove('show');
   document.body.style.overflow='';
 }
+/* ── Menu image pinch/zoom — lightbox only (#rfpLb.lb-zoomable = menu photos) ── */
+var _rfpZ={s:1,x:0,y:0,_init:false,_pd:0,_ps:1,_drag:false,_lx:0,_ly:0};
+function _rfpZOn(){var lb=document.getElementById('rfpLb');return !!(lb&&lb.classList.contains('lb-zoomable'));}
+function _rfpZDist(t){var dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
+function _rfpZClamp(){if(_rfpZ.s>5)_rfpZ.s=5;if(_rfpZ.s<=1){_rfpZ.s=1;_rfpZ.x=0;_rfpZ.y=0;}}
+function _rfpZApply(){var img=document.getElementById('rfpLbImg');if(!img)return;img.style.transform='translate('+_rfpZ.x+'px,'+_rfpZ.y+'px) scale('+_rfpZ.s+')';img.style.cursor=_rfpZ.s>1?'grab':'default';}
+function _rfpZReset(){_rfpZ.s=1;_rfpZ.x=0;_rfpZ.y=0;_rfpZApply();}
+function rfpZoomBtn(dir,ev){if(ev&&ev.stopPropagation)ev.stopPropagation();if(!_rfpZOn())return;_rfpZ.s=dir>0?_rfpZ.s*1.4:_rfpZ.s/1.4;_rfpZClamp();_rfpZApply();}
+function rfpZoomReset(ev){if(ev&&ev.stopPropagation)ev.stopPropagation();_rfpZReset();}
+function _rfpZInit(){
+  if(_rfpZ._init)return;var img=document.getElementById('rfpLbImg');if(!img)return;_rfpZ._init=true;
+  img.addEventListener('touchstart',function(e){
+    if(!_rfpZOn())return;
+    if(e.touches.length===2){_rfpZ._pd=_rfpZDist(e.touches);_rfpZ._ps=_rfpZ.s;}
+    else if(e.touches.length===1&&_rfpZ.s>1){_rfpZ._drag=true;_rfpZ._lx=e.touches[0].clientX;_rfpZ._ly=e.touches[0].clientY;}
+  },{passive:false});
+  img.addEventListener('touchmove',function(e){
+    if(!_rfpZOn())return;
+    if(e.touches.length===2){e.preventDefault();var d=_rfpZDist(e.touches);if(_rfpZ._pd>0){_rfpZ.s=_rfpZ._ps*(d/_rfpZ._pd);_rfpZClamp();_rfpZApply();}}
+    else if(_rfpZ._drag&&e.touches.length===1){e.preventDefault();var t=e.touches[0];_rfpZ.x+=t.clientX-_rfpZ._lx;_rfpZ.y+=t.clientY-_rfpZ._ly;_rfpZ._lx=t.clientX;_rfpZ._ly=t.clientY;_rfpZApply();}
+  },{passive:false});
+  img.addEventListener('touchend',function(e){if(e.touches.length===0){_rfpZ._drag=false;_rfpZ._pd=0;}});
+  img.addEventListener('mousedown',function(e){if(!_rfpZOn())return;if(_rfpZ.s>1){e.preventDefault();_rfpZ._drag=true;_rfpZ._lx=e.clientX;_rfpZ._ly=e.clientY;img.style.cursor='grabbing';}});
+  window.addEventListener('mousemove',function(e){if(_rfpZ._drag){_rfpZ.x+=e.clientX-_rfpZ._lx;_rfpZ.y+=e.clientY-_rfpZ._ly;_rfpZ._lx=e.clientX;_rfpZ._ly=e.clientY;_rfpZApply();}});
+  window.addEventListener('mouseup',function(){if(_rfpZ._drag){_rfpZ._drag=false;var im=document.getElementById('rfpLbImg');if(im)im.style.cursor=_rfpZ.s>1?'grab':'default';}});
+  img.addEventListener('wheel',function(e){if(!_rfpZOn())return;e.preventDefault();_rfpZ.s=e.deltaY<0?_rfpZ.s*1.12:_rfpZ.s/1.12;_rfpZClamp();_rfpZApply();},{passive:false});
+  img.addEventListener('dblclick',function(e){if(!_rfpZOn())return;e.preventDefault();if(_rfpZ.s>1){_rfpZReset();}else{_rfpZ.s=2.5;_rfpZApply();}});
+}
 function rfpOpenImg(src){
   var img=document.getElementById('rfpLbImg');
   img.style.backgroundImage='url('+_rfpSafeUrl(src)+')'; img.textContent=''; img.style.fontSize='';
   document.getElementById('rfpLbName').textContent='';
   document.getElementById('rfpLbPrice').textContent='';
-  document.getElementById('rfpLb').classList.add('show');
+  var _lbE=document.getElementById('rfpLb');_lbE.classList.add('show');_lbE.classList.add('lb-zoomable');
   document.body.style.overflow='hidden';
+  _rfpZReset(); _rfpZInit();
 }
 function rfpBook(){
   if(!_rfpId) return;
@@ -19206,7 +19270,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782630000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782645000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
