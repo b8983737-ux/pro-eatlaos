@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782665000 · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782670000 · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -19074,6 +19074,52 @@ function rfpOpenMyBooking(){
   try{ var h=document.getElementById('pg-resto'); var sh=document.querySelector('#mCustBookingStatus .bkm-shell'); if(sh) sh.setAttribute('data-bg', (h&&h.getAttribute('data-bg'))||'dark'); }catch(_){}
   if(typeof openModal==='function') openModal('mCustBookingStatus');
 }
+/* ── [Step A] Customer restaurant cache — per-phone, version-probed, size-capped.
+   Repeat page loads no longer re-download menu photos: a tiny updatedAt probe checks
+   if the cached copy is still current and only re-fetches the full restaurant when the
+   owner actually edited it. Owner/SA reads use separate paths and are unaffected. ── */
+function _rfpCacheGet(rid){
+  try{ var raw=localStorage.getItem('rfp_resto_'+rid); if(raw){ var o=JSON.parse(raw); if(o&&o.data) return o; } }catch(_){}
+  return null;
+}
+function _rfpCacheEvictAll(){
+  try{ var rm=[]; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('rfp_resto_')===0) rm.push(k); } rm.forEach(function(k){ try{ localStorage.removeItem(k); }catch(_){} }); }catch(_){}
+}
+function _rfpCacheLRU(max){
+  max=max||3;
+  try{
+    var keys=[]; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&k.indexOf('rfp_resto_')===0) keys.push(k); }
+    if(keys.length<=max) return;
+    keys.map(function(k){ var ts=0; try{ ts=(JSON.parse(localStorage.getItem(k))||{}).ts||0; }catch(_){} return {k:k,ts:ts}; })
+        .sort(function(a,b){ return a.ts-b.ts; })
+        .slice(0, keys.length-max)
+        .forEach(function(o){ try{ localStorage.removeItem(o.k); }catch(_){} });
+  }catch(_){}
+}
+function _rfpCachePut(rid,r){
+  try{
+    var rec=JSON.stringify({ data:r, v:(r&&r.updatedAt!=null)?r.updatedAt:null, ts:Date.now() });
+    if(rec.length>2500000){ try{ localStorage.removeItem('rfp_resto_'+rid); }catch(_){} return; }
+    try{ localStorage.setItem('rfp_resto_'+rid, rec); }
+    catch(e){ _rfpCacheEvictAll(); try{ localStorage.setItem('rfp_resto_'+rid, rec); }catch(__){} }
+    _rfpCacheLRU(3);
+  }catch(_){}
+}
+async function _rfpCachedResto(rid){
+  var cached=_rfpCacheGet(rid);
+  var probe;
+  try{ probe=await fbGetFresh('restaurants/'+rid+'/updatedAt'); }
+  catch(_){ try{ probe=await fbGet('restaurants/'+rid+'/updatedAt'); }catch(__){ probe=undefined; } }
+  if(cached && cached.data){
+    var fresh=(probe!=null && cached.v!=null) ? (String(probe)===String(cached.v))
+                                              : ((Date.now()-(cached.ts||0))<300000);
+    if(fresh) return cached.data;
+  }
+  var r=await fbGet('restaurants/'+rid);
+  if(r) _rfpCachePut(rid,r);
+  return r;
+}
+
 async function renderRestoPage(rid){
   _rfpId=rid;
   if(typeof showPage==='function') showPage('pg-resto');
@@ -19084,7 +19130,7 @@ async function renderRestoPage(rid){
   try{ var _cbg=localStorage.getItem('rfp_bg_'+rid); if(_cbg){ host.setAttribute('data-bg',_cbg); _rfpSyncPageBg(host); } }catch(_){}
   host.innerHTML='<div class="rfp-wrap"><div class="rfp-sec" style="padding-top:80px;text-align:center;color:#a89a85">Loading…</div></div>';
   var r=null;
-  try{ r=await fbGet('restaurants/'+rid); }catch(_){}
+  try{ r=await _rfpCachedResto(rid); }catch(_){ try{ r=await fbGet('restaurants/'+rid); }catch(__){} }
   if(!r){ host.innerHTML='<div class="rfp-wrap"><div class="rfp-sec" style="padding-top:90px;text-align:center"><div style="font-size:40px;margin-bottom:12px">🍽️</div><div style="font-size:18px;color:#f4ecdd;font-family:Fraunces,serif">Restaurant not found</div><a href="/" style="display:inline-block;margin-top:18px;color:#c8973a">← Back to EATLAOS</a></div></div>'; return; }
   _rfpResto=r;
   var hrs=null; try{ hrs=await fbGet('restoHours/'+rid); }catch(_){}
@@ -19276,7 +19322,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782665000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782670000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
