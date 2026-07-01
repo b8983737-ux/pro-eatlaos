@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782950000 · CLOUDINARY photos (logo/cover/menu/item → CDN URL, base64 fallback) · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782955000 · SA Photo Migration tool (base64→Cloudinary, upload-first safe) · CLOUDINARY photos (logo/cover/menu/item → CDN URL, base64 fallback) · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -3588,6 +3588,7 @@ setTimeout(function(){
         <div class="sb-sec">System</div>
         <button class="sb-item" onclick="saP('contacts',this)" id="sa-contact-btn"><span class="sb-ico">📩</span>Contact Requests <span id="sa-contact-badge" style="display:none;background:#c8973a;color:#000;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px;font-weight:700">0</span></button>
         <button class="sb-item" onclick="saP('requests',this)" id="sa-req-btn"><span class="sb-ico">🗑️</span>Delete Requests <span id="sa-req-badge" style="display:none;background:#e5484d;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px">0</span></button>
+        <button class="sb-item" onclick="saP('photomig',this)" id="sa-photomig-btn"><span class="sb-ico">🖼️</span>Photo Migration</button>
         <button class="sb-item" onclick="saP('settings',this)"><span class="sb-ico">⚙️</span>Platform Settings</button>
       </nav>
       <div class="sb-foot"><div class="sb-user"><div class="sb-av">👑</div><div><div class="sb-un">Super Admin</div><div class="sb-ur">Platform Owner</div></div><button class="btn-logout" onclick="logout()">Out</button></div></div>
@@ -3722,6 +3723,25 @@ setTimeout(function(){
             <div id="sa-contact-list" style="padding:8px 0">
               <div style="text-align:center;padding:40px;color:var(--s-muted)">Loading...</div>
             </div>
+          </div>
+        </div>
+
+        <div class="panel" id="sa-photomig">
+          <div class="card">
+            <div class="card-h">
+              <div class="card-title">🖼️ Photo Migration → Cloudinary</div>
+              <button class="btn btn-sm btn-gold" onclick="saPmScan()">① Scan</button>
+            </div>
+            <div style="padding:10px 14px;font-size:12.5px;line-height:1.7;color:var(--s-muted)">
+              Moves the old photos out of Firebase into Cloudinary — <b>faster refresh + far lower download bill.</b><br>
+              🔐 <b>Safe:</b> each photo is uploaded to Cloudinary <u>first</u>; the link is swapped in only after it succeeds. If any upload fails, that photo is left exactly as-is. Nothing is ever lost.<br>
+              👉 Migrate <b>one</b> restaurant first, refresh its page to confirm photos still show, then use <b>Migrate ALL</b>.
+            </div>
+            <div style="padding:0 14px 12px">
+              <button class="btn" id="sa-pm-all" onclick="saPmMigrateAll()" style="display:none">② Migrate ALL remaining</button>
+            </div>
+            <div id="sa-pm-list" style="padding:0 14px 12px"><div style="color:var(--s-muted);font-size:12px">Press <b>① Scan</b> to see which restaurants still have old photos.</div></div>
+            <div id="sa-pm-log" style="margin:0 14px 14px;padding:10px 12px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:260px;overflow:auto;background:#0a0a0a;border:1px solid var(--s-border);border-radius:8px;color:#9fe6b0"></div>
           </div>
         </div>
 
@@ -8835,6 +8855,85 @@ async function submitContact(){
 // ══ LANDING PAGE TRANSLATIONS ══
 _lpLang = localStorage.getItem('el_lp_lang')||'lo';
 
+
+/* ── SA Photo Migration: move old base64 photos → Cloudinary (safe: upload FIRST, swap link only on success) ── */
+function _saPmLog(msg){ var el=document.getElementById('sa-pm-log'); if(el){ el.textContent+=msg+'\n'; el.scrollTop=el.scrollHeight; } }
+function _saPmIsB64(v){ return typeof v==='string' && v.indexOf('data:')===0; }
+function _saPmCount(r){
+  var n=0; r=r||{};
+  if(_saPmIsB64(r.logo)) n++;
+  if(_saPmIsB64(r.cover)) n++;
+  if(Array.isArray(r.menuPhotos)) r.menuPhotos.forEach(function(p){ if(_saPmIsB64(p)) n++; });
+  if(Array.isArray(r.menu)) r.menu.forEach(function(it){ if(it && _saPmIsB64(it.img)) n++; });
+  return n;
+}
+async function saPmScan(){
+  var listEl=document.getElementById('sa-pm-list'); if(listEl) listEl.innerHTML='Scanning…';
+  var logEl=document.getElementById('sa-pm-log'); if(logEl) logEl.textContent='';
+  var restos=await fbGetFresh('restaurants')||{};
+  var rows='', any=false, total=0;
+  Object.keys(restos).forEach(function(rid){
+    var r=restos[rid]||{}; var n=_saPmCount(r); total+=n; if(n>0) any=true;
+    rows+='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--s-border);border-radius:8px;margin-bottom:8px">'+
+      '<div style="min-width:0"><b>'+escapeHtml(r.name||rid)+'</b><br><span style="font-size:11px;color:var(--s-muted)">'+(n>0?(n+' old photo(s) to move'):'✅ already on Cloudinary')+'</span></div>'+
+      (n>0?'<button class="btn btn-sm btn-gold" onclick="saPmMigrateOne(\''+rid+'\',this)">Migrate</button>':'<span style="color:#3ecf8e;font-size:18px;flex-shrink:0">✓</span>')+
+      '</div>';
+  });
+  if(listEl) listEl.innerHTML=rows||'<div style="color:var(--s-muted)">No restaurants found.</div>';
+  var allBtn=document.getElementById('sa-pm-all'); if(allBtn) allBtn.style.display=any?'inline-block':'none';
+  _saPmLog('Scan complete — '+total+' old photo(s) still in Firebase across all restaurants.'+(any?'':' 🎉 Everything already migrated!'));
+}
+async function _saPmMigrateResto(rid, r){
+  var patch={}, done=0, fail=0;
+  async function mig(val,label){
+    if(!_saPmIsB64(val)) return null;                 // already a URL or empty → skip
+    var url=await _uploadPhoto(val);                  // upload to Cloudinary FIRST
+    if(typeof url==='string' && url.indexOf('http')===0){ done++; _saPmLog('  ✅ '+label); return url; }
+    fail++; _saPmLog('  ❌ '+label+' — upload failed, left as-is (safe)'); return null; // keep base64 on failure
+  }
+  var lu=await mig(r.logo,'logo'); if(lu) patch.logo=lu;
+  var cu=await mig(r.cover,'cover'); if(cu) patch.cover=cu;
+  if(Array.isArray(r.menuPhotos)){
+    var mp=r.menuPhotos.slice();
+    for(var i=0;i<mp.length;i++){ var u=await mig(mp[i],'menu photo '+(i+1)); if(u) mp[i]=u; }
+    patch.menuPhotos=mp;
+  }
+  if(Array.isArray(r.menu)){
+    var menu=r.menu.map(function(x){ return Object.assign({},x); }); // clone, preserve every item field
+    for(var j=0;j<menu.length;j++){ if(menu[j] && menu[j].img){ var iu=await mig(menu[j].img,'item "'+(menu[j].name||('#'+j))+'"'); if(iu) menu[j].img=iu; } }
+    patch.menu=menu;
+  }
+  if(Object.keys(patch).length){ await fbUpdate('restaurants/'+rid, patch); } // swap links in ONE write
+  return {done:done, fail:fail};
+}
+async function saPmMigrateOne(rid, btn){
+  if(btn){ btn.disabled=true; btn.textContent='Migrating…'; }
+  _saPmLog('▶ '+rid+' …');
+  try{
+    var r=await fbGetFresh('restaurants/'+rid);
+    if(!r){ _saPmLog('  ⚠ not found'); if(btn){ btn.disabled=false; btn.textContent='Migrate'; } return; }
+    var res=await _saPmMigrateResto(rid, r);
+    _saPmLog('✔ Done — moved '+res.done+', failed '+res.fail+'. Open that restaurant page & refresh to confirm photos still show.');
+    if(btn){ btn.textContent='✓ Done'; btn.classList.remove('btn-gold'); }
+  }catch(e){ _saPmLog('  ❌ error: '+((e&&e.message)||e)); if(btn){ btn.disabled=false; btn.textContent='Retry'; } }
+}
+async function saPmMigrateAll(){
+  if(!confirm('Migrate ALL remaining old photos to Cloudinary?\n\nSafe: uploads first, swaps the link only after success. You can run it again anytime.')) return;
+  var allBtn=document.getElementById('sa-pm-all'); if(allBtn){ allBtn.disabled=true; allBtn.textContent='Migrating…'; }
+  var restos=await fbGetFresh('restaurants')||{};
+  var ids=Object.keys(restos), gDone=0, gFail=0;
+  _saPmLog('▶ Migrating ALL ('+ids.length+' restaurants)…');
+  for(var k=0;k<ids.length;k++){
+    var rid=ids[k], r=restos[rid]||{};
+    if(_saPmCount(r)===0) continue;
+    _saPmLog('— '+(r.name||rid));
+    try{ var res=await _saPmMigrateResto(rid, r); gDone+=res.done; gFail+=res.fail; }
+    catch(e){ _saPmLog('  ❌ '+((e&&e.message)||e)); }
+  }
+  _saPmLog('✅ ALL done — moved '+gDone+', failed '+gFail+'. Re-scan to verify everything shows ✅.');
+  if(allBtn){ allBtn.disabled=false; allBtn.textContent='② Migrate ALL remaining'; }
+  saPmScan();
+}
 
 async function loadContactRequests(){
   const list=document.getElementById('sa-contact-list');
@@ -19423,7 +19522,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782950000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782955000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
