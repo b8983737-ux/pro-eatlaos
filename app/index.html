@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782700000 · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782705000 · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8870,13 +8870,13 @@ async function loadContactRequests(){
     <div style="padding:16px;border-bottom:1px solid var(--s-border)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
         <div style="flex:1">
-          <div style="font-weight:700;font-size:15px;color:var(--s-text)">${r.name||'—'} <span style="color:var(--s-gold);font-size:13px">· ${r.resto||'—'}</span></div>
-          <div style="font-size:13px;color:var(--s-muted);margin-top:3px">📞 ${r.phone||'—'} · ${r.date||''} ${r.time||''}</div>
-          ${r.msg?`<div style="font-size:13px;color:var(--s-text);margin-top:8px;padding:10px;background:var(--s-surf2);border-radius:6px">"${r.msg}"</div>`:''}
+          <div style="font-weight:700;font-size:15px;color:var(--s-text)">${escapeHtml(r.name||'—')} <span style="color:var(--s-gold);font-size:13px">· ${escapeHtml(r.resto||'—')}</span></div>
+          <div style="font-size:13px;color:var(--s-muted);margin-top:3px">📞 ${escapeHtml(r.phone||'—')} · ${escapeHtml(r.date||'')} ${escapeHtml(r.time||'')}</div>
+          ${r.msg?`<div style="font-size:13px;color:var(--s-text);margin-top:8px;padding:10px;background:var(--s-surf2);border-radius:6px">"${escapeHtml(r.msg)}"</div>`:''}
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
-          <span style="font-size:11px;font-weight:700;color:${r.status==='new'?'var(--s-gold)':'var(--s-muted)'};text-transform:uppercase;letter-spacing:1px">${r.status||'new'}</span>
-          ${r.status==='new'?`<button class="btn btn-sm" onclick="markContactDone('${k}')" style="background:var(--s-green);color:#fff;border:none">✓ Done</button>`:''}
+          <span style="font-size:11px;font-weight:700;color:${r.status==='new'?'var(--s-gold)':'var(--s-muted)'};text-transform:uppercase;letter-spacing:1px">${escapeHtml(r.status||'new')}</span>
+          ${r.status==='new'?`<button class="btn btn-sm" onclick="markContactDone('${escapeHtml(k)}')" style="background:var(--s-green);color:#fff;border:none">✓ Done</button>`:''}
         </div>
       </div>
     </div>`).join('');
@@ -12793,7 +12793,7 @@ function setupCustomerUI(r,sess){
   document.getElementById('cRestoName').textContent=r.name;
   document.getElementById('cTableTag').textContent='Table '+qrSess.tNum;
   document.getElementById('cHeroTag').textContent='Table '+qrSess.tNum+' · '+r.name;
-  document.getElementById('cHeroTitle').innerHTML=`<em>${r.name}</em>`;
+  document.getElementById('cHeroTitle').innerHTML=`<em>${escapeHtml(r.name||'')}</em>`;
   document.getElementById('cHeroSub').textContent=r.cuisine||'';
   document.getElementById('cMenuCount').textContent=(r.menu||[]).filter(m=>m.status==='active').length;
   // Update people count (how many scanned this QR)
@@ -12988,7 +12988,7 @@ function openDetail(itemId){
     // Show photo if available, otherwise show emoji
     const detImgEl=document.getElementById('detEmoji');
     if(item.img){
-      detImgEl.innerHTML=`<img src="${item.img}" onclick="cMenuZoomOpenDetail()" style="width:100%;height:100%;object-fit:cover;border-radius:0;display:block;cursor:zoom-in;" alt="${item.name}"><span class="c-det-zoom" aria-hidden="true">🔍</span>`;
+      detImgEl.innerHTML=`<img src="${escapeHtml(item.img||'')}" onclick="cMenuZoomOpenDetail()" style="width:100%;height:100%;object-fit:cover;border-radius:0;display:block;cursor:zoom-in;" alt="${escapeHtml(item.name||'')}"><span class="c-det-zoom" aria-hidden="true">🔍</span>`;
     } else {
       detImgEl.innerHTML=item.emoji||'🍽️';
     }
@@ -19402,7 +19402,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782700000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782705000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
