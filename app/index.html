@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782705000 · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782950000 · CLOUDINARY photos (logo/cover/menu/item → CDN URL, base64 fallback) · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10152,17 +10152,39 @@ async function renewResto(id){
   loadAndRenderRestos();
 }
 
+/* ── Cloudinary photo upload — photos live on the CDN, the database stores only the short URL.
+   SAFETY NET: if Cloudinary is not configured or the upload fails for any reason, we keep the
+   original base64 (exactly today's behavior) so uploading can NEVER break. Display code is
+   unchanged: <img src> and _rfpSafeUrl already accept both base64 and https URLs. */
+var CLOUDINARY_CLOUD='kqc3swie';
+var CLOUDINARY_PRESET='eatlaos_unsigned';
+async function _uploadPhoto(dataUrl){
+  try{
+    if(CLOUDINARY_CLOUD && CLOUDINARY_PRESET && typeof dataUrl==='string' && dataUrl.indexOf('data:')===0){
+      var fd=new FormData();
+      fd.append('file', dataUrl);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      var res=await fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd});
+      if(res.ok){ var d=await res.json(); if(d && d.secure_url) return d.secure_url; }
+    }
+  }catch(_){}
+  return dataUrl; // fallback: keep base64 (safe — works everywhere, same as before)
+}
+
 // Logo
-function previewLogo(input){
+async function previewLogo(input){
   if(!input.files||!input.files[0]) return;
   const file=input.files[0];
   if(file.size>2*1024*1024){notifyD('⚠ Max 2MB');return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    document.getElementById('mRlogoData').value=e.target.result;
-    document.getElementById('logoPreview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
-  };
-  reader.readAsDataURL(file);
+  const hid=document.getElementById('mRlogoData');
+  const prev=document.getElementById('logoPreview');
+  try{
+    const data=await _compressImg(file, 512, 0.85);          // logo: small
+    if(hid) hid.value=data;                                   // safe base64 first (works even if saved now)
+    if(prev) prev.innerHTML=`<img src="${data}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
+    const url=await _uploadPhoto(data);                       // upgrade to Cloudinary URL
+    if(hid) hid.value=url;
+  }catch(_){ notifyD('⚠ Could not process image'); }
 }
 function clearLogo(){
   document.getElementById('mRlogoData').value='';
@@ -10195,9 +10217,10 @@ async function previewCover(input){
   if(file.size>10*1024*1024){notifyD('⚠ Max 10MB');return;}
   try{
     const data=await _compressImg(file, 1280, 0.82); // cover banner: ~1280px wide
-    document.getElementById('mRcoverData').value=data;
+    const hid=document.getElementById('mRcoverData'); if(hid) hid.value=data; // safe base64 first
     const cp=document.getElementById('coverPreview');
     cp.style.backgroundImage=`url(${data})`; cp.textContent='';
+    const url=await _uploadPhoto(data); if(hid) hid.value=url; // upgrade to Cloudinary URL
   }catch(_){ notifyD('⚠ Could not process image'); }
 }
 function clearCover(){
@@ -10212,7 +10235,7 @@ async function previewMenuPhotos(input){
   for(var i=0;i<files.length;i++){
     if(_mRmenuPhotos.length>=8){ notifyD('⚠ Max 8 menu photos'); break; }
     if(files[i].size>10*1024*1024){ notifyD('⚠ Max 10MB each'); continue; }
-    try{ var data=await _compressImg(files[i], 1400, 0.8); _mRmenuPhotos.push(data); }catch(_){ notifyD('⚠ Could not process image'); }
+    try{ var data=await _compressImg(files[i], 1400, 0.8); var idx=_mRmenuPhotos.push(data)-1; _renderMenuStrip(); var url=await _uploadPhoto(data); _mRmenuPhotos[idx]=url; }catch(_){ notifyD('⚠ Could not process image'); }
   }
   input.value='';
   _renderMenuStrip();
@@ -11414,17 +11437,15 @@ document.addEventListener('click',e=>{
   if(!e.target.closest('.ep-wrap')) closeAllEP();
 });
 
-function previewItemImg(input){
+async function previewItemImg(input){
   if(!input.files||!input.files[0]) return;
   const file=input.files[0];
   if(file.size>2*1024*1024){notifyD('⚠ Max 2MB');return;}
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const data=ev.target.result;
-    document.getElementById('mIimgData').value=data;
+  try{
+    const data=await _compressImg(file, 900, 0.82);
+    const hid=document.getElementById('mIimgData'); if(hid) hid.value=data; // safe base64 first
     const prev=document.getElementById('mIimgPreview');
-    prev.innerHTML=`<img src="${data}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`;
-    prev.style.fontSize='';
+    if(prev){ prev.innerHTML=`<img src="${data}" style="width:100%;height:100%;object-fit:cover;border-radius:3px">`; prev.style.fontSize=''; }
     // Update photo tab preview
     const photoInner=document.getElementById('itemEP-photo-inner');
     if(photoInner) photoInner.innerHTML=`
@@ -11435,8 +11456,8 @@ function previewItemImg(input){
           <button type="button" class="btn btn-sm btn-red" onclick="clearItemImg()">Remove</button>
         </div>
       </div>`;
-  };
-  reader.readAsDataURL(file);
+    const url=await _uploadPhoto(data); if(hid) hid.value=url; // upgrade to Cloudinary URL
+  }catch(_){ notifyD('⚠ Could not process image'); }
 }
 
 function clearItemImg(){
@@ -19402,7 +19423,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782705000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782950000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
