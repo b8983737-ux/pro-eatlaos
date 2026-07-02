@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD:1782955000 · SA Photo Migration tool (base64→Cloudinary, upload-first safe) · CLOUDINARY photos (logo/cover/menu/item → CDN URL, base64 fallback) · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
+<!DOCTYPE html><!-- BUILD:1782960000 · migration auth-identity check + permission hint · SA Photo Migration tool (base64→Cloudinary, upload-first safe) · CLOUDINARY photos (logo/cover/menu/item → CDN URL, base64 fallback) · MENU IMAGE hand-pinch zoom (no buttons) · SA contact live · zone description · booking release-time note · SA Restaurants password-gate · menu image pinch/zoom in lightbox (menu photos only, scoped via lb-zoomable) · Outside-area carve tool (L-shape rooms) · full-map default + pinch-zoom · scroll cue v2 · booking full-Lao --><!-- EATLAOS v5 · BUILD 1781065000 · authsafe-B6.2 + booking-v2-TURNOVER P1: per-restaurant seatingMode (open/min60/90/120), turnover-aware slot+table availability -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8859,6 +8859,16 @@ _lpLang = localStorage.getItem('el_lp_lang')||'lo';
 /* ── SA Photo Migration: move old base64 photos → Cloudinary (safe: upload FIRST, swap link only on success) ── */
 function _saPmLog(msg){ var el=document.getElementById('sa-pm-log'); if(el){ el.textContent+=msg+'\n'; el.scrollTop=el.scrollHeight; } }
 function _saPmIsB64(v){ return typeof v==='string' && v.indexOf('data:')===0; }
+function _saPmWho(){
+  try{ var u=(typeof fbAuth!=='undefined'&&fbAuth)?fbAuth.currentUser:null; return u?{email:(u.email||'(no email on token)'),uid:u.uid}:null; }catch(_){ return null; }
+}
+function _saPmPermHint(msg){
+  if(/permission|denied/i.test(String(msg||''))){
+    var who=_saPmWho();
+    _saPmLog('     → Firebase BLOCKED the save. This login '+(who?('('+who.email+')'):'(not signed in)')+' is not allowed to edit this restaurant.');
+    _saPmLog('     → FIX: sign in as Super Admin (superadmin@eatlaos.com) via the SA login, then Retry.');
+  }
+}
 function _saPmCount(r){
   var n=0; r=r||{};
   if(_saPmIsB64(r.logo)) n++;
@@ -8881,6 +8891,9 @@ async function saPmScan(){
   });
   if(listEl) listEl.innerHTML=rows||'<div style="color:var(--s-muted)">No restaurants found.</div>';
   var allBtn=document.getElementById('sa-pm-all'); if(allBtn) allBtn.style.display=any?'inline-block':'none';
+  var who=_saPmWho();
+  _saPmLog('🔑 Signed in as: '+(who?(who.email+' · uid '+who.uid.slice(0,10)+'…'):'❌ NOT signed in to Firebase Auth — every save will be denied!'));
+  if(who && who.email!=='superadmin@eatlaos.com'){ _saPmLog('⚠ You are NOT superadmin@eatlaos.com — you can only migrate restaurants you OWN. To migrate ALL, sign in as Super Admin first.'); }
   _saPmLog('Scan complete — '+total+' old photo(s) still in Firebase across all restaurants.'+(any?'':' 🎉 Everything already migrated!'));
 }
 async function _saPmMigrateResto(rid, r){
@@ -8915,7 +8928,7 @@ async function saPmMigrateOne(rid, btn){
     var res=await _saPmMigrateResto(rid, r);
     _saPmLog('✔ Done — moved '+res.done+', failed '+res.fail+'. Open that restaurant page & refresh to confirm photos still show.');
     if(btn){ btn.textContent='✓ Done'; btn.classList.remove('btn-gold'); }
-  }catch(e){ _saPmLog('  ❌ error: '+((e&&e.message)||e)); if(btn){ btn.disabled=false; btn.textContent='Retry'; } }
+  }catch(e){ var _m=((e&&e.message)||e); _saPmLog('  ❌ error: '+_m); _saPmPermHint(_m); if(btn){ btn.disabled=false; btn.textContent='Retry'; } }
 }
 async function saPmMigrateAll(){
   if(!confirm('Migrate ALL remaining old photos to Cloudinary?\n\nSafe: uploads first, swaps the link only after success. You can run it again anytime.')) return;
@@ -8928,7 +8941,7 @@ async function saPmMigrateAll(){
     if(_saPmCount(r)===0) continue;
     _saPmLog('— '+(r.name||rid));
     try{ var res=await _saPmMigrateResto(rid, r); gDone+=res.done; gFail+=res.fail; }
-    catch(e){ _saPmLog('  ❌ '+((e&&e.message)||e)); }
+    catch(e){ var _m2=((e&&e.message)||e); _saPmLog('  ❌ '+_m2); _saPmPermHint(_m2); }
   }
   _saPmLog('✅ ALL done — moved '+gDone+', failed '+gFail+'. Re-scan to verify everything shows ✅.');
   if(allBtn){ allBtn.disabled=false; allBtn.textContent='② Migrate ALL remaining'; }
@@ -19522,7 +19535,7 @@ function rfpBook(){
   else if(typeof openCustBookingModal==='function'){ openCustBookingModal(); }
 }
 </script>
-<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782955000</div>
+<div id="elBuildBadge" style="display:none;position:fixed;right:5px;bottom:5px;z-index:2147483600;font:700 10px/1 ui-monospace,monospace;color:#c8973a;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;pointer-events:none;letter-spacing:.5px;opacity:.85">BUILD 1782960000</div>
 <script>(function(){try{var b=document.getElementById('elBuildBadge');if(!b)return;if(/[?&#]build\b/i.test(location.href))b.style.display='block';}catch(_){}})();</script>
 </body>
 </html>
